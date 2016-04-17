@@ -1,0 +1,330 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+  },
+  "plugins": [
+    "jsx-a11y", //on react based application
+    "react", //on react based application
+    "import" //for es6 import
+  ],
+  "ecmaFeatures": {
+    "arrowFunctions": true,
+    "blockBindings": true,
+    "classes": true,
+    "defaultParams": true,
+    "destructuring": true,
+    "forOf": true,
+    "jsx": true,
+    "modules": true,
+    "objectLiteralComputedProperties": true,
+    "objectLiteralDuplicateProperties": true,
+    "objectLiteralShorthandMethods": true,
+    "objectLiteralShorthandProperties": true,
+    "spread": true,
+    "superInFunctions": true,
+    "templateStrings": true,
+  },
+  "parser": "babel-eslint",
+  "rules": {
+
+    /*** best practices ***/
+
+    "eqeqeq": [1, 'smart'],
+    "curly": [2,"multi-line"],
+    "no-unused-vars" : 1,
+    // enforces return statements in callbacks of array's methods
+    'array-callback-return': 2,
+    // require default case in switch statements
+    'default-case': 2,
+    // make sure for-in loops have an if statement
+    'guard-for-in': 2,
+    // disallow the use of alert, confirm, and prompt
+    'no-alert': 1,
+    // disallow use of arguments.caller or arguments.callee
+    'no-caller': 2,
+    // disallow lexical declarations in case/default clauses
+    // http://eslint.org/docs/rules/no-case-declarations.html
+    'no-case-declarations': 2,
+    // disallow else after a return in an if
+    'no-else-return': 2,
+    // disallow Unnecessary Labels
+    // http://eslint.org/docs/rules/no-extra-label
+    'no-extra-label': 2,
+    // disallow use of eval()
+    'no-eval': 1,
+    // disallow adding to native types
+    'no-extend-native': 1,
+    // disallow unnecessary function binding
+    'no-extra-bind': 1,
+    // disallow fallthrough of case statements
+    'no-fallthrough': 1,
+    // disallow the use of leading or trailing decimal points in numeric literals
+    'no-floating-decimal': 1,
+    // disallow usage of __iterator__ property
+    'no-iterator': 2,
+    // disallow use of labels for anything other then loops and switches
+    'no-labels': [2, {
+      'allowLoop': false,
+      'allowSwitch': false
+    }],
+    // disallow unnecessary nested blocks
+    'no-lone-blocks': 2,
+    // disallow creation of functions within loops
+    'no-loop-func': 2,
+    // disallow use of multiline strings
+    'no-multi-str': 2,
+    // disallow reassignments of native objects
+    'no-native-reassign': 2,
+    // disallow use of new operator for Function object
+    'no-new-func': 1,
+    // disallows creating new instances of String, Number, and Boolean
+    'no-new-wrappers': 2,
+    // disallow use of (old style) octal literals
+    'no-octal': 2,
+    // disallow use of octal escape sequences in string literals, such as
+    // var foo = 'Copyright \251';
+    'no-octal-escape': 2,
+    // disallow usage of __proto__ property
+    'no-proto': 2,
+    // disallow declaring the same variable more then once
+    'no-redeclare': 2,
+    // disallow use of assignment in return statement
+    'no-return-assign': 2,
+    // disallow use of `javascript: urls.
+    'no-script-url': 2,
+    // disallow comparisons where both sides are exactly the same
+    'no-self-compare': 2,
+    // disallow use of comma operator
+    'no-sequences': 1,
+    // restrict what can be thrown as an exception
+    'no-throw-literal': 2,
+    // disallow usage of expressions in statement position
+    'no-unused-expressions': 2,
+    // disallow unused labels
+    // http://eslint.org/docs/rules/no-unused-labels
+    'no-unused-labels': 2,
+    // disallow unnecessary string escaping
+    // http://eslint.org/docs/rules/no-useless-escape
+    'no-useless-escape': 2,
+    // disallow use of the with statement
+    'no-with': 1,
+    // require use of the second argument for parseInt()
+    'radix': 2,
+
+    /*** best practice rule end ***/
+
+    /***********************************************************/
+
+    /*** breaking error rules ***/
+    // disallow assignment in conditional expressions
+    'no-cond-assign': [2, 'always'],
+    // disallow use of constant expressions in conditions
+    'no-constant-condition': 1,
+    // disallow control characters in regular expressions
+    'no-control-regex': 2,
+    // disallow use of debugger
+    //'no-debugger': 2, //for production
+    // disallow duplicate arguments in functions
+    'no-dupe-args': 2,
+    // disallow duplicate keys when creating object literals
+    'no-dupe-keys': 2,
+    // disallow a duplicate case label.
+    'no-duplicate-case': 2,
+    // disallow the use of empty character classes in regular expressions
+    'no-empty-character-class': 2,
+    // disallow empty statements
+    'no-empty': 2,
+    // disallow assigning to the exception in a catch block
+    'no-ex-assign': 2,
+    // disallow unnecessary parentheses
+    'no-extra-parens': [1, 'functions'],
+    // disallow unnecessary semicolons
+    'no-extra-semi': 1,
+    // disallow overwriting functions written as function declarations
+    'no-func-assign': 2,
+
+    // disallow function or variable declarations in nested blocks
+    "no-inner-declarations": [2, "functions"],
+      // disallow invalid regular expression strings in the RegExp constructor
+    'no-invalid-regexp': 2,
+    // disallow negation of the left operand of an in expression
+    'no-negated-in-lhs': 2,
+    // disallow the use of object properties of the global object (Math and JSON) as functions
+    'no-obj-calls': 2,
+    // disallow sparse arrays
+    'no-sparse-arrays': 2,
+    // disallow unreachable statements after a return, throw, continue, or break statement
+    'no-unreachable': 2,
+    // disallow comparisons with the value NaN
+    'use-isnan': 2,
+    // ensure that the results of typeof are compared against a valid string
+    'valid-typeof': 2,
+    /*** breaking error rules end***/
+
+    /***********************************************************/
+
+    /*** es6 error rules start ***/
+    "no-var": 1,
+    "prefer-const": 1,
+    // disallow arrow functions where they could be confused with comparisons
+    // http://eslint.org/docs/rules/no-confusing-arrow
+    'no-confusing-arrow': [2, {
+      'allowParens': true,
+    }],
+    // disallow modifying variables that are declared using const
+    'no-const-assign': 2,
+    // disallow duplicate class members
+    // http://eslint.org/docs/rules/no-dupe-class-members
+    'no-dupe-class-members': 2,
+    // disallow symbol constructor
+    // http://eslint.org/docs/rules/no-new-symbol
+    'no-new-symbol': 2,
+    // disallow to use this/super before super() calling in constructors.
+    'no-this-before-super': 2,
+    // disallow unnecessary constructor
+    // http://eslint.org/docs/rules/no-useless-constructor
+    'no-useless-constructor': 2,
+    // suggest using arrow functions as callbacks
+    'prefer-arrow-callback': 1,
+
+    // disallow invalid exports, e.g. multiple defaults
+    // https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/export.md
+    'import/export': 2,
+    // ensure imports point to files/modules that can be resolved
+    // https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/no-unresolved.md
+    'import/no-unresolved': [2, { 'commonjs': true }],
+    /*** es6 error rules end ***/
+
+    /***********************************************************/
+
+    /*** react error rules start ***/
+
+        // Prevent use of `accessKey`
+    // https://github.com/evcohen/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-access-key.md
+    'jsx-a11y/no-access-key': 2,
+
+    // Require <img> to have a non-empty `alt` prop, or role="presentation"
+    // https://github.com/evcohen/eslint-plugin-jsx-a11y/blob/master/docs/rules/img-uses-alt.md
+    //* 'jsx-a11y/img-uses-alt': 2,
+
+    // Prevent img alt text from containing redundant words like "image", "picture", or "photo"
+    // https://github.com/evcohen/eslint-plugin-jsx-a11y/blob/master/docs/rules/redundant-alt.md
+    //* 'jsx-a11y/redundant-alt': 2,
+
+    // Require ARIA roles to be valid and non-abstract
+    // https://github.com/evcohen/eslint-plugin-jsx-a11y/blob/master/docs/rules/valid-aria-role.md
+    //* 'jsx-a11y/valid-aria-role': 2,
+
+    // Prevent missing displayName in a React component definition
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/display-name.md
+    //* 'react/display-name': [0, { 'ignoreTranspilerName': false }],
+
+
+    // Validate JSX has key prop when in array or iterator
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-key.md
+    'react/jsx-key': 1,
+
+
+    // Prevent usage of .bind() and arrow functions in JSX props
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-no-bind.md
+    'react/jsx-no-bind': [1, {
+      'ignoreRefs': true,
+      'allowArrowFunctions': true,
+      'allowBind': false,
+    }],
+
+    // Prevent duplicate props in JSX
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-no-duplicate-props.md
+    'react/jsx-no-duplicate-props': 2,
+
+    // Disallow undeclared variables in JSX
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-no-undef.md
+    'react/jsx-no-undef': 2,
+
+    // Enforce PascalCase for user-defined JSX components
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-pascal-case.md
+    'react/jsx-pascal-case': 2,
+
+
+    // Prevent React to be incorrectly marked as unused
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-uses-react.md
+    'react/jsx-uses-react': 2,
+
+    // Prevent variables used in JSX to be incorrectly marked as unused
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-uses-vars.md
+    'react/jsx-uses-vars': 2,
+
+    // Prevent usage of dangerous JSX properties
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-danger.md
+    'react/no-danger': 1,
+
+    // Prevent usage of deprecated methods
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-deprecated.md
+    'react/no-deprecated': [1, { 'react': '0.14.0' }],
+
+    // Prevent usage of setState in componentDidMount
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-did-mount-set-state.md
+    'react/no-did-mount-set-state': [2, 'allow-in-func'],
+
+    // Prevent usage of setState in componentDidUpdate
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-did-update-set-state.md
+    'react/no-did-update-set-state': [2, 'allow-in-func'],
+
+
+    // Prevent usage of isMounted
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-is-mounted.md
+    'react/no-is-mounted': 2,
+
+    // Prevent multiple component definition per file
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-multi-comp.md
+    //* 'react/no-multi-comp': [1, { 'ignoreStateless': true }],
+
+    // Prevent usage of unknown DOM property
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-unknown-property.md
+    'react/no-unknown-property': 2,
+
+    // Require stateless functions when not using lifecycle methods, setState or ref
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/prefer-stateless-function.md
+    //* 'react/prefer-stateless-function': 2,
+
+
+    // Prevent missing props validation in a React component definition
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/prop-types.md
+    //* 'react/prop-types': [2, { 'ignore': [], 'customValidators': [] }],
+
+    // Prevent missing React when using JSX
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/react-in-jsx-scope.md
+    'react/react-in-jsx-scope': 2,
+
+    // Require render() methods to return something
+    // https://github.com/yannickcr/eslint-plugin-react/pull/502
+    'react/require-render-return': 2,
+
+    // Prevent extra closing tags for components without children
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/self-closing-comp.md
+    //* 'react/self-closing-comp': 1,
+
+    // Enforce component methods order
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/sort-comp.md
+    /** 'react/sort-comp': [2, {
+      'order': [
+        'static-methods',
+        'lifecycle',
+        '/^on.+$/',
+        '/^(get|set)(?!(InitialState$|DefaultProps$|ChildContext$)).+$/',
+        'everything-else',
+        '/^render.+$/',
+        'render'
+      ]
+    }], */
+    // Prevent missing parentheses around multilines JSX
+    // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/wrap-multilines.md
+    /** 'react/wrap-multilines': [2, {
+      declaration: true,
+      assignment: true,
+      return: true
+    }], */
+    /*** react error rules end ***/
+  }
+}
