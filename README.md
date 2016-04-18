@@ -44,19 +44,19 @@ Output : 4111 1111 1111 1111
 ```jsx
 <NumberFormat thousandSeperator={true} prefix={'$'} />
 ```
-![Screencast example](https://i.imgur.com/d0P2Db1.gifv)
+![Screencast example](https://i.imgur.com/d0P2Db1.gif)
 
 #### Format with pattern : Format credit card in an input
 ```jsx
 <NumberFormat format="#### #### #### ####" />
 ```
-![Screencast example](https://i.imgur.com/KEiYp4o.gifv)
+![Screencast example](https://i.imgur.com/KEiYp4o.gif)
 
 #### Format with mask : Format credit card in an input
 ```jsx
 <NumberFormat format="#### #### #### ####" mask="_"/>
 ```
-![Screencast example](https://i.imgur.com/qvmydpH.gifv)
+![Screencast example](https://i.imgur.com/qvmydpH.gif)
 
 #### Custom format method  : Format credit card expiry time
 ```jsx
@@ -73,7 +73,7 @@ Output : 4111 1111 1111 1111
 
 <NumberFormat format={formatExpiryChange}/>
 ```
-![Screencast example](https://i.imgur.com/9wwdyFF.gifv)
+![Screencast example](https://i.imgur.com/9wwdyFF.gif)
 
 ### Development
 - Download the zip
