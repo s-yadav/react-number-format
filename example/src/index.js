@@ -1,6 +1,6 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
-const FormatNumberInput = require('../../src/number_format');
+const NumberFormat = require('../../src/number_format');
 
 const App = React.createClass({
   getInitialState : function(){
@@ -23,42 +23,42 @@ const App = React.createClass({
           <h3>
             Prefix and thousand seperator : Format currency as text
           </h3>
-          <FormatNumberInput value={2456981} displayType={'text'} thousandSeperator={true} prefix={'$'} />
+          <NumberFormat value={2456981} displayType={'text'} thousandSeperator={true} prefix={'$'} />
         </div>
 
         <div className="example">
           <h3>
             Format with pattern : Format credit card as text
           </h3>
-          <FormatNumberInput value={4111111111111111} displayType={'text'} format="#### #### #### ####" />
+          <NumberFormat value={4111111111111111} displayType={'text'} format="#### #### #### ####" />
         </div>
 
         <div className="example">
           <h3>
             Prefix and thousand seperator : Format currency in input
           </h3>
-          <FormatNumberInput thousandSeperator={true} prefix={'$'} />
+          <NumberFormat thousandSeperator={true} prefix={'$'} />
         </div>
 
         <div className="example">
           <h3>
             Format with pattern : Format credit card in an input
           </h3>
-          <FormatNumberInput format="#### #### #### ####" />
+          <NumberFormat format="#### #### #### ####" />
         </div>
 
         <div className="example">
           <h3>
             Format with mask : Format credit card in an input
           </h3>
-          <FormatNumberInput format="#### #### #### ####" mask="_"/>
+          <NumberFormat format="#### #### #### ####" mask="_"/>
         </div>
 
         <div className="example">
           <h3>
             Custom format method  : Format credit card expiry time
           </h3>
-          <FormatNumberInput format={this.formatExpiryChange}/>
+          <NumberFormat format={this.formatExpiryChange}/>
         </div>
       </div>
     )

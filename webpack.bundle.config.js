@@ -1,4 +1,10 @@
 const webpack = require('webpack');
+const PACKAGE = require('./package.json');
+const fullYear = new Date().getFullYear();
+const banner = PACKAGE.name + ' - ' + PACKAGE.version + '\n' +
+  'Author : '+PACKAGE.author+'\n'+
+  'Copyright (c) '+ (fullYear!== 2016 ? '2016,' : '') + fullYear + ' to ' + PACKAGE.author + ' - ignitersworld.com , released under the '+PACKAGE.license+' license.'
+  /* +PACKAGE.homepage */;
 
 module.exports = {
   entry: {
@@ -14,7 +20,8 @@ module.exports = {
     // publicPath: "http://localhost:8081/public/js/",
     // path: path.join(__dirname, "public","js"),
     filename: '[name].js',
-    libraryTarget : 'umd'
+    libraryTarget : 'umd',
+    library : 'NumberFormat'
   },
   resolveLoader: {
     modulesDirectories: ['','node_modules']
@@ -32,7 +39,8 @@ module.exports = {
     new webpack.optimize.UglifyJsPlugin({
           include: /\.min\.js$/,
           minimize: true
-    })
+    }),
+    new webpack.BannerPlugin(banner)
   ],
   resolve: {
     extensions: ['','.js'] //can add jsx also but not required

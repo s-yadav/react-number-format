@@ -1,6 +1,7 @@
 const React = require('react');
 
-const FormatNumberInput =  React.createClass({
+const NumberFormat =  React.createClass({
+  displayName : 'NumberFormat',
   getInitialState : function(){
     return {
       value : this.formatInput(this.props.value).formattedValue
@@ -149,4 +150,4 @@ const FormatNumberInput =  React.createClass({
   }
 });
 
-module.exports = FormatNumberInput;
+module.exports = NumberFormat;

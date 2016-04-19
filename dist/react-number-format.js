@@ -1,12 +1,17 @@
+/*!
+ * react-number-format - 0.1.1
+ * Author : Sudhanshu Yadav
+ * Copyright (c) 2016 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
+ */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory(require("React"));
 	else if(typeof define === 'function' && define.amd)
 		define(["React"], factory);
-	else {
-		var a = typeof exports === 'object' ? factory(require("React")) : factory(root["React"]);
-		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
-	}
+	else if(typeof exports === 'object')
+		exports["NumberFormat"] = factory(require("React"));
+	else
+		root["NumberFormat"] = factory(root["React"]);
 })(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -67,9 +72,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var React = __webpack_require__(2);
 
-	var FormatNumberInput = React.createClass({
-	  displayName: 'FormatNumberInput',
-
+	var NumberFormat = React.createClass({
+	  displayName: 'NumberFormat',
 	  getInitialState: function getInitialState() {
 	    return {
 	      value: this.formatInput(this.props.value).formattedValue
@@ -233,7 +237,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	});
 
-	module.exports = FormatNumberInput;
+	module.exports = NumberFormat;
 
 /***/ },
 /* 2 */
