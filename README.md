@@ -75,6 +75,9 @@ Output : 4111 1111 1111 1111
 ```
 ![Screencast example](https://i.imgur.com/9wwdyFF.gif)
 
+### Live Demo
+[http://codepen.io/s-yadav/pen/bpKNMa](http://codepen.io/s-yadav/pen/bpKNMa)
+
 ### Development
 - Download the zip
 - `npm install`
