@@ -133,7 +133,7 @@ const NumberFormat =  React.createClass({
     this.onChangeHandler(e,this.props.onInput);
   },
   render : function(){
-    const {thousandSeperator, suffix, prefix, format, mask, ...props} = this.props;
+    const {thousandSeperator, suffix, prefix, format, mask, displayType, ...props} = this.props;
     if(displayType === "text"){
       return (<span {...props}>{this.state.value}</span>);
     }
