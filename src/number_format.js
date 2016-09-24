@@ -68,7 +68,7 @@ const NumberFormat =  React.createClass({
     return frmtdStr.substring(0,hashIdx + 1) + (lastIdx!==-1 ? frmtdStr.substring(lastIdx + 1, frmtdStr.length) :'');
   },
   formatInput : function(val){
-    const {prefix, thousandSeperator, suffix, mask,format} = this.props;
+    const {prefix, thousandSeparator, suffix, mask,format} = this.props;
     const maskPattern = format && typeof format == "string" && !!mask;
 
     if(!val || !((val+"").match(/\d/g))) return {value :"", formattedValue: (maskPattern ? "" : "")}
@@ -85,7 +85,7 @@ const NumberFormat =  React.createClass({
       }
     }
     else{
-      if(thousandSeperator) formattedValue = formattedValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+      if(thousandSeparator) formattedValue = formattedValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 
       //add prefix and suffix
       if(prefix) formattedValue = prefix + formattedValue;
@@ -133,13 +133,19 @@ const NumberFormat =  React.createClass({
     this.onChangeHandler(e,this.props.onInput);
   },
   render : function(){
-    const {props} = this;
-    if(props.displayType === "text"){
-      return (<span {...this.props}>{this.state.value}</span>);
+    const props = Object.assign({}, this.props);
+
+    ['thousandSeparator', 'displayType', 'prefix', 'suffix', 'format', 'mask', 'value'].forEach((key) => {
+      delete props[key];
+    });
+
+
+    if(this.props.displayType === "text"){
+      return (<span {...props}>{this.state.value}</span>);
     }
     return (
       <input
-        {...this.props}
+        {...props}
         type='tel'
         value={this.state.value}
         ref="input"

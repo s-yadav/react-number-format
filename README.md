@@ -2,14 +2,14 @@
 React component to format number in an input or as a text
 
 ### Features
-1. Allow prefix, suffix and thousand seperator. 
+1. Allow prefix, suffix and thousand separator.
 2. Allow format pattern.
 3. Allow masking.
 4. Allow custom formatting handler.
 5. Allow formatting a input or a simple text
 
 ### Install
-Through npm 
+Through npm
 `npm install react-number-format --save`
 
 Or get compiled development and production version from ./dist
@@ -17,7 +17,7 @@ Or get compiled development and production version from ./dist
 ### Props
 | Props        | Options           | Default  | Description |
 | ------------- |-------------| -----| -------- |
-| thousandSeperator | Boolean: true/false | false | Add thousand seperators on number |
+| thousandSeparator | Boolean: true/false | false | Add thousand separators on number |
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
 | suffix | String (ex : /-)      |    none | Add a prefix after the number |
 | value | Number | null | Give initial value to number format |
@@ -26,11 +26,11 @@ Or get compiled development and production version from ./dist
 | mask | String (ex : _) | none | If mask defined, component will show non entered placed with masked value.  
 
 ### Examples
-#### Prefix and thousand seperator : Format currency as text
+#### Prefix and thousand separator : Format currency as text
 ```jsx
 var NumberFormat = require('react-number-format');
 
-<NumberFormat value={2456981} displayType={'text'} thousandSeperator={true} prefix={'$'} />
+<NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />
 ```
 Output : $2,456,981
 
@@ -40,9 +40,9 @@ Output : $2,456,981
 ```
 Output : 4111 1111 1111 1111
 
-#### Prefix and thousand seperator : Format currency in input
+#### Prefix and thousand separator : Format currency in input
 ```jsx
-<NumberFormat thousandSeperator={true} prefix={'$'} />
+<NumberFormat thousandSeparator={true} prefix={'$'} />
 ```
 ![Screencast example](https://i.imgur.com/d0P2Db1.gif)
 

@@ -27,7 +27,12 @@ module.exports = {
     modulesDirectories: ['','node_modules']
   },
   externals: {
-    react : 'React'
+    react: {
+        root: 'React',
+        commonjs2: 'react',
+        commonjs: 'react',
+        amd: 'react'
+      }
   },
   plugins: [
     new webpack.DefinePlugin({

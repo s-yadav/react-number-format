@@ -5,7 +5,7 @@ const FormatNumberInput = require('../src/number_format');
 /*** format_number input as input ****/
 describe('FormatNumberInput as input', () => {
   it('should have initial value', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value={2456981} thousandSeperator={true} prefix={'$'} />);
+    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value={2456981} thousandSeparator={true} prefix={'$'} />);
     const input = ReactTestUtils.findRenderedDOMComponentWithTag(
        component, 'input'
     );
@@ -13,7 +13,7 @@ describe('FormatNumberInput as input', () => {
   });
 
   it('should listen input event and formmat currency properly', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeperator={true} prefix={'$'} />);
+    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeparator={true} prefix={'$'} />);
     const input = ReactTestUtils.findRenderedDOMComponentWithTag(
        component, 'input'
     );
@@ -26,7 +26,7 @@ describe('FormatNumberInput as input', () => {
   });
 
   it('should listen change event and formmat currency properly', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeperator={true} prefix={'$'} />);
+    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeparator={true} prefix={'$'} />);
     const input = ReactTestUtils.findRenderedDOMComponentWithTag(
        component, 'input'
     );
@@ -118,7 +118,7 @@ describe('FormatNumberInput as input', () => {
 /*** format_number input as text ****/
 describe('FormatNumberInput as text', () => {
   it('should format numbers to currency', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value={2456981} displayType={'text'} thousandSeperator={true} prefix={'$'} />);
+    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />);
     const span = ReactTestUtils.findRenderedDOMComponentWithTag(
        component, 'span'
     );

@@ -23,7 +23,7 @@ const App = React.createClass({
           <h3>
             Prefix and thousand seperator : Format currency as text
           </h3>
-          <NumberFormat value={2456981} displayType={'text'} thousandSeperator={true} prefix={'$'} />
+          <NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />
         </div>
 
         <div className="example">
@@ -37,7 +37,7 @@ const App = React.createClass({
           <h3>
             Prefix and thousand seperator : Format currency in input
           </h3>
-          <NumberFormat thousandSeperator={true} prefix={'$'} />
+          <NumberFormat thousandSeparator={true} prefix={'$'} />
         </div>
 
         <div className="example">

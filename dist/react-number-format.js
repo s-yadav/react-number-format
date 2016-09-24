@@ -1,15 +1,15 @@
 /*!
- * react-number-format - 0.1.1
+ * react-number-format - 0.1.2
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("React"));
+		module.exports = factory(require("react"));
 	else if(typeof define === 'function' && define.amd)
-		define(["React"], factory);
+		define(["react"], factory);
 	else if(typeof exports === 'object')
-		exports["NumberFormat"] = factory(require("React"));
+		exports["NumberFormat"] = factory(require("react"));
 	else
 		root["NumberFormat"] = factory(root["React"]);
 })(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
@@ -144,7 +144,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  formatInput: function formatInput(val) {
 	    var _props2 = this.props;
 	    var prefix = _props2.prefix;
-	    var thousandSeperator = _props2.thousandSeperator;
+	    var thousandSeparator = _props2.thousandSeparator;
 	    var suffix = _props2.suffix;
 	    var mask = _props2.mask;
 	    var format = _props2.format;
@@ -163,7 +163,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        formattedValue = format(formattedValue);
 	      }
 	    } else {
-	      if (thousandSeperator) formattedValue = formattedValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+	      if (thousandSeparator) formattedValue = formattedValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 
 	      //add prefix and suffix
 	      if (prefix) formattedValue = prefix + formattedValue;
@@ -218,16 +218,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.onChangeHandler(e, this.props.onInput);
 	  },
 	  render: function render() {
-	    var props = this.props;
+	    var props = _extends({}, this.props);
 
-	    if (props.displayType === "text") {
+	    ['thousandSeparator', 'displayType', 'prefix', 'suffix', 'format', 'mask', 'value'].forEach(function (key) {
+	      delete props[key];
+	    });
+
+	    if (this.props.displayType === "text") {
 	      return React.createElement(
 	        'span',
-	        this.props,
+	        props,
 	        this.state.value
 	      );
 	    }
-	    return React.createElement('input', _extends({}, this.props, {
+	    return React.createElement('input', _extends({}, props, {
 	      type: 'tel',
 	      value: this.state.value,
 	      ref: 'input',
