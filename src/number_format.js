@@ -17,9 +17,6 @@ const NumberFormat =  React.createClass({
       value : this.formatInput(newProps.value).formattedValue
     });
   },
-  shouldComponentUpdate:function(newProps){
-    return !(newProps!==this.props && newProps.value === this.props.value);
-  },
   setCaretPosition : function(caretPos) {
     const el = this.refs.input;
       el.value = el.value;
