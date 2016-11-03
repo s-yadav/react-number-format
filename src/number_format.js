@@ -123,8 +123,15 @@ const NumberFormat =  React.createClass({
 
     return value;
   },
+  onBlurHandler: function(e, callback){
+    const {value} = this.state;
+    if(callback) callback(e,value);
+  },
   onChange : function(e){
     this.onChangeHandler(e,this.props.onChange);
+  },
+  onBlur : function(e){
+    this.onBlurHandler(e,this.props.onBlur);
   },
   onInput : function(e){
     this.onChangeHandler(e,this.props.onInput);
@@ -148,6 +155,7 @@ const NumberFormat =  React.createClass({
         ref="input"
         onInput={this.onChange}
         onChange={this.onChange}
+        onBlur={this.onBlur}
       />
     )
   }
