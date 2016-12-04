@@ -17,7 +17,8 @@ Or get compiled development and production version from ./dist
 ### Props
 | Props        | Options           | Default  | Description |
 | ------------- |-------------| -----| -------- |
-| thousandSeparator | Boolean: true/false | false | Add thousand separators on number |
+| thousandSeparator | mixed: true/false (boolean) or ,/. (string) | false | Add thousand separators on number |
+| decimalSeperator | mixed: ./, (string) or true/false (boolean)| . | Suppor decimal point on a number |
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
 | suffix | String (ex : /-)      |    none | Add a prefix after the number |
 | value | Number | null | Give initial value to number format |
@@ -77,6 +78,14 @@ Output : 4111 1111 1111 1111
 
 ### Live Demo
 [http://codepen.io/s-yadav/pen/bpKNMa](http://codepen.io/s-yadav/pen/bpKNMa)
+
+### Major Updates
+### v1.0.0
+- Support decimals
+- Support changing thousandSeparator to ','
+- Updated complete code to ES6
+- Added propTypes validation
+- Fixed #1, #7, #8, #9
 
 ### Development
 - Download the zip

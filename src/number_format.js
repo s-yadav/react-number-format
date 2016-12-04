@@ -1,23 +1,74 @@
-const React = require('react');
+//const React = require('react');
+import React, {PropTypes} from 'react';
 
-const NumberFormat =  React.createClass({
-  displayName : 'NumberFormat',
-  getInitialState : function(){
-    return {
-      value : this.formatInput(this.props.value).formattedValue
+function escapeRegExp(str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
+const propTypes = {
+  thousandSeparator: PropTypes.oneOf([',', '.', true, false]),
+  decimalSeperator: PropTypes.oneOf([',', '.', true, false]),
+  displayType: PropTypes.oneOf(['input', 'text']),
+  prefix: PropTypes.string,
+  suffix: PropTypes.string,
+  format: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.func
+  ]),
+  mask: PropTypes.string,
+  value: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string
+  ])
+};
+
+const defaultProps = {
+  displayType: 'input',
+  decimalSeperator: '.'
+};
+
+class NumberFormat extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: this.formatInput(props.value).formattedValue
     }
-  },
-  getDefaultProps : function(){
-    return {
-      displayType : 'input'
-    }
-  },
-  componentWillReceiveProps: function(newProps){
+    this.onChange = this.onChange.bind(this);
+    this.onInput = this.onInput.bind(this);
+  }
+
+  componentWillReceiveProps(newProps) {
     this.setState({
       value : this.formatInput(newProps.value).formattedValue
     });
-  },
-  setCaretPosition : function(caretPos) {
+  }
+
+  getSeperators() {
+    let {thousandSeparator, decimalSeperator} = this.props;
+    if (thousandSeparator === true) {
+      thousandSeparator = ','
+    }
+
+    if (decimalSeperator && thousandSeparator) {
+      decimalSeperator = thousandSeparator === ',' ? '.' : ',';
+    }
+
+    if (decimalSeperator === true) {
+      decimalSeperator = '.'
+    }
+
+    return {
+      decimalSeperator,
+      thousandSeparator
+    }
+  }
+
+  getNumberRegex(g) {
+    const {decimalSeperator} = this.getSeperators();
+    return new RegExp('\\d' + (decimalSeperator ? '|' + escapeRegExp(decimalSeperator) : ''), g ? 'g' : undefined);
+  }
+
+  setCaretPosition(caretPos) {
     const el = this.refs.input;
       el.value = el.value;
       // ^ this is used to not only get "focus", but
@@ -42,8 +93,9 @@ const NumberFormat =  React.createClass({
           return false;
 
       }
-  },
-  formatWithPattern : function(str){
+  }
+
+  formatWithPattern(str) {
     const {format,mask} = this.props;
     if (!format) return str;
     const hashCount = format.split('#').length - 1;
@@ -63,13 +115,17 @@ const NumberFormat =  React.createClass({
       return frmtdStr.replace(/#/g,mask);
     }
     return frmtdStr.substring(0,hashIdx + 1) + (lastIdx!==-1 ? frmtdStr.substring(lastIdx + 1, frmtdStr.length) :'');
-  },
-  formatInput : function(val){
-    const {prefix, thousandSeparator, suffix, mask,format} = this.props;
-    const maskPattern = format && typeof format == "string" && !!mask;
+  }
 
-    if(!val || !((val+"").match(/\d/g))) return {value :"", formattedValue: (maskPattern ? "" : "")}
-    const num = (val+"").match(/\d/g).join("");
+  formatInput(val) {
+    const {prefix, suffix, mask, format} = this.props;
+    const {thousandSeparator, decimalSeperator} = this.getSeperators()
+    const maskPattern = format && typeof format == 'string' && !!mask;
+
+    const numRegex = this.getNumberRegex(true);
+
+    if(!val || !((val+'').match(numRegex))) return {value :'', formattedValue: (maskPattern ? '' : '')}
+    const num = (val+'').match(numRegex).join('');
 
     let formattedValue = num;
 
@@ -77,73 +133,89 @@ const NumberFormat =  React.createClass({
       if(typeof format == 'string'){
         formattedValue = this.formatWithPattern(formattedValue);
       }
-      else if(typeof format == "function"){
+      else if(typeof format == 'function'){
         formattedValue = format(formattedValue);
       }
     }
     else{
-      if(thousandSeparator) formattedValue = formattedValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-
+      let beforeDecimal = formattedValue, afterDecimal = '';
+      const hasDecimals = formattedValue.indexOf(decimalSeperator) !== -1;
+      if(decimalSeperator && hasDecimals) {
+        const parts = formattedValue.split(decimalSeperator)
+        beforeDecimal = parts[0];
+        afterDecimal = parts[1];
+      }
+      if(thousandSeparator) {
+        beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
+      }
       //add prefix and suffix
-      if(prefix) formattedValue = prefix + formattedValue;
-      if(suffix) formattedValue = formattedValue + suffix;
+      if(prefix) beforeDecimal = prefix + beforeDecimal;
+      if(suffix) afterDecimal = afterDecimal + suffix;
+
+      formattedValue = beforeDecimal + (hasDecimals && decimalSeperator || '') + afterDecimal;
     }
 
     return {
-        value : formattedValue.match(/\d/g).join(""),
+        value : formattedValue.match(numRegex).join(''),
         formattedValue : formattedValue
     }
-  },
-  getCursorPosition : function(inputValue,formattedValue,cursorPos){
+  }
+
+  getCursorPosition(inputValue, formattedValue, cursorPos) {
+    const numRegex = this.getNumberRegex();
+
     let j=0;
     for(let i=0; i<cursorPos; i++){
-      if(!inputValue[i].match(/\d/) && inputValue[i] !== formattedValue[j]) continue;
+      if(!inputValue[i].match(numRegex) && inputValue[i] !== formattedValue[j]) continue;
       while(inputValue[i] !== formattedValue[j] && j<formattedValue.length) j++;
       j++;
     }
 
     //check if there is no number before caret position
     while(j > 0 && formattedValue[j]){
-      if(!formattedValue[j-1].match(/\d/)) j--;
+      if(!formattedValue[j-1].match(numRegex)) j--;
       else break;
     }
     return j;
-  },
-  onChangeHandler : function(e,callback){
-    const inputValue = e.target.value;
+  }
+
+  onChangeHandler(e,callback) {
+    e.persist();
+    const inputValue = e.target.value + '';
     const {formattedValue,value} = this.formatInput(inputValue);
     let cursorPos = this.refs.input.selectionStart;
 
     //change the state
     this.setState({value : formattedValue},()=>{
-      cursorPos = this.getCursorPosition(inputValue, formattedValue,cursorPos );
+      cursorPos = this.getCursorPosition(inputValue, formattedValue, cursorPos );
       this.setCaretPosition(cursorPos);
       if(callback) callback(e,value);
     });
 
     return value;
-  },
-  onChange : function(e){
+  }
+
+  onChange(e) {
     this.onChangeHandler(e,this.props.onChange);
-  },
-  onInput : function(e){
+  }
+  onInput(e) {
     this.onChangeHandler(e,this.props.onInput);
-  },
-  render : function(){
+  }
+  render() {
     const props = Object.assign({}, this.props);
 
-    ['thousandSeparator', 'displayType', 'prefix', 'suffix', 'format', 'mask', 'value'].forEach((key) => {
+    Object.keys(propTypes).forEach((key) => {
       delete props[key];
     });
 
 
-    if(this.props.displayType === "text"){
+    if(this.props.displayType === 'text'){
       return (<span {...props}>{this.state.value}</span>);
     }
     return (
       <input
         {...props}
-        type='tel'
+        type="tel"
         value={this.state.value}
         ref="input"
         onInput={this.onChange}
@@ -151,6 +223,9 @@ const NumberFormat =  React.createClass({
       />
     )
   }
-});
+}
 
-module.exports = NumberFormat;
+NumberFormat.propTypes = propTypes;
+NumberFormat.defaultProps = defaultProps;
+
+module.exports =  NumberFormat;

@@ -1,6 +1,6 @@
-const React = require('react');
-const ReactTestUtils = require('react-addons-test-utils');
-const FormatNumberInput = require('../src/number_format');
+import React from 'react';
+import ReactTestUtils from 'react-addons-test-utils';
+import FormatNumberInput from '../src/number_format';
 
 /*** format_number input as input ****/
 describe('FormatNumberInput as input', () => {
@@ -25,6 +25,7 @@ describe('FormatNumberInput as input', () => {
     expect(input.value).toEqual("$2,456,981");
   });
 
+
   it('should listen change event and formmat currency properly', () => {
     const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeparator={true} prefix={'$'} />);
     const input = ReactTestUtils.findRenderedDOMComponentWithTag(
@@ -37,6 +38,33 @@ describe('FormatNumberInput as input', () => {
 
     expect(input.value).toEqual("$2,456,981");
   });
+
+  it('should maintain decimal points', () => {
+    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeparator={true} prefix={'$'} />);
+    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
+       component, 'input'
+    );
+
+    input.value = "2456981.89";
+
+    ReactTestUtils.Simulate.input(input);
+
+    expect(input.value).toEqual("$2,456,981.89");
+  });
+
+  it('should support custom thousand seperator', () => {
+    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeparator={'.'} decimalSeperator={','} prefix={'$'} />);
+    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
+       component, 'input'
+    );
+
+    input.value = "2456981,89";
+
+    ReactTestUtils.Simulate.input(input);
+
+    expect(input.value).toEqual("$2.456.981,89");
+  });
+
 
   it('should have proper intermediate formatting', () => {
     const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput format="#### #### #### ####" />);

@@ -1,12 +1,15 @@
-const React = require('react');
-const ReactDOM = require('react-dom');
-const NumberFormat = require('../../src/number_format');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import NumberFormat from '../../src/number_format';
 
-const App = React.createClass({
-  getInitialState : function(){
-    return {};
-  },
-  formatExpiryChange: function(val){
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {};
+    this.formatExpiryChange = this.formatExpiryChange.bind(this);
+  }
+
+  formatExpiryChange(val) {
     if(val && Number(val[0]) > 1){
       val = '0'+val;
     }
@@ -15,8 +18,9 @@ const App = React.createClass({
     }
     val = val.substring(0,2)+ (val.length > 2 ? '/'+val.substring(2,4) : '');
     return val;
-  },
-  render : function(){
+  }
+
+  render() {
     return (
       <div>
         <div className="example">
@@ -42,6 +46,13 @@ const App = React.createClass({
 
         <div className="example">
           <h3>
+            Custom thousand seperator : Format currency in input
+          </h3>
+          <NumberFormat thousandSeparator={'.'} decimalSeperator={','} prefix={'$'} />
+        </div>
+
+        <div className="example">
+          <h3>
             Format with pattern : Format credit card in an input
           </h3>
           <NumberFormat format="#### #### #### ####" />
@@ -63,6 +74,7 @@ const App = React.createClass({
       </div>
     )
   }
-});
+}
+
 
 ReactDOM.render(<App />, document.getElementById('app'));
