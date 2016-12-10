@@ -53,7 +53,7 @@ describe('FormatNumberInput as input', () => {
   });
 
   it('should support custom thousand seperator', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeparator={'.'} decimalSeperator={','} prefix={'$'} />);
+    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeparator={'.'} decimalSeparator={','} prefix={'$'} />);
     const input = ReactTestUtils.findRenderedDOMComponentWithTag(
        component, 'input'
     );

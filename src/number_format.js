@@ -7,7 +7,7 @@ function escapeRegExp(str) {
 
 const propTypes = {
   thousandSeparator: PropTypes.oneOf([',', '.', true, false]),
-  decimalSeperator: PropTypes.oneOf([',', '.', true, false]),
+  decimalSeparator: PropTypes.oneOf([',', '.', true, false]),
   displayType: PropTypes.oneOf(['input', 'text']),
   prefix: PropTypes.string,
   suffix: PropTypes.string,
@@ -24,7 +24,7 @@ const propTypes = {
 
 const defaultProps = {
   displayType: 'input',
-  decimalSeperator: '.'
+  decimalSeparator: '.'
 };
 
 class NumberFormat extends React.Component {
@@ -44,28 +44,28 @@ class NumberFormat extends React.Component {
   }
 
   getSeperators() {
-    let {thousandSeparator, decimalSeperator} = this.props;
+    let {thousandSeparator, decimalSeparator} = this.props;
     if (thousandSeparator === true) {
       thousandSeparator = ','
     }
 
-    if (decimalSeperator && thousandSeparator) {
-      decimalSeperator = thousandSeparator === ',' ? '.' : ',';
+    if (decimalSeparator && thousandSeparator) {
+      decimalSeparator = thousandSeparator === ',' ? '.' : ',';
     }
 
-    if (decimalSeperator === true) {
-      decimalSeperator = '.'
+    if (decimalSeparator === true) {
+      decimalSeparator = '.'
     }
 
     return {
-      decimalSeperator,
+      decimalSeparator,
       thousandSeparator
     }
   }
 
   getNumberRegex(g) {
-    const {decimalSeperator} = this.getSeperators();
-    return new RegExp('\\d' + (decimalSeperator ? '|' + escapeRegExp(decimalSeperator) : ''), g ? 'g' : undefined);
+    const {decimalSeparator} = this.getSeperators();
+    return new RegExp('\\d' + (decimalSeparator ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
   }
 
   setCaretPosition(caretPos) {
@@ -119,7 +119,7 @@ class NumberFormat extends React.Component {
 
   formatInput(val) {
     const {prefix, suffix, mask, format} = this.props;
-    const {thousandSeparator, decimalSeperator} = this.getSeperators()
+    const {thousandSeparator, decimalSeparator} = this.getSeperators()
     const maskPattern = format && typeof format == 'string' && !!mask;
 
     const numRegex = this.getNumberRegex(true);
@@ -139,9 +139,9 @@ class NumberFormat extends React.Component {
     }
     else{
       let beforeDecimal = formattedValue, afterDecimal = '';
-      const hasDecimals = formattedValue.indexOf(decimalSeperator) !== -1;
-      if(decimalSeperator && hasDecimals) {
-        const parts = formattedValue.split(decimalSeperator)
+      const hasDecimals = formattedValue.indexOf(decimalSeparator) !== -1;
+      if(decimalSeparator && hasDecimals) {
+        const parts = formattedValue.split(decimalSeparator)
         beforeDecimal = parts[0];
         afterDecimal = parts[1];
       }
@@ -152,7 +152,7 @@ class NumberFormat extends React.Component {
       if(prefix) beforeDecimal = prefix + beforeDecimal;
       if(suffix) afterDecimal = afterDecimal + suffix;
 
-      formattedValue = beforeDecimal + (hasDecimals && decimalSeperator || '') + afterDecimal;
+      formattedValue = beforeDecimal + (hasDecimals && decimalSeparator || '') + afterDecimal;
     }
 
     return {
