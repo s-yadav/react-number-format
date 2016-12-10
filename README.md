@@ -18,7 +18,7 @@ Or get compiled development and production version from ./dist
 | Props        | Options           | Default  | Description |
 | ------------- |-------------| -----| -------- |
 | thousandSeparator | mixed: true/false (boolean) or ,/. (string) | false | Add thousand separators on number |
-| decimalSeperator | mixed: ./, (string) or true/false (boolean)| . | Suppor decimal point on a number |
+| decimalSeparator | mixed: ./, (string) or true/false (boolean)| . | Support decimal point on a number |
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
 | suffix | String (ex : /-)      |    none | Add a prefix after the number |
 | value | Number | null | Give initial value to number format |

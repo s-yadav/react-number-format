@@ -48,7 +48,7 @@ class App extends React.Component {
           <h3>
             Custom thousand seperator : Format currency in input
           </h3>
-          <NumberFormat thousandSeparator={'.'} decimalSeperator={','} prefix={'$'} />
+          <NumberFormat thousandSeparator={'.'} decimalSeparator={','} prefix={'$'} />
         </div>
 
         <div className="example">
