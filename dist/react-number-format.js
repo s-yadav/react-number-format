@@ -129,8 +129,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	    }
 	  }, {
-	    key: 'getSeperators',
-	    value: function getSeperators() {
+	    key: 'getSeparators',
+	    value: function getSeparators() {
 	      var _props = this.props;
 	      var thousandSeparator = _props.thousandSeparator;
 	      var decimalSeparator = _props.decimalSeparator;
@@ -155,9 +155,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'getNumberRegex',
 	    value: function getNumberRegex(g) {
-	      var _getSeperators = this.getSeperators();
+	      var _getSeparators = this.getSeparators();
 
-	      var decimalSeparator = _getSeperators.decimalSeparator;
+	      var decimalSeparator = _getSeparators.decimalSeparator;
 
 	      return new RegExp('\\d' + (decimalSeparator ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
 	    }
@@ -223,10 +223,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var mask = _props3.mask;
 	      var format = _props3.format;
 
-	      var _getSeperators2 = this.getSeperators();
+	      var _getSeparators2 = this.getSeparators();
 
-	      var thousandSeparator = _getSeperators2.thousandSeparator;
-	      var decimalSeparator = _getSeperators2.decimalSeparator;
+	      var thousandSeparator = _getSeparators2.thousandSeparator;
+	      var decimalSeparator = _getSeparators2.decimalSeparator;
 
 	      var maskPattern = format && typeof format == 'string' && !!mask;
 

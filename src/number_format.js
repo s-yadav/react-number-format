@@ -43,7 +43,7 @@ class NumberFormat extends React.Component {
     });
   }
 
-  getSeperators() {
+  getSeparators() {
     let {thousandSeparator, decimalSeparator} = this.props;
     if (thousandSeparator === true) {
       thousandSeparator = ','
@@ -64,7 +64,7 @@ class NumberFormat extends React.Component {
   }
 
   getNumberRegex(g) {
-    const {decimalSeparator} = this.getSeperators();
+    const {decimalSeparator} = this.getSeparators();
     return new RegExp('\\d' + (decimalSeparator ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
   }
 
@@ -119,7 +119,7 @@ class NumberFormat extends React.Component {
 
   formatInput(val) {
     const {prefix, suffix, mask, format} = this.props;
-    const {thousandSeparator, decimalSeparator} = this.getSeperators()
+    const {thousandSeparator, decimalSeparator} = this.getSeparators()
     const maskPattern = format && typeof format == 'string' && !!mask;
 
     const numRegex = this.getNumberRegex(true);
