@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 1.0.0
+ * react-number-format - 1.0.1
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -131,9 +131,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'getSeperators',
 	    value: function getSeperators() {
-	      var _props = this.props,
-	          thousandSeparator = _props.thousandSeparator,
-	          decimalSeparator = _props.decimalSeparator;
+	      var _props = this.props;
+	      var thousandSeparator = _props.thousandSeparator;
+	      var decimalSeparator = _props.decimalSeparator;
 
 	      if (thousandSeparator === true) {
 	        thousandSeparator = ',';
@@ -155,8 +155,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'getNumberRegex',
 	    value: function getNumberRegex(g) {
-	      var _getSeperators = this.getSeperators(),
-	          decimalSeparator = _getSeperators.decimalSeparator;
+	      var _getSeperators = this.getSeperators();
+
+	      var decimalSeparator = _getSeperators.decimalSeparator;
 
 	      return new RegExp('\\d' + (decimalSeparator ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
 	    }
@@ -190,9 +191,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'formatWithPattern',
 	    value: function formatWithPattern(str) {
-	      var _props2 = this.props,
-	          format = _props2.format,
-	          mask = _props2.mask;
+	      var _props2 = this.props;
+	      var format = _props2.format;
+	      var mask = _props2.mask;
 
 	      if (!format) return str;
 	      var hashCount = format.split('#').length - 1;
@@ -216,15 +217,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'formatInput',
 	    value: function formatInput(val) {
-	      var _props3 = this.props,
-	          prefix = _props3.prefix,
-	          suffix = _props3.suffix,
-	          mask = _props3.mask,
-	          format = _props3.format;
+	      var _props3 = this.props;
+	      var prefix = _props3.prefix;
+	      var suffix = _props3.suffix;
+	      var mask = _props3.mask;
+	      var format = _props3.format;
 
-	      var _getSeperators2 = this.getSeperators(),
-	          thousandSeparator = _getSeperators2.thousandSeparator,
-	          decimalSeparator = _getSeperators2.decimalSeparator;
+	      var _getSeperators2 = this.getSeperators();
+
+	      var thousandSeparator = _getSeperators2.thousandSeparator;
+	      var decimalSeparator = _getSeperators2.decimalSeparator;
 
 	      var maskPattern = format && typeof format == 'string' && !!mask;
 
@@ -292,9 +294,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      e.persist();
 	      var inputValue = e.target.value + '';
 
-	      var _formatInput = this.formatInput(inputValue),
-	          formattedValue = _formatInput.formattedValue,
-	          value = _formatInput.value;
+	      var _formatInput = this.formatInput(inputValue);
+
+	      var formattedValue = _formatInput.formattedValue;
+	      var value = _formatInput.value;
 
 	      var cursorPos = this.refs.input.selectionStart;
 
