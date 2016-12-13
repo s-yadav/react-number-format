@@ -97,12 +97,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  suffix: _react.PropTypes.string,
 	  format: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
 	  mask: _react.PropTypes.string,
-	  value: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string])
+	  value: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string]),
+	  type: _react.PropTypes.oneOf(['text', 'tel'])
 	};
 
 	var defaultProps = {
 	  displayType: 'input',
-	  decimalSeparator: '.'
+	  decimalSeparator: '.',
+	  type: 'text'
 	};
 
 	var NumberFormat = function (_React$Component) {
@@ -131,9 +133,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'getSeparators',
 	    value: function getSeparators() {
-	      var _props = this.props;
-	      var thousandSeparator = _props.thousandSeparator;
-	      var decimalSeparator = _props.decimalSeparator;
+	      var _props = this.props,
+	          thousandSeparator = _props.thousandSeparator,
+	          decimalSeparator = _props.decimalSeparator;
 
 	      if (thousandSeparator === true) {
 	        thousandSeparator = ',';
@@ -155,9 +157,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'getNumberRegex',
 	    value: function getNumberRegex(g) {
-	      var _getSeparators = this.getSeparators();
-
-	      var decimalSeparator = _getSeparators.decimalSeparator;
+	      var _getSeparators = this.getSeparators(),
+	          decimalSeparator = _getSeparators.decimalSeparator;
 
 	      return new RegExp('\\d' + (decimalSeparator ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
 	    }
@@ -191,9 +192,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'formatWithPattern',
 	    value: function formatWithPattern(str) {
-	      var _props2 = this.props;
-	      var format = _props2.format;
-	      var mask = _props2.mask;
+	      var _props2 = this.props,
+	          format = _props2.format,
+	          mask = _props2.mask;
 
 	      if (!format) return str;
 	      var hashCount = format.split('#').length - 1;
@@ -217,16 +218,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'formatInput',
 	    value: function formatInput(val) {
-	      var _props3 = this.props;
-	      var prefix = _props3.prefix;
-	      var suffix = _props3.suffix;
-	      var mask = _props3.mask;
-	      var format = _props3.format;
+	      var _props3 = this.props,
+	          prefix = _props3.prefix,
+	          suffix = _props3.suffix,
+	          mask = _props3.mask,
+	          format = _props3.format;
 
-	      var _getSeparators2 = this.getSeparators();
-
-	      var thousandSeparator = _getSeparators2.thousandSeparator;
-	      var decimalSeparator = _getSeparators2.decimalSeparator;
+	      var _getSeparators2 = this.getSeparators(),
+	          thousandSeparator = _getSeparators2.thousandSeparator,
+	          decimalSeparator = _getSeparators2.decimalSeparator;
 
 	      var maskPattern = format && typeof format == 'string' && !!mask;
 
@@ -294,10 +294,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      e.persist();
 	      var inputValue = e.target.value + '';
 
-	      var _formatInput = this.formatInput(inputValue);
-
-	      var formattedValue = _formatInput.formattedValue;
-	      var value = _formatInput.value;
+	      var _formatInput = this.formatInput(inputValue),
+	          formattedValue = _formatInput.formattedValue,
+	          value = _formatInput.value;
 
 	      var cursorPos = this.refs.input.selectionStart;
 
@@ -337,7 +336,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        );
 	      }
 	      return _react2.default.createElement('input', _extends({}, props, {
-	        type: 'tel',
+	        type: this.props.type,
 	        value: this.state.value,
 	        ref: 'input',
 	        onInput: this.onChange,

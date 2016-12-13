@@ -19,12 +19,14 @@ const propTypes = {
   value: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string
-  ])
+  ]),
+  type: PropTypes.oneOf(['text', 'tel']),
 };
 
 const defaultProps = {
   displayType: 'input',
-  decimalSeparator: '.'
+  decimalSeparator: '.',
+  type: 'text'
 };
 
 class NumberFormat extends React.Component {
@@ -208,14 +210,13 @@ class NumberFormat extends React.Component {
       delete props[key];
     });
 
-
     if(this.props.displayType === 'text'){
       return (<span {...props}>{this.state.value}</span>);
     }
     return (
       <input
         {...props}
-        type="tel"
+        type={this.props.type}
         value={this.state.value}
         ref="input"
         onInput={this.onChange}
