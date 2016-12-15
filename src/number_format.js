@@ -8,6 +8,7 @@ function escapeRegExp(str) {
 const propTypes = {
   thousandSeparator: PropTypes.oneOf([',', '.', true, false]),
   decimalSeparator: PropTypes.oneOf([',', '.', true, false]),
+  decimalPrecision: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]),
   displayType: PropTypes.oneOf(['input', 'text']),
   prefix: PropTypes.string,
   suffix: PropTypes.string,
@@ -24,7 +25,8 @@ const propTypes = {
 
 const defaultProps = {
   displayType: 'input',
-  decimalSeparator: '.'
+  decimalSeparator: '.',
+  decimalPrecision: false
 };
 
 class NumberFormat extends React.Component {
@@ -119,7 +121,8 @@ class NumberFormat extends React.Component {
 
   formatInput(val) {
     const {prefix, suffix, mask, format} = this.props;
-    const {thousandSeparator, decimalSeparator} = this.getSeparators()
+    const {thousandSeparator, decimalSeparator} = this.getSeparators();
+    const {decimalPrecision} = this.props;
     const maskPattern = format && typeof format == 'string' && !!mask;
 
     const numRegex = this.getNumberRegex(true);
@@ -139,9 +142,14 @@ class NumberFormat extends React.Component {
     }
     else{
       let beforeDecimal = formattedValue, afterDecimal = '';
-      const hasDecimals = formattedValue.indexOf(decimalSeparator) !== -1;
+      const hasDecimals = formattedValue.indexOf(decimalSeparator) !== -1 || decimalPrecision !== false;
       if(decimalSeparator && hasDecimals) {
-        const parts = formattedValue.split(decimalSeparator)
+        if(decimalPrecision !== false) {
+          const precision = decimalPrecision === true ? 2 : decimalPrecision;
+          var parts = parseFloat(formattedValue).toFixed(precision).split(decimalSeparator);
+        }else {
+          var parts = formattedValue.split(decimalSeparator);
+        }
         beforeDecimal = parts[0];
         afterDecimal = parts[1];
       }
@@ -152,7 +160,7 @@ class NumberFormat extends React.Component {
       if(prefix) beforeDecimal = prefix + beforeDecimal;
       if(suffix) afterDecimal = afterDecimal + suffix;
 
-      formattedValue = beforeDecimal + (hasDecimals && decimalSeparator || '') + afterDecimal;
+      formattedValue = beforeDecimal + (hasDecimals && decimalSeparator ||  '') + afterDecimal;
     }
 
     return {
