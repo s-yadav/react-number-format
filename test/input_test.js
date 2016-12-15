@@ -179,6 +179,74 @@ describe('FormatNumberInput as input', () => {
     ReactTestUtils.Simulate.change(input);
     expect(input.value).toEqual("4111 2111 1211 1111");
   });
+
+  it('should round to passed decimal precision', () => {
+    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput decimalPrecision={4}/>);
+    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
+        component, 'input'
+    );
+
+    //case 1st - already exactly precision 4 should stay that way
+    input.value = "4111.1111";
+    ReactTestUtils.Simulate.change(input);
+    expect(input.value).toEqual("4111.1111");
+
+    //case 2nd - longer precision should round
+    input.value = "4111.11111";
+    ReactTestUtils.Simulate.change(input);
+    expect(input.value).toEqual("4111.1111");
+
+    //case 3rd - shorter precision adds 0
+    input.value = "4111.111";
+    ReactTestUtils.Simulate.change(input);
+    expect(input.value).toEqual("4111.1110");
+
+    //case 4th - no decimal should round with 4 zeros
+    input.value = "4111";
+    ReactTestUtils.Simulate.change(input);
+    expect(input.value).toEqual("4111.0000");
+
+  });
+
+
+  it('should not round by default', () => {
+    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput />);
+    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
+        component, 'input'
+    );
+
+    //case 1st - no rounding with long decimal
+    input.value = "4111.111111";
+    ReactTestUtils.Simulate.change(input);
+    expect(input.value).toEqual("4111.111111");
+
+    //case 2nd - no rounding with whole numbers
+    input.value = "4111";
+    ReactTestUtils.Simulate.change(input);
+    expect(input.value).toEqual("4111");
+
+    //case 3rd - no rounding on single place decimals
+    input.value = "4111.1";
+    ReactTestUtils.Simulate.change(input);
+    expect(input.value).toEqual("4111.1");
+  });
+
+  it('should round default 2 places', () => {
+    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput decimalPrecision={true} />);
+    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
+        component, 'input'
+    );
+
+    //case 1st - auto round to 2 places
+    input.value = "4111.1111";
+    ReactTestUtils.Simulate.change(input);
+    expect(input.value).toEqual("4111.11");
+
+    //case 2nd - auto round whole integers
+    input.value = "4111";
+    ReactTestUtils.Simulate.change(input);
+    expect(input.value).toEqual("4111.00");
+  });
 });
 
 /*** format_number input as text ****/
@@ -221,5 +289,29 @@ describe('FormatNumberInput as text', () => {
        component, 'span'
     );
     expect(span.textContent).toEqual("4111 1111 1111 11__");
+  });
+
+  it('should not round decimals by defualt', () => {
+    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value="4111" displayType={'text'} />);
+    const span = ReactTestUtils.findRenderedDOMComponentWithTag(
+        component, 'span'
+    );
+    expect(span.textContent).toEqual("4111");
+  });
+
+  it('should round to 2 decimals if passed true', () => {
+    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value="4111" displayType={'text'} decimalPrecision={true} />);
+    const span = ReactTestUtils.findRenderedDOMComponentWithTag(
+        component, 'span'
+    );
+    expect(span.textContent).toEqual("4111.00");
+  });
+
+  it('should round to 4 decimals if passed 4', () => {
+    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value="4111.11" displayType={'text'} decimalPrecision={4} />);
+    const span = ReactTestUtils.findRenderedDOMComponentWithTag(
+        component, 'span'
+    );
+    expect(span.textContent).toEqual("4111.1100");
   });
 });
