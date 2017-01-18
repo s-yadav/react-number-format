@@ -41,7 +41,7 @@ class App extends React.Component {
           <h3>
             Prefix and thousand seperator : Format currency in input
           </h3>
-          <NumberFormat thousandSeparator={true} prefix={'$'} />
+          <NumberFormat thousandSeparator={true} value={this.state.test} prefix={'$'} onChange={(e, val) => this.setState({test: val})} />
         </div>
 
         <div className="example">

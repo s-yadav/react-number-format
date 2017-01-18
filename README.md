@@ -25,6 +25,9 @@ Or get compiled development and production version from ./dist
 | displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
 | format | String : Hash based ex (#### #### #### ####) <br/> Or Function| none | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number.
 | mask | String (ex : _) | none | If mask defined, component will show non entered placed with masked value.  
+| onChange | (e, value) => {} | none | onChange handler accepts event object through which you can get formattedValue (e.targe.value # $2,223)  and second parameter non formatted value (ie: 2223)
+
+Other than this it accepts all the props which can be given to a input or span based on displayType you selected.
 
 ### Examples
 #### Prefix and thousand separator : Format currency as text
@@ -46,6 +49,15 @@ Output : 4111 1111 1111 1111
 <NumberFormat thousandSeparator={true} prefix={'$'} />
 ```
 ![Screencast example](https://i.imgur.com/d0P2Db1.gif)
+
+#### Maintaining change value on state
+```jsx
+<NumberFormat value={this.state.profit} thousandSeparator={true} prefix={'$'} onChange={(e, value) => {
+    const formattedValue = e.target.value; // $222,3
+    //value will be non formatted value ie, 2223
+    this.setState({profit: value})
+  }}/>
+```
 
 #### Format with pattern : Format credit card in an input
 ```jsx

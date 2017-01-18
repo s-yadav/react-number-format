@@ -1,7 +1,7 @@
 /*!
- * react-number-format - 1.0.1
+ * react-number-format - 1.0.2
  * Author : Sudhanshu Yadav
- * Copyright (c) 2016 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
+ * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -124,9 +124,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(NumberFormat, [{
 	    key: 'componentWillReceiveProps',
 	    value: function componentWillReceiveProps(newProps) {
-	      this.setState({
-	        value: this.formatInput(newProps.value).formattedValue
-	      });
+	      if (newProps.value !== this.props.value) {
+	        this.setState({
+	          value: this.formatInput(newProps.value).formattedValue
+	        });
+	      }
 	    }
 	  }, {
 	    key: 'getSeparators',
@@ -232,8 +234,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var numRegex = this.getNumberRegex(true);
 
-	      if (!val || !(val + '').match(numRegex)) return { value: '', formattedValue: maskPattern ? '' : '' };
-	      var num = (val + '').match(numRegex).join('');
+	      //change val to string if its number
+	      if (typeof val === 'number') val = val + '';
+
+	      if (!val || !val.match(numRegex)) return { value: '', formattedValue: maskPattern ? '' : '' };
+	      var num = val.match(numRegex).join('');
 
 	      var formattedValue = num;
 
@@ -292,7 +297,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this2 = this;
 
 	      e.persist();
-	      var inputValue = e.target.value + '';
+	      var inputValue = e.target.value;
 
 	      var _formatInput = this.formatInput(inputValue);
 

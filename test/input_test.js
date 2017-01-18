@@ -12,6 +12,44 @@ describe('FormatNumberInput as input', () => {
     expect(input.value).toEqual("$2,456,981");
   });
 
+  it('show the initial value as $0 when number 0 is passed', () => {
+    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value={0} thousandSeparator={true} prefix={'$'} />);
+    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
+       component, 'input'
+    );
+    expect(input.value).toEqual("$0");
+  });
+
+  it('should not reset number inputs value if number input renders again with same props', () => {
+    class WrapperComponent extends React.Component {
+      constructor() {
+        super ();
+        this.state = {
+          testState: false
+        };
+      }
+      render() {
+        return (<FormatNumberInput thousandSeparator={true} prefix={'$'}/>)
+      }
+    }
+
+    const component = ReactTestUtils.renderIntoDocument(<WrapperComponent />);
+    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
+       component, 'input'
+    );
+
+    input.value = "2456981";
+
+    ReactTestUtils.Simulate.input(input);
+
+    expect(input.value).toEqual("$2,456,981");
+
+    component.setState({testState: true});
+
+    expect(input.value).toEqual("$2,456,981");
+    
+  });
+
   it('should listen input event and formmat currency properly', () => {
     const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeparator={true} prefix={'$'} />);
     const input = ReactTestUtils.findRenderedDOMComponentWithTag(
@@ -26,7 +64,7 @@ describe('FormatNumberInput as input', () => {
   });
 
 
-  it('should listen change event and formmat currency properly', () => {
+  it('should listen change event and format currency properly', () => {
     const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeparator={true} prefix={'$'} />);
     const input = ReactTestUtils.findRenderedDOMComponentWithTag(
        component, 'input'

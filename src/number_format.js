@@ -38,9 +38,11 @@ class NumberFormat extends React.Component {
   }
 
   componentWillReceiveProps(newProps) {
-    this.setState({
-      value : this.formatInput(newProps.value).formattedValue
-    });
+    if(newProps.value !== this.props.value) {
+      this.setState({
+        value : this.formatInput(newProps.value).formattedValue
+      });
+    }
   }
 
   getSeparators() {
@@ -124,8 +126,11 @@ class NumberFormat extends React.Component {
 
     const numRegex = this.getNumberRegex(true);
 
-    if(!val || !((val+'').match(numRegex))) return {value :'', formattedValue: (maskPattern ? '' : '')}
-    const num = (val+'').match(numRegex).join('');
+    //change val to string if its number
+    if(typeof val === 'number') val = val + '';
+
+    if(!val || !(val.match(numRegex))) return {value :'', formattedValue: (maskPattern ? '' : '')}
+    const num = val.match(numRegex).join('');
 
     let formattedValue = num;
 
@@ -181,7 +186,7 @@ class NumberFormat extends React.Component {
 
   onChangeHandler(e,callback) {
     e.persist();
-    const inputValue = e.target.value + '';
+    const inputValue = e.target.value;
     const {formattedValue,value} = this.formatInput(inputValue);
     let cursorPos = this.refs.input.selectionStart;
 
