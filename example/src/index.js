@@ -46,6 +46,14 @@ class App extends React.Component {
 
         <div className="example">
           <h3>
+            Decimal precision : Format currency in input with decimal precision
+          </h3>
+          <NumberFormat thousandSeparator={true} decimalPrecision={true} prefix={'$'}/>
+        </div>
+
+
+        <div className="example">
+          <h3>
             Custom thousand seperator : Format currency in input
           </h3>
           <NumberFormat thousandSeparator={'.'} decimalSeparator={','} prefix={'$'} />

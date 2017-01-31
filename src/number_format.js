@@ -149,11 +149,12 @@ class NumberFormat extends React.Component {
       let beforeDecimal = formattedValue, afterDecimal = '';
       const hasDecimals = formattedValue.indexOf(decimalSeparator) !== -1 || decimalPrecision !== false;
       if(decimalSeparator && hasDecimals) {
-        if(decimalPrecision !== false) {
+        let parts;
+        if (decimalPrecision !== false) {
           const precision = decimalPrecision === true ? 2 : decimalPrecision;
-          var parts = parseFloat(formattedValue).toFixed(precision).split(decimalSeparator);
-        }else {
-          var parts = formattedValue.split(decimalSeparator);
+          parts = parseFloat(formattedValue).toFixed(precision).split(decimalSeparator);
+        } else {
+          parts = formattedValue.split(decimalSeparator);
         }
         beforeDecimal = parts[0];
         afterDecimal = parts[1];
