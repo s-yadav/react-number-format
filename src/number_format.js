@@ -6,8 +6,8 @@ function escapeRegExp(str) {
 }
 
 const propTypes = {
-  thousandSeparator: PropTypes.oneOf([',', '.', true, false]),
-  decimalSeparator: PropTypes.oneOf([',', '.', true, false]),
+  thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  decimalSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   decimalPrecision: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]),
   displayType: PropTypes.oneOf(['input', 'text']),
   prefix: PropTypes.string,
@@ -37,6 +37,7 @@ class NumberFormat extends React.Component {
     }
     this.onChange = this.onChange.bind(this);
     this.onInput = this.onInput.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
   }
 
   componentWillReceiveProps(newProps) {
@@ -53,8 +54,8 @@ class NumberFormat extends React.Component {
       thousandSeparator = ','
     }
 
-    if (decimalSeparator && thousandSeparator) {
-      decimalSeparator = thousandSeparator === ',' ? '.' : ',';
+    if (decimalSeparator && thousandSeparator && typeof decimalSeparator !== 'string') {
+      decimalSeparator = thousandSeparator === '.' ? ',' : '.';
     }
 
     if (decimalSeparator === true) {
@@ -67,9 +68,9 @@ class NumberFormat extends React.Component {
     }
   }
 
-  getNumberRegex(g) {
+  getNumberRegex(g, ignoreDecimalSeperator) {
     const {decimalSeparator} = this.getSeparators();
-    return new RegExp('\\d' + (decimalSeparator ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
+    return new RegExp('\\d' + (decimalSeparator && !ignoreDecimalSeperator ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
   }
 
   setCaretPosition(caretPos) {
@@ -185,11 +186,6 @@ class NumberFormat extends React.Component {
       j++;
     }
 
-    //check if there is no number before caret position
-    while(j > 0 && formattedValue[j]){
-      if(!formattedValue[j-1].match(numRegex)) j--;
-      else break;
-    }
     return j;
   }
 
@@ -215,6 +211,26 @@ class NumberFormat extends React.Component {
   onInput(e) {
     this.onChangeHandler(e,this.props.onInput);
   }
+  onKeyDown(e) {
+    const {selectionStart, selectionEnd, value} = this.refs.input;
+    const {decimalPrecision} = this.props;
+    const {key} = e;
+    const numRegex = this.getNumberRegex(false, decimalPrecision !== false);
+    //Handle backspace and delete against non numerical/decimal characters
+    if(selectionEnd - selectionStart === 0) {
+      if (key === 'Delete' && !numRegex.test(value[selectionStart])) {
+        let nextCursorPosition = selectionStart;
+        while (!numRegex.test(value[nextCursorPosition]) && nextCursorPosition < value.length) nextCursorPosition++;
+        this.setCaretPosition(nextCursorPosition);
+      } else if (key === 'Backspace' && !numRegex.test(value[selectionStart - 1])) {
+        let prevCursorPosition = selectionStart;
+        while (!numRegex.test(value[prevCursorPosition - 1]) && prevCursorPosition > 0) prevCursorPosition--;
+        this.setCaretPosition(prevCursorPosition);
+      }
+    }
+
+    if (this.props.onKeyDown) this.props.onKeyDown(e);
+  }
   render() {
     const props = Object.assign({}, this.props);
 
@@ -234,6 +250,7 @@ class NumberFormat extends React.Component {
         ref="input"
         onInput={this.onChange}
         onChange={this.onChange}
+        onKeyDown={this.onKeyDown}
       />
     )
   }

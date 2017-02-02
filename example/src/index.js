@@ -56,7 +56,19 @@ class App extends React.Component {
           <h3>
             Custom thousand seperator : Format currency in input
           </h3>
-          <NumberFormat thousandSeparator={'.'} decimalSeparator={','} prefix={'$'} />
+          <div>
+            ThousandSeperator: '.', decimalSeparator=','
+          </div>
+          <div>
+            <NumberFormat thousandSeparator={"."} decimalSeparator={','} prefix={'$'} />
+          </div>
+          <br/>
+          <div>
+            ThousandSeperator: ' ', decimalSeparator='.'
+          </div>
+          <div>
+            <NumberFormat thousandSeparator={" "} decimalSeparator={'.'} prefix={'$'} />
+          </div>
         </div>
 
         <div className="example">
@@ -79,6 +91,7 @@ class App extends React.Component {
           </h3>
           <NumberFormat format={this.formatExpiryChange}/>
         </div>
+
       </div>
     )
   }
