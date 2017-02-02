@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 1.0.2
+ * react-number-format - 1.1.0-alpha
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -90,8 +90,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	var propTypes = {
-	  thousandSeparator: _react.PropTypes.oneOf([',', '.', true, false]),
-	  decimalSeparator: _react.PropTypes.oneOf([',', '.', true, false]),
+	  thousandSeparator: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.bool]),
+	  decimalSeparator: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.bool]),
+	  decimalPrecision: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.bool]),
 	  displayType: _react.PropTypes.oneOf(['input', 'text']),
 	  prefix: _react.PropTypes.string,
 	  suffix: _react.PropTypes.string,
@@ -102,7 +103,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var defaultProps = {
 	  displayType: 'input',
-	  decimalSeparator: '.'
+	  decimalSeparator: '.',
+	  decimalPrecision: false
 	};
 
 	var NumberFormat = function (_React$Component) {
@@ -118,6 +120,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    _this.onChange = _this.onChange.bind(_this);
 	    _this.onInput = _this.onInput.bind(_this);
+	    _this.onKeyDown = _this.onKeyDown.bind(_this);
 	    return _this;
 	  }
 
@@ -133,16 +136,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'getSeparators',
 	    value: function getSeparators() {
-	      var _props = this.props;
-	      var thousandSeparator = _props.thousandSeparator;
-	      var decimalSeparator = _props.decimalSeparator;
+	      var _props = this.props,
+	          thousandSeparator = _props.thousandSeparator,
+	          decimalSeparator = _props.decimalSeparator;
 
 	      if (thousandSeparator === true) {
 	        thousandSeparator = ',';
 	      }
 
-	      if (decimalSeparator && thousandSeparator) {
-	        decimalSeparator = thousandSeparator === ',' ? '.' : ',';
+	      if (decimalSeparator && thousandSeparator && typeof decimalSeparator !== 'string') {
+	        decimalSeparator = thousandSeparator === '.' ? ',' : '.';
 	      }
 
 	      if (decimalSeparator === true) {
@@ -156,12 +159,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'getNumberRegex',
-	    value: function getNumberRegex(g) {
-	      var _getSeparators = this.getSeparators();
+	    value: function getNumberRegex(g, ignoreDecimalSeperator) {
+	      var _getSeparators = this.getSeparators(),
+	          decimalSeparator = _getSeparators.decimalSeparator;
 
-	      var decimalSeparator = _getSeparators.decimalSeparator;
-
-	      return new RegExp('\\d' + (decimalSeparator ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
+	      return new RegExp('\\d' + (decimalSeparator && !ignoreDecimalSeperator ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
 	    }
 	  }, {
 	    key: 'setCaretPosition',
@@ -193,9 +195,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'formatWithPattern',
 	    value: function formatWithPattern(str) {
-	      var _props2 = this.props;
-	      var format = _props2.format;
-	      var mask = _props2.mask;
+	      var _props2 = this.props,
+	          format = _props2.format,
+	          mask = _props2.mask;
 
 	      if (!format) return str;
 	      var hashCount = format.split('#').length - 1;
@@ -219,16 +221,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'formatInput',
 	    value: function formatInput(val) {
-	      var _props3 = this.props;
-	      var prefix = _props3.prefix;
-	      var suffix = _props3.suffix;
-	      var mask = _props3.mask;
-	      var format = _props3.format;
+	      var _props3 = this.props,
+	          prefix = _props3.prefix,
+	          suffix = _props3.suffix,
+	          mask = _props3.mask,
+	          format = _props3.format;
 
-	      var _getSeparators2 = this.getSeparators();
+	      var _getSeparators2 = this.getSeparators(),
+	          thousandSeparator = _getSeparators2.thousandSeparator,
+	          decimalSeparator = _getSeparators2.decimalSeparator;
 
-	      var thousandSeparator = _getSeparators2.thousandSeparator;
-	      var decimalSeparator = _getSeparators2.decimalSeparator;
+	      var decimalPrecision = this.props.decimalPrecision;
 
 	      var maskPattern = format && typeof format == 'string' && !!mask;
 
@@ -251,9 +254,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	      } else {
 	        var beforeDecimal = formattedValue,
 	            afterDecimal = '';
-	        var hasDecimals = formattedValue.indexOf(decimalSeparator) !== -1;
+	        var hasDecimals = formattedValue.indexOf(decimalSeparator) !== -1 || decimalPrecision !== false;
 	        if (decimalSeparator && hasDecimals) {
-	          var parts = formattedValue.split(decimalSeparator);
+	          var parts = void 0;
+	          if (decimalPrecision !== false) {
+	            var precision = decimalPrecision === true ? 2 : decimalPrecision;
+	            parts = parseFloat(formattedValue).toFixed(precision).split(decimalSeparator);
+	          } else {
+	            parts = formattedValue.split(decimalSeparator);
+	          }
 	          beforeDecimal = parts[0];
 	          afterDecimal = parts[1];
 	        }
@@ -285,10 +294,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }j++;
 	      }
 
-	      //check if there is no number before caret position
-	      while (j > 0 && formattedValue[j]) {
-	        if (!formattedValue[j - 1].match(numRegex)) j--;else break;
-	      }
 	      return j;
 	    }
 	  }, {
@@ -299,10 +304,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      e.persist();
 	      var inputValue = e.target.value;
 
-	      var _formatInput = this.formatInput(inputValue);
-
-	      var formattedValue = _formatInput.formattedValue;
-	      var value = _formatInput.value;
+	      var _formatInput = this.formatInput(inputValue),
+	          formattedValue = _formatInput.formattedValue,
+	          value = _formatInput.value;
 
 	      var cursorPos = this.refs.input.selectionStart;
 
@@ -326,6 +330,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.onChangeHandler(e, this.props.onInput);
 	    }
 	  }, {
+	    key: 'onKeyDown',
+	    value: function onKeyDown(e) {
+	      var _refs$input = this.refs.input,
+	          selectionStart = _refs$input.selectionStart,
+	          selectionEnd = _refs$input.selectionEnd,
+	          value = _refs$input.value;
+	      var decimalPrecision = this.props.decimalPrecision;
+	      var key = e.key;
+
+	      var numRegex = this.getNumberRegex(false, decimalPrecision !== false);
+	      //Handle backspace and delete against non numerical/decimal characters
+	      if (selectionEnd - selectionStart === 0) {
+	        if (key === 'Delete' && !numRegex.test(value[selectionStart])) {
+	          var nextCursorPosition = selectionStart;
+	          while (!numRegex.test(value[nextCursorPosition]) && nextCursorPosition < value.length) {
+	            nextCursorPosition++;
+	          }this.setCaretPosition(nextCursorPosition);
+	        } else if (key === 'Backspace' && !numRegex.test(value[selectionStart - 1])) {
+	          var prevCursorPosition = selectionStart;
+	          while (!numRegex.test(value[prevCursorPosition - 1]) && prevCursorPosition > 0) {
+	            prevCursorPosition--;
+	          }this.setCaretPosition(prevCursorPosition);
+	        }
+	      }
+
+	      if (this.props.onKeyDown) this.props.onKeyDown(e);
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var props = _extends({}, this.props);
@@ -346,7 +378,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: this.state.value,
 	        ref: 'input',
 	        onInput: this.onChange,
-	        onChange: this.onChange
+	        onChange: this.onChange,
+	        onKeyDown: this.onKeyDown
 	      }));
 	    }
 	  }]);
