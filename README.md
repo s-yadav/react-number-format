@@ -17,17 +17,19 @@ Or get compiled development and production version from ./dist
 ### Props
 | Props        | Options           | Default  | Description |
 | ------------- |-------------| -----| -------- |
-| thousandSeparator | mixed: true/false (boolean) or ,/. (string) | false | Add thousand separators on number |
-| decimalSeparator | mixed: ./, (string) or true/false (boolean)| . | Support decimal point on a number |
+| thousandSeparator | mixed: single character string or true/false (boolean) | false | Add thousand separators on number |
+| decimalSeparator | mixed: single character string or true/false (boolean)| . | Support decimal point on a number |
+| decimalPrecision | mixed: number or boolean | false (2 if true)| If false it does not limit decimal place, if true default precision is 2 or else limits to provided decimal place |
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
 | suffix | String (ex : /-)      |    none | Add a prefix after the number |
 | value | Number | null | Give initial value to number format |
 | displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
 | format | String : Hash based ex (#### #### #### ####) <br/> Or Function| none | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number.
 | mask | String (ex : _) | none | If mask defined, component will show non entered placed with masked value.  
+| customInput | Component Reference | input | This allow supporting custom inputs with number format. See details
 | onChange | (e, value) => {} | none | onChange handler accepts event object through which you can get formattedValue (e.targe.value # $2,223)  and second parameter non formatted value (ie: 2223)
 
-Other than this it accepts all the props which can be given to a input or span based on displayType you selected.
+**Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
 
 ### Examples
 #### Prefix and thousand separator : Format currency as text
@@ -87,6 +89,23 @@ Output : 4111 1111 1111 1111
 <NumberFormat format={formatExpiryChange}/>
 ```
 ![Screencast example](https://i.imgur.com/9wwdyFF.gif)
+
+### Custom Inputs
+You can easily extend your custom input with number format. But custom input should have all input props.
+```jsx
+  import TextField from 'material-ui/TextField';
+```
+
+```jsx
+  <NumberFormat customInput={TextField} format="#### #### #### ####"/>
+```
+
+**Passing custom input props**
+All custom input props and number input props are passed together.
+```jsx
+  <NumberFormat hintText="Some placeholder" value={this.state.card} customInput={TextField} format="#### #### #### ####"/>
+```
+
 
 ### Live Demo
 [http://codepen.io/s-yadav/pen/bpKNMa](http://codepen.io/s-yadav/pen/bpKNMa)

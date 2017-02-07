@@ -58,6 +58,7 @@
     "karma-jasmine-html-reporter": "^0.2.0",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^1.7.0",
+    "material-ui": "^0.16.7",
     "react": "^15.0.1",
     "react-addons-test-utils": "^15.0.1",
     "react-dom": "^15.0.1",

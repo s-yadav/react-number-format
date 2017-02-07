@@ -20,7 +20,8 @@ const propTypes = {
   value: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string
-  ])
+  ]),
+  customInput: PropTypes.any
 };
 
 const defaultProps = {
@@ -73,8 +74,12 @@ class NumberFormat extends React.Component {
     return new RegExp('\\d' + (decimalSeparator && !ignoreDecimalSeperator ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
   }
 
+  getInput() {
+    return this.props.customInput ? document.activeElement : this.refs.input;
+  }
+
   setCaretPosition(caretPos) {
-    const el = this.refs.input;
+    const el = this.getInput();
       el.value = el.value;
       // ^ this is used to not only get "focus", but
       // to make sure we don't have it everything -selected-
@@ -193,7 +198,8 @@ class NumberFormat extends React.Component {
     e.persist();
     const inputValue = e.target.value;
     const {formattedValue,value} = this.formatInput(inputValue);
-    let cursorPos = this.refs.input.selectionStart;
+    const el = this.getInput();
+    let cursorPos = el.selectionStart;
 
     //change the state
     this.setState({value : formattedValue},()=>{
@@ -212,17 +218,20 @@ class NumberFormat extends React.Component {
     this.onChangeHandler(e,this.props.onInput);
   }
   onKeyDown(e) {
-    const {selectionStart, selectionEnd, value} = this.refs.input;
+    const el = this.getInput();
+    const {selectionStart, selectionEnd, value} = el;
     const {decimalPrecision} = this.props;
     const {key} = e;
     const numRegex = this.getNumberRegex(false, decimalPrecision !== false);
     //Handle backspace and delete against non numerical/decimal characters
     if(selectionEnd - selectionStart === 0) {
       if (key === 'Delete' && !numRegex.test(value[selectionStart])) {
+        e.preventDefault();
         let nextCursorPosition = selectionStart;
         while (!numRegex.test(value[nextCursorPosition]) && nextCursorPosition < value.length) nextCursorPosition++;
         this.setCaretPosition(nextCursorPosition);
       } else if (key === 'Backspace' && !numRegex.test(value[selectionStart - 1])) {
+        e.preventDefault();
         let prevCursorPosition = selectionStart;
         while (!numRegex.test(value[prevCursorPosition - 1]) && prevCursorPosition > 0) prevCursorPosition--;
         this.setCaretPosition(prevCursorPosition);
@@ -238,19 +247,31 @@ class NumberFormat extends React.Component {
       delete props[key];
     });
 
+    const inputProps = Object.assign({}, props, {
+      type:'tel',
+      value:this.state.value,
+      onInput:this.onChange,
+      onChange:this.onChange,
+      onKeyDown:this.onKeyDown,
+    })
 
-    if(this.props.displayType === 'text'){
+    if( this.props.displayType === 'text'){
       return (<span {...props}>{this.state.value}</span>);
     }
+
+    else if (this.props.customInput) {
+      const CustomInput = this.props.customInput;
+      return (
+        <CustomInput
+          {...inputProps}
+        />
+      )
+    }
+
     return (
       <input
-        {...props}
-        type="tel"
-        value={this.state.value}
+        {...inputProps}
         ref="input"
-        onInput={this.onChange}
-        onChange={this.onChange}
-        onKeyDown={this.onKeyDown}
       />
     )
   }

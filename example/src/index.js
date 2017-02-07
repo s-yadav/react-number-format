@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import NumberFormat from '../../src/number_format';
+import TextField from 'material-ui/TextField';
 
 class App extends React.Component {
   constructor() {
@@ -92,10 +94,22 @@ class App extends React.Component {
           <NumberFormat format={this.formatExpiryChange}/>
         </div>
 
+        <div className="example">
+          <h3>
+            Custom input : Format credit card number
+          </h3>
+          <NumberFormat customInput={TextField} format="#### #### #### ####"/>
+        </div>
+
       </div>
     )
   }
 }
 
+const ThemedApp = () => {
+  return (<MuiThemeProvider>
+    <App />
+  </MuiThemeProvider>);
+};
 
-ReactDOM.render(<App />, document.getElementById('app'));
+ReactDOM.render(<ThemedApp />, document.getElementById('app'));
