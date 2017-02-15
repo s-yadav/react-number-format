@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 1.1.0-alpha
+ * react-number-format - 1.1.0-alpha2
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -98,7 +98,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  suffix: _react.PropTypes.string,
 	  format: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
 	  mask: _react.PropTypes.string,
-	  value: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string])
+	  value: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string]),
+	  customInput: _react.PropTypes.func
 	};
 
 	var defaultProps = {
@@ -167,8 +168,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'setCaretPosition',
-	    value: function setCaretPosition(caretPos) {
-	      var el = this.refs.input;
+	    value: function setCaretPosition(el, caretPos) {
 	      el.value = el.value;
 	      // ^ this is used to not only get "focus", but
 	      // to make sure we don't have it everything -selected-
@@ -302,18 +302,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this2 = this;
 
 	      e.persist();
-	      var inputValue = e.target.value;
+	      var el = e.target;
+	      var inputValue = el.value;
 
 	      var _formatInput = this.formatInput(inputValue),
 	          formattedValue = _formatInput.formattedValue,
 	          value = _formatInput.value;
 
-	      var cursorPos = this.refs.input.selectionStart;
+	      var cursorPos = el.selectionStart;
 
 	      //change the state
 	      this.setState({ value: formattedValue }, function () {
 	        cursorPos = _this2.getCursorPosition(inputValue, formattedValue, cursorPos);
-	        _this2.setCaretPosition(cursorPos);
+	        /*
+	          setting caret position within timeout of 0ms is required for mobile chrome,
+	          otherwise browser resets the caret position after we set it
+	         */
+	        setTimeout(function () {
+	          return _this2.setCaretPosition(el, cursorPos);
+	        }, 0);
 	        if (callback) callback(e, value);
 	      });
 
@@ -332,10 +339,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'onKeyDown',
 	    value: function onKeyDown(e) {
-	      var _refs$input = this.refs.input,
-	          selectionStart = _refs$input.selectionStart,
-	          selectionEnd = _refs$input.selectionEnd,
-	          value = _refs$input.value;
+	      var el = e.target;
+	      var selectionStart = el.selectionStart,
+	          selectionEnd = el.selectionEnd,
+	          value = el.value;
 	      var decimalPrecision = this.props.decimalPrecision;
 	      var key = e.key;
 
@@ -343,15 +350,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	      //Handle backspace and delete against non numerical/decimal characters
 	      if (selectionEnd - selectionStart === 0) {
 	        if (key === 'Delete' && !numRegex.test(value[selectionStart])) {
+	          e.preventDefault();
 	          var nextCursorPosition = selectionStart;
 	          while (!numRegex.test(value[nextCursorPosition]) && nextCursorPosition < value.length) {
 	            nextCursorPosition++;
-	          }this.setCaretPosition(nextCursorPosition);
+	          }this.setCaretPosition(el, nextCursorPosition);
 	        } else if (key === 'Backspace' && !numRegex.test(value[selectionStart - 1])) {
+	          e.preventDefault();
 	          var prevCursorPosition = selectionStart;
 	          while (!numRegex.test(value[prevCursorPosition - 1]) && prevCursorPosition > 0) {
 	            prevCursorPosition--;
-	          }this.setCaretPosition(prevCursorPosition);
+	          }this.setCaretPosition(el, prevCursorPosition);
 	        }
 	      }
 
@@ -366,21 +375,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        delete props[key];
 	      });
 
+	      var inputProps = _extends({}, props, {
+	        type: 'tel',
+	        value: this.state.value,
+	        onInput: this.onChange,
+	        onChange: this.onChange,
+	        onKeyDown: this.onKeyDown
+	      });
+
 	      if (this.props.displayType === 'text') {
 	        return _react2.default.createElement(
 	          'span',
 	          props,
 	          this.state.value
 	        );
+	      } else if (this.props.customInput) {
+	        var CustomInput = this.props.customInput;
+	        return _react2.default.createElement(CustomInput, inputProps);
 	      }
-	      return _react2.default.createElement('input', _extends({}, props, {
-	        type: 'tel',
-	        value: this.state.value,
-	        ref: 'input',
-	        onInput: this.onChange,
-	        onChange: this.onChange,
-	        onKeyDown: this.onKeyDown
-	      }));
+
+	      return _react2.default.createElement('input', inputProps);
 	    }
 	  }]);
 

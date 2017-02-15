@@ -198,6 +198,10 @@ class NumberFormat extends React.Component {
     //change the state
     this.setState({value : formattedValue},()=>{
       cursorPos = this.getCursorPosition(inputValue, formattedValue, cursorPos );
+      /*
+        setting caret position within timeout of 0ms is required for mobile chrome,
+        otherwise browser resets the caret position after we set it
+       */
       setTimeout(() => this.setCaretPosition(el, cursorPos), 0);
       if(callback) callback(e,value);
     });
