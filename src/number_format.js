@@ -21,7 +21,7 @@ const propTypes = {
     PropTypes.number,
     PropTypes.string
   ]),
-  customInput: PropTypes.any
+  customInput: PropTypes.func
 };
 
 const defaultProps = {
@@ -74,35 +74,29 @@ class NumberFormat extends React.Component {
     return new RegExp('\\d' + (decimalSeparator && !ignoreDecimalSeperator ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
   }
 
-  getInput() {
-    return this.props.customInput ? document.activeElement : this.refs.input;
-  }
-
-  setCaretPosition(caretPos) {
-    const el = this.getInput();
-      el.value = el.value;
-      // ^ this is used to not only get "focus", but
-      // to make sure we don't have it everything -selected-
-      // (it causes an issue in chrome, and having it doesn't hurt any other browser)
-      if (el !== null) {
-          if (el.createTextRange) {
-              const range = el.createTextRange();
-              range.move('character', caretPos);
-              range.select();
-              return true;
-          }
-          // (el.selectionStart === 0 added for Firefox bug)
-          if (el.selectionStart || el.selectionStart === 0) {
-              el.focus();
-              el.setSelectionRange(caretPos, caretPos);
-              return true;
-          }
-
-          // fail city, fortunately this never happens (as far as I've tested) :)
-          el.focus();
-          return false;
-
+  setCaretPosition(el, caretPos) {
+    el.value = el.value;
+    // ^ this is used to not only get "focus", but
+    // to make sure we don't have it everything -selected-
+    // (it causes an issue in chrome, and having it doesn't hurt any other browser)
+    if (el !== null) {
+      if (el.createTextRange) {
+        const range = el.createTextRange();
+        range.move('character', caretPos);
+        range.select();
+        return true;
       }
+      // (el.selectionStart === 0 added for Firefox bug)
+      if (el.selectionStart || el.selectionStart === 0) {
+        el.focus();
+        el.setSelectionRange(caretPos, caretPos);
+        return true;
+      }
+
+      // fail city, fortunately this never happens (as far as I've tested) :)
+      el.focus();
+      return false;
+    }
   }
 
   formatWithPattern(str) {
@@ -196,15 +190,15 @@ class NumberFormat extends React.Component {
 
   onChangeHandler(e,callback) {
     e.persist();
-    const inputValue = e.target.value;
+    const el = e.target;
+    const inputValue = el.value;
     const {formattedValue,value} = this.formatInput(inputValue);
-    const el = this.getInput();
     let cursorPos = el.selectionStart;
 
     //change the state
     this.setState({value : formattedValue},()=>{
       cursorPos = this.getCursorPosition(inputValue, formattedValue, cursorPos );
-      this.setCaretPosition(cursorPos);
+      setTimeout(() => this.setCaretPosition(el, cursorPos), 0);
       if(callback) callback(e,value);
     });
 
@@ -218,7 +212,7 @@ class NumberFormat extends React.Component {
     this.onChangeHandler(e,this.props.onInput);
   }
   onKeyDown(e) {
-    const el = this.getInput();
+    const el = e.target;
     const {selectionStart, selectionEnd, value} = el;
     const {decimalPrecision} = this.props;
     const {key} = e;
@@ -229,12 +223,12 @@ class NumberFormat extends React.Component {
         e.preventDefault();
         let nextCursorPosition = selectionStart;
         while (!numRegex.test(value[nextCursorPosition]) && nextCursorPosition < value.length) nextCursorPosition++;
-        this.setCaretPosition(nextCursorPosition);
+        this.setCaretPosition(el, nextCursorPosition);
       } else if (key === 'Backspace' && !numRegex.test(value[selectionStart - 1])) {
         e.preventDefault();
         let prevCursorPosition = selectionStart;
         while (!numRegex.test(value[prevCursorPosition - 1]) && prevCursorPosition > 0) prevCursorPosition--;
-        this.setCaretPosition(prevCursorPosition);
+        this.setCaretPosition(el, prevCursorPosition);
       }
     }
 
@@ -271,7 +265,6 @@ class NumberFormat extends React.Component {
     return (
       <input
         {...inputProps}
-        ref="input"
       />
     )
   }

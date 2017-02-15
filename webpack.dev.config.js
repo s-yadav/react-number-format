@@ -7,7 +7,7 @@ module.exports = {
   devtool: "eval",
   debug: true,
   output: {
-    publicPath: "http://localhost:8080/",
+    publicPath: "http://localhost:9000/",
     // path: path.join(__dirname, "public","js"),
     filename: '[name].js'
   },
