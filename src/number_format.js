@@ -37,7 +37,6 @@ class NumberFormat extends React.Component {
       value: this.formatInput(props.value).formattedValue
     }
     this.onChange = this.onChange.bind(this);
-    this.onInput = this.onInput.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
   }
 
@@ -212,9 +211,6 @@ class NumberFormat extends React.Component {
   onChange(e) {
     this.onChangeHandler(e,this.props.onChange);
   }
-  onInput(e) {
-    this.onChangeHandler(e,this.props.onInput);
-  }
   onKeyDown(e) {
     const el = e.target;
     const {selectionStart, selectionEnd, value} = el;
@@ -246,9 +242,8 @@ class NumberFormat extends React.Component {
     });
 
     const inputProps = Object.assign({}, props, {
-      type:'tel',
+      type:'text',
       value:this.state.value,
-      onInput:this.onChange,
       onChange:this.onChange,
       onKeyDown:this.onKeyDown,
     })

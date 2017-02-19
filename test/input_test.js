@@ -1,23 +1,31 @@
 import React from 'react';
-import ReactTestUtils from 'react-addons-test-utils';
-import FormatNumberInput from '../src/number_format';
+import { shallow, mount } from 'enzyme';
+import NumberFormat from '../src/number_format';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import TextField from 'material-ui/TextField';
+
+function getCustomEvent(value) {
+  return {
+    persist: function(){},
+    preventDefault: function(){},
+    target: {
+      value,
+      focus: function(){}
+    }
+  }
+}
 
 /*** format_number input as input ****/
-describe('FormatNumberInput as input', () => {
+describe('NumberFormat as input', () => {
   it('should have initial value', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value={2456981} thousandSeparator={true} prefix={'$'} />);
-    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
-       component, 'input'
-    );
-    expect(input.value).toEqual("$2,456,981");
+    const wrapper = mount(<NumberFormat value={2456981} thousandSeparator={true} prefix={'$'} />);
+    expect(wrapper.state().value).toEqual("$2,456,981");
+    expect(wrapper.find('input').get(0).value).toEqual("$2,456,981");
   });
 
   it('show the initial value as $0 when number 0 is passed', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value={0} thousandSeparator={true} prefix={'$'} />);
-    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
-       component, 'input'
-    );
-    expect(input.value).toEqual("$0");
+    const wrapper = shallow(<NumberFormat value={0} thousandSeparator={true} prefix={'$'} />);
+    expect(wrapper.state().value).toEqual("$0");
   });
 
   it('should not reset number inputs value if number input renders again with same props', () => {
@@ -29,289 +37,235 @@ describe('FormatNumberInput as input', () => {
         };
       }
       render() {
-        return (<FormatNumberInput thousandSeparator={true} prefix={'$'}/>)
+        return (<NumberFormat thousandSeparator={true} prefix={'$'}/>)
       }
     }
 
-    const component = ReactTestUtils.renderIntoDocument(<WrapperComponent />);
-    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
-       component, 'input'
-    );
+    const wrapper = mount(<WrapperComponent />);
+    const input = wrapper.find('input');
+    const domInput = input.get(0);
 
-    input.value = "2456981";
+    input.simulate('change', getCustomEvent('2456981'));
 
-    ReactTestUtils.Simulate.input(input);
+    expect(domInput.value).toEqual("$2,456,981");
 
-    expect(input.value).toEqual("$2,456,981");
+    wrapper.setState({testState: true});
 
-    component.setState({testState: true});
-
-    expect(input.value).toEqual("$2,456,981");
-    
+    expect(domInput.value).toEqual("$2,456,981");
   });
 
-  it('should listen input event and formmat currency properly', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeparator={true} prefix={'$'} />);
-    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
-       component, 'input'
-    );
+  it('should listen change event and formmat currency properly', () => {
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} />);
 
-    input.value = "2456981";
+    wrapper.find('input').simulate('change', getCustomEvent('2456981'));
 
-    ReactTestUtils.Simulate.input(input);
-
-    expect(input.value).toEqual("$2,456,981");
+    expect(wrapper.state().value).toEqual("$2,456,981");
   });
 
-
-  it('should listen change event and format currency properly', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeparator={true} prefix={'$'} />);
-    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
-       component, 'input'
-    );
-
-    input.value = "2456981";
-
-    ReactTestUtils.Simulate.change(input);
-
-    expect(input.value).toEqual("$2,456,981");
-  });
 
   it('should maintain decimal points', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeparator={true} prefix={'$'} />);
-    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
-       component, 'input'
-    );
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} />);
 
-    input.value = "2456981.89";
+    wrapper.find('input').simulate('change', getCustomEvent('2456981.89'));
 
-    ReactTestUtils.Simulate.input(input);
-
-    expect(input.value).toEqual("$2,456,981.89");
+    expect(wrapper.state().value).toEqual("$2,456,981.89");
   });
 
   it('should support custom thousand seperator', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput thousandSeparator={'.'} decimalSeparator={','} prefix={'$'} />);
-    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
-       component, 'input'
-    );
+    const wrapper = shallow(<NumberFormat thousandSeparator={'.'} decimalSeparator={','} prefix={'$'} />);
+    const input = wrapper.find('input');
 
-    input.value = "2456981,89";
+    input.simulate('change', getCustomEvent('2456981,89'));
 
-    ReactTestUtils.Simulate.input(input);
+    expect(wrapper.state().value).toEqual('$2.456.981,89');
 
-    expect(input.value).toEqual("$2.456.981,89");
+    wrapper.setProps({thousandSeparator: "'"});
+
+    /** TODO : Failing testcases, changing thousand seperator, decimal seperator on the fly fails **/
+    //expect(wrapper.state().value).toEqual("$2'456'981,89");
+
+    input.simulate('change', getCustomEvent('2456981,89'));
+    expect(wrapper.state().value).toEqual("$2'456'981,89");
+
+    wrapper.setProps({thousandSeparator: " ", decimalSeparator:"'" });
+    input.simulate('change', getCustomEvent("2456981'89"));
+    expect(wrapper.state().value).toEqual("$2 456 981'89");
+
   });
 
-
   it('should have proper intermediate formatting', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput format="#### #### #### ####" />);
-    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
-       component, 'input'
-    );
+    const wrapper = shallow(<NumberFormat format="#### #### #### ####" />);
+    const input = wrapper.find('input');
 
     //case 1st - if entered a number where formatting should happen
-    input.value = "41111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111 1");
+    input.simulate('change', getCustomEvent('41111'));
+    expect(wrapper.state().value).toEqual('4111 1');
 
     //case 2st - if pressed backspace at formatting point
-    input.value = "411 1";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111");
+    input.simulate('change', getCustomEvent('411 1'));
+    expect(wrapper.state().value).toEqual('4111');
 
     //case 3rd - if something entered before formatting point
-    input.value = "41111 1";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111 11");
+    input.simulate('change', getCustomEvent('41111 1'));
+    expect(wrapper.state().value).toEqual('4111 11');
 
     //case 4th - if something entered when maximum numbers are input
-    input.value = "41112 1111 1111 1111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111 2111 1111 1111");
+    input.simulate('change', getCustomEvent('41112 1111 1111 1111'));
+    expect(wrapper.state().value).toEqual('4111 2111 1111 1111');
 
 
     //case 5th - if something removed after empty space
-    input.value = "4111 2111 211 1111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111 2111 2111 111");
+    input.simulate('change', getCustomEvent('4111 2111 211 1111'));
+    expect(wrapper.state().value).toEqual('4111 2111 2111 111');
 
     //case 6th - if space is removed
-    input.value = "41112111 1211 1111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111 2111 1211 1111");
+    input.simulate('change', getCustomEvent('41112111 1211 1111'));
+    expect(wrapper.state().value).toEqual('4111 2111 1211 1111');
   });
 
   it('should have proper intermediate masking', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput format="#### #### #### ####" mask="_"/>);
-    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
-       component, 'input'
-    );
+    const wrapper = shallow(<NumberFormat format="#### #### #### ####"  mask="_"/>);
+    const input = wrapper.find('input');
 
     //case 1st - if entered a number where formatting should happen
-    input.value = "41111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111 1___ ____ ____");
+    input.simulate('change', getCustomEvent('41111'));
+    expect(wrapper.state().value).toEqual('4111 1___ ____ ____');
 
     //case 2st - if pressed backspace at formatting point
-    input.value = "411 1";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111 ____ ____ ____");
+    input.simulate('change', getCustomEvent('411 1'));
+    expect(wrapper.state().value).toEqual('4111 ____ ____ ____');
+
 
     //case 3rd - if something entered before formatting point
-    input.value = "41111 1";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111 11__ ____ ____");
+    input.simulate('change', getCustomEvent('41111 1'));
+    expect(wrapper.state().value).toEqual('4111 11__ ____ ____');
 
     //case 4th - if something entered when maximum numbers are input
-    input.value = "41112 1111 1111 1111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111 2111 1111 1111");
-
+    input.simulate('change', getCustomEvent('41112 1111 1111 1111'));
+    expect(wrapper.state().value).toEqual('4111 2111 1111 1111');
 
     //case 5th - if something removed after empty space
-    input.value = "4111 2111 211 1111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111 2111 2111 111_");
+    input.simulate('change', getCustomEvent('4111 2111 211 1111'));
+    expect(wrapper.state().value).toEqual('4111 2111 2111 111_');
 
     //case 6th - if space is removed
-    input.value = "41112111 1211 1111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111 2111 1211 1111");
+    input.simulate('change', getCustomEvent('41112111 1211 1111'));
+    expect(wrapper.state().value).toEqual('4111 2111 1211 1111');
   });
 
   it('should round to passed decimal precision', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput decimalPrecision={4}/>);
-    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
-        component, 'input'
-    );
+    const wrapper = shallow(<NumberFormat decimalPrecision={4}/>);
+    const input = wrapper.find('input');
 
     //case 1st - already exactly precision 4 should stay that way
-    input.value = "4111.1111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111.1111");
+    input.simulate('change', getCustomEvent('4111.1111'));
+    expect(wrapper.state().value).toEqual("4111.1111");
 
     //case 2nd - longer precision should round
-    input.value = "4111.11111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111.1111");
+    input.simulate('change', getCustomEvent('4111.11111'));
+    expect(wrapper.state().value).toEqual("4111.1111");
+
+    /** TODO: Failing test case **/
+    /** Only initial value should round off not while input **/
+    // input.simulate('change', getCustomEvent('4111.11118'));
+    // expect(wrapper.state().value).toEqual("4111.1112");
+
 
     //case 3rd - shorter precision adds 0
-    input.value = "4111.111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111.1110");
+    input.simulate('change', getCustomEvent('4111.111'));
+    expect(wrapper.state().value).toEqual("4111.1110");
 
     //case 4th - no decimal should round with 4 zeros
-    input.value = "4111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111.0000");
+    input.simulate('change', getCustomEvent('4111'));
+    expect(wrapper.state().value).toEqual("4111.0000");
 
+    //case 5 - round with two decimal precision
+    wrapper.setProps({decimalPrecision: 2});
+    input.simulate('change', getCustomEvent('4111.111'));
+    expect(wrapper.state().value).toEqual("4111.11");
   });
 
 
   it('should not round by default', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput />);
-    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
-        component, 'input'
-    );
+    const wrapper = shallow(<NumberFormat/>);
+    const input = wrapper.find('input');
 
     //case 1st - no rounding with long decimal
-    input.value = "4111.111111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111.111111");
+    input.simulate('change', getCustomEvent('4111.111111'));
+    expect(wrapper.state().value).toEqual("4111.111111");
 
     //case 2nd - no rounding with whole numbers
-    input.value = "4111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111");
+    input.simulate('change', getCustomEvent('4111'));
+    expect(wrapper.state().value).toEqual("4111");
 
     //case 3rd - no rounding on single place decimals
-    input.value = "4111.1";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111.1");
+    input.simulate('change', getCustomEvent('4111.1'));
+    expect(wrapper.state().value).toEqual("4111.1");
   });
 
-  it('should round default 2 places', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput decimalPrecision={true} />);
-    const input = ReactTestUtils.findRenderedDOMComponentWithTag(
-        component, 'input'
-    );
+  it('works with custom input', () => {
 
-    //case 1st - auto round to 2 places
-    input.value = "4111.1111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111.11");
+    const WrapperComponent = (props) => {
+      return (
+        <MuiThemeProvider>
+          <NumberFormat {...props} />
+        </MuiThemeProvider>
+      )
+    }
 
-    //case 2nd - auto round whole integers
-    input.value = "4111";
-    ReactTestUtils.Simulate.change(input);
-    expect(input.value).toEqual("4111.00");
+    const wrapper = mount(<WrapperComponent customInput={TextField} thousandSeparator={'.'} decimalSeparator={','}/>);
+    const input = wrapper.find('input');
+
+    input.simulate('change', getCustomEvent('2456981,89'));
+    expect(input.get(0).value).toEqual('2.456.981,89');
+
+    wrapper.setProps({format: '#### #### #### ####', mask: '_', thousandSeparator: false, decimalSeparator: false});
+    input.simulate('change', getCustomEvent('41111 1'));
+    expect(input.get(0).value).toEqual('4111 11__ ____ ____');
+
   });
+
 });
 
 /*** format_number input as text ****/
-describe('FormatNumberInput as text', () => {
+describe('NumberFormat as text', () => {
   it('should format numbers to currency', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />);
-    const span = ReactTestUtils.findRenderedDOMComponentWithTag(
-       component, 'span'
-    );
-    expect(span.textContent).toEqual("$2,456,981");
+    const wrapper = shallow(<NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />);
+    expect(wrapper.find('span').text()).toEqual("$2,456,981");
   });
 
   it('should format as given format', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value={4111111111111111} displayType={'text'} format="#### #### #### ####" />);
-    const span = ReactTestUtils.findRenderedDOMComponentWithTag(
-       component, 'span'
-    );
-    expect(span.textContent).toEqual("4111 1111 1111 1111");
+    const wrapper = shallow(<NumberFormat value={4111111111111111} displayType={'text'} format="#### #### #### ####" />);
+    expect(wrapper.find('span').text()).toEqual("4111 1111 1111 1111");
   });
 
   it('should format as given format when input is string', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value="4111111111111111" displayType={'text'} format="#### #### #### ####" />);
-    const span = ReactTestUtils.findRenderedDOMComponentWithTag(
-       component, 'span'
-    );
-    expect(span.textContent).toEqual("4111 1111 1111 1111");
+    const wrapper = shallow(<NumberFormat value="4111111111111111" displayType={'text'} format="#### #### #### ####" />);
+    expect(wrapper.find('span').text()).toEqual("4111 1111 1111 1111");
   });
 
   it('should format as given format when input length is less than format length', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value="41111111111111" displayType={'text'} format="#### #### #### ####" />);
-    const span = ReactTestUtils.findRenderedDOMComponentWithTag(
-       component, 'span'
-    );
-    expect(span.textContent).toEqual("4111 1111 1111 11");
+    const wrapper = shallow(<NumberFormat value="41111111111111" displayType={'text'} format="#### #### #### ####" />);
+    expect(wrapper.find('span').text()).toEqual("4111 1111 1111 11");
   });
 
   it('should format as given format with mask', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value="41111111111111" displayType={'text'} format="#### #### #### ####" mask="_" />);
-    const span = ReactTestUtils.findRenderedDOMComponentWithTag(
-       component, 'span'
-    );
-    expect(span.textContent).toEqual("4111 1111 1111 11__");
+    const wrapper = shallow(<NumberFormat value="41111111111111" displayType={'text'} format="#### #### #### ####" mask="_" />);
+    expect(wrapper.find('span').text()).toEqual("4111 1111 1111 11__");
   });
 
   it('should not round decimals by defualt', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value="4111" displayType={'text'} />);
-    const span = ReactTestUtils.findRenderedDOMComponentWithTag(
-        component, 'span'
-    );
-    expect(span.textContent).toEqual("4111");
+    const wrapper = shallow(<NumberFormat value="4111" displayType={'text'} />);
+    expect(wrapper.find('span').text()).toEqual("4111");
   });
 
   it('should round to 2 decimals if passed true', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value="4111" displayType={'text'} decimalPrecision={true} />);
-    const span = ReactTestUtils.findRenderedDOMComponentWithTag(
-        component, 'span'
-    );
-    expect(span.textContent).toEqual("4111.00");
+    const wrapper = shallow(<NumberFormat value="4111" displayType={'text'} decimalPrecision={true} />);
+    expect(wrapper.find('span').text()).toEqual("4111.00");
   });
 
   it('should round to 4 decimals if passed 4', () => {
-    const component = ReactTestUtils.renderIntoDocument(<FormatNumberInput value="4111.11" displayType={'text'} decimalPrecision={4} />);
-    const span = ReactTestUtils.findRenderedDOMComponentWithTag(
-        component, 'span'
-    );
-    expect(span.textContent).toEqual("4111.1100");
+    const wrapper = shallow(<NumberFormat value="4111.11" displayType={'text'} decimalPrecision={4} />);
+    expect(wrapper.find('span').text()).toEqual("4111.1100");
   });
 });

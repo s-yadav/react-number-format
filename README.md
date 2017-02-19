@@ -26,7 +26,7 @@ Or get compiled development and production version from ./dist
 | displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
 | format | String : Hash based ex (#### #### #### ####) <br/> Or Function| none | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number.
 | mask | String (ex : _) | none | If mask defined, component will show non entered placed with masked value.  
-| customInput | Component Reference | input | This allow supporting custom inputs with number format. See details
+| customInput | Component Reference | input | This allow supporting custom inputs with number format.
 | onChange | (e, value) => {} | none | onChange handler accepts event object through which you can get formattedValue (e.targe.value # $2,223)  and second parameter non formatted value (ie: 2223)
 
 **Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
@@ -111,6 +111,12 @@ All custom input props and number input props are passed together.
 [http://codepen.io/s-yadav/pen/bpKNMa](http://codepen.io/s-yadav/pen/bpKNMa)
 
 ### Major Updates
+### v1.1.0
+- Support custom input
+- Support custom decimal / thousandSeparator
+- Support providing decimal precision
+- Bug fixes ([See release notes](https://github.com/s-yadav/react-number-format/releases))
+
 ### v1.0.0
 - Support decimals
 - Support changing thousandSeparator to ','
