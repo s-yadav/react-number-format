@@ -22,7 +22,7 @@ Or get compiled development and production version from ./dist
 | decimalPrecision | mixed: number or boolean | false (2 if true)| If false it does not limit decimal place, if true default precision is 2 or else limits to provided decimal place |
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
 | suffix | String (ex : /-)      |    none | Add a prefix after the number |
-| value | Number | null | Give initial value to number format |
+| value | Number | null | Value to number format |
 | displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
 | format | String : Hash based ex (#### #### #### ####) <br/> Or Function| none | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number.
 | mask | String (ex : _) | none | If mask defined, component will show non entered placed with masked value.  
