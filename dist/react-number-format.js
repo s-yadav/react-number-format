@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 1.1.0-alpha2
+ * react-number-format - 1.1.0
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -120,7 +120,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      value: _this.formatInput(props.value).formattedValue
 	    };
 	    _this.onChange = _this.onChange.bind(_this);
-	    _this.onInput = _this.onInput.bind(_this);
 	    _this.onKeyDown = _this.onKeyDown.bind(_this);
 	    return _this;
 	  }
@@ -332,11 +331,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.onChangeHandler(e, this.props.onChange);
 	    }
 	  }, {
-	    key: 'onInput',
-	    value: function onInput(e) {
-	      this.onChangeHandler(e, this.props.onInput);
-	    }
-	  }, {
 	    key: 'onKeyDown',
 	    value: function onKeyDown(e) {
 	      var el = e.target;
@@ -376,9 +370,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 
 	      var inputProps = _extends({}, props, {
-	        type: 'tel',
+	        type: 'text',
 	        value: this.state.value,
-	        onInput: this.onChange,
 	        onChange: this.onChange,
 	        onKeyDown: this.onKeyDown
 	      });
