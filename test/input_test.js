@@ -91,6 +91,17 @@ describe('NumberFormat as input', () => {
     input.simulate('change', getCustomEvent("2456981'89"));
     expect(wrapper.state().value).toEqual("$2 456 981'89");
 
+    wrapper.setProps({thousandSeparator: ",", decimalSeparator: "."});
+    input.simulate('change', getCustomEvent("2456981.89"));
+    expect(wrapper.state().value).toEqual("$2,456,981.89");
+  });
+
+  it('should support decimal precision with custom decimal separator', () => {
+    const wrapper = shallow(<NumberFormat thousandSeparator={"."} decimalSeparator={","} decimalPrecision={2} />);
+    const input = wrapper.find('input');
+
+    input.simulate('change', getCustomEvent("2456981,89");
+    expect(wrapper.state().value).toEqual("2.456.981,89");
   });
 
   it('should have proper intermediate formatting', () => {

@@ -151,7 +151,15 @@ class NumberFormat extends React.Component {
         let parts;
         if (decimalPrecision !== false) {
           const precision = decimalPrecision === true ? 2 : decimalPrecision;
-          parts = parseFloat(formattedValue).toFixed(precision).split(decimalSeparator);
+          if (decimalSeparator !== '.') {
+            // Replace custom decimalSeparator with '.' for parseFloat function
+            parts = parseFloat(formattedValue.replace(decimalSeparator, '.')).toFixed(precision)
+            // Put custom decimalSeparator back
+            parts = parts.replace('.', decimalSeparator);
+          } else {
+            parts = parseFloat(formattedValue).toFixed(precision)
+          }
+          parts = parts.split(decimalSeparator);
         } else {
           parts = formattedValue.split(decimalSeparator);
         }

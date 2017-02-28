@@ -27,7 +27,7 @@ class App extends React.Component {
       <div>
         <div className="example">
           <h3>
-            Prefix and thousand seperator : Format currency as text
+            Prefix and thousand separator : Format currency as text
           </h3>
           <NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />
         </div>
@@ -41,7 +41,7 @@ class App extends React.Component {
 
         <div className="example">
           <h3>
-            Prefix and thousand seperator : Format currency in input
+            Prefix and thousand separator : Format currency in input
           </h3>
           <NumberFormat thousandSeparator={true} value={this.state.test} prefix={'$'} onChange={(e, val) => this.setState({test: val})} />
         </div>
@@ -56,20 +56,39 @@ class App extends React.Component {
 
         <div className="example">
           <h3>
-            Custom thousand seperator : Format currency in input
+            Custom thousand separator : Format currency in input
           </h3>
           <div>
             ThousandSeperator: '.', decimalSeparator=','
           </div>
           <div>
-            <NumberFormat thousandSeparator={"."} decimalSeparator={','} prefix={'$'} />
+            <NumberFormat thousandSeparator={"."} decimalSeparator={","} prefix={"$"} />
           </div>
           <br/>
           <div>
             ThousandSeperator: ' ', decimalSeparator='.'
           </div>
           <div>
-            <NumberFormat thousandSeparator={" "} decimalSeparator={'.'} prefix={'$'} />
+            <NumberFormat thousandSeparator={" "} decimalSeparator={"."} prefix={"$"} />
+          </div>
+        </div>
+
+        <div className="example">
+          <h3>
+            Custom thousand separator with decimal precision
+          </h3>
+          <div>
+            ThousandSeperator: ',', decimalSeparator='.', decimalPrecision:2
+          </div>
+          <div>
+            <NumberFormat thousandSeparator={","} decimalSeparator={"."} decimalPrecision={2} />
+          </div>
+          <br/>
+          <div>
+            ThousandSeperator: '.', decimalSeparator=',', decimalPrecision:2
+          </div>
+          <div>
+            <NumberFormat thousandSeparator={"."} decimalSeparator={","} decimalPrecision={2} />
           </div>
         </div>
 
