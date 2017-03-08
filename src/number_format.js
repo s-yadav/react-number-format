@@ -21,20 +21,23 @@ const propTypes = {
     PropTypes.number,
     PropTypes.string
   ]),
+  allowNegative: PropTypes.bool,
   customInput: PropTypes.func
 };
 
 const defaultProps = {
   displayType: 'input',
   decimalSeparator: '.',
-  decimalPrecision: false
+  decimalPrecision: false,
+  allowNegative: true
 };
 
 class NumberFormat extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: this.formatInput(props.value).formattedValue
+      value: this.formatInput(props.value).formattedValue,
+      negative: false
     }
     this.onChange = this.onChange.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
@@ -43,7 +46,8 @@ class NumberFormat extends React.Component {
   componentWillReceiveProps(newProps) {
     if(newProps.value !== this.props.value) {
       this.setState({
-        value : this.formatInput(newProps.value).formattedValue
+        value : this.formatInput(newProps.value).formattedValue,
+        negative: !newProps.value.length ? false : newProps.allowNegative && this.state.negative
       });
     }
   }
@@ -123,7 +127,7 @@ class NumberFormat extends React.Component {
   formatInput(val) {
     const {prefix, suffix, mask, format} = this.props;
     const {thousandSeparator, decimalSeparator} = this.getSeparators();
-    const {decimalPrecision} = this.props;
+    const {decimalPrecision, allowNegative} = this.props;
     const maskPattern = format && typeof format == 'string' && !!mask;
 
     const numRegex = this.getNumberRegex(true);
@@ -161,6 +165,7 @@ class NumberFormat extends React.Component {
       if(thousandSeparator) {
         beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
       }
+      beforeDecimal = allowNegative && this.state && this.state.negative ? '-' + beforeDecimal : beforeDecimal;
       //add prefix and suffix
       if(prefix) beforeDecimal = prefix + beforeDecimal;
       if(suffix) afterDecimal = afterDecimal + suffix;
@@ -214,10 +219,13 @@ class NumberFormat extends React.Component {
   onKeyDown(e) {
     const el = e.target;
     const {selectionStart, selectionEnd, value} = el;
-    const {decimalPrecision} = this.props;
+    const {decimalPrecision, allowNegative} = this.props;
     const {key} = e;
     const numRegex = this.getNumberRegex(false, decimalPrecision !== false);
     //Handle backspace and delete against non numerical/decimal characters
+    if (key === '-' && allowNegative) {
+      this.setState({negative: !this.state.negative});
+    }
     if(selectionEnd - selectionStart === 0) {
       if (key === 'Delete' && !numRegex.test(value[selectionStart])) {
         e.preventDefault();
