@@ -58,6 +58,10 @@ class NumberFormat extends React.Component {
       decimalSeparator = thousandSeparator === '.' ? ',' : '.';
     }
 
+    if (thousandSeparator === '.') {
+      decimalSeparator = ',';
+    }
+
     if (decimalSeparator === true) {
       decimalSeparator = '.'
     }
@@ -69,8 +73,9 @@ class NumberFormat extends React.Component {
   }
 
   getNumberRegex(g, ignoreDecimalSeperator) {
+    const {format} = this.props;
     const {decimalSeparator} = this.getSeparators();
-    return new RegExp('\\d' + (decimalSeparator && !ignoreDecimalSeperator ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
+    return new RegExp('\\d' + (decimalSeparator && !ignoreDecimalSeperator && !format ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
   }
 
   setCaretPosition(el, caretPos) {
@@ -184,9 +189,10 @@ class NumberFormat extends React.Component {
 
   getCursorPosition(inputValue, formattedValue, cursorPos) {
     const numRegex = this.getNumberRegex();
+    let j, i;
 
-    let j=0;
-    for(let i=0; i<cursorPos; i++){
+    j=0;
+    for(i=0; i<cursorPos; i++){
       if(!inputValue[i].match(numRegex) && inputValue[i] !== formattedValue[j]) continue;
       while(inputValue[i] !== formattedValue[j] && j<formattedValue.length) j++;
       j++;
@@ -208,7 +214,9 @@ class NumberFormat extends React.Component {
       /*
         setting caret position within timeout of 0ms is required for mobile chrome,
         otherwise browser resets the caret position after we set it
+        We are also setting it without timeout so that in normal browser we don't see the flickering
        */
+      this.setCaretPosition(el, cursorPos);
       setTimeout(() => this.setCaretPosition(el, cursorPos), 0);
       if(callback) callback(e,value);
     });

@@ -148,6 +148,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        decimalSeparator = thousandSeparator === '.' ? ',' : '.';
 	      }
 
+	      if (thousandSeparator === '.') {
+	        decimalSeparator = ',';
+	      }
+
 	      if (decimalSeparator === true) {
 	        decimalSeparator = '.';
 	      }
@@ -160,10 +164,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'getNumberRegex',
 	    value: function getNumberRegex(g, ignoreDecimalSeperator) {
+	      var format = this.props.format;
+
 	      var _getSeparators = this.getSeparators(),
 	          decimalSeparator = _getSeparators.decimalSeparator;
 
-	      return new RegExp('\\d' + (decimalSeparator && !ignoreDecimalSeperator ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
+	      return new RegExp('\\d' + (decimalSeparator && !ignoreDecimalSeperator && !format ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
 	    }
 	  }, {
 	    key: 'setCaretPosition',
@@ -258,7 +264,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var parts = void 0;
 	          if (decimalPrecision !== false) {
 	            var precision = decimalPrecision === true ? 2 : decimalPrecision;
-	            parts = parseFloat(formattedValue).toFixed(precision).split(decimalSeparator);
+	            if (decimalSeparator !== '.') {
+	              // Replace custom decimalSeparator with '.' for parseFloat function
+	              parts = parseFloat(formattedValue.replace(decimalSeparator, '.')).toFixed(precision);
+	              // Put custom decimalSeparator back
+	              parts = parts.replace('.', decimalSeparator);
+	            } else {
+	              parts = parseFloat(formattedValue).toFixed(precision);
+	            }
+	            parts = parts.split(decimalSeparator);
 	          } else {
 	            parts = formattedValue.split(decimalSeparator);
 	          }
@@ -284,9 +298,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'getCursorPosition',
 	    value: function getCursorPosition(inputValue, formattedValue, cursorPos) {
 	      var numRegex = this.getNumberRegex();
+	      var j = void 0,
+	          i = void 0;
 
-	      var j = 0;
-	      for (var i = 0; i < cursorPos; i++) {
+	      j = 0;
+	      for (i = 0; i < cursorPos; i++) {
 	        if (!inputValue[i].match(numRegex) && inputValue[i] !== formattedValue[j]) continue;
 	        while (inputValue[i] !== formattedValue[j] && j < formattedValue.length) {
 	          j++;
@@ -316,7 +332,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /*
 	          setting caret position within timeout of 0ms is required for mobile chrome,
 	          otherwise browser resets the caret position after we set it
+	          We are also setting it without timeout so that in normal browser we don't see the flickering
 	         */
+	        _this2.setCaretPosition(el, cursorPos);
 	        setTimeout(function () {
 	          return _this2.setCaretPosition(el, cursorPos);
 	        }, 0);

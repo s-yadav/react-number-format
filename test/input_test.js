@@ -100,7 +100,7 @@ describe('NumberFormat as input', () => {
     const wrapper = shallow(<NumberFormat thousandSeparator={"."} decimalSeparator={","} decimalPrecision={2} />);
     const input = wrapper.find('input');
 
-    input.simulate('change', getCustomEvent("2456981,89");
+    input.simulate('change', getCustomEvent("2456981,89"));
     expect(wrapper.state().value).toEqual("2.456.981,89");
   });
 
