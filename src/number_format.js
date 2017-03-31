@@ -27,6 +27,7 @@ const propTypes = {
 };
 
 const defaultProps = {
+    id: 'number_format',
     displayType: 'input',
     decimalSeparator: '.',
     decimalPrecision: false
@@ -297,7 +298,7 @@ class NumberFormat extends React.Component {
             key
         } = e;
         const numRegex = this.getNumberRegex(false, decimalPrecision !== false);
-        const negativeRegex = new RegExp('\-');
+        const negativeRegex = new RegExp('-');
         // Handle backspace and delete against non numerical/decimal characters
         if (selectionEnd - selectionStart === 0) {
             if (key === 'Delete' && !numRegex.test(value[selectionStart]) && !negativeRegex.test(value[selectionStart])) {

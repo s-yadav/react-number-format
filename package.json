@@ -1,5 +1,5 @@
 {
-  "name": "react-number-format",
+  "name": "trq-react-number-format",
   "description": "React component to format number in an input or as a text.",
   "version": "1.1.2",
   "main": "lib/number_format.js",
@@ -7,12 +7,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/s-yadav/react-number-format"
-  },
-  "bugs": {
-    "mail": "sudhanshuyadav2@gmail.com",
-    "url": "https://github.com/s-yadav/react-number-format/issues"
-  },
+    "url": "https://github.com/TorqueITS/react-number-format"
+  },  
   "keywords": [
     "react-component",
     "react",
@@ -24,10 +20,16 @@
   ],
   "scripts": {
     "start": "webpack-dev-server --content-base example/ --config webpack.dev.config.js --watch-poll --progress --inline --hot",
-    "bundle": "cross-env NODE_ENV=production npm run compile && cross-env NODE_ENV=production webpack --config webpack.bundle.config.js  && cross-env NODE_ENV=production karma start",
+    "bundle": "cross-env NODE_ENV=production npm run compile && cross-env NODE_ENV=production webpack --config webpack.bundle.config.js",
     "compile": "cross-env NODE_ENV=production babel src/number_format.js --out-file lib/number_format.js",
     "test": "cross-env NODE_ENV=test karma start"
   },
+  "publishConfig": {
+    "registry": "http://npm.torqueitsolutions.com:8081/nexus/repository/npm-hosted/"
+  },
+  "files": [
+    "dist/"
+  ],
   "devDependencies": {
     "babel-cli": "^6.7.5",
     "babel-core": "^6.7.2",
@@ -60,11 +62,12 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^1.7.0",
     "material-ui": "^0.16.7",
-    "react": "^15.0.1",
+    "react": "^15.3.2",
     "react-dom": "^15.0.1",
     "react-transform-hmr": "^1.0.4",
     "webpack": "^1.12.14",
-    "webpack-dev-server": "^1.14.1"
+    "webpack-dev-server": "^1.14.1",
+	"react-addons-test-utils": "15.3.2"
   },
   "peerDependencies": {
     "react": "^0.14 || ^15.0.0-rc || ^15.0.0",
