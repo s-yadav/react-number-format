@@ -236,6 +236,21 @@ describe('NumberFormat as input', () => {
 
   });
 
+  it('should update input value when format is updated', () => {
+    const wrapper = mount(<NumberFormat value="4111111111111111" format="################" />);
+    const input = wrapper.find('input');
+    expect(input.get(0).value).toEqual("4111111111111111");
+    wrapper.setProps({format: '#### #### #### ####'})
+    expect(input.get(0).value).toEqual("4111 1111 1111 1111");
+  });
+
+  it('should update input value when mask is updated', () => {
+    const wrapper = mount(<NumberFormat value="411111111111111" format="#### #### #### ####" mask="_" />);
+    const input = wrapper.find('input');
+    expect(input.get(0).value).toEqual("4111 1111 1111 111_");
+    wrapper.setProps({mask: '*'})
+    expect(input.get(0).value).toEqual("4111 1111 1111 111*");
+  });
 });
 
 /*** format_number input as text ****/
