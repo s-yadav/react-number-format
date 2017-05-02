@@ -48,6 +48,14 @@ class NumberFormat extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if ((prevProps.mask !== this.props.mask) || (prevProps.format !== this.props.format)) {
+      this.setState({
+        value: this.formatInput(this.props.value).formattedValue
+      });
+    }
+  }
+
   getSeparators() {
     let {thousandSeparator, decimalSeparator} = this.props;
     if (thousandSeparator === true) {
