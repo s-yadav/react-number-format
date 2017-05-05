@@ -41,11 +41,9 @@ class NumberFormat extends React.Component {
   }
 
   componentWillReceiveProps(newProps) {
-    if(newProps.value !== this.props.value) {
-      this.setState({
-        value : this.formatInput(newProps.value).formattedValue
-      });
-    }
+    this.setState({
+      value : this.formatInput(newProps.value).formattedValue
+    });
   }
 
   getSeparators() {
