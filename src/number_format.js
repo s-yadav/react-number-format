@@ -28,10 +28,10 @@ const propTypes = {
 };
 
 const defaultProps = {
-  id: 'number_format',
   displayType: 'input',
   decimalSeparator: '.',
-  decimalPrecision: false
+  decimalPrecision: false,
+  allowNegative: true
 };
 
 class NumberFormat extends React.Component {
@@ -130,12 +130,11 @@ class NumberFormat extends React.Component {
   }
 
   formatInput(val) {
-    const {prefix, suffix, mask, format} = this.props;
+    const {prefix, suffix, mask, format, allowNegative, decimalPrecision} = this.props;
     const {thousandSeparator, decimalSeparator} = this.getSeparators();
-    const {decimalPrecision} = this.props;
     const maskPattern = format && typeof format == 'string' && !!mask;
-
     const numRegex = this.getNumberRegex(true);
+    let hasNegative, removeNegative;
 
     //change val to string if its number
     if(typeof val === 'number') val = val + '';
@@ -143,12 +142,23 @@ class NumberFormat extends React.Component {
     const negativeRegex = new RegExp('(-)');
     const doubleNegativeRegex = new RegExp('(-)(.)*(-)');
 
-    // Check number has '-' value
-    const hasNegative = negativeRegex.test(val);
-    // Check number has 2 or more '-' values
-    const removeNegative = doubleNegativeRegex.test(val);
+    if (allowNegative && !format) {
+      // Check number has '-' value
+      hasNegative = negativeRegex.test(val);
+      // Check number has 2 or more '-' values
+      removeNegative = doubleNegativeRegex.test(val);
+    }
 
-    if(!val || !(val.match(numRegex))) return {value :'', formattedValue: (maskPattern ? '' : '')}
+    const valMatch = val && val.match(numRegex);
+    
+    if (!valMatch && removeNegative) {
+      return {value :'', formattedValue: ''} 
+    } else if (!valMatch && hasNegative) {
+      return {value :'', formattedValue: '-'} 
+    } else if (!valMatch) {
+      return {value :'', formattedValue: (maskPattern ? '' : '')} 
+    }
+
     const num = val.match(numRegex).join('');
 
     let formattedValue = num;
@@ -190,13 +200,13 @@ class NumberFormat extends React.Component {
       if(prefix) beforeDecimal = prefix + beforeDecimal;
       if(suffix) afterDecimal = afterDecimal + suffix;
 
-      if (this.props.allowNegative && hasNegative && !removeNegative) beforeDecimal = '-' + beforeDecimal;
+      if (hasNegative && !removeNegative) beforeDecimal = '-' + beforeDecimal;
 
       formattedValue = beforeDecimal + (hasDecimals && decimalSeparator ||  '') + afterDecimal;
     }
 
     return {
-        value : formattedValue.match(numRegex).join(''),
+        value : (hasNegative && !removeNegative ? '-' : '') + formattedValue.match(numRegex).join(''),
         formattedValue : formattedValue
     }
   }

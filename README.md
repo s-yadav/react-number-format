@@ -20,6 +20,7 @@ Or get compiled development and production version from ./dist
 | thousandSeparator | mixed: single character string or true/false (boolean) | false | Add thousand separators on number |
 | decimalSeparator | mixed: single character string or true/false (boolean)| . | Support decimal point on a number |
 | decimalPrecision | mixed: number or boolean | false (2 if true)| If false it does not limit decimal place, if true default precision is 2 or else limits to provided decimal place |
+| allowNegative      | boolean     |   true | allow negative numbers (Only when format option is not provided) |
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
 | suffix | String (ex : /-)      |    none | Add a prefix after the number |
 | value | Number | null | Value to number format |
@@ -111,6 +112,9 @@ All custom input props and number input props are passed together.
 [http://codepen.io/s-yadav/pen/bpKNMa](http://codepen.io/s-yadav/pen/bpKNMa)
 
 ### Major Updates
+### v1.2.0
+- Support negative numbers
+
 ### v1.1.0
 - Support custom input
 - Support custom decimal / thousandSeparator

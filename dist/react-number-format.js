@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 1.1.2
+ * react-number-format - 1.2.0
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -99,13 +99,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  format: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
 	  mask: _react.PropTypes.string,
 	  value: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string]),
-	  customInput: _react.PropTypes.func
+	  customInput: _react.PropTypes.func,
+	  allowNegative: _react.PropTypes.bool,
+	  onKeyDown: _react.PropTypes.func,
+	  onChange: _react.PropTypes.func
 	};
 
 	var defaultProps = {
 	  displayType: 'input',
 	  decimalSeparator: '.',
-	  decimalPrecision: false
+	  decimalPrecision: false,
+	  allowNegative: true
 	};
 
 	var NumberFormat = function (_React$Component) {
@@ -230,22 +234,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	          prefix = _props3.prefix,
 	          suffix = _props3.suffix,
 	          mask = _props3.mask,
-	          format = _props3.format;
+	          format = _props3.format,
+	          allowNegative = _props3.allowNegative,
+	          decimalPrecision = _props3.decimalPrecision;
 
 	      var _getSeparators2 = this.getSeparators(),
 	          thousandSeparator = _getSeparators2.thousandSeparator,
 	          decimalSeparator = _getSeparators2.decimalSeparator;
 
-	      var decimalPrecision = this.props.decimalPrecision;
-
 	      var maskPattern = format && typeof format == 'string' && !!mask;
-
 	      var numRegex = this.getNumberRegex(true);
+	      var hasNegative = void 0,
+	          removeNegative = void 0;
 
 	      //change val to string if its number
 	      if (typeof val === 'number') val = val + '';
 
-	      if (!val || !val.match(numRegex)) return { value: '', formattedValue: maskPattern ? '' : '' };
+	      var negativeRegex = new RegExp('(-)');
+	      var doubleNegativeRegex = new RegExp('(-)(.)*(-)');
+
+	      if (allowNegative && !format) {
+	        // Check number has '-' value
+	        hasNegative = negativeRegex.test(val);
+	        // Check number has 2 or more '-' values
+	        removeNegative = doubleNegativeRegex.test(val);
+	      }
+
+	      var valMatch = val && val.match(numRegex);
+
+	      if (!valMatch && removeNegative) {
+	        return { value: '', formattedValue: '' };
+	      } else if (!valMatch && hasNegative) {
+	        return { value: '', formattedValue: '-' };
+	      } else if (!valMatch) {
+	        return { value: '', formattedValue: maskPattern ? '' : '' };
+	      }
+
 	      var num = val.match(numRegex).join('');
 
 	      var formattedValue = num;
@@ -286,11 +310,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (prefix) beforeDecimal = prefix + beforeDecimal;
 	        if (suffix) afterDecimal = afterDecimal + suffix;
 
+	        if (hasNegative && !removeNegative) beforeDecimal = '-' + beforeDecimal;
+
 	        formattedValue = beforeDecimal + (hasDecimals && decimalSeparator || '') + afterDecimal;
 	      }
 
 	      return {
-	        value: formattedValue.match(numRegex).join(''),
+	        value: (hasNegative && !removeNegative ? '-' : '') + formattedValue.match(numRegex).join(''),
 	        formattedValue: formattedValue
 	      };
 	    }
@@ -359,15 +385,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var key = e.key;
 
 	      var numRegex = this.getNumberRegex(false, decimalPrecision !== false);
+	      var negativeRegex = new RegExp('-');
 	      //Handle backspace and delete against non numerical/decimal characters
 	      if (selectionEnd - selectionStart === 0) {
-	        if (key === 'Delete' && !numRegex.test(value[selectionStart])) {
+	        if (key === 'Delete' && !numRegex.test(value[selectionStart]) && !negativeRegex.test(value[selectionStart])) {
 	          e.preventDefault();
 	          var nextCursorPosition = selectionStart;
 	          while (!numRegex.test(value[nextCursorPosition]) && nextCursorPosition < value.length) {
 	            nextCursorPosition++;
 	          }this.setCaretPosition(el, nextCursorPosition);
-	        } else if (key === 'Backspace' && !numRegex.test(value[selectionStart - 1])) {
+	        } else if (key === 'Backspace' && !numRegex.test(value[selectionStart - 1]) && !negativeRegex.test(value[selectionStart - 1])) {
 	          e.preventDefault();
 	          var prevCursorPosition = selectionStart;
 	          while (!numRegex.test(value[prevCursorPosition - 1]) && prevCursorPosition > 0) {

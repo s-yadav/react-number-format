@@ -81,14 +81,14 @@ class App extends React.Component {
             ThousandSeperator: ',', decimalSeparator='.', decimalPrecision:2
           </div>
           <div>
-            <NumberFormat thousandSeparator={","} decimalSeparator={"."} decimalPrecision={2} />
+            <NumberFormat thousandSeparator={","}  decimalSeparator={"."} decimalPrecision={2} />
           </div>
           <br/>
           <div>
             ThousandSeperator: '.', decimalSeparator=',', decimalPrecision:2
           </div>
           <div>
-            <NumberFormat thousandSeparator={"."} decimalSeparator={","} decimalPrecision={2} />
+            <NumberFormat thousandSeparator={"."}  decimalSeparator={","}  decimalPrecision={2} />
           </div>
         </div>
 

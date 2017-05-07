@@ -19,13 +19,13 @@ function getCustomEvent(value) {
 describe('NumberFormat as input', () => {
   it('should have initial value', () => {
     const wrapper = mount(<NumberFormat value={2456981} thousandSeparator={true} prefix={'$'} />);
-    expect(wrapper.state().value).toEqual("$2,456,981");
-    expect(wrapper.find('input').get(0).value).toEqual("$2,456,981");
+    expect(wrapper.state().value).toEqual('$2,456,981');
+    expect(wrapper.find('input').get(0).value).toEqual('$2,456,981');
   });
 
   it('show the initial value as $0 when number 0 is passed', () => {
     const wrapper = shallow(<NumberFormat value={0} thousandSeparator={true} prefix={'$'} />);
-    expect(wrapper.state().value).toEqual("$0");
+    expect(wrapper.state().value).toEqual('$0');
   });
 
   it('should not reset number inputs value if number input renders again with same props', () => {
@@ -47,11 +47,11 @@ describe('NumberFormat as input', () => {
 
     input.simulate('change', getCustomEvent('2456981'));
 
-    expect(domInput.value).toEqual("$2,456,981");
+    expect(domInput.value).toEqual('$2,456,981');
 
     wrapper.setState({testState: true});
 
-    expect(domInput.value).toEqual("$2,456,981");
+    expect(domInput.value).toEqual('$2,456,981');
   });
 
   it('should listen change event and formmat currency properly', () => {
@@ -59,7 +59,7 @@ describe('NumberFormat as input', () => {
 
     wrapper.find('input').simulate('change', getCustomEvent('2456981'));
 
-    expect(wrapper.state().value).toEqual("$2,456,981");
+    expect(wrapper.state().value).toEqual('$2,456,981');
   });
 
 
@@ -68,8 +68,53 @@ describe('NumberFormat as input', () => {
 
     wrapper.find('input').simulate('change', getCustomEvent('2456981.89'));
 
-    expect(wrapper.state().value).toEqual("$2,456,981.89");
+    expect(wrapper.state().value).toEqual('$2,456,981.89');
   });
+
+  it('supports negative numbers', () => {
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} />);
+    
+    wrapper.find('input').simulate('change', getCustomEvent('-2456981.89'));
+
+    expect(wrapper.state().value).toEqual('-$2,456,981.89');
+
+    wrapper.find('input').simulate('change', getCustomEvent('-'));
+    expect(wrapper.state().value).toEqual('-');
+    
+  });
+
+  it('removes negation when format props is provided', () => {
+    const wrapper = shallow(<NumberFormat format="#### #### #### ####" />);
+    
+    wrapper.find('input').simulate('change', getCustomEvent('-2456981'));
+
+    expect(wrapper.state().value).toEqual('2456 981');
+  });
+
+  it('removes negation when double negation is done', () => {
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} />);
+    
+    wrapper.find('input').simulate('change', getCustomEvent('--2456981.89'));
+
+    expect(wrapper.state().value).toEqual('$2,456,981.89');
+
+    wrapper.find('input').simulate('change', getCustomEvent('--'));
+    expect(wrapper.state().value).toEqual('');
+    
+  });
+
+  it('allows negation and double negation any cursor position in the input', () => {
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'}/>);
+    
+    wrapper.find('input').simulate('change', getCustomEvent('24569-81.89'));
+
+    expect(wrapper.state().value).toEqual('-$2,456,981.89');
+
+    wrapper.find('input').simulate('change', getCustomEvent('24569--81.89'));
+
+    expect(wrapper.state().value).toEqual('$2,456,981.89');
+  });
+
 
   it('should support custom thousand seperator', () => {
     const wrapper = shallow(<NumberFormat thousandSeparator={'.'} decimalSeparator={','} prefix={'$'} />);
@@ -97,11 +142,11 @@ describe('NumberFormat as input', () => {
   });
 
   it('should support decimal precision with custom decimal separator', () => {
-    const wrapper = shallow(<NumberFormat thousandSeparator={"."} decimalSeparator={","} decimalPrecision={2} />);
+    const wrapper = shallow(<NumberFormat thousandSeparator={'.'} decimalSeparator={','} decimalPrecision={2} />);
     const input = wrapper.find('input');
 
-    input.simulate('change', getCustomEvent("2456981,89"));
-    expect(wrapper.state().value).toEqual("2.456.981,89");
+    input.simulate('change', getCustomEvent('2456981,89'));
+    expect(wrapper.state().value).toEqual('2.456.981,89');
   });
 
   it('should have proper intermediate formatting', () => {
@@ -170,30 +215,30 @@ describe('NumberFormat as input', () => {
 
     //case 1st - already exactly precision 4 should stay that way
     input.simulate('change', getCustomEvent('4111.1111'));
-    expect(wrapper.state().value).toEqual("4111.1111");
+    expect(wrapper.state().value).toEqual('4111.1111');
 
     //case 2nd - longer precision should round
     input.simulate('change', getCustomEvent('4111.11111'));
-    expect(wrapper.state().value).toEqual("4111.1111");
+    expect(wrapper.state().value).toEqual('4111.1111');
 
     /** TODO: Failing test case **/
     /** Only initial value should round off not while input **/
     // input.simulate('change', getCustomEvent('4111.11118'));
-    // expect(wrapper.state().value).toEqual("4111.1112");
+    // expect(wrapper.state().value).toEqual('4111.1112');
 
 
     //case 3rd - shorter precision adds 0
     input.simulate('change', getCustomEvent('4111.111'));
-    expect(wrapper.state().value).toEqual("4111.1110");
+    expect(wrapper.state().value).toEqual('4111.1110');
 
     //case 4th - no decimal should round with 4 zeros
     input.simulate('change', getCustomEvent('4111'));
-    expect(wrapper.state().value).toEqual("4111.0000");
+    expect(wrapper.state().value).toEqual('4111.0000');
 
     //case 5 - round with two decimal precision
     wrapper.setProps({decimalPrecision: 2});
     input.simulate('change', getCustomEvent('4111.111'));
-    expect(wrapper.state().value).toEqual("4111.11");
+    expect(wrapper.state().value).toEqual('4111.11');
   });
 
 
@@ -203,15 +248,15 @@ describe('NumberFormat as input', () => {
 
     //case 1st - no rounding with long decimal
     input.simulate('change', getCustomEvent('4111.111111'));
-    expect(wrapper.state().value).toEqual("4111.111111");
+    expect(wrapper.state().value).toEqual('4111.111111');
 
     //case 2nd - no rounding with whole numbers
     input.simulate('change', getCustomEvent('4111'));
-    expect(wrapper.state().value).toEqual("4111");
+    expect(wrapper.state().value).toEqual('4111');
 
     //case 3rd - no rounding on single place decimals
     input.simulate('change', getCustomEvent('4111.1'));
-    expect(wrapper.state().value).toEqual("4111.1");
+    expect(wrapper.state().value).toEqual('4111.1');
   });
 
   it('works with custom input', () => {
@@ -236,47 +281,48 @@ describe('NumberFormat as input', () => {
 
   });
 
+
 });
 
 /*** format_number input as text ****/
 describe('NumberFormat as text', () => {
   it('should format numbers to currency', () => {
     const wrapper = shallow(<NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />);
-    expect(wrapper.find('span').text()).toEqual("$2,456,981");
+    expect(wrapper.find('span').text()).toEqual('$2,456,981');
   });
 
   it('should format as given format', () => {
     const wrapper = shallow(<NumberFormat value={4111111111111111} displayType={'text'} format="#### #### #### ####" />);
-    expect(wrapper.find('span').text()).toEqual("4111 1111 1111 1111");
+    expect(wrapper.find('span').text()).toEqual('4111 1111 1111 1111');
   });
 
   it('should format as given format when input is string', () => {
     const wrapper = shallow(<NumberFormat value="4111111111111111" displayType={'text'} format="#### #### #### ####" />);
-    expect(wrapper.find('span').text()).toEqual("4111 1111 1111 1111");
+    expect(wrapper.find('span').text()).toEqual('4111 1111 1111 1111');
   });
 
   it('should format as given format when input length is less than format length', () => {
     const wrapper = shallow(<NumberFormat value="41111111111111" displayType={'text'} format="#### #### #### ####" />);
-    expect(wrapper.find('span').text()).toEqual("4111 1111 1111 11");
+    expect(wrapper.find('span').text()).toEqual('4111 1111 1111 11');
   });
 
   it('should format as given format with mask', () => {
     const wrapper = shallow(<NumberFormat value="41111111111111" displayType={'text'} format="#### #### #### ####" mask="_" />);
-    expect(wrapper.find('span').text()).toEqual("4111 1111 1111 11__");
+    expect(wrapper.find('span').text()).toEqual('4111 1111 1111 11__');
   });
 
   it('should not round decimals by defualt', () => {
     const wrapper = shallow(<NumberFormat value="4111" displayType={'text'} />);
-    expect(wrapper.find('span').text()).toEqual("4111");
+    expect(wrapper.find('span').text()).toEqual('4111');
   });
 
   it('should round to 2 decimals if passed true', () => {
     const wrapper = shallow(<NumberFormat value="4111" displayType={'text'} decimalPrecision={true} />);
-    expect(wrapper.find('span').text()).toEqual("4111.00");
+    expect(wrapper.find('span').text()).toEqual('4111.00');
   });
 
   it('should round to 4 decimals if passed 4', () => {
     const wrapper = shallow(<NumberFormat value="4111.11" displayType={'text'} decimalPrecision={4} />);
-    expect(wrapper.find('span').text()).toEqual("4111.1100");
+    expect(wrapper.find('span').text()).toEqual('4111.1100');
   });
 });
