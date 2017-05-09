@@ -57,14 +57,14 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__(1);
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -78,6 +78,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -87,6 +89,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function escapeRegExp(str) {
 	  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+	}
+
+	function omit(obj) {
+	  for (var _len = arguments.length, keys = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	    keys[_key - 1] = arguments[_key];
+	  }
+
+	  if (!keys.length) {
+	    return obj;
+	  }
+
+	  var res = {};
+	  for (var key in obj) {
+	    if (obj.hasOwnProperty(key) && keys.indexOf(key) === -1) {
+	      res[key] = obj[key];
+	    }
+	  }
+
+	  return res;
 	}
 
 	var propTypes = {
@@ -102,14 +123,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  customInput: _react.PropTypes.func,
 	  allowNegative: _react.PropTypes.bool,
 	  onKeyDown: _react.PropTypes.func,
-	  onChange: _react.PropTypes.func
+	  onChange: _react.PropTypes.func,
+	  type: _react.PropTypes.oneOf(['text', 'tel'])
 	};
 
 	var defaultProps = {
 	  displayType: 'input',
 	  decimalSeparator: '.',
 	  decimalPrecision: false,
-	  allowNegative: true
+	  allowNegative: true,
+	  type: 'text'
 	};
 
 	var NumberFormat = function (_React$Component) {
@@ -408,14 +431,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var props = _extends({}, this.props);
-
-	      Object.keys(propTypes).forEach(function (key) {
-	        delete props[key];
-	      });
+	      var props = omit.apply(undefined, [this.props].concat(_toConsumableArray(Object.keys(propTypes))));
 
 	      var inputProps = _extends({}, props, {
-	        type: 'text',
+	        type: this.props.type,
 	        value: this.state.value,
 	        onChange: this.onChange,
 	        onKeyDown: this.onKeyDown
@@ -444,13 +463,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = NumberFormat;
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
-/***/ }
+/***/ })
 /******/ ])
 });
 ;
