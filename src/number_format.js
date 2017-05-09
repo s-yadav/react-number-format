@@ -5,6 +5,21 @@ function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
+function omit(obj, ...keys) {
+  if(!keys.length) {
+    return obj;
+  }
+
+  const res = {};
+  for (const key in obj) {
+    if(obj.hasOwnProperty(key) && keys.indexOf(key) === -1) {
+      res[key] = obj[key];
+    }
+  }
+
+  return res;
+}
+
 const propTypes = {
   thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   decimalSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
@@ -24,14 +39,16 @@ const propTypes = {
   customInput: PropTypes.func,
   allowNegative: PropTypes.bool,
   onKeyDown: PropTypes.func,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  type: PropTypes.oneOf(['text', 'tel'])
 };
 
 const defaultProps = {
   displayType: 'input',
   decimalSeparator: '.',
   decimalPrecision: false,
-  allowNegative: true
+  allowNegative: true,
+  type: 'text'
 };
 
 class NumberFormat extends React.Component {
@@ -276,14 +293,10 @@ class NumberFormat extends React.Component {
     if (this.props.onKeyDown) this.props.onKeyDown(e);
   }
   render() {
-    const props = Object.assign({}, this.props);
-
-    Object.keys(propTypes).forEach((key) => {
-      delete props[key];
-    });
+    const props = omit(this.props, ...Object.keys(propTypes));
 
     const inputProps = Object.assign({}, props, {
-      type:'text',
+      type:this.props.type,
       value:this.state.value,
       onChange:this.onChange,
       onKeyDown:this.onKeyDown,
