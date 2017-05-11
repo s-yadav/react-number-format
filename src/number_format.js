@@ -231,17 +231,29 @@ class NumberFormat extends React.Component {
     const inputValue = el.value;
     const {formattedValue,value} = this.formatInput(inputValue);
     let cursorPos = el.selectionStart;
+    
+    cursorPos = this.getCursorPosition(inputValue, formattedValue, cursorPos );    
+    
+    el.value = formattedValue;
+    this.setCaretPosition(el, cursorPos);
+
+    /*
+      setting caret position within timeout of 0ms is required for mobile chrome,
+      otherwise browser resets the caret position after we set it
+      We are also setting it without timeout so that in normal browser we don't see the flickering
+     */
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(() => {
+      this.timeout = null;
+      if (el.value === formattedValue) {
+        this.setCaretPosition(el, cursorPos);
+      }
+    }, 0);
 
     //change the state
     this.setState({value : formattedValue},()=>{
-      cursorPos = this.getCursorPosition(inputValue, formattedValue, cursorPos );
-      /*
-        setting caret position within timeout of 0ms is required for mobile chrome,
-        otherwise browser resets the caret position after we set it
-        We are also setting it without timeout so that in normal browser we don't see the flickering
-       */
-      this.setCaretPosition(el, cursorPos);
-      setTimeout(() => this.setCaretPosition(el, cursorPos), 0);
       if(callback) callback(e,value);
     });
 
@@ -313,4 +325,4 @@ class NumberFormat extends React.Component {
 NumberFormat.propTypes = propTypes;
 NumberFormat.defaultProps = defaultProps;
 
-module.exports =  NumberFormat;
+module.exports = NumberFormat;
