@@ -12,6 +12,7 @@ const propTypes = {
   displayType: PropTypes.oneOf(['input', 'text']),
   prefix: PropTypes.string,
   suffix: PropTypes.string,
+  max: PropTypes.number,
   format: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.func
@@ -130,7 +131,7 @@ class NumberFormat extends React.Component {
   }
 
   formatInput(val) {
-    const {prefix, suffix, mask, format, allowNegative, decimalPrecision} = this.props;
+    const {prefix, suffix, max, mask, format, allowNegative, decimalPrecision} = this.props;
     const {thousandSeparator, decimalSeparator} = this.getSeparators();
     const maskPattern = format && typeof format == 'string' && !!mask;
     const numRegex = this.getNumberRegex(true);
@@ -192,6 +193,15 @@ class NumberFormat extends React.Component {
         }
         beforeDecimal = parts[0];
         afterDecimal = parts[1];
+      }
+      if (max) {
+        if (!hasNegative && parseFloat(beforeDecimal + '.' + afterDecimal) > max) {
+          if (afterDecimal && afterDecimal.length > 0) {
+            afterDecimal = afterDecimal.replace(/^(\d*?)(\d)(0*?)$/, '$10$3');
+          } else if (beforeDecimal && beforeDecimal.length > 0) {
+            beforeDecimal = beforeDecimal.substring(0, beforeDecimal.length - 1);
+          }
+        }
       }
       if(thousandSeparator) {
         beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
