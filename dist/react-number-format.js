@@ -57,14 +57,14 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__(1);
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -96,6 +96,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  displayType: _react.PropTypes.oneOf(['input', 'text']),
 	  prefix: _react.PropTypes.string,
 	  suffix: _react.PropTypes.string,
+	  max: _react.PropTypes.number,
 	  format: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
 	  mask: _react.PropTypes.string,
 	  value: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string]),
@@ -233,6 +234,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _props3 = this.props,
 	          prefix = _props3.prefix,
 	          suffix = _props3.suffix,
+	          max = _props3.max,
 	          mask = _props3.mask,
 	          format = _props3.format,
 	          allowNegative = _props3.allowNegative,
@@ -302,6 +304,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	          beforeDecimal = parts[0];
 	          afterDecimal = parts[1];
+	        }
+	        if (max) {
+	          if (!hasNegative && parseFloat(beforeDecimal + '.' + afterDecimal) > max) {
+	            if (afterDecimal && afterDecimal.length > 0) {
+	              afterDecimal = afterDecimal.replace(/^(\d*?)(\d)(0*?)$/, '$10$3');
+	            } else if (beforeDecimal && beforeDecimal.length > 0) {
+	              beforeDecimal = beforeDecimal.substring(0, beforeDecimal.length - 1);
+	            }
+	          }
 	        }
 	        if (thousandSeparator) {
 	          beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
@@ -444,13 +455,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = NumberFormat;
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
-/***/ }
+/***/ })
 /******/ ])
 });
 ;
