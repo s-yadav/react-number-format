@@ -281,7 +281,61 @@ describe('NumberFormat as input', () => {
 
   });
 
+  it('should accept value smaller than max', () => {
+    const wrapper = mount(<NumberFormat thousandSeparator={true} prefix={'$'} max={10000} />);
 
+    wrapper.find('input').simulate('change', getCustomEvent('5000'));
+
+    expect(wrapper.state().value).toEqual('$5,000');
+  });
+
+  it('should accept value equal to max', () => {
+      const wrapper = mount(<NumberFormat thousandSeparator={true} prefix={'$'} max={10000} />);
+
+      wrapper.find('input').simulate('change', getCustomEvent('10000'));
+
+      expect(wrapper.state().value).toEqual('$10,000');
+  });
+
+  it('should not accept value bigger than max', () => {
+    const wrapper = mount(<NumberFormat thousandSeparator={true} prefix={'$'} max={10000} />);
+
+    wrapper.find('input').simulate('change', getCustomEvent('10001'));
+
+    expect(wrapper.state().value).toEqual('$1,000');
+  });
+
+  it('should not accept value bigger than max with decimal precision value', () => {
+    const wrapper = mount(<NumberFormat decimalPrecision={true} thousandSeparator={true} prefix={'$'} max={10000} />);
+
+    wrapper.find('input').simulate('change', getCustomEvent('10000.1'));
+
+    expect(wrapper.state().value).toEqual('$10,000.00');
+  });
+
+  it('should accept value bigger than max with decimal precision limit', () => {
+    const wrapper = mount(<NumberFormat decimalPrecision={true} thousandSeparator={true} prefix={'$'} max={10000.02} />);
+
+    wrapper.find('input').simulate('change', getCustomEvent('10000.01'));
+
+    expect(wrapper.state().value).toEqual('$10,000.01');
+  });
+
+  it('should not accept value bigger than max with decimal precision limit', () => {
+    const wrapper = mount(<NumberFormat decimalPrecision={true} thousandSeparator={true} prefix={'$'} max={10000.02} />);
+
+    wrapper.find('input').simulate('change', getCustomEvent('10000.03'));
+
+    expect(wrapper.state().value).toEqual('$10,000.00');
+  });
+
+  it('should accept any negative value in relation to max', () => {
+    const wrapper = mount(<NumberFormat thousandSeparator={true} prefix={'$'} max={10000} />);
+
+    wrapper.find('input').simulate('change', getCustomEvent('-10001'));
+
+    expect(wrapper.state().value).toEqual('-$10,001');
+  });
 });
 
 /*** format_number input as text ****/

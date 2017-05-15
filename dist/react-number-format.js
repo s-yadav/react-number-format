@@ -57,14 +57,14 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__(1);
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -94,19 +94,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	var propTypes = {
-	  thousandSeparator: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.bool]),
-	  decimalSeparator: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.bool]),
-	  decimalPrecision: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.bool]),
-	  displayType: _propTypes2.default.oneOf(['input', 'text']),
-	  prefix: _propTypes2.default.string,
-	  suffix: _propTypes2.default.string,
-	  format: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.func]),
-	  mask: _propTypes2.default.string,
-	  value: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string]),
-	  customInput: _propTypes2.default.func,
-	  allowNegative: _propTypes2.default.bool,
-	  onKeyDown: _propTypes2.default.func,
-	  onChange: _propTypes2.default.func
+    thousandSeparator: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.bool]),
+    decimalSeparator: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.bool]),
+    decimalPrecision: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.bool]),
+    displayType: _propTypes2.default.oneOf(['input', 'text']),
+    prefix: _propTypes2.default.string,
+    suffix: _propTypes2.default.string,
+    max: _propTypes2.default.number,
+    format: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.func]),
+    mask: _propTypes2.default.string,
+    value: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string]),
+    customInput: _propTypes2.default.func,
+    allowNegative: _propTypes2.default.bool,
+    onKeyDown: _propTypes2.default.func,
+    onChange: _propTypes2.default.func
 	};
 
 	var defaultProps = {
@@ -237,6 +238,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _props3 = this.props,
 	          prefix = _props3.prefix,
 	          suffix = _props3.suffix,
+	          max = _props3.max,
 	          mask = _props3.mask,
 	          format = _props3.format,
 	          allowNegative = _props3.allowNegative,
@@ -306,6 +308,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	          beforeDecimal = parts[0];
 	          afterDecimal = parts[1];
+	        }
+	        if (max) {
+	          if (!hasNegative && parseFloat(beforeDecimal + '.' + afterDecimal) > max) {
+	            if (afterDecimal && afterDecimal.length > 0) {
+	              afterDecimal = afterDecimal.replace(/^(\d*?)(\d)(0*?)$/, '$10$3');
+	            } else if (beforeDecimal && beforeDecimal.length > 0) {
+	              beforeDecimal = beforeDecimal.substring(0, beforeDecimal.length - 1);
+	            }
+	          }
 	        }
 	        if (thousandSeparator) {
 	          beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
@@ -448,7 +459,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = NumberFormat;
 
-/***/ },
+/***/ }),
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -678,7 +689,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_7__;
 
-/***/ }
+/***/ })
 /******/ ])
 });
 ;
