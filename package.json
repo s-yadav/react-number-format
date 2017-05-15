@@ -1,7 +1,7 @@
 {
   "name": "react-number-format",
   "description": "React component to format number in an input or as a text.",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "main": "lib/number_format.js",
   "author": "Sudhanshu Yadav",
   "license": "MIT",
@@ -69,5 +69,8 @@
   "peerDependencies": {
     "react": "^0.14 || ^15.0.0-rc || ^15.0.0",
     "react-dom": "^0.14 || ^15.0.0-rc || ^15.0.0"
+  },
+  "dependencies": {
+    "prop-types": "^15.5.8"
   }
 }
