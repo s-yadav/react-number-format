@@ -50,7 +50,7 @@ class App extends React.Component {
           <h3>
             Decimal precision : Format currency in input with decimal precision
           </h3>
-          <NumberFormat thousandSeparator={true} decimalPrecision={true} prefix={'$'}/>
+          <NumberFormat thousandSeparator={true} decimalPrecision={3} prefix={'$'}/>
         </div>
 
 

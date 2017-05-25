@@ -1,4 +1,15 @@
-//const React = require('react');
+/**
+ * 1. Validate thousand separators and decimals throw error
+ * 2. Thousand separator just have value true or any other string
+ * 3. Decimal separator should be defined only as string
+ * 4. Decimal precision should be only defined as number
+ * 5. If user don't want floating numbers set decimalPrecision to 0
+ * 6. User can pass value as floating point numbers or string, if user passes string decimal separator in string should match to provided decimalSeparator
+ * 7. Add formattedValue, numeric value, value with string in event object and not as parameters so that getting values should look consistent
+ * 8. dont use parseFloat that will not able to parse 2^23
+ * 9. Always have decimal precision
+ * 10. isAllowed props to validate input and block if returns false
+ */
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -6,10 +17,23 @@ function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
+function removeLeadingZero(numStr) {
+  //remove leading zeros
+  return numStr.replace(/^0+/,'') || '0';
+}
+
+function limitToPrecision(numStr, precision) {
+  let str = ''
+  for (let i=0; i<=precision - 1; i++) {
+    str += numStr[i] || '0'
+  }
+  return str;
+}
+
 const propTypes = {
-  thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-  decimalSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-  decimalPrecision: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]),
+  thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([true])]),
+  decimalSeparator: PropTypes.string,
+  decimalPrecision: PropTypes.number,
   displayType: PropTypes.oneOf(['input', 'text']),
   prefix: PropTypes.string,
   suffix: PropTypes.string,
@@ -25,50 +49,89 @@ const propTypes = {
   customInput: PropTypes.func,
   allowNegative: PropTypes.bool,
   onKeyDown: PropTypes.func,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  isAllowed: PropTypes.func
 };
 
 const defaultProps = {
   displayType: 'input',
   decimalSeparator: '.',
-  decimalPrecision: false,
-  allowNegative: true
+  allowNegative: true,
+  isAllowed: function() {return true;}
 };
 
 class NumberFormat extends React.Component {
   constructor(props) {
     super(props);
+    const value = this.optimizeValueProp(props);
     this.state = {
-      value: this.formatInput(props.value).formattedValue
+      value: this.formatInput(value).formattedValue
     }
     this.onChange = this.onChange.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
   }
 
-  componentWillReceiveProps(newProps) {
-    if(newProps.value !== this.props.value) {
-      this.setState({
-        value : this.formatInput(newProps.value).formattedValue
-      });
+  componentDidUpdate(prevProps, prevState) {
+    this.updateValueIfRequired(prevProps, prevState);
+  }
+
+  updateValueIfRequired(prevProps) {
+    const {props, state} = this;
+
+    if(prevProps !== props) {
+      const stateValue = state.value;
+
+      let value = this.optimizeValueProp(props);
+      if (value === undefined) value = stateValue;
+
+      const {formattedValue} = this.formatInput(value);
+
+      if (formattedValue !== stateValue) {
+        this.setState({
+          value : this.formatInput(value).formattedValue
+        })
+      }
     }
   }
 
-  getSeparators() {
-    let {thousandSeparator, decimalSeparator} = this.props;
+  getFloatValue(num) {
+    const {decimalSeparator} = this.props;
+    return parseFloat(num.replace(decimalSeparator, '.')) || 0;
+  }
+
+  optimizeValueProp(props) {
+    const {decimalSeparator} = this.getSeparators(props);
+    let {value, decimalPrecision, format} = props;
+
+    if (format || value === undefined) return value;
+
+    const isNumber = typeof value === 'number';
+
+    if (isNumber) value = value.toString();
+
+    //correct decimal separator
+    if (decimalSeparator && isNumber) {
+      value = value.replace('.', decimalSeparator);
+    }
+
+    //if decimalPrecision is 0 remove decimalNumbers
+    if (decimalPrecision === 0) return value.split(decimalSeparator)[0]
+
+    return value;
+  }
+
+  getSeparators(props) {
+    let {thousandSeparator, decimalSeparator, decimalPrecision} = props || this.props;
     if (thousandSeparator === true) {
       thousandSeparator = ','
     }
 
-    if (decimalSeparator && thousandSeparator && typeof decimalSeparator !== 'string') {
-      decimalSeparator = thousandSeparator === '.' ? ',' : '.';
-    }
-
-    if (thousandSeparator === '.') {
-      decimalSeparator = ',';
-    }
-
-    if (decimalSeparator === true) {
-      decimalSeparator = '.'
+    if (decimalSeparator === thousandSeparator) {
+      throw new Error(`
+          Decimal separator can\'t be same as thousand separator.\n
+          thousandSeparator: ${thousandSeparator} (thousandSeparator = {true} is same as thousandSeparator = ",")
+          decimalSeparator: ${decimalSeparator} (default value for decimalSeparator is .)
+       `);
     }
 
     return {
@@ -77,10 +140,10 @@ class NumberFormat extends React.Component {
     }
   }
 
-  getNumberRegex(g, ignoreDecimalSeperator) {
-    const {format} = this.props;
+  getNumberRegex(g, ignoreDecimalSeparator) {
+    const {format, decimalPrecision} = this.props;
     const {decimalSeparator} = this.getSeparators();
-    return new RegExp('\\d' + (decimalSeparator && !ignoreDecimalSeperator && !format ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
+    return new RegExp('\\d' + (decimalSeparator && decimalPrecision !== 0 && !ignoreDecimalSeparator && !format ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
   }
 
   setCaretPosition(el, caretPos) {
@@ -106,6 +169,16 @@ class NumberFormat extends React.Component {
       el.focus();
       return false;
     }
+  }
+
+  setPatchedCaretPosition(el, caretPos) {
+        /*
+      setting caret position within timeout of 0ms is required for mobile chrome,
+      otherwise browser resets the caret position after we set it
+      We are also setting it without timeout so that in normal browser we don't see the flickering
+      */
+    this.setCaretPosition(el, caretPos);
+    setTimeout(() => this.setCaretPosition(el, caretPos), 0);
   }
 
   formatWithPattern(str) {
@@ -151,13 +224,13 @@ class NumberFormat extends React.Component {
     }
 
     const valMatch = val && val.match(numRegex);
-    
+
     if (!valMatch && removeNegative) {
-      return {value :'', formattedValue: ''} 
+      return {value :'', formattedValue: ''}
     } else if (!valMatch && hasNegative) {
-      return {value :'', formattedValue: '-'} 
+      return {value :'', formattedValue: '-'}
     } else if (!valMatch) {
-      return {value :'', formattedValue: (maskPattern ? '' : '')} 
+      return {value :'', formattedValue: (maskPattern ? '' : '')}
     }
 
     const num = val.match(numRegex).join('');
@@ -173,37 +246,29 @@ class NumberFormat extends React.Component {
       }
     }
     else{
-      let beforeDecimal = formattedValue, afterDecimal = '';
-      const hasDecimals = formattedValue.indexOf(decimalSeparator) !== -1 || decimalPrecision !== false;
-      if(decimalSeparator && hasDecimals) {
-        let parts;
-        if (decimalPrecision !== false) {
-          const precision = decimalPrecision === true ? 2 : decimalPrecision;
-          if (decimalSeparator !== '.') {
-            // Replace custom decimalSeparator with '.' for parseFloat function
-            parts = parseFloat(formattedValue.replace(decimalSeparator, '.')).toFixed(precision)
-            // Put custom decimalSeparator back
-            parts = parts.replace('.', decimalSeparator);
-          } else {
-            parts = parseFloat(formattedValue).toFixed(precision)
-          }
-          parts = parts.split(decimalSeparator);
-        } else {
-          parts = formattedValue.split(decimalSeparator);
-        }
-        beforeDecimal = parts[0];
-        afterDecimal = parts[1];
-      }
+      const hasDecimalSeparator = formattedValue.indexOf(decimalSeparator) !== -1 || decimalPrecision;
+
+      const parts = formattedValue.split(decimalSeparator);
+      let beforeDecimal = parts[0];
+      let afterDecimal = parts[1] || '';
+
+      //remove leading zeros from number before decimal
+      beforeDecimal = removeLeadingZero(beforeDecimal);
+
+      //apply decimal precision if its defined
+      if (decimalPrecision !== undefined) afterDecimal = limitToPrecision(afterDecimal, decimalPrecision);
+
       if(thousandSeparator) {
         beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
       }
+
       //add prefix and suffix
       if(prefix) beforeDecimal = prefix + beforeDecimal;
       if(suffix) afterDecimal = afterDecimal + suffix;
 
       if (hasNegative && !removeNegative) beforeDecimal = '-' + beforeDecimal;
 
-      formattedValue = beforeDecimal + (hasDecimals && decimalSeparator ||  '') + afterDecimal;
+      formattedValue = beforeDecimal + (hasDecimalSeparator && decimalSeparator ||  '') + afterDecimal;
     }
 
     return {
@@ -217,8 +282,10 @@ class NumberFormat extends React.Component {
     let j, i;
 
     j=0;
+
     for(i=0; i<cursorPos; i++){
       if(!inputValue[i].match(numRegex) && inputValue[i] !== formattedValue[j]) continue;
+      if (inputValue[i] === '0' && formattedValue[j].match(numRegex) && formattedValue[j] !== '0') continue;
       while(inputValue[i] !== formattedValue[j] && j<formattedValue.length) j++;
       j++;
     }
@@ -230,20 +297,25 @@ class NumberFormat extends React.Component {
     e.persist();
     const el = e.target;
     const inputValue = el.value;
-    const {formattedValue,value} = this.formatInput(inputValue);
-    let cursorPos = el.selectionStart;
+    const {isAllowed} = this.props;
+    const lastValue = this.state.value;
+    let {formattedValue, value} = this.formatInput(inputValue);
+    const cursorPos = this.getCursorPosition(inputValue, formattedValue, el.selectionStart);
+
+    //set caret position befor setState
+    //this.setPatchedCaretPosition(el, cursorPos);
+
+    if (!isAllowed(formattedValue, value, this.getFloatValue(value))) {
+      formattedValue = lastValue;
+    }
 
     //change the state
     this.setState({value : formattedValue},()=>{
-      cursorPos = this.getCursorPosition(inputValue, formattedValue, cursorPos );
-      /*
-        setting caret position within timeout of 0ms is required for mobile chrome,
-        otherwise browser resets the caret position after we set it
-        We are also setting it without timeout so that in normal browser we don't see the flickering
-       */
-      this.setCaretPosition(el, cursorPos);
-      setTimeout(() => this.setCaretPosition(el, cursorPos), 0);
-      if(callback) callback(e,value);
+
+      //reset again after setState so if formattedValue is other then
+      this.setPatchedCaretPosition(el, cursorPos);
+
+      if(callback && formattedValue !== lastValue) callback(e, value);
     });
 
     return value;
@@ -256,21 +328,26 @@ class NumberFormat extends React.Component {
     const el = e.target;
     const {selectionStart, selectionEnd, value} = el;
     const {decimalPrecision} = this.props;
-    const {key} = e;
-    const numRegex = this.getNumberRegex(false, decimalPrecision !== false);
+    const {key, which, keyCode} = e;
+    const numRegex = this.getNumberRegex(false, decimalPrecision !== undefined);
+    console.log(numRegex.toString(), key, which, keyCode);
+    console.log(e);
     const negativeRegex = new RegExp('-');
     //Handle backspace and delete against non numerical/decimal characters
     if(selectionEnd - selectionStart === 0) {
+      console.log('coming here');
       if (key === 'Delete' && !numRegex.test(value[selectionStart]) && !negativeRegex.test(value[selectionStart])) {
+        console.log('delete');
         e.preventDefault();
         let nextCursorPosition = selectionStart;
         while (!numRegex.test(value[nextCursorPosition]) && nextCursorPosition < value.length) nextCursorPosition++;
-        this.setCaretPosition(el, nextCursorPosition);
+        this.setPatchedCaretPosition(el, nextCursorPosition);
       } else if (key === 'Backspace' && !numRegex.test(value[selectionStart - 1]) && !negativeRegex.test(value[selectionStart-1])) {
+        console.log('Backspace');
         e.preventDefault();
         let prevCursorPosition = selectionStart;
         while (!numRegex.test(value[prevCursorPosition - 1]) && prevCursorPosition > 0) prevCursorPosition--;
-        this.setCaretPosition(el, prevCursorPosition);
+        this.setPatchedCaretPosition(el, prevCursorPosition);
       }
     }
 

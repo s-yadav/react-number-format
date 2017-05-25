@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 1.2.1
+ * react-number-format - 2.0.0-alpha
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -86,17 +86,41 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //const React = require('react');
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * 1. Validate thousand separators and decimals throw error
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * 2. Thousand separator just have value true or any other string
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * 3. Decimal separator should be defined only as string
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * 4. Decimal precision should be only defined as number
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * 5. If user don't want floating numbers set decimalPrecision to 0
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * 6. User can pass value as floating point numbers or string, if user passes string decimal separator in string should match to provided decimalSeparator
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * 7. Add formattedValue, numeric value, value with string in event object and not as parameters so that getting values should look consistent
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * 8. dont use parseFloat that will not able to parse 2^23
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * 9. Always have decimal precision
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * 10. isAllowed props to validate input and block if returns false
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
 
 
 	function escapeRegExp(str) {
 	  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 	}
 
+	function removeLeadingZero(numStr) {
+	  //remove leading zeros
+	  return numStr.replace(/^0+/, '') || '0';
+	}
+
+	function limitToPrecision(numStr, precision) {
+	  var str = '';
+	  for (var i = 0; i <= precision - 1; i++) {
+	    str += numStr[i] || '0';
+	  }
+	  return str;
+	}
+
 	var propTypes = {
-	  thousandSeparator: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.bool]),
-	  decimalSeparator: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.bool]),
-	  decimalPrecision: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.bool]),
+	  thousandSeparator: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.oneOf([true])]),
+	  decimalSeparator: _propTypes2.default.string,
+	  decimalPrecision: _propTypes2.default.number,
 	  displayType: _propTypes2.default.oneOf(['input', 'text']),
 	  prefix: _propTypes2.default.string,
 	  suffix: _propTypes2.default.string,
@@ -106,14 +130,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  customInput: _propTypes2.default.func,
 	  allowNegative: _propTypes2.default.bool,
 	  onKeyDown: _propTypes2.default.func,
-	  onChange: _propTypes2.default.func
+	  onChange: _propTypes2.default.func,
+	  isAllowed: _propTypes2.default.func
 	};
 
 	var defaultProps = {
 	  displayType: 'input',
 	  decimalSeparator: '.',
-	  decimalPrecision: false,
-	  allowNegative: true
+	  allowNegative: true,
+	  isAllowed: function isAllowed() {
+	    return true;
+	  }
 	};
 
 	var NumberFormat = function (_React$Component) {
@@ -124,8 +151,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var _this = _possibleConstructorReturn(this, (NumberFormat.__proto__ || Object.getPrototypeOf(NumberFormat)).call(this, props));
 
+	    var value = _this.optimizeValueProp(props);
 	    _this.state = {
-	      value: _this.formatInput(props.value).formattedValue
+	      value: _this.formatInput(value).formattedValue
 	    };
 	    _this.onChange = _this.onChange.bind(_this);
 	    _this.onKeyDown = _this.onKeyDown.bind(_this);
@@ -133,35 +161,81 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  _createClass(NumberFormat, [{
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps(newProps) {
-	      if (newProps.value !== this.props.value) {
-	        this.setState({
-	          value: this.formatInput(newProps.value).formattedValue
-	        });
+	    key: 'componentDidUpdate',
+	    value: function componentDidUpdate(prevProps, prevState) {
+	      this.updateValueIfRequired(prevProps, prevState);
+	    }
+	  }, {
+	    key: 'updateValueIfRequired',
+	    value: function updateValueIfRequired(prevProps) {
+	      var props = this.props,
+	          state = this.state;
+
+
+	      if (prevProps !== props) {
+	        var stateValue = state.value;
+
+	        var value = this.optimizeValueProp(props);
+	        if (value === undefined) value = stateValue;
+
+	        var _formatInput = this.formatInput(value),
+	            formattedValue = _formatInput.formattedValue;
+
+	        if (formattedValue !== stateValue) {
+	          this.setState({
+	            value: this.formatInput(value).formattedValue
+	          });
+	        }
 	      }
 	    }
 	  }, {
+	    key: 'getFloatValue',
+	    value: function getFloatValue(num) {
+	      var decimalSeparator = this.props.decimalSeparator;
+
+	      return parseFloat(num.replace(decimalSeparator, '.')) || 0;
+	    }
+	  }, {
+	    key: 'optimizeValueProp',
+	    value: function optimizeValueProp(props) {
+	      var _getSeparators = this.getSeparators(props),
+	          decimalSeparator = _getSeparators.decimalSeparator;
+
+	      var value = props.value,
+	          decimalPrecision = props.decimalPrecision,
+	          format = props.format;
+
+
+	      if (format || value === undefined) return value;
+
+	      var isNumber = typeof value === 'number';
+
+	      if (isNumber) value = value.toString();
+
+	      //correct decimal separator
+	      if (decimalSeparator && isNumber) {
+	        value = value.replace('.', decimalSeparator);
+	      }
+
+	      //if decimalPrecision is 0 remove decimalNumbers
+	      if (decimalPrecision === 0) return value.split(decimalSeparator)[0];
+
+	      return value;
+	    }
+	  }, {
 	    key: 'getSeparators',
-	    value: function getSeparators() {
-	      var _props = this.props,
-	          thousandSeparator = _props.thousandSeparator,
-	          decimalSeparator = _props.decimalSeparator;
+	    value: function getSeparators(props) {
+	      var _ref = props || this.props,
+	          thousandSeparator = _ref.thousandSeparator,
+	          decimalSeparator = _ref.decimalSeparator,
+	          decimalPrecision = _ref.decimalPrecision;
 
 	      if (thousandSeparator === true) {
 	        thousandSeparator = ',';
 	      }
 
-	      if (decimalSeparator && thousandSeparator && typeof decimalSeparator !== 'string') {
-	        decimalSeparator = thousandSeparator === '.' ? ',' : '.';
-	      }
-
-	      if (thousandSeparator === '.') {
-	        decimalSeparator = ',';
-	      }
-
-	      if (decimalSeparator === true) {
-	        decimalSeparator = '.';
+	      if (decimalSeparator === thousandSeparator) {
+	        throw new Error('\n          Decimal separator can\'t be same as thousand separator.\n\n          thousandSeparator: ' + thousandSeparator + ' (thousandSeparator = {true} is same as thousandSeparator = ",")\n          decimalSeparator: ' + decimalSeparator + ' (default value for decimalSeparator is .)\n       ');
 	      }
 
 	      return {
@@ -171,13 +245,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'getNumberRegex',
-	    value: function getNumberRegex(g, ignoreDecimalSeperator) {
-	      var format = this.props.format;
+	    value: function getNumberRegex(g, ignoreDecimalSeparator) {
+	      var _props = this.props,
+	          format = _props.format,
+	          decimalPrecision = _props.decimalPrecision;
 
-	      var _getSeparators = this.getSeparators(),
-	          decimalSeparator = _getSeparators.decimalSeparator;
+	      var _getSeparators2 = this.getSeparators(),
+	          decimalSeparator = _getSeparators2.decimalSeparator;
 
-	      return new RegExp('\\d' + (decimalSeparator && !ignoreDecimalSeperator && !format ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
+	      return new RegExp('\\d' + (decimalSeparator && decimalPrecision !== 0 && !ignoreDecimalSeparator && !format ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
 	    }
 	  }, {
 	    key: 'setCaretPosition',
@@ -204,6 +280,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	        el.focus();
 	        return false;
 	      }
+	    }
+	  }, {
+	    key: 'setPatchedCaretPosition',
+	    value: function setPatchedCaretPosition(el, caretPos) {
+	      var _this2 = this;
+
+	      /*
+	      setting caret position within timeout of 0ms is required for mobile chrome,
+	      otherwise browser resets the caret position after we set it
+	      We are also setting it without timeout so that in normal browser we don't see the flickering
+	      */
+	      this.setCaretPosition(el, caretPos);
+	      setTimeout(function () {
+	        return _this2.setCaretPosition(el, caretPos);
+	      }, 0);
 	    }
 	  }, {
 	    key: 'formatWithPattern',
@@ -242,9 +333,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          allowNegative = _props3.allowNegative,
 	          decimalPrecision = _props3.decimalPrecision;
 
-	      var _getSeparators2 = this.getSeparators(),
-	          thousandSeparator = _getSeparators2.thousandSeparator,
-	          decimalSeparator = _getSeparators2.decimalSeparator;
+	      var _getSeparators3 = this.getSeparators(),
+	          thousandSeparator = _getSeparators3.thousandSeparator,
+	          decimalSeparator = _getSeparators3.decimalSeparator;
 
 	      var maskPattern = format && typeof format == 'string' && !!mask;
 	      var numRegex = this.getNumberRegex(true);
@@ -285,38 +376,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	          formattedValue = format(formattedValue);
 	        }
 	      } else {
-	        var beforeDecimal = formattedValue,
-	            afterDecimal = '';
-	        var hasDecimals = formattedValue.indexOf(decimalSeparator) !== -1 || decimalPrecision !== false;
-	        if (decimalSeparator && hasDecimals) {
-	          var parts = void 0;
-	          if (decimalPrecision !== false) {
-	            var precision = decimalPrecision === true ? 2 : decimalPrecision;
-	            if (decimalSeparator !== '.') {
-	              // Replace custom decimalSeparator with '.' for parseFloat function
-	              parts = parseFloat(formattedValue.replace(decimalSeparator, '.')).toFixed(precision);
-	              // Put custom decimalSeparator back
-	              parts = parts.replace('.', decimalSeparator);
-	            } else {
-	              parts = parseFloat(formattedValue).toFixed(precision);
-	            }
-	            parts = parts.split(decimalSeparator);
-	          } else {
-	            parts = formattedValue.split(decimalSeparator);
-	          }
-	          beforeDecimal = parts[0];
-	          afterDecimal = parts[1];
-	        }
+	        var hasDecimalSeparator = formattedValue.indexOf(decimalSeparator) !== -1 || decimalPrecision;
+
+	        var parts = formattedValue.split(decimalSeparator);
+	        var beforeDecimal = parts[0];
+	        var afterDecimal = parts[1] || '';
+
+	        //remove leading zeros from number before decimal
+	        beforeDecimal = removeLeadingZero(beforeDecimal);
+
+	        //apply decimal precision if its defined
+	        if (decimalPrecision !== undefined) afterDecimal = limitToPrecision(afterDecimal, decimalPrecision);
+
 	        if (thousandSeparator) {
 	          beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
 	        }
+
 	        //add prefix and suffix
 	        if (prefix) beforeDecimal = prefix + beforeDecimal;
 	        if (suffix) afterDecimal = afterDecimal + suffix;
 
 	        if (hasNegative && !removeNegative) beforeDecimal = '-' + beforeDecimal;
 
-	        formattedValue = beforeDecimal + (hasDecimals && decimalSeparator || '') + afterDecimal;
+	        formattedValue = beforeDecimal + (hasDecimalSeparator && decimalSeparator || '') + afterDecimal;
 	      }
 
 	      return {
@@ -332,8 +414,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	          i = void 0;
 
 	      j = 0;
+
 	      for (i = 0; i < cursorPos; i++) {
 	        if (!inputValue[i].match(numRegex) && inputValue[i] !== formattedValue[j]) continue;
+	        if (inputValue[i] === '0' && formattedValue[j].match(numRegex) && formattedValue[j] !== '0') continue;
 	        while (inputValue[i] !== formattedValue[j] && j < formattedValue.length) {
 	          j++;
 	        }j++;
@@ -344,31 +428,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'onChangeHandler',
 	    value: function onChangeHandler(e, callback) {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      e.persist();
 	      var el = e.target;
 	      var inputValue = el.value;
+	      var isAllowed = this.props.isAllowed;
 
-	      var _formatInput = this.formatInput(inputValue),
-	          formattedValue = _formatInput.formattedValue,
-	          value = _formatInput.value;
+	      var lastValue = this.state.value;
 
-	      var cursorPos = el.selectionStart;
+	      var _formatInput2 = this.formatInput(inputValue),
+	          formattedValue = _formatInput2.formattedValue,
+	          value = _formatInput2.value;
+
+	      var cursorPos = this.getCursorPosition(inputValue, formattedValue, el.selectionStart);
+
+	      //set caret position befor setState
+	      //this.setPatchedCaretPosition(el, cursorPos);
+
+	      if (!isAllowed(formattedValue, value, this.getFloatValue(value))) {
+	        formattedValue = lastValue;
+	      }
 
 	      //change the state
 	      this.setState({ value: formattedValue }, function () {
-	        cursorPos = _this2.getCursorPosition(inputValue, formattedValue, cursorPos);
-	        /*
-	          setting caret position within timeout of 0ms is required for mobile chrome,
-	          otherwise browser resets the caret position after we set it
-	          We are also setting it without timeout so that in normal browser we don't see the flickering
-	         */
-	        _this2.setCaretPosition(el, cursorPos);
-	        setTimeout(function () {
-	          return _this2.setCaretPosition(el, cursorPos);
-	        }, 0);
-	        if (callback) callback(e, value);
+
+	        //reset again after setState so if formattedValue is other then
+	        _this3.setPatchedCaretPosition(el, cursorPos);
+
+	        if (callback && formattedValue !== lastValue) callback(e, value);
 	      });
 
 	      return value;
@@ -386,24 +474,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	          selectionEnd = el.selectionEnd,
 	          value = el.value;
 	      var decimalPrecision = this.props.decimalPrecision;
-	      var key = e.key;
+	      var key = e.key,
+	          which = e.which,
+	          keyCode = e.keyCode;
 
-	      var numRegex = this.getNumberRegex(false, decimalPrecision !== false);
+	      var numRegex = this.getNumberRegex(false, decimalPrecision !== undefined);
+	      console.log(numRegex.toString(), key, which, keyCode);
+	      console.log(e);
 	      var negativeRegex = new RegExp('-');
 	      //Handle backspace and delete against non numerical/decimal characters
 	      if (selectionEnd - selectionStart === 0) {
+	        console.log('coming here');
 	        if (key === 'Delete' && !numRegex.test(value[selectionStart]) && !negativeRegex.test(value[selectionStart])) {
+	          console.log('delete');
 	          e.preventDefault();
 	          var nextCursorPosition = selectionStart;
 	          while (!numRegex.test(value[nextCursorPosition]) && nextCursorPosition < value.length) {
 	            nextCursorPosition++;
-	          }this.setCaretPosition(el, nextCursorPosition);
+	          }this.setPatchedCaretPosition(el, nextCursorPosition);
 	        } else if (key === 'Backspace' && !numRegex.test(value[selectionStart - 1]) && !negativeRegex.test(value[selectionStart - 1])) {
+	          console.log('Backspace');
 	          e.preventDefault();
 	          var prevCursorPosition = selectionStart;
 	          while (!numRegex.test(value[prevCursorPosition - 1]) && prevCursorPosition > 0) {
 	            prevCursorPosition--;
-	          }this.setCaretPosition(el, prevCursorPosition);
+	          }this.setPatchedCaretPosition(el, prevCursorPosition);
 	        }
 	      }
 
