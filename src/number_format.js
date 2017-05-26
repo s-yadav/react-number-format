@@ -101,7 +101,9 @@ class NumberFormat extends React.Component {
 
   optimizeValueProp(props) {
     const {decimalSeparator} = this.getSeparators(props);
-    let {value, decimalPrecision, format} = props;
+    const {decimalPrecision, format} = props;
+
+    let {value} = props;
 
     if (format || value === undefined) return value;
 
@@ -121,7 +123,12 @@ class NumberFormat extends React.Component {
   }
 
   getSeparators(props) {
-    let {thousandSeparator, decimalSeparator, decimalPrecision} = props || this.props;
+    props = props || this.props;
+
+    const {decimalSeparator} = props;
+
+    let {thousandSeparator} = props;
+
     if (thousandSeparator === true) {
       thousandSeparator = ','
     }
@@ -328,22 +335,17 @@ class NumberFormat extends React.Component {
     const el = e.target;
     const {selectionStart, selectionEnd, value} = el;
     const {decimalPrecision} = this.props;
-    const {key, which, keyCode} = e;
+    const {key} = e;
     const numRegex = this.getNumberRegex(false, decimalPrecision !== undefined);
-    console.log(numRegex.toString(), key, which, keyCode);
-    console.log(e);
     const negativeRegex = new RegExp('-');
     //Handle backspace and delete against non numerical/decimal characters
     if(selectionEnd - selectionStart === 0) {
-      console.log('coming here');
       if (key === 'Delete' && !numRegex.test(value[selectionStart]) && !negativeRegex.test(value[selectionStart])) {
-        console.log('delete');
         e.preventDefault();
         let nextCursorPosition = selectionStart;
         while (!numRegex.test(value[nextCursorPosition]) && nextCursorPosition < value.length) nextCursorPosition++;
         this.setPatchedCaretPosition(el, nextCursorPosition);
       } else if (key === 'Backspace' && !numRegex.test(value[selectionStart - 1]) && !negativeRegex.test(value[selectionStart-1])) {
-        console.log('Backspace');
         e.preventDefault();
         let prevCursorPosition = selectionStart;
         while (!numRegex.test(value[prevCursorPosition - 1]) && prevCursorPosition > 0) prevCursorPosition--;
