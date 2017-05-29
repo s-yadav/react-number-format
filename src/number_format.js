@@ -69,6 +69,7 @@ class NumberFormat extends React.Component {
     }
     this.onChange = this.onChange.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
+    this.setInputRef = this.setInputRef.bind(this);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -331,6 +332,7 @@ class NumberFormat extends React.Component {
   onChange(e) {
     this.onChangeHandler(e,this.props.onChange);
   }
+
   onKeyDown(e) {
     const el = e.target;
     const {selectionStart, selectionEnd, value} = el;
@@ -355,6 +357,11 @@ class NumberFormat extends React.Component {
 
     if (this.props.onKeyDown) this.props.onKeyDown(e);
   }
+
+  setInputRef(input){
+    this._input = input
+  }
+
   render() {
     const props = Object.assign({}, this.props);
 
@@ -364,6 +371,7 @@ class NumberFormat extends React.Component {
 
     const inputProps = Object.assign({}, props, {
       type:'text',
+      ref:this.setInputRef,
       value:this.state.value,
       onChange:this.onChange,
       onKeyDown:this.onKeyDown,
