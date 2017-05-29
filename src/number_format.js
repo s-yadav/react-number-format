@@ -364,13 +364,13 @@ class NumberFormat extends React.Component {
 
     const inputProps = Object.assign({}, props, {
       type:'text',
-      value:this.state.value,
+      value: (this.props.value < 0 ? '–' : '') + this.state.value,
       onChange:this.onChange,
       onKeyDown:this.onKeyDown,
     })
 
     if( this.props.displayType === 'text'){
-      return (<span {...props}>{this.state.value}</span>);
+      return (<span {...props}>{(this.props.value < 0 ? '–' : '') + this.state.value}</span>);
     }
 
     else if (this.props.customInput) {
