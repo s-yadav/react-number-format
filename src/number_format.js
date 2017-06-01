@@ -88,7 +88,7 @@ class NumberFormat extends React.Component {
 
       if (formattedValue !== stateValue) {
         this.setState({
-          value : this.formatInput(value).formattedValue
+          value : formattedValue
         })
       }
     }
