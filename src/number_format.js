@@ -30,6 +30,14 @@ function limitToPrecision(numStr, precision) {
   return str;
 }
 
+function omit(obj, keyMaps) {
+  const filteredObj = {};
+  Object.keys(obj).forEach((key) => {
+    if (!keyMaps[key]) filteredObj[key] = obj[key]
+  });
+  return filteredObj;
+}
+
 const propTypes = {
   thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([true])]),
   decimalSeparator: PropTypes.string,
@@ -50,6 +58,7 @@ const propTypes = {
   allowNegative: PropTypes.bool,
   onKeyDown: PropTypes.func,
   onChange: PropTypes.func,
+  type: PropTypes.oneOf(['text', 'tel']),
   isAllowed: PropTypes.func
 };
 
@@ -57,6 +66,7 @@ const defaultProps = {
   displayType: 'input',
   decimalSeparator: '.',
   allowNegative: true,
+  type: 'text',
   isAllowed: function() {return true;}
 };
 
@@ -356,14 +366,10 @@ class NumberFormat extends React.Component {
     if (this.props.onKeyDown) this.props.onKeyDown(e);
   }
   render() {
-    const props = Object.assign({}, this.props);
-
-    Object.keys(propTypes).forEach((key) => {
-      delete props[key];
-    });
+    const props = omit(this.props, propTypes);
 
     const inputProps = Object.assign({}, props, {
-      type:'text',
+      type:this.props.type,
       value:this.state.value,
       onChange:this.onChange,
       onKeyDown:this.onKeyDown,

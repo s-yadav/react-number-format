@@ -17,6 +17,16 @@ function getCustomEvent(value) {
 
 /*** format_number input as input ****/
 describe('NumberFormat as input', () => {
+  it('should render input as type text by default', () => {
+    const wrapper = mount(<NumberFormat />);
+    expect(wrapper.find('input').get(0).getAttribute('type')).toEqual('text');
+  });
+
+  it('should render input as type tel', () => {
+    const wrapper = mount(<NumberFormat type="tel" />);
+    expect(wrapper.find('input').get(0).getAttribute('type')).toEqual('tel');
+  });
+
   it('should have initial value', () => {
     const wrapper = mount(<NumberFormat value={2456981} thousandSeparator={true} prefix={'$'} />);
     expect(wrapper.state().value).toEqual('$2,456,981');
