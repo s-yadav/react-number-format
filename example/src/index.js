@@ -12,6 +12,9 @@ class App extends React.Component {
   }
 
   formatExpiryChange(val) {
+    if(val && val.length > 1 && Number(val[0]) < 1 && Number(val[1]) < 1){
+      val = '01'+val.substring(2,val.length);
+    }
     if(val && Number(val[0]) > 1){
       val = '0'+val;
     }
