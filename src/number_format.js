@@ -317,7 +317,11 @@ class NumberFormat extends React.Component {
     const {isAllowed} = this.props;
     const lastValue = this.state.value;
     let {formattedValue, value} = this.formatInput(inputValue);
-    const cursorPos = this.getCursorPosition(inputValue, formattedValue, el.selectionStart);
+
+    /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device cursor bug*/
+    const currentCursorPosition = Math.max(el.selectionStart, el.selectionEnd);
+
+    const cursorPos = this.getCursorPosition(inputValue, formattedValue, currentCursorPosition);
 
     //set caret position befor setState
     //this.setPatchedCaretPosition(el, cursorPos);

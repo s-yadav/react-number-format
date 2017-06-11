@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 2.0.0-alpha2
+ * react-number-format - 2.0.0-alpha3
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -117,6 +117,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return str;
 	}
 
+	function omit(obj, keyMaps) {
+	  var filteredObj = {};
+	  Object.keys(obj).forEach(function (key) {
+	    if (!keyMaps[key]) filteredObj[key] = obj[key];
+	  });
+	  return filteredObj;
+	}
+
 	var propTypes = {
 	  thousandSeparator: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.oneOf([true])]),
 	  decimalSeparator: _propTypes2.default.string,
@@ -131,6 +139,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  allowNegative: _propTypes2.default.bool,
 	  onKeyDown: _propTypes2.default.func,
 	  onChange: _propTypes2.default.func,
+	  type: _propTypes2.default.oneOf(['text', 'tel']),
 	  isAllowed: _propTypes2.default.func
 	};
 
@@ -138,6 +147,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  displayType: 'input',
 	  decimalSeparator: '.',
 	  allowNegative: true,
+	  type: 'text',
 	  isAllowed: function isAllowed() {
 	    return true;
 	  }
@@ -183,7 +193,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (formattedValue !== stateValue) {
 	          this.setState({
-	            value: this.formatInput(value).formattedValue
+	            value: formattedValue
 	          });
 	        }
 	      }
@@ -444,7 +454,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	          formattedValue = _formatInput2.formattedValue,
 	          value = _formatInput2.value;
 
-	      var cursorPos = this.getCursorPosition(inputValue, formattedValue, el.selectionStart);
+	      /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device cursor bug*/
+
+
+	      var currentCursorPosition = Math.max(el.selectionStart, el.selectionEnd);
+
+	      var cursorPos = this.getCursorPosition(inputValue, formattedValue, currentCursorPosition);
 
 	      //set caret position befor setState
 	      //this.setPatchedCaretPosition(el, cursorPos);
@@ -503,14 +518,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var props = _extends({}, this.props);
-
-	      Object.keys(propTypes).forEach(function (key) {
-	        delete props[key];
-	      });
+	      var props = omit(this.props, propTypes);
 
 	      var inputProps = _extends({}, props, {
-	        type: 'text',
+	        type: this.props.type,
 	        value: this.state.value,
 	        onChange: this.onChange,
 	        onKeyDown: this.onKeyDown
