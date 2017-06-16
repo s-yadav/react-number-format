@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 2.0.0-alpha3
+ * react-number-format - 2.0.0-alpha4
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -100,6 +100,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
 
 
+	function noop() {};
+
 	function escapeRegExp(str) {
 	  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 	}
@@ -148,6 +150,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  decimalSeparator: '.',
 	  allowNegative: true,
 	  type: 'text',
+	  onChange: noop,
+	  onKeyDown: noop,
 	  isAllowed: function isAllowed() {
 	    return true;
 	  }
@@ -296,7 +300,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'setPatchedCaretPosition',
-	    value: function setPatchedCaretPosition(el, caretPos) {
+	    value: function setPatchedCaretPosition(el, caretPos, lastValue) {
 	      var _this2 = this;
 
 	      /*
@@ -306,7 +310,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      */
 	      this.setCaretPosition(el, caretPos);
 	      setTimeout(function () {
-	        return _this2.setCaretPosition(el, caretPos);
+	        if (el.value === lastValue) _this2.setCaretPosition(el, caretPos);
 	      }, 0);
 	    }
 	  }, {
@@ -430,7 +434,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      for (i = 0; i < cursorPos; i++) {
 	        if (!inputValue[i].match(numRegex) && inputValue[i] !== formattedValue[j]) continue;
-	        if (inputValue[i] === '0' && formattedValue[j].match(numRegex) && formattedValue[j] !== '0') continue;
+	        if (inputValue[i] === '0' && (formattedValue[j] || '').match(numRegex) && formattedValue[j] !== '0') continue;
 	        while (inputValue[i] !== formattedValue[j] && j < formattedValue.length) {
 	          j++;
 	        }j++;
@@ -439,16 +443,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return j;
 	    }
 	  }, {
-	    key: 'onChangeHandler',
-	    value: function onChangeHandler(e, callback) {
-	      var _this3 = this;
-
+	    key: 'onChange',
+	    value: function onChange(e) {
 	      e.persist();
 	      var el = e.target;
 	      var inputValue = el.value;
-	      var isAllowed = this.props.isAllowed;
+	      var state = this.state,
+	          props = this.props;
+	      var isAllowed = props.isAllowed;
 
-	      var lastValue = this.state.value;
+	      var lastValue = state.value;
 
 	      var _formatInput2 = this.formatInput(inputValue),
 	          formattedValue = _formatInput2.formattedValue,
@@ -468,21 +472,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        formattedValue = lastValue;
 	      }
 
+	      //set the value imperatively, this is required for IE fix
+	      el.value = formattedValue;
+	      //reset again after setState so if formattedValue is other then
+	      this.setPatchedCaretPosition(el, cursorPos, lastValue);
+
 	      //change the state
-	      this.setState({ value: formattedValue }, function () {
-
-	        //reset again after setState so if formattedValue is other then
-	        _this3.setPatchedCaretPosition(el, cursorPos);
-
-	        if (callback && formattedValue !== lastValue) callback(e, value);
-	      });
+	      if (formattedValue !== lastValue) {
+	        this.setState({ value: formattedValue }, function () {
+	          props.onChange(e, value);
+	        });
+	      }
 
 	      return value;
-	    }
-	  }, {
-	    key: 'onChange',
-	    value: function onChange(e) {
-	      this.onChangeHandler(e, this.props.onChange);
 	    }
 	  }, {
 	    key: 'onKeyDown',
@@ -513,7 +515,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      }
 
-	      if (this.props.onKeyDown) this.props.onKeyDown(e);
+	      this.props.onKeyDown(e);
 	    }
 	  }, {
 	    key: 'render',

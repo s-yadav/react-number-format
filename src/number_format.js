@@ -13,6 +13,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+function noop(){};
+
 function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
@@ -67,6 +69,8 @@ const defaultProps = {
   decimalSeparator: '.',
   allowNegative: true,
   type: 'text',
+  onChange: noop,
+  onKeyDown: noop,
   isAllowed: function() {return true;}
 };
 
@@ -188,14 +192,16 @@ class NumberFormat extends React.Component {
     }
   }
 
-  setPatchedCaretPosition(el, caretPos) {
+  setPatchedCaretPosition(el, caretPos, lastValue) {
         /*
       setting caret position within timeout of 0ms is required for mobile chrome,
       otherwise browser resets the caret position after we set it
       We are also setting it without timeout so that in normal browser we don't see the flickering
       */
     this.setCaretPosition(el, caretPos);
-    setTimeout(() => this.setCaretPosition(el, caretPos), 0);
+    setTimeout(() => {
+      if(el.value === lastValue) this.setCaretPosition(el, caretPos);
+    }, 0);
   }
 
   formatWithPattern(str) {
@@ -302,7 +308,7 @@ class NumberFormat extends React.Component {
 
     for(i=0; i<cursorPos; i++){
       if(!inputValue[i].match(numRegex) && inputValue[i] !== formattedValue[j]) continue;
-      if (inputValue[i] === '0' && formattedValue[j].match(numRegex) && formattedValue[j] !== '0') continue;
+      if (inputValue[i] === '0' && (formattedValue[j]||'').match(numRegex) && formattedValue[j] !== '0') continue;
       while(inputValue[i] !== formattedValue[j] && j<formattedValue.length) j++;
       j++;
     }
@@ -310,12 +316,13 @@ class NumberFormat extends React.Component {
     return j;
   }
 
-  onChangeHandler(e,callback) {
+  onChange(e) {
     e.persist();
     const el = e.target;
     const inputValue = el.value;
-    const {isAllowed} = this.props;
-    const lastValue = this.state.value;
+    const {state, props} = this;
+    const {isAllowed} = props;
+    const lastValue = state.value;
     let {formattedValue, value} = this.formatInput(inputValue);
 
     /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device cursor bug*/
@@ -330,21 +337,22 @@ class NumberFormat extends React.Component {
       formattedValue = lastValue;
     }
 
+    //set the value imperatively, this is required for IE fix
+    el.value = formattedValue;
+    //reset again after setState so if formattedValue is other then
+    this.setPatchedCaretPosition(el, cursorPos, lastValue);
+
+
     //change the state
-    this.setState({value : formattedValue},()=>{
-
-      //reset again after setState so if formattedValue is other then
-      this.setPatchedCaretPosition(el, cursorPos);
-
-      if(callback && formattedValue !== lastValue) callback(e, value);
-    });
+    if (formattedValue !== lastValue) {
+      this.setState({value : formattedValue},()=>{
+        props.onChange(e, value);
+      });
+    }
 
     return value;
   }
 
-  onChange(e) {
-    this.onChangeHandler(e,this.props.onChange);
-  }
   onKeyDown(e) {
     const el = e.target;
     const {selectionStart, selectionEnd, value} = el;
@@ -367,7 +375,7 @@ class NumberFormat extends React.Component {
       }
     }
 
-    if (this.props.onKeyDown) this.props.onKeyDown(e);
+    this.props.onKeyDown(e);
   }
   render() {
     const props = omit(this.props, propTypes);
