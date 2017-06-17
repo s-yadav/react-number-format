@@ -192,7 +192,7 @@ class NumberFormat extends React.Component {
     }
   }
 
-  setPatchedCaretPosition(el, caretPos, lastValue) {
+  setPatchedCaretPosition(el, caretPos, currentValue) {
         /*
       setting caret position within timeout of 0ms is required for mobile chrome,
       otherwise browser resets the caret position after we set it
@@ -200,7 +200,7 @@ class NumberFormat extends React.Component {
       */
     this.setCaretPosition(el, caretPos);
     setTimeout(() => {
-      if(el.value === lastValue) this.setCaretPosition(el, caretPos);
+      if(el.value === currentValue) this.setCaretPosition(el, caretPos);
     }, 0);
   }
 
@@ -330,18 +330,15 @@ class NumberFormat extends React.Component {
 
     const cursorPos = this.getCursorPosition(inputValue, formattedValue, currentCursorPosition);
 
-    //set caret position befor setState
-    //this.setPatchedCaretPosition(el, cursorPos);
-
     if (!isAllowed(formattedValue, value, this.getFloatValue(value))) {
       formattedValue = lastValue;
     }
 
     //set the value imperatively, this is required for IE fix
     el.value = formattedValue;
-    //reset again after setState so if formattedValue is other then
-    this.setPatchedCaretPosition(el, cursorPos, lastValue);
 
+    //set caret position
+    this.setPatchedCaretPosition(el, cursorPos, formattedValue);
 
     //change the state
     if (formattedValue !== lastValue) {
@@ -366,12 +363,12 @@ class NumberFormat extends React.Component {
         e.preventDefault();
         let nextCursorPosition = selectionStart;
         while (!numRegex.test(value[nextCursorPosition]) && nextCursorPosition < value.length) nextCursorPosition++;
-        this.setPatchedCaretPosition(el, nextCursorPosition);
+        this.setPatchedCaretPosition(el, nextCursorPosition, value);
       } else if (key === 'Backspace' && !numRegex.test(value[selectionStart - 1]) && !negativeRegex.test(value[selectionStart-1])) {
         e.preventDefault();
         let prevCursorPosition = selectionStart;
         while (!numRegex.test(value[prevCursorPosition - 1]) && prevCursorPosition > 0) prevCursorPosition--;
-        this.setPatchedCaretPosition(el, prevCursorPosition);
+        this.setPatchedCaretPosition(el, prevCursorPosition, value);
       }
     }
 

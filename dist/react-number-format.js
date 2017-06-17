@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 2.0.0-alpha4
+ * react-number-format - 2.0.0-alpha5
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -300,7 +300,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'setPatchedCaretPosition',
-	    value: function setPatchedCaretPosition(el, caretPos, lastValue) {
+	    value: function setPatchedCaretPosition(el, caretPos, currentValue) {
 	      var _this2 = this;
 
 	      /*
@@ -310,7 +310,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      */
 	      this.setCaretPosition(el, caretPos);
 	      setTimeout(function () {
-	        if (el.value === lastValue) _this2.setCaretPosition(el, caretPos);
+	        if (el.value === currentValue) _this2.setCaretPosition(el, caretPos);
 	      }, 0);
 	    }
 	  }, {
@@ -465,17 +465,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var cursorPos = this.getCursorPosition(inputValue, formattedValue, currentCursorPosition);
 
-	      //set caret position befor setState
-	      //this.setPatchedCaretPosition(el, cursorPos);
-
 	      if (!isAllowed(formattedValue, value, this.getFloatValue(value))) {
 	        formattedValue = lastValue;
 	      }
 
 	      //set the value imperatively, this is required for IE fix
 	      el.value = formattedValue;
-	      //reset again after setState so if formattedValue is other then
-	      this.setPatchedCaretPosition(el, cursorPos, lastValue);
+
+	      //set caret position
+	      this.setPatchedCaretPosition(el, cursorPos, formattedValue);
 
 	      //change the state
 	      if (formattedValue !== lastValue) {
@@ -505,13 +503,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var nextCursorPosition = selectionStart;
 	          while (!numRegex.test(value[nextCursorPosition]) && nextCursorPosition < value.length) {
 	            nextCursorPosition++;
-	          }this.setPatchedCaretPosition(el, nextCursorPosition);
+	          }this.setPatchedCaretPosition(el, nextCursorPosition, value);
 	        } else if (key === 'Backspace' && !numRegex.test(value[selectionStart - 1]) && !negativeRegex.test(value[selectionStart - 1])) {
 	          e.preventDefault();
 	          var prevCursorPosition = selectionStart;
 	          while (!numRegex.test(value[prevCursorPosition - 1]) && prevCursorPosition > 0) {
 	            prevCursorPosition--;
-	          }this.setPatchedCaretPosition(el, prevCursorPosition);
+	          }this.setPatchedCaretPosition(el, prevCursorPosition, value);
 	        }
 	      }
 
