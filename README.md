@@ -2,11 +2,11 @@
 React component to format number in an input or as a text
 
 ### Features
-1. Allow prefix, suffix and thousand separator.
-2. Allow format pattern.
-3. Allow masking.
-4. Allow custom formatting handler.
-5. Allow formatting a input or a simple text
+1. Prefix, suffix and thousand separator.
+2. Custom format pattern.
+3. Masking.
+4. Custom formatting handler.
+5. Formatting a input or a simple text.
 
 ### Install
 Through npm
@@ -17,20 +17,32 @@ Or get compiled development and production version from ./dist
 ### Props
 | Props        | Options           | Default  | Description |
 | ------------- |-------------| -----| -------- |
-| thousandSeparator | mixed: single character string or true/false (boolean) | false | Add thousand separators on number |
-| decimalSeparator | mixed: single character string or true/false (boolean)| . | Support decimal point on a number |
-| decimalPrecision | mixed: number or boolean | false (2 if true)| If false it does not limit decimal place, if true default precision is 2 or else limits to provided decimal place |
+| thousandSeparator | mixed: single character string or boolean true (true is default to ,) |none| Add thousand separators on number |
+| decimalSeparator | single character string| . | Support decimal point on a number |
+| decimalPrecision | number| none| If defined it limits to given decimal precision |
 | allowNegative      | boolean     |   true | allow negative numbers (Only when format option is not provided) |
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
 | suffix | String (ex : /-)      |    none | Add a prefix after the number |
 | value | Number | null | Value to number format |
 | displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
+| type | One of ['text', 'tel'] | text | Input type attribute
 | format | String : Hash based ex (#### #### #### ####) <br/> Or Function| none | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number.
 | mask | String (ex : _) | none | If mask defined, component will show non entered placed with masked value.  
 | customInput | Component Reference | input | This allow supporting custom inputs with number format.
-| onChange | (e, value) => {} | none | onChange handler accepts event object through which you can get formattedValue (e.targe.value # $2,223)  and second parameter non formatted value (ie: 2223)
+| onChange | (e, values) => {} | none | onChange handler accepts event object and [values object](#values-object)
+| isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not
 
 **Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
+
+#### values object
+values object is on following format
+```js
+{
+  formattedValue: '$23,234,235.56', //value after applying formatting
+  value: '23234235.56', //non formatted value as string, but it maintains the decimalSeparator provided, so if , is decimal separator then value will be 23234235,56
+  floatValue: 23234235.56 //floating point representation. For big numbers it can have exponential syntax
+}
+```
 
 ### Examples
 #### Prefix and thousand separator : Format currency as text
@@ -76,18 +88,32 @@ Output : 4111 1111 1111 1111
 
 #### Custom format method  : Format credit card expiry time
 ```jsx
-  function formatExpiryChange(val){
-    if(val && Number(val[0]) > 1){
-      val = '0'+val;
-    }
-    if(val && val.length >1 && Number(val[0]+val[1]) > 12){
-      val = '12'+val.substring(2,val.length);
-    }
-    val = val.substring(0,2)+ (val.length > 2 ? '/'+val.substring(2,4) : '');
-    return val;
+function limit(val, max) {
+  if (val.length === 1 && val[0] > max[0]) {
+    val = '0' + val;
   }
 
-<NumberFormat format={formatExpiryChange}/>
+  if (val.length === 2) {
+    if (Number(val) === 0) {
+      val = '01';
+
+    //this can happen when user paste number
+  } else if (val > max) {
+      val = max;
+    }
+  }
+
+  return val;
+}
+
+function cardExpiry(val) {
+  let month = limit(val.substring(0, 2), '12');
+  let date = limit(val.substring(2, 4), '31');
+
+  return month + (date.length ? '/' + date : '');
+}
+
+<NumberFormat format={cardExpiry}/>
 ```
 ![Screencast example](https://i.imgur.com/9wwdyFF.gif)
 

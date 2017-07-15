@@ -6,11 +6,11 @@ module.exports = function (config) {
         singleRun: false,
         frameworks: ['jasmine'],
         files: [
-            './test/input_test.js'
+            './test/**/*.spec.js'
         ],
         reporters: ['kjhtml'],
         preprocessors: {
-          './test/*.js': [ 'webpack','sourcemap'] //preprocess with webpack
+          './test/**/*.js': [ 'webpack','sourcemap'] //preprocess with webpack
         },
         webpack: {
             module: {

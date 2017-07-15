@@ -4,7 +4,7 @@ module.exports = {
       './example/src/index.js'
     ]
   },
-  devtool: "cheap-module-eval-source-map",
+  devtool: "eval-source-map",
   debug: true,
   output: {
     publicPath: "http://localhost:9000/",

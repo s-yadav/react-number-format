@@ -3,26 +3,14 @@ import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import NumberFormat from '../../src/number_format';
 import TextField from 'material-ui/TextField';
+import {cardExpiry} from '../../custom_formatters/card_expiry';
+
+
 
 class App extends React.Component {
   constructor() {
     super();
-    this.state = {};
-    this.formatExpiryChange = this.formatExpiryChange.bind(this);
-  }
-
-  formatExpiryChange(val) {
-    if(val && val.length > 1 && Number(val[0]) < 1 && Number(val[1]) < 1){
-      val = '01'+val.substring(2,val.length);
-    }
-    if(val && Number(val[0]) > 1){
-      val = '0'+val;
-    }
-    if(val && val.length >1 && Number(val[0]+val[1]) > 12){
-      val = '12'+val.substring(2,val.length);
-    }
-    val = val.substring(0,2)+ (val.length > 2 ? '/'+val.substring(2,4) : '');
-    return val;
+    this.state = {test: 1232323.780023};
   }
 
   render() {
@@ -32,7 +20,7 @@ class App extends React.Component {
           <h3>
             Prefix and thousand separator : Format currency as text
           </h3>
-          <NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />
+          <NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'}/>
         </div>
 
         <div className="example">
@@ -46,7 +34,7 @@ class App extends React.Component {
           <h3>
             Prefix and thousand separator : Format currency in input
           </h3>
-          <NumberFormat thousandSeparator={true} value={this.state.test} prefix={'$'} onChange={(e, val) => this.setState({test: val})} />
+          <NumberFormat thousandSeparator={'.'} decimalSeparator="," isAllowed={(values) => { return values.floatValue > 5}} value={this.state.test} prefix={'$'} decimalPrecision={3} onChange={(e, val) => this.setState({test: e.target.value})}/>
         </div>
 
         <div className="example">
@@ -113,7 +101,7 @@ class App extends React.Component {
           <h3>
             Custom format method  : Format credit card expiry time
           </h3>
-          <NumberFormat format={this.formatExpiryChange}/>
+          <NumberFormat format={cardExpiry}/>
         </div>
 
         <div className="example">
