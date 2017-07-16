@@ -1,17 +1,3 @@
-/**
- * 1. Validate thousand separators and decimals throw error
- * 2. Thousand separator just have value true or any other string
- * 3. Decimal separator should be defined only as string
- * 4. Decimal precision should be only defined as number
- * 5. If user don't want floating numbers set decimalPrecision to 0
- * 6. User can pass value as floating point numbers or string, if user passes string decimal separator in string should match to provided decimalSeparator
- * 7. Add formattedValue, numeric value, value with string in event object and not as parameters so that getting values should look consistent
- * 8. dont use parseFloat that will not able to parse 2^23
- * 9. Always have decimal precision
- * 10. isAllowed props to validate input and block if returns false
- * 11. Round to precision for passed value
- * 12. It should always move cursor to type area ignoring prefix and suffix
- */
 import PropTypes from 'prop-types';
 import React from 'react';
 

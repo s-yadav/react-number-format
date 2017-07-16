@@ -9,6 +9,8 @@ React component to format number in an input or as a text
 5. Formatting a input or a simple text.
 
 ### Install
+[![npm](https://img.shields.io/npm/dm/react-number-format.svg)](https://www.npmjs.com/package/react-number-format)
+
 Through npm
 `npm install react-number-format --save`
 
@@ -23,7 +25,7 @@ Or get compiled development and production version from ./dist
 | allowNegative      | boolean     |   true | allow negative numbers (Only when format option is not provided) |
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
 | suffix | String (ex : /-)      |    none | Add a prefix after the number |
-| value | Number | null | Value to number format |
+| value | Number or String | null | Value to the number format. If passed as string it should have same decimal separator as the decimalSeparator props|
 | displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
 | type | One of ['text', 'tel'] | text | Input type attribute
 | format | String : Hash based ex (#### #### #### ####) <br/> Or Function| none | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number.
@@ -43,6 +45,15 @@ values object is on following format
   floatValue: 23234235.56 //floating point representation. For big numbers it can have exponential syntax
 }
 ```
+
+### Notes and quirks
+1. Value can be passed as string or number, but if it is passed as string you should maintain the same decimal separator on the string what you provided as decimalSeparator prop.
+
+2. Value as prop will be rounded to given precision if format option is not provided.
+
+3. If you want to block floating number set decimalPrecision to 0.
+
+4. Use type as tel when you are providing format prop. This will change the mobile keyboard layout to have only numbers. In other case use type as text, so user can type decimal separator.
 
 ### Examples
 #### Prefix and thousand separator : Format currency as text
@@ -67,9 +78,10 @@ Output : 4111 1111 1111 1111
 
 #### Maintaining change value on state
 ```jsx
-<NumberFormat value={this.state.profit} thousandSeparator={true} prefix={'$'} onChange={(e, value) => {
-    const formattedValue = e.target.value; // $222,3
-    //value will be non formatted value ie, 2223
+<NumberFormat value={this.state.profit} thousandSeparator={true} prefix={'$'} onChange={(e, values) => {
+    const {formattedValue, value} = values;
+    // formattedValue = $222,3
+    //value ie, 2223
     this.setState({profit: value})
   }}/>
 ```
@@ -115,7 +127,7 @@ function cardExpiry(val) {
 
 <NumberFormat format={cardExpiry}/>
 ```
-![Screencast example](https://i.imgur.com/9wwdyFF.gif)
+![Screencast example](https://media.giphy.com/media/3ohryizPIpkv2Qs3p6/giphy.gif)
 
 ### Custom Inputs
 You can easily extend your custom input with number format. But custom input should have all input props.
@@ -126,6 +138,7 @@ You can easily extend your custom input with number format. But custom input sho
 ```jsx
   <NumberFormat customInput={TextField} format="#### #### #### ####"/>
 ```
+![Screencast example](https://media.giphy.com/media/3og0IH0LJhIQWFxztC/giphy.gif)
 
 **Passing custom input props**
 All custom input props and number input props are passed together.
@@ -138,21 +151,16 @@ All custom input props and number input props are passed together.
 [http://codepen.io/s-yadav/pen/bpKNMa](http://codepen.io/s-yadav/pen/bpKNMa)
 
 ### Major Updates
-### v1.2.0
-- Support negative numbers
+### v2.0.0
+- Added isAllowed prop to validate custom input and block based on it.
+- onChange api been changed. Now it receives [values object](#values-object) as second parameter.
+- decimalSeparator no longer support boolean values
+- thousandSeparator accepts only true as boolean (which defaults to ,) or thousandSeparator string
+- decimalSeparator only accepts number Now
+- Value can be passed as string or number but if it is passed as string you should maintain the same decimal separator on the string what you provided as decimalSeparator prop.
+- Added back the type prop for the input type attribute (Only text or tel is supported)
+- Lot of bugs and stability fixes ([See release notes](https://github.com/s-yadav/react-number-format/releases))
 
-### v1.1.0
-- Support custom input
-- Support custom decimal / thousandSeparator
-- Support providing decimal precision
-- Bug fixes ([See release notes](https://github.com/s-yadav/react-number-format/releases))
-
-### v1.0.0
-- Support decimals
-- Support changing thousandSeparator to ','
-- Updated complete code to ES6
-- Added propTypes validation
-- Fixed #1, #7, #8, #9
 
 ### Development
 - Download the zip
