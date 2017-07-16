@@ -152,13 +152,14 @@ All custom input props and number input props are passed together.
 
 ### Major Updates
 ### v2.0.0
-- Added isAllowed prop to validate custom input and block based on it.
+- Added isAllowed prop to validate custom input and reject input based on it.
 - onChange api been changed. Now it receives [values object](#values-object) as second parameter.
 - decimalSeparator no longer support boolean values
 - thousandSeparator accepts only true as boolean (which defaults to ,) or thousandSeparator string
-- decimalSeparator only accepts number Now
+- decimalPrecision only accepts number Now
 - Value can be passed as string or number but if it is passed as string you should maintain the same decimal separator on the string what you provided as decimalSeparator prop.
 - Added back the type prop for the input type attribute (Only text or tel is supported)
+- Enforce cursor to be between prefix and suffix in focus, click or arrow navigation.
 - Lot of bugs and stability fixes ([See release notes](https://github.com/s-yadav/react-number-format/releases))
 
 
