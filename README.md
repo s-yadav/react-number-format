@@ -150,6 +150,9 @@ All custom input props and number input props are passed together.
 ### Live Demo
 [http://codepen.io/s-yadav/pen/bpKNMa](http://codepen.io/s-yadav/pen/bpKNMa)
 
+### Show your support
+[:star: this repo](https://github.com/s-yadav/react-number-format)
+
 ### Major Updates
 ### v2.0.0
 - Added isAllowed prop to validate custom input and reject input based on it.
