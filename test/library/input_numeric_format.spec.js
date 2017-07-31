@@ -18,6 +18,18 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('$0');
   });
 
+  it('show the initial value as empty string when empty string is passed and decimalPrecision is set', () => {
+    const wrapper = mount(<NumberFormat value="" thousandSeparator={true} decimalPrecision={2} />);
+    expect(wrapper.state().value).toEqual('');
+    expect(wrapper.find('input').get(0).value).toEqual('');
+  });
+
+  it('show the initial value as empty string when empty string is passed and decimalPrecision is not set', () => {
+    const wrapper = mount(<NumberFormat value="" thousandSeparator={true} />);
+    expect(wrapper.state().value).toEqual('');
+    expect(wrapper.find('input').get(0).value).toEqual('');
+  });
+
   it('should maintain decimal points', () => {
     const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} />);
 

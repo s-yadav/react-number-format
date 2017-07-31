@@ -142,7 +142,7 @@ class NumberFormat extends React.Component {
 
     let {value} = props;
 
-    if (format || value === undefined) return value;
+    if (format || value === undefined || value === '') return value;
 
     const isNumber = typeof value === 'number';
 
