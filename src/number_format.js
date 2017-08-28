@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-function noop(){};
+function noop(){}
 
 function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
@@ -84,6 +84,7 @@ const defaultProps = {
   suffix: '',
   allowNegative: true,
   type: 'text',
+  value: '',
   onChange: noop,
   onKeyDown: noop,
   onMouseUp: noop,
@@ -128,7 +129,7 @@ class NumberFormat extends React.Component {
   getFloatString(num, props) {
     props = props || this.props;
     const {decimalSeparator, thousandSeparator} = this.getSeparators(props);
-    return num.replace(new RegExp(escapeRegExp(thousandSeparator || ''), 'g'), '').replace(decimalSeparator, '.');
+    return (num || '').replace(new RegExp(escapeRegExp(thousandSeparator || ''), 'g'), '').replace(decimalSeparator, '.');
   }
 
   getFloatValue(num, props) {
@@ -142,7 +143,7 @@ class NumberFormat extends React.Component {
 
     let {value} = props;
 
-    if (format || value === undefined || value === '') return value;
+    if (format || !(value || value === 0)) return value;
 
     const isNumber = typeof value === 'number';
 
@@ -407,7 +408,7 @@ class NumberFormat extends React.Component {
     const {state, props} = this;
     const {isAllowed} = props;
     const lastValue = state.value;
-    let {formattedValue, value} = this.formatInput(inputValue);
+    let {formattedValue, value} = this.formatInput(inputValue); // eslint-disable-line prefer-const
 
     /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
     const currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);

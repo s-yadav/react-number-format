@@ -21,8 +21,8 @@ function limit(val, max) {
 }
 
 export function cardExpiry(val) {
-  let month = limit(val.substring(0, 2), '12');
-  let date = limit(val.substring(2, 4), '31');
+  const month = limit(val.substring(0, 2), '12');
+  const date = limit(val.substring(2, 4), '31');
 
   return month + (date.length ? '/' + date : '');
 }

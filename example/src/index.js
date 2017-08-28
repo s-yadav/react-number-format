@@ -20,28 +20,36 @@ class App extends React.Component {
           <h3>
             Prefix and thousand separator : Format currency as text
           </h3>
-          <NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'}/>
+          <NumberFormat value={2456981} displayType="text" thousandSeparator={true} prefix="$" />
         </div>
 
         <div className="example">
           <h3>
             Format with pattern : Format credit card as text
           </h3>
-          <NumberFormat value={4111111111111111} displayType={'text'} format="#### #### #### ####" />
+          <NumberFormat value={4111111111111111} displayType="text" format="#### #### #### ####" />
         </div>
 
         <div className="example">
           <h3>
             Prefix and thousand separator : Format currency in input
           </h3>
-          <NumberFormat thousandSeparator={'.'} decimalSeparator="," isAllowed={(values) => { return values.floatValue > 5}} value={this.state.test} prefix={'$'} decimalPrecision={3} onChange={(e, val) => this.setState({test: e.target.value})}/>
+          <NumberFormat
+            thousandSeparator="."
+            decimalSeparator=","
+            isAllowed={(values) => values.floatValue > 5}
+            value={this.state.test}
+            prefix="$"
+            decimalPrecision={3}
+            onChange={(e) => this.setState({test: e.target.value})}
+          />
         </div>
 
         <div className="example">
           <h3>
             Decimal precision : Format currency in input with decimal precision
           </h3>
-          <NumberFormat thousandSeparator={true} decimalPrecision={3} prefix={'$'}/>
+          <NumberFormat thousandSeparator={true} decimalPrecision={3} prefix="$" />
         </div>
 
 
@@ -53,14 +61,14 @@ class App extends React.Component {
             ThousandSeperator: '.', decimalSeparator=','
           </div>
           <div>
-            <NumberFormat thousandSeparator={"."} decimalSeparator={","} prefix={"$"} />
+            <NumberFormat thousandSeparator="." decimalSeparator="," prefix="$" />
           </div>
           <br/>
           <div>
             ThousandSeperator: ' ', decimalSeparator='.'
           </div>
           <div>
-            <NumberFormat thousandSeparator={" "} decimalSeparator={"."} prefix={"$"} />
+            <NumberFormat thousandSeparator=" " decimalSeparator="." prefix="$" />
           </div>
         </div>
 
@@ -72,14 +80,14 @@ class App extends React.Component {
             ThousandSeperator: ',', decimalSeparator='.', decimalPrecision:2
           </div>
           <div>
-            <NumberFormat thousandSeparator={","}  decimalSeparator={"."} decimalPrecision={2} />
+            <NumberFormat thousandSeparator=","  decimalSeparator="." decimalPrecision={2} />
           </div>
           <br/>
           <div>
             ThousandSeperator: '.', decimalSeparator=',', decimalPrecision:2
           </div>
           <div>
-            <NumberFormat thousandSeparator={"."}  decimalSeparator={","}  decimalPrecision={2} />
+            <NumberFormat thousandSeparator="."  decimalSeparator=","  decimalPrecision={2} />
           </div>
         </div>
 
@@ -94,21 +102,21 @@ class App extends React.Component {
           <h3>
             Format with mask : Format credit card in an input
           </h3>
-          <NumberFormat format="#### #### #### ####" mask="_"/>
+          <NumberFormat format="#### #### #### ####" mask="_" />
         </div>
 
         <div className="example">
           <h3>
             Custom format method  : Format credit card expiry time
           </h3>
-          <NumberFormat format={cardExpiry}/>
+          <NumberFormat format={cardExpiry} />
         </div>
 
         <div className="example">
           <h3>
             Custom input : Format credit card number
           </h3>
-          <NumberFormat customInput={TextField} format="#### #### #### ####"/>
+          <NumberFormat customInput={TextField} format="#### #### #### ####" />
         </div>
 
       </div>
