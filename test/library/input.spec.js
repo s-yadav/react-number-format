@@ -62,27 +62,28 @@ describe('NumberFormat as input', () => {
   it('removes negation when format props is provided', () => {
     const wrapper = shallow(<NumberFormat format="#### #### #### ####" />);
 
-    wrapper.find('input').simulate('change', getCustomEvent('-2456981'));
+    //by default space is mask
+    wrapper.find('input').simulate('change', getCustomEvent('-2456 981           '));
 
-    expect(wrapper.state().value).toEqual('2456 981');
+    expect(wrapper.state().value).toEqual('2456 981           ');
   });
 
 
   it('should have proper intermediate formatting', () => {
-    const wrapper = shallow(<NumberFormat format="#### #### #### ####" />);
+    const wrapper = shallow(<NumberFormat mask="-" format="#### #### #### ####" />);
     const input = wrapper.find('input');
 
     //case 1st - if entered a number where formatting should happen
-    input.simulate('change', getCustomEvent('41111'));
-    expect(wrapper.state().value).toEqual('4111 1');
+    input.simulate('change', getCustomEvent('41111 ____ ____ ____'));
+    expect(wrapper.state().value).toEqual('4111 1___ ____ ____');
 
     //case 2st - if pressed backspace at formatting point
-    input.simulate('change', getCustomEvent('411 1'));
-    expect(wrapper.state().value).toEqual('4111');
+    input.simulate('change', getCustomEvent('411 1___ ____ ____'));
+    expect(wrapper.state().value).toEqual('4111 ____ ____ ____');
 
     //case 3rd - if something entered before formatting point
-    input.simulate('change', getCustomEvent('41111 1'));
-    expect(wrapper.state().value).toEqual('4111 11');
+    input.simulate('change', getCustomEvent('41111 1___ ____ ____'));
+    expect(wrapper.state().value).toEqual('4111 11__ ____ ____');
 
     //case 4th - if something entered when maximum numbers are input
     input.simulate('change', getCustomEvent('41112 1111 1111 1111'));
@@ -93,9 +94,6 @@ describe('NumberFormat as input', () => {
     input.simulate('change', getCustomEvent('4111 2111 211 1111'));
     expect(wrapper.state().value).toEqual('4111 2111 2111 111');
 
-    //case 6th - if space is removed
-    input.simulate('change', getCustomEvent('41112111 1211 1111'));
-    expect(wrapper.state().value).toEqual('4111 2111 1211 1111');
   });
 
   it('should have proper intermediate masking', () => {
@@ -128,6 +126,17 @@ describe('NumberFormat as input', () => {
     expect(wrapper.state().value).toEqual('4111 2111 1211 1111');
   });
 
+
+  it('should allow adding numbers in format props', () => {
+    const wrapper = shallow(<NumberFormat value="9876543210" isNumericString={true} format="+1 (###) ### ## ##" />);
+    const input = wrapper.find('input');
+
+    expect(wrapper.state().value).toEqual('+1 (987) 654 32 10');
+
+    input.simulate('change', getCustomEvent('+1 (987) 654 2 11'));
+
+    expect(wrapper.state().value).toEqual('+1 (987) 654 21 1 ');
+  })
 
   it('should block inputs based on isAllowed callback', () => {
     const wrapper = shallow(<NumberFormat isAllowed={(values) => {

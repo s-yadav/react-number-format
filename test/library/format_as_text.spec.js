@@ -43,4 +43,5 @@ describe('NumberFormat as text', () => {
     const wrapper = shallow(<NumberFormat value="4111.11" displayType={'text'} decimalPrecision={4} />);
     expect(wrapper.find('span').text()).toEqual('4111.1100');
   });
+
 });
