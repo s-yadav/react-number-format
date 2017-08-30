@@ -84,7 +84,6 @@ const defaultProps = {
   suffix: '',
   allowNegative: true,
   type: 'text',
-  value: '',
   onChange: noop,
   onKeyDown: noop,
   onMouseUp: noop,

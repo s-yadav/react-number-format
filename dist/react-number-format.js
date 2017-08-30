@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 2.0.3
+ * react-number-format - 2.0.4
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -88,7 +88,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	function noop() {};
+	function noop() {}
 
 	function escapeRegExp(str) {
 	  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
@@ -227,7 +227,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          decimalSeparator = _getSeparators.decimalSeparator,
 	          thousandSeparator = _getSeparators.thousandSeparator;
 
-	      return num.replace(new RegExp(escapeRegExp(thousandSeparator || ''), 'g'), '').replace(decimalSeparator, '.');
+	      return (num || '').replace(new RegExp(escapeRegExp(thousandSeparator || ''), 'g'), '').replace(decimalSeparator, '.');
 	    }
 	  }, {
 	    key: 'getFloatValue',
@@ -246,7 +246,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var value = props.value;
 
 
-	      if (format || value === undefined || value === '') return value;
+	      if (format || !(value || value === 0)) return value;
 
 	      var isNumber = typeof value === 'number';
 
@@ -551,7 +551,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var _formatInput2 = this.formatInput(inputValue),
 	          formattedValue = _formatInput2.formattedValue,
-	          value = _formatInput2.value;
+	          value = _formatInput2.value; // eslint-disable-line prefer-const
 
 	      /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
 
