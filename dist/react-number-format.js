@@ -57,14 +57,14 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__(1);
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -442,6 +442,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var negativeRegex = new RegExp('(-)');
 	      var doubleNegativeRegex = new RegExp('(-)(.)*(-)');
 
+	      //remove prefix and suffix
+	      val = removePrefixAndSuffix(val, props);
+
 	      //check if it has negative numbers
 	      if (allowNegative && !format) {
 	        // Check number has '-' value
@@ -449,9 +452,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Check number has 2 or more '-' values
 	        removeNegative = doubleNegativeRegex.test(val);
 	      }
-
-	      //remove prefix and suffix
-	      val = removePrefixAndSuffix(val, props);
 
 	      var valMatch = val && val.match(numRegex);
 
@@ -681,9 +681,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = NumberFormat;
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * Copyright 2013-present, Facebook, Inc.
@@ -717,9 +717,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * Copyright 2013-present, Facebook, Inc.
@@ -782,9 +782,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 
@@ -825,9 +825,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = emptyFunction;
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * Copyright (c) 2013-present, Facebook, Inc.
@@ -885,9 +885,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = invariant;
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/**
 	 * Copyright 2013-present, Facebook, Inc.
@@ -905,13 +905,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = ReactPropTypesSecret;
 
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_7__;
 
-/***/ }
+/***/ })
 /******/ ])
 });
 ;
