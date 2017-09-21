@@ -27,12 +27,12 @@ Or get compiled development and production version from ./dist
 | suffix | String (ex : /-)      |    none | Add a prefix after the number |
 | value | Number or String | null | Value to the number format. If passed as string it should have same decimal separator as the decimalSeparator props|
 | displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
-| type | One of ['text', 'tel'] | text | Input type attribute
-| format | String : Hash based ex (#### #### #### ####) <br/> Or Function| none | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number.
-| mask | String (ex : _) | none | If mask defined, component will show non entered placed with masked value.  
-| customInput | Component Reference | input | This allow supporting custom inputs with number format.
-| onChange | (e, values) => {} | none | onChange handler accepts event object and [values object](#values-object)
-| isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not
+| type | One of ['text', 'tel'] | text | Input type attribute |
+| format | String : Hash based ex (#### #### #### ####) <br/> Or Function| none | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number. |
+| mask | String (ex : _) | none | If mask defined, component will show non entered placed with masked value. |
+| customInput | Component Reference | input | This allow supporting custom inputs with number format. |
+| onChange | (e, values) => {} | none | onChange handler accepts event object and [values object](#values-object) |
+| isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not |
 
 **Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
 
