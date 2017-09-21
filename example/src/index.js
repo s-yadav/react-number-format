@@ -119,6 +119,17 @@ class App extends React.Component {
           <NumberFormat customInput={TextField} format="#### #### #### ####" />
         </div>
 
+        <div className="example">
+          <h3>
+            Suffix containing numbers and signs
+          </h3>
+          <br/>
+          <div>
+              suffix: 'e-005 m/s²', decimalSeparator=',', decimalPrecision:1
+          </div>
+          <NumberFormat value={2.5} suffix="e-005 m/s²" decimalSeparator=","  decimalPrecision={1} />
+        </div>
+
       </div>
     )
   }

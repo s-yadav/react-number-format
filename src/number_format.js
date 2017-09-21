@@ -306,6 +306,9 @@ class NumberFormat extends React.Component {
     const negativeRegex = new RegExp('(-)');
     const doubleNegativeRegex = new RegExp('(-)(.)*(-)');
 
+    //remove prefix and suffix
+    val = removePrefixAndSuffix(val, props);
+
     //check if it has negative numbers
     if (allowNegative && !format) {
       // Check number has '-' value
@@ -313,9 +316,6 @@ class NumberFormat extends React.Component {
       // Check number has 2 or more '-' values
       removeNegative = doubleNegativeRegex.test(val);
     }
-
-    //remove prefix and suffix
-    val = removePrefixAndSuffix(val, props);
 
     const valMatch = val && val.match(numRegex);
 
