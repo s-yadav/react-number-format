@@ -19,7 +19,7 @@ function removeLeadingZero(numStr) {
 function limitToPrecision(numStr, precision) {
   let str = ''
   for (let i=0; i<=precision - 1; i++) {
-    str += numStr[i] || '0'
+    str += numStr[i] || ''
   }
   return str;
 }
@@ -28,15 +28,18 @@ function limitToPrecision(numStr, precision) {
  * This method is required to round prop value to given precision.
  * Not used .round or .fixedTo because that will break with big numbers
  */
-function roundToPrecision(numStr, precision) {
+function roundToPrecision(numStr, precision, fillZeroes) {
   const numberParts = numStr.split('.');
-  const roundedDecimalParts = parseFloat(`0.${numberParts[1] || '0'}`).toFixed(precision).split('.');
+  const currentDecimalPart  = numberParts[1] || '';
+  const roundedDecimalParts = currentDecimalPart.length > precision || fillZeroes
+    ? parseFloat(`0.${currentDecimalPart || '0'}`).toFixed(precision).split('.')
+    :  ['0', currentDecimalPart];
   const intPart = numberParts[0].split('').reverse().reduce((roundedStr, current, idx) => {
     if (roundedStr.length > idx) {
       return (Number(roundedStr[0]) + Number(current)).toString() + roundedStr.substring(1, roundedStr.length);
     }
     return current + roundedStr;
-  }, roundedDecimalParts[0])
+  }, roundedDecimalParts[0]);
 
   const decimalPart = roundedDecimalParts[1];
 
@@ -158,8 +161,10 @@ class NumberFormat extends React.Component {
       value = value.replace('.', decimalSeparator);
     }
 
+    const numberParts = value.split(decimalSeparator);
+
     //throw error if value has two decimal seperators
-    if (value.split(decimalSeparator).length > 2) {
+    if (numberParts.length > 2) {
       throw new Error(`
           Wrong input for value props.\n
           More than one decimalSeparator found
@@ -167,7 +172,7 @@ class NumberFormat extends React.Component {
     }
 
     //if decimalPrecision is 0 remove decimalNumbers
-    if (decimalPrecision === 0) return value.split(decimalSeparator)[0]
+    if (decimalPrecision === 0 || (numberParts[1] && !numberParts[1].length)) return numberParts[0]
 
     return value;
   }
@@ -294,7 +299,7 @@ class NumberFormat extends React.Component {
 
   formatInput(val) {
     const {props, removePrefixAndSuffix} = this;
-    const {prefix, suffix, mask, format, allowNegative, decimalPrecision} = props;
+    const {prefix, suffix, mask, format, allowNegative, decimalPrecision, fillZeroes} = props;
     const {thousandSeparator, decimalSeparator} = this.getSeparators();
     const maskPattern = format && typeof format == 'string' && !!mask;
     const numRegex = this.getNumberRegex(true);
@@ -340,7 +345,7 @@ class NumberFormat extends React.Component {
       }
     }
     else{
-      const hasDecimalSeparator = formattedValue.indexOf(decimalSeparator) !== -1 || decimalPrecision;
+      const hasDecimalSeparator = formattedValue.indexOf(decimalSeparator) !== -1 || (decimalPrecision && fillZeroes);
 
       const parts = formattedValue.split(decimalSeparator);
       let beforeDecimal = parts[0];
