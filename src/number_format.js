@@ -16,10 +16,11 @@ function removeLeadingZero(numStr) {
  * limit decimal numbers to given precision
  * Not used .fixedTo because that will break with big numbers
  */
-function limitToPrecision(numStr, precision) {
+function limitToPrecision(numStr, precision, fillDecimalZeroes) {
   let str = ''
+  const filler = fillDecimalZeroes ? '0' : '';
   for (let i=0; i<=precision - 1; i++) {
-    str += numStr[i] || ''
+    str += numStr[i] || filler
   }
   return str;
 }
@@ -28,11 +29,11 @@ function limitToPrecision(numStr, precision) {
  * This method is required to round prop value to given precision.
  * Not used .round or .fixedTo because that will break with big numbers
  */
-function roundToPrecision(numStr, precision, fillZeroes) {
+function roundToPrecision(numStr, precision, fillDecimalZeroes) {
   const numberParts = numStr.split('.');
   const hasDecimalSeperator = numStr.indexOf('.') >= 0;
   const currentDecimalPart  = numberParts[1] || '';
-  const roundedDecimalParts = currentDecimalPart.length > precision || fillZeroes
+  const roundedDecimalParts = currentDecimalPart.length > precision || fillDecimalZeroes
     ? parseFloat(`0.${currentDecimalPart || '0'}`).toFixed(precision).split('.')
     :  ['0', currentDecimalPart];
   const intPart = numberParts[0].split('').reverse().reduce((roundedStr, current, idx) => {
@@ -78,7 +79,8 @@ const propTypes = {
   onMouseUp: PropTypes.func,
   onChange: PropTypes.func,
   type: PropTypes.oneOf(['text', 'tel']),
-  isAllowed: PropTypes.func
+  isAllowed: PropTypes.func,
+  fillDecimalZeroes: PropTypes.bool
 };
 
 const defaultProps = {
@@ -91,7 +93,8 @@ const defaultProps = {
   onChange: noop,
   onKeyDown: noop,
   onMouseUp: noop,
-  isAllowed: function() {return true;}
+  isAllowed: function() {return true;},
+  fillDecimalZeroes: true
 };
 
 class NumberFormat extends React.Component {
@@ -173,7 +176,7 @@ class NumberFormat extends React.Component {
     }
 
     //if decimalPrecision is 0 remove decimalNumbers
-    if (decimalPrecision === 0) return numberParts[0]
+    if (decimalPrecision === 0) return numberParts[0];
 
     return value;
   }
@@ -300,7 +303,7 @@ class NumberFormat extends React.Component {
 
   formatInput(val) {
     const {props, removePrefixAndSuffix} = this;
-    const {prefix, suffix, mask, format, allowNegative, decimalPrecision, fillZeroes} = props;
+    const {prefix, suffix, mask, format, allowNegative, decimalPrecision, fillDecimalZeroes} = props;
     const {thousandSeparator, decimalSeparator} = this.getSeparators();
     const maskPattern = format && typeof format == 'string' && !!mask;
     const numRegex = this.getNumberRegex(true);
@@ -346,7 +349,7 @@ class NumberFormat extends React.Component {
       }
     }
     else{
-      const hasDecimalSeparator = formattedValue.indexOf(decimalSeparator) !== -1 || (decimalPrecision && fillZeroes);
+      const hasDecimalSeparator = formattedValue.indexOf(decimalSeparator) !== -1 || (decimalPrecision && fillDecimalZeroes);
 
       const parts = formattedValue.split(decimalSeparator);
       let beforeDecimal = parts[0];
@@ -356,7 +359,7 @@ class NumberFormat extends React.Component {
       beforeDecimal = removeLeadingZero(beforeDecimal);
 
       //apply decimal precision if its defined
-      if (decimalPrecision !== undefined) afterDecimal = limitToPrecision(afterDecimal, decimalPrecision);
+      if (decimalPrecision !== undefined) afterDecimal = limitToPrecision(afterDecimal, decimalPrecision, fillDecimalZeroes);
 
       if(thousandSeparator) {
         beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
@@ -451,9 +454,9 @@ class NumberFormat extends React.Component {
     const el = e.target;
     const {selectionEnd, value} = el;
     let {selectionStart} = el;
-    const {decimalPrecision, prefix, suffix, fillZeroes} = this.props;
+    const {decimalPrecision, prefix, suffix, fillDecimalZeroes} = this.props;
     const {key} = e;
-    const numRegex = this.getNumberRegex(false, decimalPrecision !== undefined && fillZeroes);
+    const numRegex = this.getNumberRegex(false, decimalPrecision !== undefined && fillDecimalZeroes);
     const negativeRegex = new RegExp('-');
 
     //Handle backspace and delete against non numerical/decimal characters
