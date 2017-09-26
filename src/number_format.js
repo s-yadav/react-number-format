@@ -30,6 +30,7 @@ function limitToPrecision(numStr, precision) {
  */
 function roundToPrecision(numStr, precision, fillZeroes) {
   const numberParts = numStr.split('.');
+  const hasDecimalSeperator = numStr.indexOf('.') >= 0;
   const currentDecimalPart  = numberParts[1] || '';
   const roundedDecimalParts = currentDecimalPart.length > precision || fillZeroes
     ? parseFloat(`0.${currentDecimalPart || '0'}`).toFixed(precision).split('.')
@@ -43,7 +44,7 @@ function roundToPrecision(numStr, precision, fillZeroes) {
 
   const decimalPart = roundedDecimalParts[1];
 
-  return intPart + (decimalPart ? '.' + decimalPart : '');
+  return intPart + (decimalPart || hasDecimalSeperator ? '.' + decimalPart : '');
 }
 
 
@@ -172,7 +173,7 @@ class NumberFormat extends React.Component {
     }
 
     //if decimalPrecision is 0 remove decimalNumbers
-    if (decimalPrecision === 0 || (numberParts[1] && !numberParts[1].length)) return numberParts[0]
+    if (decimalPrecision === 0) return numberParts[0]
 
     return value;
   }
@@ -450,9 +451,9 @@ class NumberFormat extends React.Component {
     const el = e.target;
     const {selectionEnd, value} = el;
     let {selectionStart} = el;
-    const {decimalPrecision, prefix, suffix} = this.props;
+    const {decimalPrecision, prefix, suffix, fillZeroes} = this.props;
     const {key} = e;
-    const numRegex = this.getNumberRegex(false, decimalPrecision !== undefined);
+    const numRegex = this.getNumberRegex(false, decimalPrecision !== undefined && fillZeroes);
     const negativeRegex = new RegExp('-');
 
     //Handle backspace and delete against non numerical/decimal characters
@@ -500,7 +501,7 @@ class NumberFormat extends React.Component {
       onChange:this.onChange,
       onKeyDown:this.onKeyDown,
       onMouseUp: this.onMouseUp
-    })
+    });
 
     if( this.props.displayType === 'text'){
       return (<span {...props}>{this.state.value}</span>);
