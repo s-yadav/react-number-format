@@ -19,6 +19,8 @@ module.exports = function (config) {
                     {test: /\.json$/, loaders: ['json-loader']}
                 ]
             },
+            externals: {
+            },
             watch: true
         },
         webpackServer: {

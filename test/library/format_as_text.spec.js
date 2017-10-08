@@ -1,5 +1,6 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+
+import { shallow } from '../test_util';
 import NumberFormat from '../../src/number_format';
 
 /*** format_number input as text ****/
@@ -21,7 +22,7 @@ describe('NumberFormat as text', () => {
 
   it('should format as given format when input length is less than format length', () => {
     const wrapper = shallow(<NumberFormat value="41111111111111" displayType={'text'} format="#### #### #### ####" />);
-    expect(wrapper.find('span').text()).toEqual('4111 1111 1111 11');
+    expect(wrapper.find('span').text()).toEqual('4111 1111 1111 11  ');
   });
 
   it('should format as given format with mask', () => {
@@ -43,5 +44,10 @@ describe('NumberFormat as text', () => {
     const wrapper = shallow(<NumberFormat value="4111.11" displayType={'text'} decimalPrecision={4} />);
     expect(wrapper.find('span').text()).toEqual('4111.1100');
   });
+
+  it('should accept custom renderText method', () => {
+    const wrapper = shallow(<NumberFormat value="4111.11" thousandSeparator="," renderText={value => <div>{value}</div>} displayType={'text'} decimalPrecision={4} />);
+    expect(wrapper.find('div').text()).toEqual('4,111.1100');
+  })
 
 });

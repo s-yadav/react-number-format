@@ -2,69 +2,18 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-/** type defination **/
-declare class SyntheticKeyboardInputEvent extends SyntheticKeyboardEvent {
-    target: HTMLInputElement
-}
+import {
+  noop,
+  charIsNumber,
+  escapeRegExp,
+  removeLeadingZero,
+  splitString,
+  limitToPrecision,
+  roundToPrecision,
+  omit,
+  setCaretPosition
+} from './utils';
 
-declare class SyntheticMouseInputEvent extends SyntheticMouseEvent {
-    target: HTMLInputElement
-}
-
-function noop(){}
-
-function charIsNumber(char) {
-  return !!(char || '').match(/\d/);
-}
-
-function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-}
-
-function removeLeadingZero(numStr) {
-  //remove leading zeros
-  return numStr.replace(/^0+/,'') || '0';
-}
-
-/**
- * limit decimal numbers to given precision
- * Not used .fixedTo because that will break with big numbers
- */
-function limitToPrecision(numStr, precision) {
-  let str = ''
-  for (let i=0; i<=precision - 1; i++) {
-    str += numStr[i] || '0'
-  }
-  return str;
-}
-
-/**
- * This method is required to round prop value to given precision.
- * Not used .round or .fixedTo because that will break with big numbers
- */
-function roundToPrecision(numStr, precision) {
-  const numberParts = numStr.split('.');
-  const roundedDecimalParts = parseFloat(`0.${numberParts[1] || '0'}`).toFixed(precision).split('.');
-  const intPart = numberParts[0].split('').reverse().reduce((roundedStr, current, idx) => {
-    if (roundedStr.length > idx) {
-      return (Number(roundedStr[0]) + Number(current)).toString() + roundedStr.substring(1, roundedStr.length);
-    }
-    return current + roundedStr;
-  }, roundedDecimalParts[0])
-
-  const decimalPart = roundedDecimalParts[1];
-
-  return intPart + (decimalPart ? '.' + decimalPart : '');
-}
-
-
-function omit(obj, keyMaps) {
-  const filteredObj = {};
-  Object.keys(obj).forEach((key) => {
-    if (!keyMaps[key]) filteredObj[key] = obj[key]
-  });
-  return filteredObj;
-}
 
 const propTypes = {
   thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([true])]),
@@ -89,6 +38,7 @@ const propTypes = {
   onKeyDown: PropTypes.func,
   onMouseUp: PropTypes.func,
   onChange: PropTypes.func,
+  onFocus: PropTypes.func,
   type: PropTypes.oneOf(['text', 'tel']),
   isAllowed: PropTypes.func,
   renderText: PropTypes.func
@@ -105,25 +55,37 @@ const defaultProps = {
   onChange: noop,
   onKeyDown: noop,
   onMouseUp: noop,
+  onFocus: noop,
   isAllowed: function() {return true;}
 };
 
 class NumberFormat extends React.Component {
   state: {
-    value?: string
+    value?: string,
+    numAsString?: string
   }
   onChange: Function
   onKeyDown: Function
   onMouseUp: Function
+  onFocus: Function
   static defaultProps: Object
   constructor(props: Object) {
     super(props);
+
+    //validate props
+    this.validateProps();
+
+    const formattedValue = this.formatValueProp();
+
     this.state = {
-      value: this.formatValueProp()
+      value: formattedValue,
+      numAsString: this.removeFormatting(formattedValue)
     }
+
     this.onChange = this.onChange.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
+    this.onFocus = this.onFocus.bind(this);
   }
 
   componentDidUpdate(prevProps: Object) {
@@ -134,16 +96,19 @@ class NumberFormat extends React.Component {
     const {props, state} = this;
 
     if(prevProps !== props) {
+      //validate props
+      this.validateProps();
+
       const stateValue = state.value;
 
-      let value = this.formatValueProp();
-      if (value === undefined) value = stateValue;
+      const lastNumStr = state.numAsString || '';
 
-      const {formattedValue} = this.formatInput(value);
+      const formattedValue = props.value === undefined ? this.formatNumString(lastNumStr).formattedValue : this.formatValueProp();
 
       if (formattedValue !== stateValue) {
         this.setState({
-          value : formattedValue
+          value : formattedValue,
+          numAsString: this.removeFormatting(formattedValue)
         })
       }
     }
@@ -188,14 +153,6 @@ class NumberFormat extends React.Component {
       thousandSeparator = ','
     }
 
-    if (decimalSeparator === thousandSeparator) {
-      throw new Error(`
-          Decimal separator can\'t be same as thousand separator.\n
-          thousandSeparator: ${thousandSeparator} (thousandSeparator = {true} is same as thousandSeparator = ",")
-          decimalSeparator: ${decimalSeparator} (default value for decimalSeparator is .)
-       `);
-    }
-
     return {
       decimalSeparator,
       thousandSeparator
@@ -211,42 +168,28 @@ class NumberFormat extends React.Component {
     return mask[index] || ' ';
   }
 
-  /** Misc methods end **/
+  validateProps() {
+    const {decimalSeparator, thousandSeparator} = this.getSeparators();
 
-
-  /** caret specific methods **/
-  setCaretPosition(el: HTMLInputElement, caretPos: number) {
-    el.value = el.value;
-    // ^ this is used to not only get "focus", but
-    // to make sure we don't have it everything -selected-
-    // (it causes an issue in chrome, and having it doesn't hurt any other browser)
-    if (el !== null) {
-      if (el.createTextRange) {
-        const range = el.createTextRange();
-        range.move('character', caretPos);
-        range.select();
-        return true;
-      }
-      // (el.selectionStart === 0 added for Firefox bug)
-      if (el.selectionStart || el.selectionStart === 0) {
-        el.focus();
-        el.setSelectionRange(caretPos, caretPos);
-        return true;
-      }
-
-      // fail city, fortunately this never happens (as far as I've tested) :)
-      el.focus();
-      return false;
+    if (decimalSeparator === thousandSeparator) {
+      throw new Error(`
+          Decimal separator can\'t be same as thousand separator.\n
+          thousandSeparator: ${thousandSeparator} (thousandSeparator = {true} is same as thousandSeparator = ",")
+          decimalSeparator: ${decimalSeparator} (default value for decimalSeparator is .)
+       `);
     }
   }
 
+  /** Misc methods end **/
+
+  /** caret specific methods **/
   setPatchedCaretPosition(el: HTMLInputElement, caretPos: number, currentValue: string) {
     /* setting caret position within timeout of 0ms is required for mobile chrome,
     otherwise browser resets the caret position after we set it
     We are also setting it without timeout so that in normal browser we don't see the flickering */
-    this.setCaretPosition(el, caretPos);
+    setCaretPosition(el, caretPos);
     setTimeout(() => {
-      if(el.value === currentValue) this.setCaretPosition(el, caretPos);
+      if(el.value === currentValue) setCaretPosition(el, caretPos);
     }, 0);
   }
 
@@ -256,15 +199,20 @@ class NumberFormat extends React.Component {
 
     //in case of format as number limit between prefix and suffix
     if (!format) {
-      return Math.min(Math.max(caretPos, prefix.length), (value.length - suffix.length));
+      const hasNegation = value[0] === '-';
+      return Math.min(Math.max(caretPos, prefix.length + (hasNegation ? 1 : 0)), (value.length - suffix.length));
     }
 
     //in case if custom format method don't do anything
     if (typeof format === 'function') return caretPos;
 
-    //in case format is string find the closest # position from the caret position
+    /* in case format is string find the closest # position from the caret position */
+
+    //in case the caretPos have input value on it don't do anything
     if (format[caretPos] === '#' && charIsNumber(value[caretPos])) return caretPos;
 
+    //if caretPos is just after input value don't do anything
+    if (format[caretPos - 1] === '#' && charIsNumber(value[caretPos - 1])) return caretPos;
 
     //find the nearest caret position
     const firstHashPosition = format.indexOf('#');
@@ -287,6 +235,7 @@ class NumberFormat extends React.Component {
     || (caretPos - caretLeftBound < caretRightBoud - caretPos);
 
     return goToLeft ? caretLeftBound + 1 : caretRightBoud;
+
   }
 
   getCaretPosition(inputValue: string, formattedValue: string, caretPos: number) {
@@ -322,7 +271,7 @@ class NumberFormat extends React.Component {
       j = formattedValue.length
     }
 
-    //correct caret position if its outsize of editable area
+    //correct caret position if its outside of editable area
     j = this.correctCaretPosition(formattedValue, j);
 
     return j;
@@ -464,11 +413,11 @@ class NumberFormat extends React.Component {
     const {format} = this.props;
     let formattedValue = value;
 
-    //if value has negation or double negation without any number remove it as it should be only on formattedValue
-    if (value === '-' || value === '--') value = '';
-
     if (value === '') {
       formattedValue = ''
+    } else if (value === '-' && !format) {
+      formattedValue = '-';
+      value = '';
     } else if (typeof format === 'string') {
       formattedValue = this.formatWithPattern(formattedValue);
     } else if (typeof format === 'function') {
@@ -476,6 +425,7 @@ class NumberFormat extends React.Component {
     } else {
       formattedValue = this.formatAsNumber(formattedValue)
     }
+
 
     return {
       value,
@@ -487,7 +437,8 @@ class NumberFormat extends React.Component {
     const {format, decimalPrecision} = this.props;
     let {value, isNumericString} = this.props;
 
-    if (value === undefined) return;
+    // if value is not defined return empty string
+    if (value === undefined) return '';
 
     if (typeof value === 'number') {
       value = value.toString();
@@ -495,6 +446,7 @@ class NumberFormat extends React.Component {
     }
 
     //round the number based on decimalPrecision
+    //format only if non formatted value is provided
     if (isNumericString && !format && typeof decimalPrecision === 'number') {
       value = roundToPrecision(value, decimalPrecision)
     }
@@ -540,19 +492,66 @@ class NumberFormat extends React.Component {
   }
 
   /*** format specific methods end ***/
+  isCharacterAFormat(caretPos: number, value: string) {
+    const {format, prefix, suffix} = this.props;
+
+    //check within format pattern
+    if (typeof format === 'string' && format[caretPos] !== '#') return true;
+
+    //check in number format
+    if (!format && (caretPos < prefix.length || caretPos >= value.length - suffix.length)) return true;
+    return false;
+  }
+  checkIfFormatGotDeleted(start: number, end: number, value: string) {
+
+    for (let i = start; i < end; i++) {
+      if (this.isCharacterAFormat(i, value)) return true;
+      // const correctedPosition = this.correctCaretPosition(value, i);
+      // if (correctedPosition !== i) return true;
+    }
+    return false;
+  }
+
+  /**
+   * This will check if any formatting got removed by the delete or backspace and reset the value
+   * It will also work as fallback if android chome keyDown handler does not work
+   **/
+  correctInputValue(caretPos: number, lastValue: string, value: string) {
+
+    //don't do anyhting if something got added
+    if (value.length >= lastValue.length) {
+      return value;
+    }
+
+    const start = caretPos;
+    const lastValueParts = splitString(lastValue, caretPos);
+    const newValueParts = splitString(value, caretPos);
+    const deletedIndex = lastValueParts[1].lastIndexOf(newValueParts[1]);
+    const diff = deletedIndex !== -1 ? lastValueParts[1].substring(0, deletedIndex) : '';
+    const end = start + diff.length;
+
+    //if format got deleted reset the value to last value
+    if (this.checkIfFormatGotDeleted(start, end, lastValue)) {
+      value = lastValue;
+    }
+
+    return value;
+  }
 
   onChange(e: SyntheticInputEvent) {
     e.persist();
     const el = e.target;
-    const inputValue = el.value;
+    let inputValue = el.value;
     const {state, props} = this;
     const {isAllowed} = props;
     const lastValue = state.value || '';
+    const currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);
+
+    inputValue = this.correctInputValue(currentCaretPosition, lastValue, inputValue);
+
     let {formattedValue = '', value} = this.formatInput(inputValue); // eslint-disable-line prefer-const
 
     /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
-    const currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);
-
     const valueObj = {
       formattedValue,
       value,
@@ -574,7 +573,7 @@ class NumberFormat extends React.Component {
 
     //change the state
     if (formattedValue !== lastValue) {
-      this.setState({value : formattedValue},()=>{
+      this.setState({value : formattedValue, numAsString: this.removeFormatting(formattedValue)}, () => {
         props.onChange(e, valueObj);
       });
     }
@@ -584,39 +583,63 @@ class NumberFormat extends React.Component {
 
   onKeyDown(e: SyntheticKeyboardInputEvent) {
     const el = e.target;
-    const {selectionEnd, value} = el;
-    let {selectionStart} = el;
-    const {decimalPrecision, prefix, suffix, format} = this.props;
     const {key} = e;
+    const {selectionEnd, value} = el;
+    const {selectionStart} = el;
+    let expectedCaretPosition;
+    const {decimalPrecision, prefix, suffix, format, onKeyDown} = this.props;
     const numRegex = this.getNumberRegex(false, decimalPrecision !== undefined);
     const negativeRegex = new RegExp('-');
     const isPatternFormat = typeof format === 'string';
 
-    //Handle backspace and delete against non numerical/decimal characters
-    if(selectionStart === selectionEnd) {
-      let newCaretPosition = selectionStart;
-      const leftBound = isPatternFormat ? format.indexOf('#') : prefix.length;
-      const rightBound = isPatternFormat ? format.lastIndexOf('#') + 1 : value.length - suffix.length;
-
-      if (key === 'ArrowLeft' || key === 'ArrowRight') {
-        const direction = key === 'ArrowLeft' ? 'left' : 'right';
-        selectionStart += key === 'ArrowLeft' ? -1 : +1;
-        newCaretPosition = this.correctCaretPosition(value, selectionStart, direction);
-      } else if (key === 'Delete' && !numRegex.test(value[selectionStart]) && !negativeRegex.test(value[selectionStart])) {
-        while (!numRegex.test(value[newCaretPosition]) && newCaretPosition < rightBound) newCaretPosition++;
-      } else if (key === 'Backspace' && !numRegex.test(value[selectionStart - 1]) && !negativeRegex.test(value[selectionStart-1])) {
-        while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound) newCaretPosition--;
-      }
-
-      if (newCaretPosition !== selectionStart || newCaretPosition === leftBound || newCaretPosition === rightBound + 1) {
-        e.preventDefault();
-        this.setPatchedCaretPosition(el, newCaretPosition, value);
-      }
+    //Handle backspace and delete against non numerical/decimal characters or arrow keys
+    if (key === 'ArrowLeft' || key === 'Backspace') {
+      expectedCaretPosition = selectionStart - 1;
+    } else if (key === 'ArrowRight') {
+      expectedCaretPosition = selectionStart + 1;
+    } else if (key === 'Delete') {
+      expectedCaretPosition = selectionStart;
     }
 
+    //if expectedCaretPosition is not set it means we don't want to Handle keyDown
+    //also if multiple characters are selected don't handle
+    if (expectedCaretPosition === undefined || selectionStart !== selectionEnd) {
+      onKeyDown(e);
+      return;
+    }
+
+    let newCaretPosition = expectedCaretPosition;
+    const leftBound = isPatternFormat ? format.indexOf('#') : prefix.length;
+    const rightBound = isPatternFormat ? format.lastIndexOf('#') + 1 : value.length - suffix.length;
+
+    if (key === 'ArrowLeft' || key === 'ArrowRight') {
+      const direction = key === 'ArrowLeft' ? 'left' : 'right';
+      newCaretPosition = this.correctCaretPosition(value, expectedCaretPosition, direction);
+    } else if (key === 'Delete' && !numRegex.test(value[expectedCaretPosition]) && !negativeRegex.test(value[expectedCaretPosition])) {
+      while (!numRegex.test(value[newCaretPosition]) && newCaretPosition < rightBound) newCaretPosition++;
+    } else if (key === 'Backspace' && !numRegex.test(value[expectedCaretPosition]) && !negativeRegex.test(value[expectedCaretPosition])) {
+      while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound){ newCaretPosition--; }
+      newCaretPosition = this.correctCaretPosition(value, newCaretPosition, 'left');
+    }
+
+
+    if (newCaretPosition !== expectedCaretPosition || expectedCaretPosition < leftBound || expectedCaretPosition > rightBound) {
+      e.preventDefault();
+      this.setPatchedCaretPosition(el, newCaretPosition, value);
+    }
+
+    /* NOTE: this is just required for unit test as we need to get the newCaretPosition,
+            Remove this when you find different solution */
+    if (e.isUnitTestRun) {
+      this.setPatchedCaretPosition(el, newCaretPosition, value);
+    }
+
+
     this.props.onKeyDown(e);
+
   }
 
+  /** required to handle the caret position when click anywhere within the input **/
   onMouseUp(e: SyntheticMouseInputEvent) {
     const el = e.target;
     const {selectionStart, selectionEnd, value} = el;
@@ -631,6 +654,18 @@ class NumberFormat extends React.Component {
     this.props.onMouseUp(e);
   }
 
+  onFocus(e: SyntheticInputEvent) {
+    const el = e.target;
+    const {selectionStart, value} = el;
+
+    const caretPostion = this.correctCaretPosition(value, selectionStart);
+    if (caretPostion !== selectionStart) {
+      this.setPatchedCaretPosition(el, caretPostion, value);
+    }
+
+    this.props.onFocus(e);
+  }
+
   render() {
     const {type, displayType, customInput, renderText} = this.props;
     const {value} = this.state;
@@ -642,7 +677,8 @@ class NumberFormat extends React.Component {
       value,
       onChange: this.onChange,
       onKeyDown: this.onKeyDown,
-      onMouseUp: this.onMouseUp
+      onMouseUp: this.onMouseUp,
+      onFocus: this.onFocus
     })
 
     if( displayType === 'text'){

@@ -1,8 +1,7 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
-import NumberFormat from '../../src/number_format';
 
-import {getCustomEvent} from '../test_util';
+import NumberFormat from '../../src/number_format';
+import {getCustomEvent, simulateKeyInput, shallow, mount} from '../test_util';
 
 
 /**
@@ -21,19 +20,17 @@ describe('Test NumberFormat as input with numeric format options', () => {
   it('show the initial value as empty string when empty string is passed and decimalPrecision is set', () => {
     const wrapper = mount(<NumberFormat value="" thousandSeparator={true} decimalPrecision={2} />);
     expect(wrapper.state().value).toEqual('');
-    expect(wrapper.find('input').get(0).value).toEqual('');
   });
 
   it('show the initial value as empty string when empty string is passed and decimalPrecision is not set', () => {
     const wrapper = mount(<NumberFormat value="" thousandSeparator={true} />);
     expect(wrapper.state().value).toEqual('');
-    expect(wrapper.find('input').get(0).value).toEqual('');
   });
 
   it('should maintain decimal points', () => {
     const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} />);
 
-    wrapper.find('input').simulate('change', getCustomEvent('2456981.89'));
+    simulateKeyInput(wrapper.find('input'), '2456981.89', 0);
 
     expect(wrapper.state().value).toEqual('$2,456,981.89');
   });
@@ -41,34 +38,40 @@ describe('Test NumberFormat as input with numeric format options', () => {
   it('supports negative numbers', () => {
     const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} />);
 
-    wrapper.find('input').simulate('change', getCustomEvent('-2456981.89'));
+    simulateKeyInput(wrapper.find('input'), '-', 0);
 
-    expect(wrapper.state().value).toEqual('-$2,456,981.89');
-
-    wrapper.find('input').simulate('change', getCustomEvent('-'));
     expect(wrapper.state().value).toEqual('-');
+
+    simulateKeyInput(wrapper.find('input'), '123.55', 1);
+
+    expect(wrapper.state().value).toEqual('-$123.55');
   });
 
 
   it('removes negation when double negation is done', () => {
-    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} />);
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} value={-2456981.89} />);
 
-    wrapper.find('input').simulate('change', getCustomEvent('--2456981.89'));
+    expect(wrapper.state().value).toEqual('-$2,456,981.89');
+
+    simulateKeyInput(wrapper.find('input'), '-', 1);
 
     expect(wrapper.state().value).toEqual('$2,456,981.89');
 
-    wrapper.find('input').simulate('change', getCustomEvent('--'));
+    wrapper.setProps({value: ''});
+    wrapper.update();
+    simulateKeyInput(wrapper.find('input'), '--', 0);
     expect(wrapper.state().value).toEqual('');
   });
 
   it('allows negation and double negation any cursor position in the input', () => {
-    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'}/>);
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} value={2456981.89}/>);
 
-    wrapper.find('input').simulate('change', getCustomEvent('24569-81.89'));
+    simulateKeyInput(wrapper.find('input'), '-', 5);
 
     expect(wrapper.state().value).toEqual('-$2,456,981.89');
 
-    wrapper.find('input').simulate('change', getCustomEvent('24569--81.89'));
+    //restore negation back
+    simulateKeyInput(wrapper.find('input'), '-', 7);
 
     expect(wrapper.state().value).toEqual('$2,456,981.89');
   });
@@ -76,27 +79,25 @@ describe('Test NumberFormat as input with numeric format options', () => {
 
   it('should support custom thousand seperator', () => {
     const wrapper = shallow(<NumberFormat thousandSeparator={'.'} decimalSeparator={','} prefix={'$'} />);
-    const input = wrapper.find('input');
-
-    input.simulate('change', getCustomEvent('2456981,89'));
+    simulateKeyInput(wrapper.find('input'), '2456981,89', 0);
 
     expect(wrapper.state().value).toEqual('$2.456.981,89');
 
     wrapper.setProps({thousandSeparator: "'"});
+    wrapper.update();
 
-    /** TODO : Failing testcases, changing thousand seperator, decimal seperator on the fly fails **/
-    //expect(wrapper.state().value).toEqual("$2'456'981,89");
-
-    input.simulate('change', getCustomEvent('2456981,89'));
     expect(wrapper.state().value).toEqual("$2'456'981,89");
 
-    wrapper.setProps({thousandSeparator: " ", decimalSeparator:"'" });
-    input.simulate('change', getCustomEvent("2456981'89"));
-    expect(wrapper.state().value).toEqual("$2 456 981'89");
+    //changing decimal separator in the fly should work
+    wrapper.setProps({decimalSeparator: '.'});
+    wrapper.update();
+    expect(wrapper.state().value).toEqual("$2'456'981.89");
 
-    wrapper.setProps({thousandSeparator: ",", decimalSeparator: "."});
-    input.simulate('change', getCustomEvent("2456981.89"));
-    expect(wrapper.state().value).toEqual("$2,456,981.89");
+    wrapper.setProps({thousandSeparator: " ", decimalSeparator:"'", value:'' });
+    wrapper.update();
+
+    simulateKeyInput(wrapper.find('input'), "2456981'89", 0);
+    expect(wrapper.state().value).toEqual("$2 456 981'89");
   });
 
   it('should throw error when decimal separator and thousand separator are same', () => {
@@ -217,7 +218,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should round the initial value to given decimalPrecision', () => {
-    const wrapper = shallow(<NumberFormat value={123213.7536} decimalPrecision={1}/>, {lifecycleExperimental: true});
+    const wrapper = shallow(<NumberFormat value={123213.7536} isNumericString={true} decimalPrecision={1}/>, {lifecycleExperimental: true});
     expect(wrapper.state().value).toEqual('123213.8');
 
     wrapper.setProps({
@@ -248,12 +249,12 @@ describe('Test NumberFormat as input with numeric format options', () => {
 
 
     wrapper.setProps({
-      value: '56.790,876'
+      value: '56790.876'
     })
     expect(wrapper.state().value).toEqual('56.790,88');
 
     wrapper.setProps({
-      value: '981273724234817383478127,678'
+      value: '981273724234817383478127.678'
     });
 
     expect(wrapper.state().value).toEqual('981.273.724.234.817.383.478.127,68');

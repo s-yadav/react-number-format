@@ -41,7 +41,8 @@
     "babel-register": "^6.7.2",
     "classnames": "^2.2.3",
     "cross-env": "^3.1.4",
-    "enzyme": "^2.7.1",
+    "enzyme": "^3.0.0",
+    "enzyme-adapter-react-16": "^1.0.0",
     "eslint": "^2.5.3",
     "eslint-config-standard": "^5.1.0",
     "eslint-loader": "^1.3.0",
@@ -61,18 +62,19 @@
     "karma-jasmine-html-reporter": "^0.2.0",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^1.7.0",
-    "material-ui": "^0.16.7",
-    "react": "^15.0.1",
-    "react-dom": "^15.0.1",
+    "material-ui": "^0.19.2",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-test-renderer": "^16.0.0",
     "react-transform-hmr": "^1.0.4",
     "webpack": "^1.12.14",
     "webpack-dev-server": "^1.14.1"
   },
   "peerDependencies": {
-    "react": "^0.14 || ^15.0.0-rc || ^15.0.0",
-    "react-dom": "^0.14 || ^15.0.0-rc || ^15.0.0"
+    "react": "^0.14 || ^15.0.0-rc || ^15.0.0 || ^16.0.0-rc || ^16.0.0",
+    "react-dom": "^0.14 || ^15.0.0-rc || ^15.0.0 || ^16.0.0-rc || ^16.0.0"
   },
   "dependencies": {
-    "prop-types": "^15.5.8"
+    "prop-types": "^15.6.0"
   }
 }
