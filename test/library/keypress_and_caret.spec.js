@@ -230,6 +230,25 @@ describe('Test click / focus on input', () => {
     expect(caretPos).toEqual(17);
   })
 
+  it('should limit the caret position to the next position of the typed number', () => {
+    const wrapper = shallow(<NumberFormat format="##/##/####"/>);
+
+    simulateKeyInput(wrapper.find('input'), '1', 0);
+    expect(wrapper.state().value).toEqual('1 /  /    ');
+
+    simulateMousUpEvent(wrapper.find('input'), 4, setSelectionRange);
+    expect(caretPos).toEqual(1);
+
+    wrapper.setProps({
+      mask: ['D', 'D', 'M', 'M', 'Y', 'Y', 'Y', 'Y']
+    })
+    wrapper.update();
+
+    expect(wrapper.state().value).toEqual('1D/MM/YYYY');
+    simulateMousUpEvent(wrapper.find('input'), 4, setSelectionRange);
+    expect(caretPos).toEqual(1);
+  })
+
   it('should always keep caret position between suffix and prefix', () => {
     const wrapper = shallow(<NumberFormat  thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
 

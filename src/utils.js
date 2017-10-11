@@ -2,6 +2,7 @@
 
 // basic noop function
 export function noop(){}
+export function returnTrue(){ return true; }
 
 export function charIsNumber(char?: string) {
   return !!(char || '').match(/\d/);

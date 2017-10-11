@@ -102,4 +102,36 @@ describe('NumberFormat as input', () => {
     simulateKeyInput(input, '411111', 0);
     expect(input.instance().value).toEqual('4111 11__ ____ ____');
   });
+
+  describe('Test masking', () => {
+    it('should allow mask as string', () => {
+      const wrapper = shallow(<NumberFormat format="#### #### ####" mask="_"/>);
+
+      simulateKeyInput(wrapper.find('input'), '111', 0);
+      expect(wrapper.state().value).toEqual('111_ ____ ____');
+
+      simulateKeyInput(wrapper.find('input'), '1', 3);
+      expect(wrapper.state().value).toEqual('1111 ____ ____');
+    });
+
+    it('should allow mask as array of strings', () => {
+      const wrapper = shallow(<NumberFormat format="##/##/####" mask={['D', 'D', 'M', 'M', 'Y', 'Y', 'Y', 'Y']}/>);
+
+      simulateKeyInput(wrapper.find('input'), '1', 0);
+      expect(wrapper.state().value).toEqual('1D/MM/YYYY');
+
+      simulateKeyInput(wrapper.find('input'), '3', 1);
+      expect(wrapper.state().value).toEqual('13/MM/YYYY');
+    });
+
+    it('should throw an error if mask has numeric character', () => {
+      expect(() => {
+        shallow(<NumberFormat format="#### #### ####" mask="1"/>)
+      }).toThrow()
+
+      expect(() => {
+        shallow(<NumberFormat format="#### #### ####" mask={['D', 'D', 'M', '1', '2', 'Y', 'Y', 'Y']}/>)
+      }).toThrow()
+    })
+  })
 });

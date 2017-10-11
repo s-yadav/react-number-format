@@ -4,6 +4,7 @@ import React from 'react';
 
 import {
   noop,
+  returnTrue,
   charIsNumber,
   escapeRegExp,
   removeLeadingZero,
@@ -27,7 +28,7 @@ const propTypes = {
     PropTypes.func
   ]),
   removeFormatting: PropTypes.func,
-  mask: PropTypes.string,
+  mask: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
   value: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string
@@ -41,6 +42,7 @@ const propTypes = {
   onFocus: PropTypes.func,
   type: PropTypes.oneOf(['text', 'tel']),
   isAllowed: PropTypes.func,
+  validateInput: PropTypes.func,
   renderText: PropTypes.func
 };
 
@@ -56,7 +58,8 @@ const defaultProps = {
   onKeyDown: noop,
   onMouseUp: noop,
   onFocus: noop,
-  isAllowed: function() {return true;}
+  isAllowed: returnTrue,
+  validateInput: returnTrue
 };
 
 class NumberFormat extends React.Component {
@@ -169,7 +172,11 @@ class NumberFormat extends React.Component {
   }
 
   validateProps() {
+    const {mask} = this.props;
+
+    //validate decimalSeparator and thousandSeparator
     const {decimalSeparator, thousandSeparator} = this.getSeparators();
+
 
     if (decimalSeparator === thousandSeparator) {
       throw new Error(`
@@ -178,6 +185,17 @@ class NumberFormat extends React.Component {
           decimalSeparator: ${decimalSeparator} (default value for decimalSeparator is .)
        `);
     }
+
+    //validate mask
+    if (mask) {
+      const maskAsStr = mask === 'string' ? mask : mask.toString();
+      if (maskAsStr.match(/\d/g)) {
+        throw new Error(`
+          Mask ${mask} should not contain numeric character;
+        `)
+      }
+    }
+
   }
 
   /** Misc methods end **/
@@ -543,7 +561,7 @@ class NumberFormat extends React.Component {
     const el = e.target;
     let inputValue = el.value;
     const {state, props} = this;
-    const {isAllowed} = props;
+    const {isAllowed, validateInput} = props;
     const lastValue = state.value || '';
     const currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);
 
@@ -561,6 +579,16 @@ class NumberFormat extends React.Component {
     if (!isAllowed(valueObj)) {
       formattedValue = lastValue;
     }
+
+    /** validate input value and do formatting based on that **/
+    const validatedValue = validateInput(valueObj);
+
+    if (validatedValue === false) {
+      formattedValue = lastValue;
+    } else if (typeof validatedValue === 'string') {
+      formattedValue = validatedValue
+    }
+    /** validate logic finished **/
 
     //set the value imperatively, this is required for IE fix
     el.value = formattedValue;
