@@ -11,9 +11,9 @@ describe ('Test card expiry formatter', () => {
   it('should format input to valid MM/YY', () => {
     expect(cardExpiry('2')).toEqual('02');
     expect(cardExpiry('00')).toEqual('01');
-    expect(cardExpiry('0200')).toEqual('02/01');
-    expect(cardExpiry('024')).toEqual('02/04');
+    expect(cardExpiry('0200')).toEqual('02/00');
+    expect(cardExpiry('024')).toEqual('02/4');
     expect(cardExpiry('1410')).toEqual('12/10');
-    expect(cardExpiry('1235')).toEqual('12/31');
+    expect(cardExpiry('1235')).toEqual('12/35');
   });
 })

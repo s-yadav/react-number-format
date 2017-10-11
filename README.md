@@ -120,9 +120,9 @@ function limit(val, max) {
 
 function cardExpiry(val) {
   let month = limit(val.substring(0, 2), '12');
-  let date = limit(val.substring(2, 4), '31');
+  let year = val.substring(2, 4);
 
-  return month + (date.length ? '/' + date : '');
+  return month + (year.length ? '/' + year : '');
 }
 
 <NumberFormat format={cardExpiry}/>
