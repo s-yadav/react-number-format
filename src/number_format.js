@@ -278,7 +278,7 @@ class NumberFormat extends React.Component {
       if (currentInputChar === '0' && currentFormatChar.match(numRegex) && currentFormatChar !== '0' && inputNumber.length !== formattedNumber.length) continue;
 
       //we are not using currentFormatChar because j can change here
-      while(currentInputChar !== formattedValue[j] && !(formattedValue[j]||'').match(numRegex) && j<formattedValue.length) j++;
+      while(currentInputChar !== formattedValue[j] && j < formattedValue.length) j++;
       j++;
     }
 
