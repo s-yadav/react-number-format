@@ -127,7 +127,7 @@ function cardExpiry(val) {
 
 <NumberFormat format={cardExpiry}/>
 ```
-![Screencast example](https://media.giphy.com/media/3ohryizPIpkv2Qs3p6/giphy.gif)
+![Screencast example](https://i.imgur.com/9wwdyFF.gif)
 
 ### Custom Inputs
 You can easily extend your custom input with number format. But custom input should have all input props.
