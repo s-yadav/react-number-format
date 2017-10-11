@@ -536,8 +536,8 @@ class NumberFormat extends React.Component {
    **/
   correctInputValue(caretPos: number, lastValue: string, value: string) {
 
-    //don't do anyhting if something got added
-    if (value.length >= lastValue.length) {
+    //don't do anyhting if something got added, or if value is empty string (when whole input is cleared)
+    if (value.length >= lastValue.length || !value.length) {
       return value;
     }
 
@@ -565,7 +565,7 @@ class NumberFormat extends React.Component {
     const lastValue = state.value || '';
     const currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);
 
-    inputValue = this.correctInputValue(currentCaretPosition, lastValue, inputValue);
+    inputValue =  this.correctInputValue(currentCaretPosition, lastValue, inputValue);
 
     let {formattedValue = '', value} = this.formatInput(inputValue); // eslint-disable-line prefer-const
 
