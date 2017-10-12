@@ -32,12 +32,18 @@ class App extends React.Component {
 
         <div className="example">
           <h3>
+            Custom renderText method
+          </h3>
+          <NumberFormat value={4111111111111111} displayType="text" format="#### #### #### ####"  renderText={value => <i>{value}</i>}/>
+        </div>
+
+        <div className="example">
+          <h3>
             Prefix and thousand separator : Format currency in input
           </h3>
           <NumberFormat
             thousandSeparator="."
             decimalSeparator=","
-            isAllowed={(values) => values.floatValue > 5}
             value={this.state.test}
             prefix="$"
             decimalPrecision={3}
@@ -68,7 +74,7 @@ class App extends React.Component {
             ThousandSeperator: ' ', decimalSeparator='.'
           </div>
           <div>
-            <NumberFormat thousandSeparator=" " decimalSeparator="." prefix="$$$" />
+            <NumberFormat thousandSeparator=" " decimalSeparator="." prefix="$" />
           </div>
         </div>
 
@@ -100,10 +106,16 @@ class App extends React.Component {
 
         <div className="example">
           <h3>
+            Format with mask as array
+          </h3>
+          <NumberFormat format="##/##" placeholder="MM/YY" mask={['M', 'M', 'Y', 'Y']}/>
+        </div>
+
+        <div className="example">
+          <h3>
             Format with mask : Format credit card in an input
           </h3>
           <NumberFormat format="#### #### #### ####" mask="_"/>
-          <NumberFormat format="+1 (###) ### # ## US"/>
         </div>
 
         <div className="example">
@@ -111,6 +123,13 @@ class App extends React.Component {
             Custom format method  : Format credit card expiry time
           </h3>
           <NumberFormat format={cardExpiry} />
+        </div>
+
+        <div className="example">
+          <h3>
+            Format phone number
+          </h3>
+          <NumberFormat format="+1 (###) ###-####" mask="_"/>
         </div>
 
         <div className="example">

@@ -42,7 +42,6 @@ const propTypes = {
   onFocus: PropTypes.func,
   type: PropTypes.oneOf(['text', 'tel']),
   isAllowed: PropTypes.func,
-  validateInput: PropTypes.func,
   renderText: PropTypes.func
 };
 
@@ -59,7 +58,6 @@ const defaultProps = {
   onMouseUp: noop,
   onFocus: noop,
   isAllowed: returnTrue,
-  validateInput: returnTrue
 };
 
 class NumberFormat extends React.Component {
@@ -236,7 +234,7 @@ class NumberFormat extends React.Component {
     const firstHashPosition = format.indexOf('#');
     const lastHashPosition = format.lastIndexOf('#');
 
-    //limit the cursor between the first # position and the last hash position
+    //limit the cursor between the first # position and the last # position
     caretPos = Math.min(Math.max(caretPos, firstHashPosition), lastHashPosition + 1);
 
     const nextPos = format.substring(caretPos, format.length).indexOf('#');
@@ -282,8 +280,6 @@ class NumberFormat extends React.Component {
       j++;
     }
 
-    //fix the initial input cursor position when format pattern is defined and has number in pattern before the hash
-    //inputValue.length will be only less in case of initial input or delete
     if (typeof format === 'string' && !stateValue) {
       //set it to the maximum value so it goes after the last number
       j = formattedValue.length
@@ -524,8 +520,6 @@ class NumberFormat extends React.Component {
 
     for (let i = start; i < end; i++) {
       if (this.isCharacterAFormat(i, value)) return true;
-      // const correctedPosition = this.correctCaretPosition(value, i);
-      // if (correctedPosition !== i) return true;
     }
     return false;
   }
@@ -561,15 +555,16 @@ class NumberFormat extends React.Component {
     const el = e.target;
     let inputValue = el.value;
     const {state, props} = this;
-    const {isAllowed, validateInput} = props;
+    const {isAllowed} = props;
     const lastValue = state.value || '';
+
+    /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
     const currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);
 
     inputValue =  this.correctInputValue(currentCaretPosition, lastValue, inputValue);
 
     let {formattedValue = '', value} = this.formatInput(inputValue); // eslint-disable-line prefer-const
 
-    /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
     const valueObj = {
       formattedValue,
       value,
@@ -579,16 +574,6 @@ class NumberFormat extends React.Component {
     if (!isAllowed(valueObj)) {
       formattedValue = lastValue;
     }
-
-    /** validate input value and do formatting based on that **/
-    const validatedValue = validateInput(valueObj);
-
-    if (validatedValue === false) {
-      formattedValue = lastValue;
-    } else if (typeof validatedValue === 'string') {
-      formattedValue = validatedValue
-    }
-    /** validate logic finished **/
 
     //set the value imperatively, this is required for IE fix
     el.value = formattedValue;

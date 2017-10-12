@@ -25,15 +25,17 @@ Or get compiled development and production version from ./dist
 | allowNegative      | boolean     |   true | allow negative numbers (Only when format option is not provided) |
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
 | suffix | String (ex : /-)      |    none | Add a prefix after the number |
-| value | Number or String | null | Value to the number format. If passed as string it should have same decimal separator as the decimalSeparator props|
+| value | Number or String | null | Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true. |
+| isNumericString | boolean | false | If value is passed as string representation of numbers (unformatted) then this should be passed as true |
 | displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
 | type | One of ['text', 'tel'] | text | Input type attribute |
 | format | String : Hash based ex (#### #### #### ####) <br/> Or Function| none | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number. |
+| removeFormatting | (formattedValue) => numericString | none | If you are providing custom format method and it add numbers as format you will need to add custom removeFormatting logic |
 | mask | String (ex : _) | none | If mask defined, component will show non entered placed with masked value. |
 | customInput | Component Reference | input | This allow supporting custom inputs with number format. |
 | onChange | (e, values) => {} | none | onChange handler accepts event object and [values object](#values-object) |
 | isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not |
-
+| renderText | (formattedValue) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. |
 **Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
 
 #### values object
@@ -47,7 +49,7 @@ values object is on following format
 ```
 
 ### Notes and quirks
-1. Value can be passed as string or number, but if it is passed as string you should maintain the same decimal separator on the string what you provided as decimalSeparator prop.
+1. Value can be passed as string or number, but if it is passed as string it should be either formatted value or if it is a numeric string, you have to set isNumericString props to true.
 
 2. Value as prop will be rounded to given precision if format option is not provided.
 
@@ -63,6 +65,14 @@ var NumberFormat = require('react-number-format');
 <NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />
 ```
 Output : $2,456,981
+
+#### Custom renderText method
+```jsx
+var NumberFormat = require('react-number-format');
+
+<NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} renderText={value => <div>{value}</div>} />
+```
+Output : `<div> $2,456,981 </div>`
 
 #### Format with pattern : Format credit card as text
 ```jsx
@@ -98,6 +108,14 @@ Output : 4111 1111 1111 1111
 ```
 ![Screencast example](https://i.imgur.com/qvmydpH.gif)
 
+
+#### Format with mask as array
+Mask can also be a array of string. Each item corresponds to the same index #.
+```jsx
+<NumberFormat format="##/##" placeholder="MM/YY" mask={['M', 'M', 'Y', 'Y']}/>
+```
+
+
 #### Custom format method  : Format credit card expiry time
 ```jsx
 function limit(val, max) {
@@ -129,6 +147,11 @@ function cardExpiry(val) {
 ```
 ![Screencast example](https://i.imgur.com/9wwdyFF.gif)
 
+### Format phone number
+```jsx
+<NumberFormat format="+1 (###) ###-####" mask="_"/>
+```
+
 ### Custom Inputs
 You can easily extend your custom input with number format. But custom input should have all input props.
 ```jsx
@@ -154,6 +177,15 @@ All custom input props and number input props are passed together.
 [:star: this repo](https://github.com/s-yadav/react-number-format)
 
 ### Major Updates
+### v3.0.0-alpha
+- Added renderText prop to render formatted value differently.
+- onChange api been changed. Now it receives [values object](#values-object) as second parameter.
+- mask can be now array of string in which case mask at specific index will be mapped with the # of the pattern.
+- Value can be passed as string or number, but if it is passed as string it should be either formatted value or if it is a numeric string, you have to set isNumericString props to true.
+- Added support for numbers in prefix / suffix / pattern.
+- Fixed caret position issues.
+- Lot of bugs and stability fixes ([See release notes](https://github.com/s-yadav/react-number-format/releases))
+
 ### v2.0.0
 - Added isAllowed prop to validate custom input and reject input based on it.
 - onChange api been changed. Now it receives [values object](#values-object) as second parameter.
