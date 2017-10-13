@@ -1,7 +1,7 @@
 {
   "name": "react-number-format",
   "description": "React component to format number in an input or as a text.",
-  "version": "3.0.0-alpha",
+  "version": "3.0.0-alpha2",
   "main": "lib/number_format.js",
   "author": "Sudhanshu Yadav",
   "license": "MIT",
@@ -25,7 +25,7 @@
   "scripts": {
     "start": "webpack-dev-server --content-base example/ --config webpack.dev.config.js --watch-poll --progress --inline --hot",
     "bundle": "cross-env NODE_ENV=production npm run compile && cross-env NODE_ENV=production webpack --config webpack.bundle.config.js  && cross-env NODE_ENV=production karma start",
-    "compile": "cross-env NODE_ENV=production babel src/number_format.js --out-file lib/number_format.js",
+    "compile": "cross-env NODE_ENV=production babel src --out-dir lib",
     "test": "cross-env NODE_ENV=test karma start"
   },
   "devDependencies": {

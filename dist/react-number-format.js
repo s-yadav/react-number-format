@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.0.0-alpha
+ * react-number-format - 3.0.0-alpha2
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -519,6 +519,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	      var hasNagation = numStr[0] === '-';
+	      var addNegation = hasNagation && allowNegative;
 	      numStr = numStr.replace('-', '');
 
 	      var hasDecimalSeparator = numStr.indexOf('.') !== -1 || decimalPrecision;
@@ -526,6 +527,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var parts = numStr.split('.');
 	      var beforeDecimal = parts[0];
 	      var afterDecimal = parts[1] || '';
+
+	      //if beforeDecimal is empty and after decimal is 0 clear the input while keeping the negation sign
+	      if (beforeDecimal === '' && !parseFloat(afterDecimal)) {
+	        return addNegation ? '-' : '';
+	      }
 
 	      //remove leading zeros from number before decimal
 	      beforeDecimal = (0, _utils.removeLeadingZero)(beforeDecimal);
@@ -542,7 +548,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (suffix) afterDecimal = afterDecimal + suffix;
 
 	      //restore negation sign
-	      if (hasNagation && allowNegative) beforeDecimal = '-' + beforeDecimal;
+	      if (addNegation) beforeDecimal = '-' + beforeDecimal;
 
 	      numStr = beforeDecimal + (hasDecimalSeparator && decimalSeparator || '') + afterDecimal;
 
@@ -652,20 +658,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _props8 = this.props,
 	          format = _props8.format,
 	          prefix = _props8.prefix,
-	          suffix = _props8.suffix;
+	          suffix = _props8.suffix,
+	          decimalPrecision = _props8.decimalPrecision;
+
+	      var _getSeparators5 = this.getSeparators(),
+	          decimalSeparator = _getSeparators5.decimalSeparator;
 
 	      //check within format pattern
+
 
 	      if (typeof format === 'string' && format[caretPos] !== '#') return true;
 
 	      //check in number format
-	      if (!format && (caretPos < prefix.length || caretPos >= value.length - suffix.length)) return true;
+	      if (!format && (caretPos < prefix.length || caretPos >= value.length - suffix.length || decimalPrecision && value[caretPos] === decimalSeparator)) {
+	        return true;
+	      }
+
 	      return false;
 	    }
 	  }, {
 	    key: 'checkIfFormatGotDeleted',
 	    value: function checkIfFormatGotDeleted(start, end, value) {
-
 	      for (var i = start; i < end; i++) {
 	        if (this.isCharacterAFormat(i, value)) return true;
 	      }
@@ -680,7 +693,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'correctInputValue',
 	    value: function correctInputValue(caretPos, lastValue, value) {
-
 	      //don't do anyhting if something got added, or if value is empty string (when whole input is cleared)
 	      if (value.length >= lastValue.length || !value.length) {
 	        return value;
