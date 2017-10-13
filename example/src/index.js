@@ -46,7 +46,6 @@ class App extends React.Component {
             decimalSeparator=","
             value={this.state.test}
             prefix="$"
-            decimalPrecision={3}
             onChange={(e) => this.setState({test: e.target.value})}
           />
         </div>

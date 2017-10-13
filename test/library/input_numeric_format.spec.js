@@ -180,6 +180,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('4111.1110');
 
     //case 4th - no decimal should round with 4 zeros
+    input.simulate('change', getCustomEvent(''));
     input.simulate('change', getCustomEvent('4111'));
     expect(wrapper.state().value).toEqual('4111.0000');
 
@@ -259,6 +260,23 @@ describe('Test NumberFormat as input with numeric format options', () => {
 
     expect(wrapper.state().value).toEqual('981.273.724.234.817.383.478.127,68');
 
+  });
+
+  it('should allow deleting all numbers when decimalPrecision is defined', () => {
+    const wrapper = shallow(<NumberFormat prefix="$" decimalPrecision={3} value="$1.000"/>);
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 2);
+    expect(wrapper.state().value).toEqual('')
+  })
+
+  it('should not allow to remove decimalSeparator if decimalPrecision is defined', () => {
+    const wrapper = shallow(<NumberFormat prefix="$" thousandSeparator={true} decimalPrecision={3} value="$1,234.000"/>);
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 7);
+    expect(wrapper.state().value).toEqual('$1,234.000');
+
+    wrapper.setProps({decimalPrecision: undefined})
+    wrapper.update();
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 7);
+    expect(wrapper.state().value).toEqual('$1,234,000');
   });
 
   it('should not round by default', () => {

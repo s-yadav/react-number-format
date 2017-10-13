@@ -393,6 +393,7 @@ class NumberFormat extends React.Component {
 
     // Check if its negative number and remove negation for futher formatting
     const hasNagation = numStr[0] === '-';
+    const addNegation = hasNagation && allowNegative;
     numStr = numStr.replace('-', '');
 
     const hasDecimalSeparator = numStr.indexOf('.') !== -1 || decimalPrecision;
@@ -400,6 +401,11 @@ class NumberFormat extends React.Component {
     const parts = numStr.split('.');
     let beforeDecimal = parts[0];
     let afterDecimal = parts[1] || '';
+
+    //if beforeDecimal is empty and after decimal is 0 clear the input while keeping the negation sign
+    if (beforeDecimal === '' && !parseFloat(afterDecimal)) {
+      return addNegation ? '-' : '';
+    }
 
     //remove leading zeros from number before decimal
     beforeDecimal = removeLeadingZero(beforeDecimal);
@@ -416,7 +422,7 @@ class NumberFormat extends React.Component {
     if(suffix) afterDecimal = afterDecimal + suffix;
 
     //restore negation sign
-    if (hasNagation && allowNegative) beforeDecimal = '-' + beforeDecimal;
+    if (addNegation) beforeDecimal = '-' + beforeDecimal;
 
     numStr = beforeDecimal + (hasDecimalSeparator && decimalSeparator ||  '') + afterDecimal;
 
@@ -507,17 +513,24 @@ class NumberFormat extends React.Component {
 
   /*** format specific methods end ***/
   isCharacterAFormat(caretPos: number, value: string) {
-    const {format, prefix, suffix} = this.props;
+    const {format, prefix, suffix, decimalPrecision} = this.props;
+    const {decimalSeparator} = this.getSeparators();
 
     //check within format pattern
     if (typeof format === 'string' && format[caretPos] !== '#') return true;
 
     //check in number format
-    if (!format && (caretPos < prefix.length || caretPos >= value.length - suffix.length)) return true;
+    if (!format && (caretPos < prefix.length
+      || caretPos >= value.length - suffix.length
+      || (decimalPrecision && value[caretPos] === decimalSeparator))
+    ) {
+      return true;
+    }
+
     return false;
   }
-  checkIfFormatGotDeleted(start: number, end: number, value: string) {
 
+  checkIfFormatGotDeleted(start: number, end: number, value: string) {
     for (let i = start; i < end; i++) {
       if (this.isCharacterAFormat(i, value)) return true;
     }
@@ -529,7 +542,6 @@ class NumberFormat extends React.Component {
    * It will also work as fallback if android chome keyDown handler does not work
    **/
   correctInputValue(caretPos: number, lastValue: string, value: string) {
-
     //don't do anyhting if something got added, or if value is empty string (when whole input is cleared)
     if (value.length >= lastValue.length || !value.length) {
       return value;
