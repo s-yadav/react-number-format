@@ -36,6 +36,7 @@ Or get compiled development and production version from ./dist
 | onChange | (e, values) => {} | none | onChange handler accepts event object and [values object](#values-object) |
 | isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not |
 | renderText | (formattedValue) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. |
+
 **Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
 
 #### values object
@@ -184,7 +185,7 @@ All custom input props and number input props are passed together.
 - Value can be passed as string or number, but if it is passed as string it should be either formatted value or if it is a numeric string, you have to set isNumericString props to true.
 - Added support for numbers in prefix / suffix / pattern.
 - Fixed caret position issues.
-- Lot of bugs and stability fixes ([See release notes](https://github.com/s-yadav/react-number-format/releases))
+- Lot of bugs and stability fixes ([See v3 tracker](https://github.com/s-yadav/react-number-format/issues/99))
 
 ### v2.0.0
 - Added isAllowed prop to validate custom input and reject input based on it.
