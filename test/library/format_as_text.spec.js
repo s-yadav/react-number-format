@@ -30,24 +30,33 @@ describe('NumberFormat as text', () => {
     expect(wrapper.find('span').text()).toEqual('4111 1111 1111 11__');
   });
 
-  it('should not round decimals by defualt', () => {
-    const wrapper = shallow(<NumberFormat value="4111" displayType={'text'} />);
-    expect(wrapper.find('span').text()).toEqual('4111');
+  it('should limit decimal scale to given value', () => {
+    const wrapper = shallow(<NumberFormat value={4111.344} displayType={'text'} decimalScale={2}/>);
+    expect(wrapper.find('span').text()).toEqual('4111.34');
+
+    wrapper.setProps({
+      value: 4111.358
+    });
+    wrapper.update();
+
+    expect(wrapper.find('span').text()).toEqual('4111.36');
   });
 
-  it('should round to 2 decimals if passed true', () => {
-    const wrapper = shallow(<NumberFormat value="4111" displayType={'text'} decimalPrecision={2} />);
-    expect(wrapper.find('span').text()).toEqual('4111.00');
-  });
-
-  it('should round to 4 decimals if passed 4', () => {
-    const wrapper = shallow(<NumberFormat value="4111.11" displayType={'text'} decimalPrecision={4} />);
+  it('it should add zeros if fixedDecimalScale is provided', () => {
+    const wrapper = shallow(<NumberFormat value="4111.11" displayType={'text'} decimalScale={4} fixedDecimalScale={true}/>);
     expect(wrapper.find('span').text()).toEqual('4111.1100');
+
+    wrapper.setProps({
+      decimalScale: 1
+    });
+
+    wrapper.update();
+    expect(wrapper.find('span').text()).toEqual('4111.1');
   });
 
   it('should accept custom renderText method', () => {
-    const wrapper = shallow(<NumberFormat value="4111.11" thousandSeparator="," renderText={value => <div>{value}</div>} displayType={'text'} decimalPrecision={4} />);
-    expect(wrapper.find('div').text()).toEqual('4,111.1100');
+    const wrapper = shallow(<NumberFormat value="4111.11" thousandSeparator="," renderText={value => <div>{value}</div>} displayType={'text'} />);
+    expect(wrapper.find('div').text()).toEqual('4,111.11');
   })
 
 });

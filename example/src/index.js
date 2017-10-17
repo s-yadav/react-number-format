@@ -52,9 +52,9 @@ class App extends React.Component {
 
         <div className="example">
           <h3>
-            Decimal precision : Format currency in input with decimal precision
+            Decimal scale : Format currency in input with decimal scale
           </h3>
-          <NumberFormat thousandSeparator={true} decimalPrecision={3} prefix="$" />
+          <NumberFormat thousandSeparator={true} decimalScale={3} fixedDecimalScale={true} prefix="$" />
         </div>
 
 
@@ -82,17 +82,17 @@ class App extends React.Component {
             Custom thousand separator with decimal precision
           </h3>
           <div>
-            ThousandSeperator: ',', decimalSeparator='.', decimalPrecision:2
+            ThousandSeperator: ',', decimalSeparator='.', decimalScale:2
           </div>
           <div>
-            <NumberFormat thousandSeparator=","  decimalSeparator="." decimalPrecision={2} />
+            <NumberFormat thousandSeparator=","  decimalSeparator="." decimalScale={2} />
           </div>
           <br/>
           <div>
-            ThousandSeperator: '.', decimalSeparator=',', decimalPrecision:2
+            ThousandSeperator: '.', decimalSeparator=',', decimalScale:2
           </div>
           <div>
-            <NumberFormat thousandSeparator="."  decimalSeparator=","  decimalPrecision={2} />
+            <NumberFormat thousandSeparator="."  decimalSeparator=","  decimalScale={2} />
           </div>
         </div>
 

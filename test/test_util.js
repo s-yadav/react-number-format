@@ -130,4 +130,15 @@ export function simulateFocusEvent(input, selectionStart, setSelectionRange) {
 
 }
 
+export function simulateBlurEvent(input) {
+  const currentValue = input.prop('value');
+
+  const blurEvent = getEvent({}, {
+    value: currentValue,
+  });
+
+  input.simulate('blur', blurEvent);
+}
+
+
 export {Enzyme, shallow, mount};

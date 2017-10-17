@@ -93,7 +93,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var propTypes = {
 	  thousandSeparator: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.oneOf([true])]),
 	  decimalSeparator: _propTypes2.default.string,
-	  decimalPrecision: _propTypes2.default.number,
+	  decimalScale: _propTypes2.default.number,
+	  fixedDecimalScale: _propTypes2.default.bool,
 	  displayType: _propTypes2.default.oneOf(['input', 'text']),
 	  prefix: _propTypes2.default.string,
 	  suffix: _propTypes2.default.string,
@@ -104,10 +105,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  isNumericString: _propTypes2.default.bool,
 	  customInput: _propTypes2.default.func,
 	  allowNegative: _propTypes2.default.bool,
+	  onValueChange: _propTypes2.default.func,
 	  onKeyDown: _propTypes2.default.func,
 	  onMouseUp: _propTypes2.default.func,
 	  onChange: _propTypes2.default.func,
 	  onFocus: _propTypes2.default.func,
+	  onBlur: _propTypes2.default.func,
 	  type: _propTypes2.default.oneOf(['text', 'tel']),
 	  isAllowed: _propTypes2.default.func,
 	  renderText: _propTypes2.default.func
@@ -116,15 +119,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	var defaultProps = {
 	  displayType: 'input',
 	  decimalSeparator: '.',
+	  fixedDecimalScale: false,
 	  prefix: '',
 	  suffix: '',
 	  allowNegative: true,
 	  isNumericString: false,
 	  type: 'text',
+	  onValueChange: _utils.noop,
 	  onChange: _utils.noop,
 	  onKeyDown: _utils.noop,
 	  onMouseUp: _utils.noop,
 	  onFocus: _utils.noop,
+	  onBlur: _utils.noop,
 	  isAllowed: _utils.returnTrue
 	};
 
@@ -150,6 +156,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _this.onKeyDown = _this.onKeyDown.bind(_this);
 	    _this.onMouseUp = _this.onMouseUp.bind(_this);
 	    _this.onFocus = _this.onFocus.bind(_this);
+	    _this.onBlur = _this.onBlur.bind(_this);
 	    return _this;
 	  }
 
@@ -222,12 +229,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function getNumberRegex(g, ignoreDecimalSeparator) {
 	      var _props = this.props,
 	          format = _props.format,
-	          decimalPrecision = _props.decimalPrecision;
+	          decimalScale = _props.decimalScale;
 
 	      var _getSeparators2 = this.getSeparators(),
 	          decimalSeparator = _getSeparators2.decimalSeparator;
 
-	      return new RegExp('\\d' + (decimalSeparator && decimalPrecision !== 0 && !ignoreDecimalSeparator && !format ? '|' + (0, _utils.escapeRegExp)(decimalSeparator) : ''), g ? 'g' : undefined);
+	      return new RegExp('\\d' + (decimalSeparator && decimalScale !== 0 && !ignoreDecimalSeparator && !format ? '|' + (0, _utils.escapeRegExp)(decimalSeparator) : ''), g ? 'g' : undefined);
 	    }
 	  }, {
 	    key: 'getSeparators',
@@ -506,7 +513,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'formatAsNumber',
 	    value: function formatAsNumber(numStr) {
 	      var _props5 = this.props,
-	          decimalPrecision = _props5.decimalPrecision,
+	          decimalScale = _props5.decimalScale,
+	          fixedDecimalScale = _props5.fixedDecimalScale,
 	          allowNegative = _props5.allowNegative,
 	          prefix = _props5.prefix,
 	          suffix = _props5.suffix;
@@ -522,7 +530,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var addNegation = hasNagation && allowNegative;
 	      numStr = numStr.replace('-', '');
 
-	      var hasDecimalSeparator = numStr.indexOf('.') !== -1 || decimalPrecision;
+	      var hasDecimalSeparator = numStr.indexOf('.') !== -1 || decimalScale && fixedDecimalScale;
 
 	      var parts = numStr.split('.');
 	      var beforeDecimal = parts[0];
@@ -534,10 +542,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      //remove leading zeros from number before decimal
-	      beforeDecimal = (0, _utils.removeLeadingZero)(beforeDecimal);
+	      //beforeDecimal = removeLeadingZero(beforeDecimal);
 
 	      //apply decimal precision if its defined
-	      if (decimalPrecision !== undefined) afterDecimal = (0, _utils.limitToPrecision)(afterDecimal, decimalPrecision);
+	      if (decimalScale !== undefined) afterDecimal = (0, _utils.limitToScale)(afterDecimal, decimalScale, fixedDecimalScale);
 
 	      if (thousandSeparator) {
 	        beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
@@ -556,7 +564,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'formatNumString',
-	    value: function formatNumString(value) {
+	    value: function formatNumString() {
+	      var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 	      var format = this.props.format;
 
 	      var formattedValue = value;
@@ -584,7 +593,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function formatValueProp() {
 	      var _props6 = this.props,
 	          format = _props6.format,
-	          decimalPrecision = _props6.decimalPrecision;
+	          decimalScale = _props6.decimalScale,
+	          fixedDecimalScale = _props6.fixedDecimalScale;
 	      var _props7 = this.props,
 	          value = _props7.value,
 	          isNumericString = _props7.isNumericString;
@@ -598,10 +608,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        isNumericString = true;
 	      }
 
-	      //round the number based on decimalPrecision
+	      //round the number based on decimalScale
 	      //format only if non formatted value is provided
-	      if (isNumericString && !format && typeof decimalPrecision === 'number') {
-	        value = (0, _utils.roundToPrecision)(value, decimalPrecision);
+	      if (isNumericString && !format && typeof decimalScale === 'number') {
+	        value = (0, _utils.roundToPrecision)(value, decimalScale, fixedDecimalScale);
 	      }
 
 	      var values = isNumericString ? this.formatNumString(value) : this.formatInput(value);
@@ -659,7 +669,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          format = _props8.format,
 	          prefix = _props8.prefix,
 	          suffix = _props8.suffix,
-	          decimalPrecision = _props8.decimalPrecision;
+	          decimalScale = _props8.decimalScale,
+	          fixedDecimalScale = _props8.fixedDecimalScale;
 
 	      var _getSeparators5 = this.getSeparators(),
 	          decimalSeparator = _getSeparators5.decimalSeparator;
@@ -670,7 +681,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (typeof format === 'string' && format[caretPos] !== '#') return true;
 
 	      //check in number format
-	      if (!format && (caretPos < prefix.length || caretPos >= value.length - suffix.length || decimalPrecision && value[caretPos] === decimalSeparator)) {
+	      if (!format && (caretPos < prefix.length || caretPos >= value.length - suffix.length || decimalScale && fixedDecimalScale && value[caretPos] === decimalSeparator)) {
 	        return true;
 	      }
 
@@ -756,11 +767,48 @@ return /******/ (function(modules) { // webpackBootstrap
 	      //change the state
 	      if (formattedValue !== lastValue) {
 	        this.setState({ value: formattedValue, numAsString: this.removeFormatting(formattedValue) }, function () {
-	          props.onChange(e, valueObj);
+	          props.onValueChange(valueObj);
+	          props.onChange(e);
 	        });
+	      } else {
+	        props.onChange(e);
 	      }
 
 	      return value;
+	    }
+	  }, {
+	    key: 'onBlur',
+	    value: function onBlur(e) {
+	      var props = this.props,
+	          state = this.state;
+	      var format = props.format,
+	          onBlur = props.onBlur;
+	      var numAsString = state.numAsString;
+
+	      var lastValue = state.value;
+	      if (!format) {
+	        numAsString = (0, _utils.fixLeadingZero)(numAsString);
+
+	        var _formatNumString = this.formatNumString(numAsString),
+	            formattedValue = _formatNumString.formattedValue,
+	            _value = _formatNumString.value;
+
+	        var valueObj = {
+	          formattedValue: formattedValue,
+	          value: _value,
+	          floatValue: parseFloat(_value)
+	        };
+
+	        //change the state
+	        if (formattedValue !== lastValue) {
+	          this.setState({ value: formattedValue, numAsString: numAsString }, function () {
+	            props.onValueChange(valueObj);
+	            onBlur(e);
+	          });
+	        } else {
+	          onBlur(e);
+	        }
+	      }
 	    }
 	  }, {
 	    key: 'onKeyDown',
@@ -773,13 +821,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var expectedCaretPosition = void 0;
 	      var _props9 = this.props,
-	          decimalPrecision = _props9.decimalPrecision,
+	          decimalScale = _props9.decimalScale,
+	          fixedDecimalScale = _props9.fixedDecimalScale,
 	          prefix = _props9.prefix,
 	          suffix = _props9.suffix,
 	          format = _props9.format,
 	          onKeyDown = _props9.onKeyDown;
 
-	      var numRegex = this.getNumberRegex(false, decimalPrecision !== undefined);
+	      var ignoreDecimalSeparator = decimalScale !== undefined && fixedDecimalScale;
+	      var numRegex = this.getNumberRegex(false, ignoreDecimalSeparator);
 	      var negativeRegex = new RegExp('-');
 	      var isPatternFormat = typeof format === 'string';
 
@@ -885,7 +935,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        onChange: this.onChange,
 	        onKeyDown: this.onKeyDown,
 	        onMouseUp: this.onMouseUp,
-	        onFocus: this.onFocus
+	        onFocus: this.onFocus,
+	        onBlur: this.onBlur
 	      });
 
 	      if (displayType === 'text') {
@@ -1145,9 +1196,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.returnTrue = returnTrue;
 	exports.charIsNumber = charIsNumber;
 	exports.escapeRegExp = escapeRegExp;
-	exports.removeLeadingZero = removeLeadingZero;
+	exports.fixLeadingZero = fixLeadingZero;
 	exports.splitString = splitString;
-	exports.limitToPrecision = limitToPrecision;
+	exports.limitToScale = limitToScale;
 	exports.roundToPrecision = roundToPrecision;
 	exports.omit = omit;
 	exports.setCaretPosition = setCaretPosition;
@@ -1167,9 +1218,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 	}
 
-	function removeLeadingZero(numStr) {
-	  //remove leading zeros
-	  return numStr.replace(/^0+/, '') || '0';
+	function fixLeadingZero(numStr) {
+	  if (!numStr) return numStr;
+	  var isNegative = numStr[0] === '-';
+	  if (isNegative) numStr = numStr.substring(1, numStr.length);
+	  var parts = numStr.split('.');
+	  var beforeDecimal = parts[0].replace(/^0+/, '') || '0';
+	  var afterDecimal = parts[1] || '';
+
+	  return '' + (isNegative ? '-' : '') + beforeDecimal + (afterDecimal ? '.' + afterDecimal : '');
 	}
 
 	function splitString(str, index) {
@@ -1177,24 +1234,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	/**
-	 * limit decimal numbers to given precision
+	 * limit decimal numbers to given scale
 	 * Not used .fixedTo because that will break with big numbers
 	 */
-	function limitToPrecision(numStr, precision) {
+	function limitToScale(numStr, scale, fixedDecimalScale) {
 	  var str = '';
-	  for (var i = 0; i <= precision - 1; i++) {
-	    str += numStr[i] || '0';
+	  var filler = fixedDecimalScale ? '0' : '';
+	  for (var i = 0; i <= scale - 1; i++) {
+	    str += numStr[i] || filler;
 	  }
 	  return str;
 	}
 
 	/**
-	 * This method is required to round prop value to given precision.
+	 * This method is required to round prop value to given scale.
 	 * Not used .round or .fixedTo because that will break with big numbers
 	 */
-	function roundToPrecision(numStr, precision) {
+	function roundToPrecision(numStr, scale, fixedDecimalScale) {
 	  var numberParts = numStr.split('.');
-	  var roundedDecimalParts = parseFloat('0.' + (numberParts[1] || '0')).toFixed(precision).split('.');
+	  var roundedDecimalParts = parseFloat('0.' + (numberParts[1] || '0')).toFixed(scale).split('.');
 	  var intPart = numberParts[0].split('').reverse().reduce(function (roundedStr, current, idx) {
 	    if (roundedStr.length > idx) {
 	      return (Number(roundedStr[0]) + Number(current)).toString() + roundedStr.substring(1, roundedStr.length);
@@ -1202,7 +1260,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return current + roundedStr;
 	  }, roundedDecimalParts[0]);
 
-	  var decimalPart = roundedDecimalParts[1];
+	  var decimalPart = limitToScale(roundedDecimalParts[1] || '', (numberParts[1] || '').length, fixedDecimalScale);
 
 	  return intPart + (decimalPart ? '.' + decimalPart : '');
 	}

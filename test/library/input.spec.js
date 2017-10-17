@@ -70,7 +70,7 @@ describe('NumberFormat as input', () => {
     const wrapper = shallow(<NumberFormat isAllowed={(values) => {
       const {floatValue} = values;
       return floatValue <= 10000;
-    }} value={9999}/>, {lifecycleExperimental: true});
+    }} value={9999}/>);
 
     const input = wrapper.find('input');
 

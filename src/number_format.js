@@ -7,9 +7,9 @@ import {
   returnTrue,
   charIsNumber,
   escapeRegExp,
-  removeLeadingZero,
+  fixLeadingZero,
   splitString,
-  limitToPrecision,
+  limitToScale,
   roundToPrecision,
   omit,
   setCaretPosition
@@ -19,7 +19,8 @@ import {
 const propTypes = {
   thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([true])]),
   decimalSeparator: PropTypes.string,
-  decimalPrecision: PropTypes.number,
+  decimalScale: PropTypes.number,
+  fixedDecimalScale: PropTypes.bool,
   displayType: PropTypes.oneOf(['input', 'text']),
   prefix: PropTypes.string,
   suffix: PropTypes.string,
@@ -36,10 +37,12 @@ const propTypes = {
   isNumericString: PropTypes.bool,
   customInput: PropTypes.func,
   allowNegative: PropTypes.bool,
+  onValueChange: PropTypes.func,
   onKeyDown: PropTypes.func,
   onMouseUp: PropTypes.func,
   onChange: PropTypes.func,
   onFocus: PropTypes.func,
+  onBlur: PropTypes.func,
   type: PropTypes.oneOf(['text', 'tel']),
   isAllowed: PropTypes.func,
   renderText: PropTypes.func
@@ -48,16 +51,19 @@ const propTypes = {
 const defaultProps = {
   displayType: 'input',
   decimalSeparator: '.',
+  fixedDecimalScale: false,
   prefix: '',
   suffix: '',
   allowNegative: true,
   isNumericString: false,
   type: 'text',
+  onValueChange: noop,
   onChange: noop,
   onKeyDown: noop,
   onMouseUp: noop,
   onFocus: noop,
-  isAllowed: returnTrue,
+  onBlur: noop,
+  isAllowed: returnTrue
 };
 
 class NumberFormat extends React.Component {
@@ -69,6 +75,7 @@ class NumberFormat extends React.Component {
   onKeyDown: Function
   onMouseUp: Function
   onFocus: Function
+  onBlur: Function
   static defaultProps: Object
   constructor(props: Object) {
     super(props);
@@ -87,6 +94,7 @@ class NumberFormat extends React.Component {
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onFocus = this.onFocus.bind(this);
+    this.onBlur = this.onBlur.bind(this);
   }
 
   componentDidUpdate(prevProps: Object) {
@@ -141,9 +149,9 @@ class NumberFormat extends React.Component {
 
   //returned regex assumes decimalSeparator is as per prop
   getNumberRegex(g: boolean, ignoreDecimalSeparator?: boolean) {
-    const {format, decimalPrecision} = this.props;
+    const {format, decimalScale} = this.props;
     const {decimalSeparator} = this.getSeparators();
-    return new RegExp('\\d' + (decimalSeparator && decimalPrecision !== 0 && !ignoreDecimalSeparator && !format ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
+    return new RegExp('\\d' + (decimalSeparator && decimalScale !== 0 && !ignoreDecimalSeparator && !format ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
   }
 
   getSeparators() {
@@ -388,7 +396,7 @@ class NumberFormat extends React.Component {
    * @return {string} formatted Value
    */
   formatAsNumber(numStr: string) {
-    const {decimalPrecision, allowNegative, prefix, suffix} = this.props;
+    const {decimalScale, fixedDecimalScale, allowNegative, prefix, suffix} = this.props;
     const {thousandSeparator, decimalSeparator} = this.getSeparators();
 
     // Check if its negative number and remove negation for futher formatting
@@ -396,7 +404,7 @@ class NumberFormat extends React.Component {
     const addNegation = hasNagation && allowNegative;
     numStr = numStr.replace('-', '');
 
-    const hasDecimalSeparator = numStr.indexOf('.') !== -1 || decimalPrecision;
+    const hasDecimalSeparator = numStr.indexOf('.') !== -1 || (decimalScale && fixedDecimalScale);
 
     const parts = numStr.split('.');
     let beforeDecimal = parts[0];
@@ -408,10 +416,10 @@ class NumberFormat extends React.Component {
     }
 
     //remove leading zeros from number before decimal
-    beforeDecimal = removeLeadingZero(beforeDecimal);
+    //beforeDecimal = removeLeadingZero(beforeDecimal);
 
     //apply decimal precision if its defined
-    if (decimalPrecision !== undefined) afterDecimal = limitToPrecision(afterDecimal, decimalPrecision);
+    if (decimalScale !== undefined) afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
 
     if(thousandSeparator) {
       beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
@@ -429,7 +437,7 @@ class NumberFormat extends React.Component {
     return numStr;
   }
 
-  formatNumString(value: string) {
+  formatNumString(value: string = '') {
     const {format} = this.props;
     let formattedValue = value;
 
@@ -454,7 +462,7 @@ class NumberFormat extends React.Component {
   }
 
   formatValueProp() {
-    const {format, decimalPrecision} = this.props;
+    const {format, decimalScale, fixedDecimalScale} = this.props;
     let {value, isNumericString} = this.props;
 
     // if value is not defined return empty string
@@ -465,10 +473,10 @@ class NumberFormat extends React.Component {
       isNumericString = true;
     }
 
-    //round the number based on decimalPrecision
+    //round the number based on decimalScale
     //format only if non formatted value is provided
-    if (isNumericString && !format && typeof decimalPrecision === 'number') {
-      value = roundToPrecision(value, decimalPrecision)
+    if (isNumericString && !format && typeof decimalScale === 'number') {
+      value = roundToPrecision(value, decimalScale, fixedDecimalScale)
     }
 
     const values = isNumericString ? this.formatNumString(value) : this.formatInput(value);
@@ -513,7 +521,7 @@ class NumberFormat extends React.Component {
 
   /*** format specific methods end ***/
   isCharacterAFormat(caretPos: number, value: string) {
-    const {format, prefix, suffix, decimalPrecision} = this.props;
+    const {format, prefix, suffix, decimalScale, fixedDecimalScale} = this.props;
     const {decimalSeparator} = this.getSeparators();
 
     //check within format pattern
@@ -522,7 +530,7 @@ class NumberFormat extends React.Component {
     //check in number format
     if (!format && (caretPos < prefix.length
       || caretPos >= value.length - suffix.length
-      || (decimalPrecision && value[caretPos] === decimalSeparator))
+      || (decimalScale && fixedDecimalScale && value[caretPos] === decimalSeparator))
     ) {
       return true;
     }
@@ -599,11 +607,40 @@ class NumberFormat extends React.Component {
     //change the state
     if (formattedValue !== lastValue) {
       this.setState({value : formattedValue, numAsString: this.removeFormatting(formattedValue)}, () => {
-        props.onChange(e, valueObj);
+        props.onValueChange(valueObj);
+        props.onChange(e);
       });
+    } else {
+      props.onChange(e);
     }
 
     return value;
+  }
+
+  onBlur(e: SyntheticInputEvent) {
+    const {props, state} = this;
+    const {format, onBlur} = props;
+    let {numAsString} = state;
+    const lastValue = state.value;
+    if (!format) {
+      numAsString = fixLeadingZero(numAsString);
+      const {formattedValue, value} = this.formatNumString(numAsString);
+      const valueObj = {
+        formattedValue,
+        value,
+        floatValue: parseFloat(value)
+      };
+
+      //change the state
+      if (formattedValue !== lastValue) {
+        this.setState({value : formattedValue, numAsString}, () => {
+          props.onValueChange(valueObj);
+          onBlur(e);
+        });
+      } else {
+        onBlur(e);
+      }
+    }
   }
 
   onKeyDown(e: SyntheticKeyboardInputEvent) {
@@ -612,8 +649,9 @@ class NumberFormat extends React.Component {
     const {selectionEnd, value} = el;
     const {selectionStart} = el;
     let expectedCaretPosition;
-    const {decimalPrecision, prefix, suffix, format, onKeyDown} = this.props;
-    const numRegex = this.getNumberRegex(false, decimalPrecision !== undefined);
+    const {decimalScale, fixedDecimalScale, prefix, suffix, format, onKeyDown} = this.props;
+    const ignoreDecimalSeparator = decimalScale !== undefined && fixedDecimalScale;
+    const numRegex = this.getNumberRegex(false, ignoreDecimalSeparator);
     const negativeRegex = new RegExp('-');
     const isPatternFormat = typeof format === 'string';
 
@@ -703,7 +741,8 @@ class NumberFormat extends React.Component {
       onChange: this.onChange,
       onKeyDown: this.onKeyDown,
       onMouseUp: this.onMouseUp,
-      onFocus: this.onFocus
+      onFocus: this.onFocus,
+      onBlur: this.onBlur
     })
 
     if( displayType === 'text'){
