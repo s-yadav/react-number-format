@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.0.0-alpha2
+ * react-number-format - 3.0.0-alpha3
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
