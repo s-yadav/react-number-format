@@ -45,7 +45,7 @@ values object is on following format
 ```js
 {
   formattedValue: '$23,234,235.56', //value after applying formatting
-  value: '23234235.56', //non formatted value as string, but it maintains the decimalSeparator provided, so if , is decimal separator then value will be 23234235,56
+  value: '23234235.56', //non formatted value as numeric string 23234235.56
   floatValue: 23234235.56 //floating point representation. For big numbers it can have exponential syntax
 }
 ```
@@ -173,19 +173,20 @@ All custom input props and number input props are passed together.
   <NumberFormat hintText="Some placeholder" value={this.state.card} customInput={TextField} format="#### #### #### ####"/>
 ```
 
-
 ### Live Demo
 [http://codepen.io/s-yadav/pen/bpKNMa](http://codepen.io/s-yadav/pen/bpKNMa)
 
 ### Show your support
 [:star: this repo](https://github.com/s-yadav/react-number-format)
 
+### Migrate v2 to v3
+[Migrate](/MIGRATE.md)
+
 ### Major Updates
 ### v3.0.0-alpha
 - onChange no longer gets values object. You need to use onValueChange instead. This is done because formatted value may change on onBlur event. calling onChange on onBlur doesn't feel right.
 - decimalPrecision is changed to decimalScale. Precision is the number of digits in a number. Scale is the number of digits to the right of the decimal point in a number.
 - decimalScale by default will not add 0s to match provided decimalScale value like decimalPrecision. You have to set fixedDecimalScale to true.
-- onChange api been changed. Now it receives [values object](#values-object) as second parameter.
 - mask can be now array of string in which case mask at specific index will be mapped with the # of the pattern.
 - Value can be passed as string or number, but if it is passed as string it should be either formatted value or if it is a numeric string, you have to set isNumericString props to true.
 - Added support for numbers in prefix / suffix / pattern.
