@@ -384,4 +384,11 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('$0.78');
   });
 
+  it('should allow typing decimalSeparator if input is empty', () => {
+    const wrapper = shallow(<NumberFormat thousandSeparator={','} decimalSeparator={'.'} prefix={'$'}/> );
+    simulateKeyInput(wrapper.find('input'), '.', 0);
+
+    expect(wrapper.state().value).toEqual('$.');
+  })
+
 });

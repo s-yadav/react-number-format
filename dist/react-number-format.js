@@ -287,6 +287,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      }
 	    }
+	  }, {
+	    key: 'splitDecimal',
+	    value: function splitDecimal(numStr) {
+	      var allowNegative = this.props.allowNegative;
+
+	      var hasNagation = numStr[0] === '-';
+	      var addNegation = hasNagation && allowNegative;
+	      numStr = numStr.replace('-', '');
+
+	      var parts = numStr.split('.');
+	      var beforeDecimal = parts[0];
+	      var afterDecimal = parts[1] || '';
+
+	      return {
+	        beforeDecimal: beforeDecimal,
+	        afterDecimal: afterDecimal,
+	        hasNagation: hasNagation,
+	        addNegation: addNegation
+	      };
+	    }
 
 	    /** Misc methods end **/
 
@@ -515,7 +535,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _props5 = this.props,
 	          decimalScale = _props5.decimalScale,
 	          fixedDecimalScale = _props5.fixedDecimalScale,
-	          allowNegative = _props5.allowNegative,
 	          prefix = _props5.prefix,
 	          suffix = _props5.suffix;
 
@@ -523,28 +542,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	          thousandSeparator = _getSeparators4.thousandSeparator,
 	          decimalSeparator = _getSeparators4.decimalSeparator;
 
-	      // Check if its negative number and remove negation for futher formatting
-
-
-	      var hasNagation = numStr[0] === '-';
-	      var addNegation = hasNagation && allowNegative;
-	      numStr = numStr.replace('-', '');
-
 	      var hasDecimalSeparator = numStr.indexOf('.') !== -1 || decimalScale && fixedDecimalScale;
 
-	      var parts = numStr.split('.');
-	      var beforeDecimal = parts[0];
-	      var afterDecimal = parts[1] || '';
-
-	      //if beforeDecimal is empty and after decimal is 0 clear the input while keeping the negation sign
-	      if (beforeDecimal === '' && !parseFloat(afterDecimal)) {
-	        return addNegation ? '-' : '';
-	      }
-
-	      //remove leading zeros from number before decimal
-	      //beforeDecimal = removeLeadingZero(beforeDecimal);
+	      var _splitDecimal = this.splitDecimal(numStr),
+	          beforeDecimal = _splitDecimal.beforeDecimal,
+	          afterDecimal = _splitDecimal.afterDecimal,
+	          addNegation = _splitDecimal.addNegation; // eslint-disable-line prefer-const
 
 	      //apply decimal precision if its defined
+
+
 	      if (decimalScale !== undefined) afterDecimal = (0, _utils.limitToScale)(afterDecimal, decimalScale, fixedDecimalScale);
 
 	      if (thousandSeparator) {
@@ -704,6 +711,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'correctInputValue',
 	    value: function correctInputValue(caretPos, lastValue, value) {
+	      var format = this.props.format;
+
+	      var lastNumStr = this.state.numAsString || '';
+
 	      //don't do anyhting if something got added, or if value is empty string (when whole input is cleared)
 	      if (value.length >= lastValue.length || !value.length) {
 	        return value;
@@ -719,6 +730,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	      //if format got deleted reset the value to last value
 	      if (this.checkIfFormatGotDeleted(start, end, lastValue)) {
 	        value = lastValue;
+	      }
+
+	      //for numbers check if beforeDecimal got deleted and there is nothing after decimal,
+	      //clear all numbers in such case while keeping the - sign
+	      if (!format) {
+	        var numericString = this.removeFormatting(value);
+
+	        var _splitDecimal2 = this.splitDecimal(numericString),
+	            beforeDecimal = _splitDecimal2.beforeDecimal,
+	            afterDecimal = _splitDecimal2.afterDecimal,
+	            addNegation = _splitDecimal2.addNegation; // eslint-disable-line prefer-const
+
+	        //clear only if something got deleted
+
+
+	        if (numericString.length < lastNumStr.length && beforeDecimal === '' && !parseFloat(afterDecimal)) {
+	          return addNegation ? '-' : '';
+	        }
 	      }
 
 	      return value;
@@ -759,7 +788,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      el.value = formattedValue;
 
 	      //get the caret position
-	      var caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
+	      var caretPos = this.getCaretPosition(inputValue, formattedValue, Math.min(formattedValue.length, currentCaretPosition));
 
 	      //set caret position
 	      this.setPatchedCaretPosition(el, caretPos, formattedValue);

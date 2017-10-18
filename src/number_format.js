@@ -204,6 +204,24 @@ class NumberFormat extends React.Component {
 
   }
 
+  splitDecimal(numStr: string) {
+    const {allowNegative} = this.props;
+    const hasNagation = numStr[0] === '-';
+    const addNegation = hasNagation && allowNegative;
+    numStr = numStr.replace('-', '');
+
+    const parts = numStr.split('.');
+    const beforeDecimal = parts[0];
+    const afterDecimal = parts[1] || '';
+
+    return {
+      beforeDecimal,
+      afterDecimal,
+      hasNagation,
+      addNegation
+    }
+  }
+
   /** Misc methods end **/
 
   /** caret specific methods **/
@@ -396,27 +414,11 @@ class NumberFormat extends React.Component {
    * @return {string} formatted Value
    */
   formatAsNumber(numStr: string) {
-    const {decimalScale, fixedDecimalScale, allowNegative, prefix, suffix} = this.props;
+    const {decimalScale, fixedDecimalScale, prefix, suffix} = this.props;
     const {thousandSeparator, decimalSeparator} = this.getSeparators();
 
-    // Check if its negative number and remove negation for futher formatting
-    const hasNagation = numStr[0] === '-';
-    const addNegation = hasNagation && allowNegative;
-    numStr = numStr.replace('-', '');
-
     const hasDecimalSeparator = numStr.indexOf('.') !== -1 || (decimalScale && fixedDecimalScale);
-
-    const parts = numStr.split('.');
-    let beforeDecimal = parts[0];
-    let afterDecimal = parts[1] || '';
-
-    //if beforeDecimal is empty and after decimal is 0 clear the input while keeping the negation sign
-    if (beforeDecimal === '' && !parseFloat(afterDecimal)) {
-      return addNegation ? '-' : '';
-    }
-
-    //remove leading zeros from number before decimal
-    //beforeDecimal = removeLeadingZero(beforeDecimal);
+    let {beforeDecimal, afterDecimal, addNegation} = this.splitDecimal(numStr); // eslint-disable-line prefer-const
 
     //apply decimal precision if its defined
     if (decimalScale !== undefined) afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
@@ -550,6 +552,9 @@ class NumberFormat extends React.Component {
    * It will also work as fallback if android chome keyDown handler does not work
    **/
   correctInputValue(caretPos: number, lastValue: string, value: string) {
+    const {format} = this.props;
+    const lastNumStr = this.state.numAsString || '';
+
     //don't do anyhting if something got added, or if value is empty string (when whole input is cleared)
     if (value.length >= lastValue.length || !value.length) {
       return value;
@@ -565,6 +570,18 @@ class NumberFormat extends React.Component {
     //if format got deleted reset the value to last value
     if (this.checkIfFormatGotDeleted(start, end, lastValue)) {
       value = lastValue;
+    }
+
+    //for numbers check if beforeDecimal got deleted and there is nothing after decimal,
+    //clear all numbers in such case while keeping the - sign
+    if (!format) {
+      const numericString = this.removeFormatting(value);
+      let {beforeDecimal, afterDecimal, addNegation} = this.splitDecimal(numericString); // eslint-disable-line prefer-const
+
+      //clear only if something got deleted
+      if (numericString.length < lastNumStr.length && beforeDecimal === '' && !parseFloat(afterDecimal)) {
+        return addNegation ? '-' : '';
+      }
     }
 
     return value;
@@ -599,7 +616,7 @@ class NumberFormat extends React.Component {
     el.value = formattedValue;
 
     //get the caret position
-    const caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
+    const caretPos = this.getCaretPosition(inputValue, formattedValue, Math.min(formattedValue.length, currentCaretPosition));
 
     //set caret position
     this.setPatchedCaretPosition(el, caretPos, formattedValue);
