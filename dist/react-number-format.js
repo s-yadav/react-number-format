@@ -180,7 +180,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var lastNumStr = state.numAsString || '';
 
-	        var formattedValue = props.value === undefined ? this.formatNumString(lastNumStr).formattedValue : this.formatValueProp();
+	        var formattedValue = props.value === undefined ? this.formatNumString(lastNumStr) : this.formatValueProp();
 
 	        if (formattedValue !== stateValue) {
 	          this.setState({
@@ -590,10 +590,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        formattedValue = this.formatAsNumber(formattedValue);
 	      }
 
-	      return {
-	        value: value,
-	        formattedValue: formattedValue
-	      };
+	      return formattedValue;
 	    }
 	  }, {
 	    key: 'formatValueProp',
@@ -621,9 +618,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value = (0, _utils.roundToPrecision)(value, decimalScale, fixedDecimalScale);
 	      }
 
-	      var values = isNumericString ? this.formatNumString(value) : this.formatInput(value);
+	      var formattedValue = isNumericString ? this.formatNumString(value) : this.formatInput(value);
 
-	      return values.formattedValue;
+	      return formattedValue;
 	    }
 	  }, {
 	    key: 'formatNegation',
@@ -769,15 +766,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      inputValue = this.correctInputValue(currentCaretPosition, lastValue, inputValue);
 
-	      var _formatInput = this.formatInput(inputValue),
-	          _formatInput$formatte = _formatInput.formattedValue,
-	          formattedValue = _formatInput$formatte === undefined ? '' : _formatInput$formatte,
-	          value = _formatInput.value; // eslint-disable-line prefer-const
+	      var formattedValue = this.formatInput(inputValue) || '';
+	      var numAsString = this.removeFormatting(formattedValue);
 
 	      var valueObj = {
 	        formattedValue: formattedValue,
-	        value: value,
-	        floatValue: parseFloat(value)
+	        value: numAsString,
+	        floatValue: parseFloat(numAsString)
 	      };
 
 	      if (!isAllowed(valueObj)) {
@@ -795,15 +790,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      //change the state
 	      if (formattedValue !== lastValue) {
-	        this.setState({ value: formattedValue, numAsString: this.removeFormatting(formattedValue) }, function () {
+	        this.setState({ value: formattedValue, numAsString: numAsString }, function () {
 	          props.onValueChange(valueObj);
 	          props.onChange(e);
 	        });
 	      } else {
 	        props.onChange(e);
 	      }
-
-	      return value;
 	    }
 	  }, {
 	    key: 'onBlur',
@@ -817,15 +810,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var lastValue = state.value;
 	      if (!format) {
 	        numAsString = (0, _utils.fixLeadingZero)(numAsString);
-
-	        var _formatNumString = this.formatNumString(numAsString),
-	            formattedValue = _formatNumString.formattedValue,
-	            _value = _formatNumString.value;
-
+	        var formattedValue = this.formatNumString(numAsString);
 	        var valueObj = {
 	          formattedValue: formattedValue,
-	          value: _value,
-	          floatValue: parseFloat(_value)
+	          value: numAsString,
+	          floatValue: parseFloat(numAsString)
 	        };
 
 	        //change the state

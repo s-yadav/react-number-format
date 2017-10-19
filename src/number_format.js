@@ -112,7 +112,7 @@ class NumberFormat extends React.Component {
 
       const lastNumStr = state.numAsString || '';
 
-      const formattedValue = props.value === undefined ? this.formatNumString(lastNumStr).formattedValue : this.formatValueProp();
+      const formattedValue = props.value === undefined ? this.formatNumString(lastNumStr) : this.formatValueProp();
 
       if (formattedValue !== stateValue) {
         this.setState({
@@ -456,11 +456,7 @@ class NumberFormat extends React.Component {
       formattedValue = this.formatAsNumber(formattedValue)
     }
 
-
-    return {
-      value,
-      formattedValue
-    }
+    return formattedValue;
   }
 
   formatValueProp() {
@@ -481,9 +477,9 @@ class NumberFormat extends React.Component {
       value = roundToPrecision(value, decimalScale, fixedDecimalScale)
     }
 
-    const values = isNumericString ? this.formatNumString(value) : this.formatInput(value);
+    const formattedValue = isNumericString ? this.formatNumString(value) : this.formatInput(value);
 
-    return values.formattedValue;
+    return formattedValue;
   }
 
   formatNegation(value: string = '') {
@@ -600,12 +596,13 @@ class NumberFormat extends React.Component {
 
     inputValue =  this.correctInputValue(currentCaretPosition, lastValue, inputValue);
 
-    let {formattedValue = '', value} = this.formatInput(inputValue); // eslint-disable-line prefer-const
+    let formattedValue = this.formatInput(inputValue) || '';
+    const numAsString = this.removeFormatting(formattedValue);
 
     const valueObj = {
       formattedValue,
-      value,
-      floatValue: parseFloat(value)
+      value: numAsString,
+      floatValue: parseFloat(numAsString)
     };
 
     if (!isAllowed(valueObj)) {
@@ -623,15 +620,13 @@ class NumberFormat extends React.Component {
 
     //change the state
     if (formattedValue !== lastValue) {
-      this.setState({value : formattedValue, numAsString: this.removeFormatting(formattedValue)}, () => {
+      this.setState({value : formattedValue, numAsString}, () => {
         props.onValueChange(valueObj);
         props.onChange(e);
       });
     } else {
       props.onChange(e);
     }
-
-    return value;
   }
 
   onBlur(e: SyntheticInputEvent) {
@@ -641,11 +636,11 @@ class NumberFormat extends React.Component {
     const lastValue = state.value;
     if (!format) {
       numAsString = fixLeadingZero(numAsString);
-      const {formattedValue, value} = this.formatNumString(numAsString);
+      const formattedValue = this.formatNumString(numAsString);
       const valueObj = {
         formattedValue,
-        value,
-        floatValue: parseFloat(value)
+        value: numAsString,
+        floatValue: parseFloat(numAsString)
       };
 
       //change the state
