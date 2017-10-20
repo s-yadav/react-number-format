@@ -649,12 +649,10 @@ class NumberFormat extends React.Component {
           props.onValueChange(valueObj);
           onBlur(e);
         });
-      } else {
-        onBlur(e);
+        return;
       }
-    } else {
-      onBlur(e);
     }
+    onBlur(e);
   }
 
   onKeyDown(e: SyntheticKeyboardInputEvent) {

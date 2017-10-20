@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.0.0-beta
+ * react-number-format - 3.0.0-beta2
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -823,10 +823,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            props.onValueChange(valueObj);
 	            onBlur(e);
 	          });
-	        } else {
-	          onBlur(e);
+	          return;
 	        }
 	      }
+	      onBlur(e);
 	    }
 	  }, {
 	    key: 'onKeyDown',
