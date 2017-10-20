@@ -652,6 +652,8 @@ class NumberFormat extends React.Component {
       } else {
         onBlur(e);
       }
+    } else {
+      onBlur(e);
     }
   }
 
