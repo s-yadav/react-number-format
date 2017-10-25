@@ -170,6 +170,18 @@ describe('Test delete/backspace with numeric format', () => {
     expect(wrapper.state().value).toEqual('Rs. 125.50 /sq.feet');
     expect(caretPos).toEqual(6);
   });
+
+  it('should maintain correct caret positon while removing the last character and suffix is not defined. Issue #105', () => {
+    wrapper.setProps({
+      suffix: '',
+      prefix: '$',
+      value: '$2,342,343'
+    });
+    wrapper.update();
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 10, 10, setSelectionRange);
+    expect(wrapper.state().value).toEqual('$234,234');
+    expect(caretPos).toEqual(8);
+  })
 })
 
 describe('Test arrow keys', () => {

@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.0.0-beta2
+ * react-number-format - 3.0.0-beta3
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -403,7 +403,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }j++;
 	      }
 
-	      if (typeof format === 'string' && !stateValue) {
+	      if (typeof format === 'string' && !stateValue || caretPos === formattedValue.length) {
 	        //set it to the maximum value so it goes after the last number
 	        j = formattedValue.length;
 	      }

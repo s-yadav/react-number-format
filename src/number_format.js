@@ -306,9 +306,9 @@ class NumberFormat extends React.Component {
       j++;
     }
 
-    if (typeof format === 'string' && !stateValue) {
+    if ((typeof format === 'string' && !stateValue) || caretPos === formattedValue.length) {
       //set it to the maximum value so it goes after the last number
-      j = formattedValue.length
+      j = formattedValue.length;
     }
 
     //correct caret position if its outside of editable area
