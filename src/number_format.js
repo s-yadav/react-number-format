@@ -668,15 +668,20 @@ class NumberFormat extends React.Component {
   }
 
   onFocus(e: SyntheticInputEvent) {
-    const el = e.target;
-    const {selectionStart, value} = el;
+    // Workaround Chrome and Safari bug https://bugs.chromium.org/p/chromium/issues/detail?id=779328
+    // (onFocus event target selectionStart is always 0 before setTimeout)
+    e.persist()
+    setTimeout(() => {
+      const el = e.target;
+      const {selectionStart, value} = el;
 
-    const caretPostion = this.correctCaretPosition(value, selectionStart);
-    if (caretPostion !== selectionStart) {
-      this.setPatchedCaretPosition(el, caretPostion, value);
-    }
+      const caretPosition = this.correctCaretPosition(value, selectionStart);
+      if (caretPosition !== selectionStart) {
+        this.setPatchedCaretPosition(el, caretPosition, value);
+      }
 
-    this.props.onFocus(e);
+      this.props.onFocus(e);
+    })
   }
 
   render() {
