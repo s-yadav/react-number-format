@@ -118,7 +118,9 @@ export function simulateFocusEvent(input, selectionStart, setSelectionRange) {
 
   const currentValue = input.prop('value');
 
-  const focusEvent = getEvent({}, {
+  const focusEvent = getEvent({
+    persist: noop,
+  }, {
     value: currentValue,
     selectionStart,
     selectionEnd,
