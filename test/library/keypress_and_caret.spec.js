@@ -259,10 +259,26 @@ describe('Test click / focus on input', () => {
     expect(caretPos).toEqual(13);
   })
 
-  it('should correct caret position on focus', () => {
+  it('should correct wrong caret position on focus', () => {
+    jasmine.clock().install()
     const wrapper = shallow(<NumberFormat  thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
 
     simulateFocusEvent(wrapper.find('input'), 0, setSelectionRange);
-    expect(caretPos).toEqual(4);
+    jasmine.clock().tick(1)
+    expect(caretPos).toEqual(4)
+    jasmine.clock().uninstall()
+  });
+
+  it('should not reset correct caret position on focus', () => {
+    jasmine.clock().install()
+    const wrapper = shallow(<NumberFormat  thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
+
+    // Note: init caretPos to `6`. Focus to `6`. In case of bug, selectionStart is `0` and the caret will move to `4`.
+    //   otherwise (correct behaviour) the value will not change, and stay `6`
+    caretPos = 6
+    simulateFocusEvent(wrapper.find('input'), 6, setSelectionRange);
+    jasmine.clock().tick(1)
+    expect(caretPos).toEqual(6)
+    jasmine.clock().uninstall()
   });
 });
