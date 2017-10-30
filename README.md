@@ -209,7 +209,7 @@ All custom input props and number input props are passed together.
 - Value can be passed as string or number, but if it is passed as string it should be either formatted value or if it is a numeric string, you have to set isNumericString props to true.
 - Added support for numbers in prefix / suffix / pattern.
 - Fixed caret position and formatting issues.
-- Lot of bugs and stability fixes ([See v3 tracker](https://github.com/s-yadav/react-number-format/issues/99))
+- Lot of bugs and stability fixes ([See release notes](https://github.com/s-yadav/react-number-format/releases/tag/v3.0.0))
 
 ### v2.0.0
 - Added isAllowed prop to validate custom input and reject input based on it.
