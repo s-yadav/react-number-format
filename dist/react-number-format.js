@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.0.0-beta3
+ * react-number-format - 3.0.0
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -922,17 +922,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'onFocus',
 	    value: function onFocus(e) {
-	      var el = e.target;
-	      var selectionStart = el.selectionStart,
-	          value = el.value;
+	      var _this2 = this;
+
+	      // Workaround Chrome and Safari bug https://bugs.chromium.org/p/chromium/issues/detail?id=779328
+	      // (onFocus event target selectionStart is always 0 before setTimeout)
+	      e.persist();
+	      setTimeout(function () {
+	        var el = e.target;
+	        var selectionStart = el.selectionStart,
+	            value = el.value;
 
 
-	      var caretPostion = this.correctCaretPosition(value, selectionStart);
-	      if (caretPostion !== selectionStart) {
-	        this.setPatchedCaretPosition(el, caretPostion, value);
-	      }
+	        var caretPosition = _this2.correctCaretPosition(value, selectionStart);
+	        if (caretPosition !== selectionStart) {
+	          _this2.setPatchedCaretPosition(el, caretPosition, value);
+	        }
 
-	      this.props.onFocus(e);
+	        _this2.props.onFocus(e);
+	      });
 	    }
 	  }, {
 	    key: 'render',

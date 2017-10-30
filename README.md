@@ -16,6 +16,23 @@ Through npm
 
 Or get compiled development and production version from ./dist
 
+### Usage
+ES6
+```js
+import NumberFormat from 'react-number-format';
+```
+
+ES5
+```js
+const NumberFormat = require('react-number-format');
+```
+
+Typescript
+```js
+import * as NumberFormat from 'react-number-format';
+```
+
+
 ### Props
 | Props        | Options           | Default  | Description |
 | ------------- |-------------| -----| -------- |
@@ -118,7 +135,7 @@ Mask can also be a array of string. Each item corresponds to the same index #.
 ```jsx
 <NumberFormat format="##/##" placeholder="MM/YY" mask={['M', 'M', 'Y', 'Y']}/>
 ```
-
+![Screencast example](https://media.giphy.com/media/xT9IgojmLf6x3jX0nS/giphy.gif)
 
 #### Custom format method  : Format credit card expiry time
 ```jsx
@@ -155,6 +172,7 @@ function cardExpiry(val) {
 ```jsx
 <NumberFormat format="+1 (###) ###-####" mask="_"/>
 ```
+![Screencast example](https://media.giphy.com/media/l1J9wJ6ZSONO7cXkI/giphy.gif)
 
 ### Custom Inputs
 You can easily extend your custom input with number format. But custom input should have all input props.
@@ -190,7 +208,7 @@ All custom input props and number input props are passed together.
 - mask can be now array of string in which case mask at specific index will be mapped with the # of the pattern.
 - Value can be passed as string or number, but if it is passed as string it should be either formatted value or if it is a numeric string, you have to set isNumericString props to true.
 - Added support for numbers in prefix / suffix / pattern.
-- Fixed caret position issues.
+- Fixed caret position and formatting issues.
 - Lot of bugs and stability fixes ([See v3 tracker](https://github.com/s-yadav/react-number-format/issues/99))
 
 ### v2.0.0
