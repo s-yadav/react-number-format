@@ -46,7 +46,7 @@ class App extends React.Component {
             decimalSeparator=","
             value={this.state.test}
             prefix="$"
-            onChange={(e) => this.setState({test: e.target.value})}
+            onValueChange={(values) => this.setState({test: values.formattedValue})}
           />
         </div>
 

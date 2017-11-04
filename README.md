@@ -109,7 +109,7 @@ Output : 4111 1111 1111 1111
 
 #### Maintaining change value on state
 ```jsx
-<NumberFormat value={this.state.profit} thousandSeparator={true} prefix={'$'} onChange={(e, values) => {
+<NumberFormat value={this.state.profit} thousandSeparator={true} prefix={'$'} onValueChange={(values) => {
     const {formattedValue, value} = values;
     // formattedValue = $222,3
     //value ie, 2223
