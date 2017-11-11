@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.0.1
+ * react-number-format - 3.0.2
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -387,7 +387,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      j = 0;
 
 	      for (i = 0; i < caretPos; i++) {
-	        var currentInputChar = inputValue[i];
+	        var currentInputChar = inputValue[i] || '';
 	        var currentFormatChar = formattedValue[j] || '';
 	        //no need to increase new cursor position if formatted value does not have those characters
 	        //case inputValue = 1a23 and formattedValue =  123
@@ -403,7 +403,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }j++;
 	      }
 
-	      if (typeof format === 'string' && !stateValue || caretPos === formattedValue.length) {
+	      if (typeof format === 'string' && !stateValue) {
 	        //set it to the maximum value so it goes after the last number
 	        j = formattedValue.length;
 	      }
@@ -783,7 +783,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      el.value = formattedValue;
 
 	      //get the caret position
-	      var caretPos = this.getCaretPosition(inputValue, formattedValue, Math.min(formattedValue.length, currentCaretPosition));
+	      var caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
 
 	      //set caret position
 	      this.setPatchedCaretPosition(el, caretPos, formattedValue);

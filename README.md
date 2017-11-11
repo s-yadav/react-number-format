@@ -62,10 +62,11 @@ values object is on following format
 ```js
 {
   formattedValue: '$23,234,235.56', //value after applying formatting
-  value: '23234235.56', //non formatted value as numeric string 23234235.56
+  value: '23234235.56', //non formatted value as numeric string 23234235.56, if your are setting this value to state make sure to pass isNumericString prop to true
   floatValue: 23234235.56 //floating point representation. For big numbers it can have exponential syntax
 }
 ```
+Its recommended to use formattedValue / value / floatValue based on the initial state (it should be same as the initial state format) which you are passing as value prop. If you are saving the `value` key on state make sure to pass isNumericString prop to true.
 
 ### Notes and quirks
 1. Value can be passed as string or number, but if it is passed as string it should be either formatted value or if it is a numeric string, you have to set isNumericString props to true.
@@ -77,6 +78,8 @@ values object is on following format
 4. Use type as tel when you are providing format prop. This will change the mobile keyboard layout to have only numbers. In other case use type as text, so user can type decimal separator.
 
 5. onChange no longer gets values object. You need to use onValueChange instead. onChange/onFocus/onBlur and other input events will be directly passed to the input.
+
+6. Its recommended to use formattedValue / value / floatValue based on the initial state (it should be same as the initial state format) which you are passing as value prop. If you are saving the `value` key on state make sure to pass isNumericString prop to true. 
 
 ### Examples
 #### Prefix and thousand separator : Format currency as text
@@ -111,9 +114,9 @@ Output : 4111 1111 1111 1111
 ```jsx
 <NumberFormat value={this.state.profit} thousandSeparator={true} prefix={'$'} onValueChange={(values) => {
     const {formattedValue, value} = values;
-    // formattedValue = $222,3
-    //value ie, 2223
-    this.setState({profit: value})
+    // formattedValue = $2,223
+    // value ie, 2223
+    this.setState({profit: formattedValue})
   }}/>
 ```
 

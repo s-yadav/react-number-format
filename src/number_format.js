@@ -291,8 +291,8 @@ class NumberFormat extends React.Component {
     j = 0;
 
     for(i=0; i<caretPos; i++){
-      const currentInputChar = inputValue[i];
-      const currentFormatChar = formattedValue[j]||'';
+      const currentInputChar = inputValue[i] || '';
+      const currentFormatChar = formattedValue[j] || '';
       //no need to increase new cursor position if formatted value does not have those characters
       //case inputValue = 1a23 and formattedValue =  123
       if(!currentInputChar.match(numRegex) && currentInputChar !== currentFormatChar) continue;
@@ -306,7 +306,7 @@ class NumberFormat extends React.Component {
       j++;
     }
 
-    if ((typeof format === 'string' && !stateValue) || caretPos === formattedValue.length) {
+    if ((typeof format === 'string' && !stateValue)) {
       //set it to the maximum value so it goes after the last number
       j = formattedValue.length;
     }
@@ -613,7 +613,7 @@ class NumberFormat extends React.Component {
     el.value = formattedValue;
 
     //get the caret position
-    const caretPos = this.getCaretPosition(inputValue, formattedValue, Math.min(formattedValue.length, currentCaretPosition));
+    const caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
 
     //set caret position
     this.setPatchedCaretPosition(el, caretPos, formattedValue);
