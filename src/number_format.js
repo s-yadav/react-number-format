@@ -645,6 +645,8 @@ class NumberFormat extends React.Component {
 
       //change the state
       if (formattedValue !== lastValue) {
+        // the event needs to be persisted because its properties can be accessed in an asynchronous way
+        e.persist();
         this.setState({value : formattedValue, numAsString}, () => {
           props.onValueChange(valueObj);
           onBlur(e);
