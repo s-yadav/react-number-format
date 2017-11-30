@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.0.2
+ * react-number-format - 3.0.3
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -819,6 +819,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        //change the state
 	        if (formattedValue !== lastValue) {
+	          // the event needs to be persisted because its properties can be accessed in an asynchronous way
+	          e.persist();
 	          this.setState({ value: formattedValue, numAsString: numAsString }, function () {
 	            props.onValueChange(valueObj);
 	            onBlur(e);

@@ -79,7 +79,7 @@ Its recommended to use formattedValue / value / floatValue based on the initial 
 
 5. onChange no longer gets values object. You need to use onValueChange instead. onChange/onFocus/onBlur and other input events will be directly passed to the input.
 
-6. Its recommended to use formattedValue / value / floatValue based on the initial state (it should be same as the initial state format) which you are passing as value prop. If you are saving the `value` key on state make sure to pass isNumericString prop to true. 
+6. Its recommended to use formattedValue / value / floatValue based on the initial state (it should be same as the initial state format) which you are passing as value prop. If you are saving the `value` key on state make sure to pass isNumericString prop to true.
 
 ### Examples
 #### Prefix and thousand separator : Format currency as text
@@ -203,8 +203,12 @@ All custom input props and number input props are passed together.
 ### Migrate v2 to v3
 [Migrate](/MIGRATE.md)
 
-### Major Updates
-### v3.0.0-alpha
+### Updates
+For regular updates follow me on [_syadav](https://twitter.com/_syadav)
+
+#### Major updates
+
+#### v3.0.0
 - onChange no longer gets values object. You need to use onValueChange instead. This is done because formatted value may change on onBlur event. calling onChange on onBlur doesn't feel right.
 - decimalPrecision is changed to decimalScale. Precision is the number of digits in a number. Scale is the number of digits to the right of the decimal point in a number.
 - decimalScale by default will not add 0s to match provided decimalScale value like decimalPrecision. You have to set fixedDecimalScale to true.
@@ -214,7 +218,7 @@ All custom input props and number input props are passed together.
 - Fixed caret position and formatting issues.
 - Lot of bugs and stability fixes ([See release notes](https://github.com/s-yadav/react-number-format/releases/tag/v3.0.0))
 
-### v2.0.0
+#### v2.0.0
 - Added isAllowed prop to validate custom input and reject input based on it.
 - onChange api been changed. Now it receives [values object](#values-object) as second parameter.
 - decimalSeparator no longer support boolean values
