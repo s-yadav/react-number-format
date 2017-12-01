@@ -37,6 +37,7 @@ import * as NumberFormat from 'react-number-format';
 | Props        | Options           | Default  | Description |
 | ------------- |-------------| -----| -------- |
 | thousandSeparator | mixed: single character string or boolean true (true is default to ,) |none| Add thousand separators on number |
+| thousandSpacing | String, One of ['2s', '3'] | '3' | Add thousand group spacing on number. Default: '3' will format like 1,234,567,981 while '2s' will format like 1,23,45,67,981 |
 | decimalSeparator | single character string| . | Support decimal point on a number |
 | decimalScale | number| none| If defined it limits to given decimal scale |
 | fixedDecimalScale | boolean| false| If true it add 0s to match given decimalScale|
