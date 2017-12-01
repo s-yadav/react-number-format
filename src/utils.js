@@ -93,3 +93,8 @@ export function setCaretPosition(el: HTMLInputElement, caretPos: number) {
     return false;
   }
 }
+
+export const thousandGroupSpacing = {
+  twoScaled: '2s',
+  three: '3'
+};
