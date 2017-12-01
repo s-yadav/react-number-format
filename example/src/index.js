@@ -3,14 +3,14 @@ import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import NumberFormat from '../../src/number_format';
 import TextField from 'material-ui/TextField';
-import {cardExpiry} from '../../custom_formatters/card_expiry';
+import { cardExpiry } from '../../custom_formatters/card_expiry';
 
 
 
 class App extends React.Component {
   constructor() {
     super();
-    this.state = {test: 1232323.780023};
+    this.state = { test: 1232323.780023 };
   }
 
   render() {
@@ -34,7 +34,7 @@ class App extends React.Component {
           <h3>
             Custom renderText method
           </h3>
-          <NumberFormat value={4111111111111111} displayType="text" format="#### #### #### ####"  renderText={value => <i>{value}</i>}/>
+          <NumberFormat value={4111111111111111} displayType="text" format="#### #### #### ####" renderText={value => <i>{value}</i>} />
         </div>
 
         <div className="example">
@@ -46,7 +46,7 @@ class App extends React.Component {
             decimalSeparator=","
             value={this.state.test}
             prefix="$"
-            onValueChange={(values) => this.setState({test: values.formattedValue})}
+            onValueChange={(values) => this.setState({ test: values.formattedValue })}
           />
         </div>
 
@@ -68,7 +68,7 @@ class App extends React.Component {
           <div>
             <NumberFormat thousandSeparator="." decimalSeparator="," prefix="$" />
           </div>
-          <br/>
+          <br />
           <div>
             ThousandSeperator: ' ', decimalSeparator='.'
           </div>
@@ -85,14 +85,34 @@ class App extends React.Component {
             ThousandSeperator: ',', decimalSeparator='.', decimalScale:2
           </div>
           <div>
-            <NumberFormat thousandSeparator=","  decimalSeparator="." decimalScale={2} />
+            <NumberFormat thousandSeparator="," decimalSeparator="." decimalScale={2} />
           </div>
-          <br/>
+          <br />
           <div>
             ThousandSeperator: '.', decimalSeparator=',', decimalScale:2
           </div>
           <div>
-            <NumberFormat thousandSeparator="."  decimalSeparator=","  decimalScale={2} />
+            <NumberFormat thousandSeparator="." decimalSeparator="," decimalScale={2} />
+          </div>
+        </div>
+
+        <div className="example">
+          <h3>
+            Custom thousand spacing : Format currency in input
+          </h3>
+          <div>
+            Default ThousandSpacing: '3'
+          </div>
+          <div>
+            <NumberFormat value={2456981} thousandSeparator prefix="$" />
+          </div>
+          <br />
+          <div>
+            ThousandSpacing: '2s' (two-scaled)
+            Example: 24,56,981 or 2,34,45,56,981
+          </div>
+          <div>
+            <NumberFormat value={2456981} thousandSeparator thousandSpacing="2s" prefix="$" />
           </div>
         </div>
 
@@ -100,21 +120,21 @@ class App extends React.Component {
           <h3>
             Format with pattern : Format credit card in an input
           </h3>
-          <NumberFormat format="#### #### #### ####" mask="_"/>
+          <NumberFormat format="#### #### #### ####" mask="_" />
         </div>
 
         <div className="example">
           <h3>
             Format with mask as array
           </h3>
-          <NumberFormat format="##/##" placeholder="MM/YY" mask={['M', 'M', 'Y', 'Y']}/>
+          <NumberFormat format="##/##" placeholder="MM/YY" mask={['M', 'M', 'Y', 'Y']} />
         </div>
 
         <div className="example">
           <h3>
             Format with mask : Format credit card in an input
           </h3>
-          <NumberFormat format="#### #### #### ####" mask="_"/>
+          <NumberFormat format="#### #### #### ####" mask="_" />
         </div>
 
         <div className="example">
@@ -128,7 +148,7 @@ class App extends React.Component {
           <h3>
             Format phone number
           </h3>
-          <NumberFormat format="+1 (###) ###-####" mask="_"/>
+          <NumberFormat format="+1 (###) ###-####" mask="_" />
         </div>
 
         <div className="example">

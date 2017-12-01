@@ -1,7 +1,7 @@
 import React from 'react';
 
 import NumberFormat from '../../src/number_format';
-import {getCustomEvent, simulateKeyInput, simulateBlurEvent, shallow, mount} from '../test_util';
+import { getCustomEvent, simulateKeyInput, simulateBlurEvent, shallow, mount } from '../test_util';
 
 
 /**
@@ -57,14 +57,14 @@ describe('Test NumberFormat as input with numeric format options', () => {
 
     expect(wrapper.state().value).toEqual('$2,456,981.89');
 
-    wrapper.setProps({value: ''});
+    wrapper.setProps({ value: '' });
     wrapper.update();
     simulateKeyInput(wrapper.find('input'), '--', 0);
     expect(wrapper.state().value).toEqual('');
   });
 
   it('allows negation and double negation any cursor position in the input', () => {
-    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} value={2456981.89}/>);
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} value={2456981.89} />);
 
     simulateKeyInput(wrapper.find('input'), '-', 5);
 
@@ -83,17 +83,17 @@ describe('Test NumberFormat as input with numeric format options', () => {
 
     expect(wrapper.state().value).toEqual('$2.456.981,89');
 
-    wrapper.setProps({thousandSeparator: "'"});
+    wrapper.setProps({ thousandSeparator: "'" });
     wrapper.update();
 
     expect(wrapper.state().value).toEqual("$2'456'981,89");
 
     //changing decimal separator in the fly should work
-    wrapper.setProps({decimalSeparator: '.'});
+    wrapper.setProps({ decimalSeparator: '.' });
     wrapper.update();
     expect(wrapper.state().value).toEqual("$2'456'981.89");
 
-    wrapper.setProps({thousandSeparator: " ", decimalSeparator:"'", value:'' });
+    wrapper.setProps({ thousandSeparator: " ", decimalSeparator: "'", value: '' });
     wrapper.update();
 
     simulateKeyInput(wrapper.find('input'), "2456981'89", 0);
@@ -114,14 +114,14 @@ describe('Test NumberFormat as input with numeric format options', () => {
     const wrapper = shallow(<NumberFormat value={12345.67} />);
     expect(wrapper.state().value).toEqual('12345.67');
 
-    wrapper.setProps({thousandSeparator: true});
+    wrapper.setProps({ thousandSeparator: true });
     expect(wrapper.state().value).toEqual('12,345.67');
 
-    wrapper.setProps({thousandSeparator: '.', decimalSeparator: ','});
+    wrapper.setProps({ thousandSeparator: '.', decimalSeparator: ',' });
     expect(wrapper.state().value).toEqual('12.345,67');
 
 
-    wrapper.setProps({thousandSeparator: '.', decimalSeparator: ',', decimalScale: 0});
+    wrapper.setProps({ thousandSeparator: '.', decimalSeparator: ',', decimalScale: 0 });
     expect(wrapper.state().value).toEqual('12.346');
   });
 
@@ -129,13 +129,13 @@ describe('Test NumberFormat as input with numeric format options', () => {
     const wrapper = shallow(<NumberFormat value={12345.67} />);
     expect(wrapper.state().value).toEqual('12345.67');
 
-    wrapper.setProps({thousandSeparator: true});
+    wrapper.setProps({ thousandSeparator: true });
     expect(wrapper.state().value).toEqual('12,345.67');
 
-    wrapper.setProps({thousandSeparator: '.', decimalSeparator: ','});
+    wrapper.setProps({ thousandSeparator: '.', decimalSeparator: ',' });
     expect(wrapper.state().value).toEqual('12.345,67');
 
-    wrapper.setProps({thousandSeparator: '.', decimalSeparator: ',', decimalScale: 0});
+    wrapper.setProps({ thousandSeparator: '.', decimalSeparator: ',', decimalScale: 0 });
     expect(wrapper.state().value).toEqual('12.346');
   });
 
@@ -159,7 +159,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should limit to passed decimal scale', () => {
-    const wrapper = shallow(<NumberFormat decimalScale={4} fixedDecimalScale={true}/>);
+    const wrapper = shallow(<NumberFormat decimalScale={4} fixedDecimalScale={true} />);
     const input = wrapper.find('input');
 
     //case 1st - already exactly scale 4 should stay that way
@@ -185,13 +185,13 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('4111.0000');
 
     //case 5 - round with two decimal scale
-    wrapper.setProps({decimalScale: 2});
+    wrapper.setProps({ decimalScale: 2 });
     input.simulate('change', getCustomEvent('4111.111'));
     expect(wrapper.state().value).toEqual('4111.11');
   });
 
   it('should not add zeros to fixedDecimalScale is not set', () => {
-    const wrapper = shallow(<NumberFormat decimalScale={4} value={24.45}/>);
+    const wrapper = shallow(<NumberFormat decimalScale={4} value={24.45} />);
     expect(wrapper.state().value).toEqual('24.45');
 
     wrapper.setProps({
@@ -202,7 +202,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should not round the initial if decimalScale is not provided', () => {
-    const wrapper = shallow(<NumberFormat value={123213.7535}/>);
+    const wrapper = shallow(<NumberFormat value={123213.7535} />);
     expect(wrapper.state().value).toEqual('123213.7535');
 
     wrapper.setProps({
@@ -230,7 +230,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should round the initial value to given decimalScale', () => {
-    const wrapper = shallow(<NumberFormat value={123213.7536} isNumericString={true} decimalScale={1}/>);
+    const wrapper = shallow(<NumberFormat value={123213.7536} isNumericString={true} decimalScale={1} />);
     expect(wrapper.state().value).toEqual('123213.8');
 
     wrapper.setProps({
@@ -274,24 +274,24 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should allow deleting all numbers when decimalScale and fixedDecimalScale is defined', () => {
-    const wrapper = shallow(<NumberFormat prefix="$" decimalScale={3} value="$1.000" fixedDecimalScale={true}/>);
+    const wrapper = shallow(<NumberFormat prefix="$" decimalScale={3} value="$1.000" fixedDecimalScale={true} />);
     simulateKeyInput(wrapper.find('input'), 'Backspace', 2);
     expect(wrapper.state().value).toEqual('')
   })
 
   it('should not allow to remove decimalSeparator if decimalScale and fixedDecimalScale is defined', () => {
-    const wrapper = shallow(<NumberFormat prefix="$" thousandSeparator={true} decimalScale={3} fixedDecimalScale={true} value="$1,234.000"/>);
+    const wrapper = shallow(<NumberFormat prefix="$" thousandSeparator={true} decimalScale={3} fixedDecimalScale={true} value="$1,234.000" />);
     simulateKeyInput(wrapper.find('input'), 'Backspace', 7);
     expect(wrapper.state().value).toEqual('$1,234.000');
 
-    wrapper.setProps({decimalScale: undefined})
+    wrapper.setProps({ decimalScale: undefined })
     wrapper.update();
     simulateKeyInput(wrapper.find('input'), 'Backspace', 7);
     expect(wrapper.state().value).toEqual('$1,234,000');
   });
 
   it('should not round by default', () => {
-    const wrapper = shallow(<NumberFormat/>);
+    const wrapper = shallow(<NumberFormat />);
     const input = wrapper.find('input');
 
     //case 1st - no rounding with long decimal
@@ -308,7 +308,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('sould not allow decimal numbers if decimal scale is set to 0', () => {
-    const wrapper = shallow(<NumberFormat thousandSeparator={true} decimalScale={0}/>);
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} decimalScale={0} />);
     const input = wrapper.find('input');
 
     //case 1 - decimal scale set to 0
@@ -316,27 +316,27 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('4,111');
 
     //case 2 - It should round to integer if passed value props as decimal values
-    wrapper.setProps({value: 1234.78});
+    wrapper.setProps({ value: 1234.78 });
     wrapper.update();
     expect(wrapper.state().value).toEqual('1,235');
   });
 
   it('should allow decimal seperator and thousand separator on suffix prefix', () => {
-    const wrapper = shallow(<NumberFormat value={1231237.56} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'} suffix={' per sq. ft.'}/> );
+    const wrapper = shallow(<NumberFormat value={1231237.56} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'} suffix={' per sq. ft.'} />);
     expect(wrapper.state().value).toEqual('$1,231,237.56 per sq. ft.');
 
-    wrapper.setProps({suffix: '', prefix: '$ per, sq. ft. '});
+    wrapper.setProps({ suffix: '', prefix: '$ per, sq. ft. ' });
     wrapper.update();
     expect(wrapper.state().value).toEqual('$ per, sq. ft. 1,231,237.56');
   });
 
   it('should not remove leading 0s while user is in focus', () => {
-    const wrapper = shallow(<NumberFormat value={23456.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'}/> );
+    const wrapper = shallow(<NumberFormat value={23456.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'} />);
     simulateKeyInput(wrapper.find('input'), '0', 1);
 
     expect(wrapper.state().value).toEqual('$023,456.78');
 
-    wrapper.setProps({value: 10000.25});
+    wrapper.setProps({ value: 10000.25 });
     wrapper.update();
 
     simulateKeyInput(wrapper.find('input'), 'Backspace', 2);
@@ -348,14 +348,14 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should remove leading 0s while user go out of focus', () => {
-    const wrapper = shallow(<NumberFormat value={23456.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'}/> );
+    const wrapper = shallow(<NumberFormat value={23456.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'} />);
 
     simulateKeyInput(wrapper.find('input'), '0', 1);
     simulateBlurEvent(wrapper.find('input'));
 
     expect(wrapper.state().value).toEqual('$23,456.78');
 
-    wrapper.setProps({value: 10000.25});
+    wrapper.setProps({ value: 10000.25 });
     wrapper.update();
 
     simulateKeyInput(wrapper.find('input'), 'Backspace', 2);
@@ -364,7 +364,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should add 0 before decimal if user is in focus', () => {
-    const wrapper = shallow(<NumberFormat value={0.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'}/> );
+    const wrapper = shallow(<NumberFormat value={0.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'} />);
 
     simulateKeyInput(wrapper.find('input'), 'Backspace', 2);
 
@@ -375,7 +375,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should not add 0 before decimal if user go out of focus', () => {
-    const wrapper = shallow(<NumberFormat value={0.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'}/> );
+    const wrapper = shallow(<NumberFormat value={0.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'} />);
     simulateKeyInput(wrapper.find('input'), 'Backspace', 2);
 
     expect(wrapper.state().value).toEqual('$.78');
@@ -385,10 +385,26 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should allow typing decimalSeparator if input is empty', () => {
-    const wrapper = shallow(<NumberFormat thousandSeparator={','} decimalSeparator={'.'} prefix={'$'}/> );
+    const wrapper = shallow(<NumberFormat thousandSeparator={','} decimalSeparator={'.'} prefix={'$'} />);
     simulateKeyInput(wrapper.find('input'), '.', 0);
 
     expect(wrapper.state().value).toEqual('$.');
   })
+
+  it('should apply default thousandSpacing={\'3\'} correctly', () => {
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} />);
+
+    simulateKeyInput(wrapper.find('input'), '2456981.89', 0);
+
+    expect(wrapper.state().value).toEqual('$2,456,981.89');
+  });
+
+  it('should apply custom thousandSpacing={\'2s\'}', () => {
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} thousandSpacing={'2s'} prefix={'$'} />);
+
+    simulateKeyInput(wrapper.find('input'), '23456981.89', 0);
+
+    expect(wrapper.state().value).toEqual('$2,34,56,981.89');
+  });
 
 });
