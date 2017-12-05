@@ -45,7 +45,8 @@ const propTypes = {
   onBlur: PropTypes.func,
   type: PropTypes.oneOf(['text', 'tel']),
   isAllowed: PropTypes.func,
-  renderText: PropTypes.func
+  renderText: PropTypes.func,
+  inputRef: PropTypes.func,
 };
 
 const defaultProps = {
@@ -63,7 +64,8 @@ const defaultProps = {
   onMouseUp: noop,
   onFocus: noop,
   onBlur: noop,
-  isAllowed: returnTrue
+  isAllowed: returnTrue,
+  inputRef: null,
 };
 
 class NumberFormat extends React.Component {
@@ -749,7 +751,7 @@ class NumberFormat extends React.Component {
   }
 
   render() {
-    const {type, displayType, customInput, renderText} = this.props;
+    const {type, displayType, customInput, renderText, inputRef} = this.props;
     const {value} = this.state;
 
     const otherProps = omit(this.props, propTypes);
@@ -773,6 +775,7 @@ class NumberFormat extends React.Component {
       return (
         <CustomInput
           {...inputProps}
+          ref={inputRef}
         />
       )
     }
@@ -780,6 +783,7 @@ class NumberFormat extends React.Component {
     return (
       <input
         {...inputProps}
+        ref={inputRef}
       />
     )
   }
