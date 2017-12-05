@@ -54,6 +54,7 @@ import * as NumberFormat from 'react-number-format';
 | onValueChange | (values) => {} | none | onValueChange handler accepts [values object](#values-object) |
 | isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not |
 | renderText | (formattedValue) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. |
+| inputRef | (el) => {this.inputElement = el} | null | Allows direct access to the input element when displayType=input. |
 
 **Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
 
