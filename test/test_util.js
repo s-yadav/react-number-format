@@ -5,12 +5,14 @@ Enzyme.configure({ adapter: new Adapter() });
 
 const noop = function(){};
 
-export function getCustomEvent(value) {
+export function getCustomEvent(value, selectionStart, selectionEnd) {
   let event =  new Event('custom');
   const el = document.createElement('input');
   event = Object.assign({}, event, {target: el, persist: noop});
   event.target = el;
   el.value = value;
+  el.selectionStart = selectionStart;
+  el.selectionEnd = selectionEnd;
   return event;
 }
 

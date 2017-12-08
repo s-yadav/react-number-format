@@ -45,7 +45,8 @@ const propTypes = {
   onBlur: PropTypes.func,
   type: PropTypes.oneOf(['text', 'tel']),
   isAllowed: PropTypes.func,
-  renderText: PropTypes.func
+  renderText: PropTypes.func,
+  getInputRef: PropTypes.func
 };
 
 const defaultProps = {
@@ -63,7 +64,8 @@ const defaultProps = {
   onMouseUp: noop,
   onFocus: noop,
   onBlur: noop,
-  isAllowed: returnTrue
+  isAllowed: returnTrue,
+  getInputRef: noop
 };
 
 class NumberFormat extends React.Component {
@@ -548,7 +550,7 @@ class NumberFormat extends React.Component {
    * It will also work as fallback if android chome keyDown handler does not work
    **/
   correctInputValue(caretPos: number, lastValue: string, value: string) {
-    const {format} = this.props;
+    const {format, decimalSeparator} = this.props;
     const lastNumStr = this.state.numAsString || '';
 
     //don't do anyhting if something got added, or if value is empty string (when whole input is cleared)
@@ -575,7 +577,8 @@ class NumberFormat extends React.Component {
       let {beforeDecimal, afterDecimal, addNegation} = this.splitDecimal(numericString); // eslint-disable-line prefer-const
 
       //clear only if something got deleted
-      if (numericString.length < lastNumStr.length && beforeDecimal === '' && !parseFloat(afterDecimal)) {
+      const isBeforeDecimalPoint = caretPos < value.indexOf(decimalSeparator) + 1;
+      if (numericString.length < lastNumStr.length && isBeforeDecimalPoint && beforeDecimal === '' && !parseFloat(afterDecimal)) {
         return addNegation ? '-' : '';
       }
     }
@@ -745,11 +748,11 @@ class NumberFormat extends React.Component {
       }
 
       this.props.onFocus(e);
-    })
+    }, 0);
   }
 
   render() {
-    const {type, displayType, customInput, renderText} = this.props;
+    const {type, displayType, customInput, renderText, getInputRef} = this.props;
     const {value} = this.state;
 
     const otherProps = omit(this.props, propTypes);
@@ -761,11 +764,12 @@ class NumberFormat extends React.Component {
       onKeyDown: this.onKeyDown,
       onMouseUp: this.onMouseUp,
       onFocus: this.onFocus,
-      onBlur: this.onBlur
+      onBlur: this.onBlur,
+      ref: getInputRef
     })
 
     if( displayType === 'text'){
-      return renderText ? (renderText(value) || null) : <span {...otherProps}>{value}</span>;
+      return renderText ? (renderText(value) || null) : <span {...otherProps} ref={getInputRef}>{value}</span>;
     }
 
     else if (customInput) {

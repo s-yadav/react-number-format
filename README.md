@@ -54,6 +54,7 @@ import * as NumberFormat from 'react-number-format';
 | onValueChange | (values) => {} | none | onValueChange handler accepts [values object](#values-object) |
 | isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not |
 | renderText | (formattedValue) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. |
+| getInputRef | (elm) => void | null | Method to get reference of input or span based on displayType prop. See [Getting reference](#getting-reference)
 
 **Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
 
@@ -192,6 +193,23 @@ You can easily extend your custom input with number format. But custom input sho
 All custom input props and number input props are passed together.
 ```jsx
   <NumberFormat hintText="Some placeholder" value={this.state.card} customInput={TextField} format="#### #### #### ####"/>
+```
+
+### Getting reference
+As `ref` is a special property in react, its not passed as props. If you add ref property it will give you the reference of NumberFormat instance. In case you need input reference. You can use getInputRef prop instead.
+```jsx
+  <NumberFormat getInputRef = {(el) => this.inputElem = el} customInput={TextField} format="#### #### #### ####"/>
+```
+
+In case you have provided custom input you can pass there props to get the input reference (getInputRef will not work in that case).
+For ex in material-ui component.
+```jsx
+  <NumberFormat inputRef = {(el) => this.inputElem = el} customInput={TextField} format="#### #### #### ####"/>
+```
+
+If you can't get in both way you can try ReactDOM.findDOMNode. You may need to traverse if input is not the top level element.
+```jsx
+  <NumberFormat ref = {(inst) => this.inputElem = ReactDOM.findDOMNode(inst)} format="#### #### #### ####"/>
 ```
 
 ### Live Demo

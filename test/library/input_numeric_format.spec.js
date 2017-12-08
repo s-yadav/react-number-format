@@ -391,4 +391,24 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('$.');
   })
 
+  it('should delete all characters if nothing is after decimalSeparator and before decimalSeparator is deleted', () => {
+    const wrapper = shallow(<NumberFormat decimalSeparator={'.'} prefix={'$'} value="$0."/> );
+    expect(wrapper.state().value).toEqual('$0.');
+
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 2);
+    expect(wrapper.state().value).toEqual('');
+  });
+
+  it('should should not clear input if after decimal is deleted and nothing is before decimal', () => {
+    const wrapper = shallow(<NumberFormat decimalSeparator={'.'} prefix={'$'} value="$.3"/> );
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 3);
+    expect(wrapper.state().value).toEqual('$.');
+  });
+
+  it('should should allow ctrl + a -> decimalSeparator', () => {
+    const wrapper = shallow(<NumberFormat decimalSeparator={'.'} prefix={'$'} value="$34.35"/> );
+    wrapper.find('input').simulate('change', getCustomEvent('.', 1, 1));
+    expect(wrapper.state().value).toEqual('$.');
+  });
+
 });
