@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.0.3
+ * react-number-format - 3.1.0
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -113,7 +113,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  onBlur: _propTypes2.default.func,
 	  type: _propTypes2.default.oneOf(['text', 'tel']),
 	  isAllowed: _propTypes2.default.func,
-	  renderText: _propTypes2.default.func
+	  renderText: _propTypes2.default.func,
+	  getInputRef: _propTypes2.default.func
 	};
 
 	var defaultProps = {
@@ -131,7 +132,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  onMouseUp: _utils.noop,
 	  onFocus: _utils.noop,
 	  onBlur: _utils.noop,
-	  isAllowed: _utils.returnTrue
+	  isAllowed: _utils.returnTrue,
+	  getInputRef: _utils.noop
 	};
 
 	var NumberFormat = function (_React$Component) {
@@ -708,7 +710,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'correctInputValue',
 	    value: function correctInputValue(caretPos, lastValue, value) {
-	      var format = this.props.format;
+	      var _props9 = this.props,
+	          format = _props9.format,
+	          decimalSeparator = _props9.decimalSeparator;
 
 	      var lastNumStr = this.state.numAsString || '';
 
@@ -742,7 +746,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        //clear only if something got deleted
 
 
-	        if (numericString.length < lastNumStr.length && beforeDecimal === '' && !parseFloat(afterDecimal)) {
+	        var isBeforeDecimalPoint = caretPos < value.indexOf(decimalSeparator) + 1;
+	        if (numericString.length < lastNumStr.length && isBeforeDecimalPoint && beforeDecimal === '' && !parseFloat(afterDecimal)) {
 	          return addNegation ? '-' : '';
 	        }
 	      }
@@ -840,13 +845,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var selectionStart = el.selectionStart;
 
 	      var expectedCaretPosition = void 0;
-	      var _props9 = this.props,
-	          decimalScale = _props9.decimalScale,
-	          fixedDecimalScale = _props9.fixedDecimalScale,
-	          prefix = _props9.prefix,
-	          suffix = _props9.suffix,
-	          format = _props9.format,
-	          onKeyDown = _props9.onKeyDown;
+	      var _props10 = this.props,
+	          decimalScale = _props10.decimalScale,
+	          fixedDecimalScale = _props10.fixedDecimalScale,
+	          prefix = _props10.prefix,
+	          suffix = _props10.suffix,
+	          format = _props10.format,
+	          onKeyDown = _props10.onKeyDown;
 
 	      var ignoreDecimalSeparator = decimalScale !== undefined && fixedDecimalScale;
 	      var numRegex = this.getNumberRegex(false, ignoreDecimalSeparator);
@@ -941,16 +946,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        _this2.props.onFocus(e);
-	      });
+	      }, 0);
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _props10 = this.props,
-	          type = _props10.type,
-	          displayType = _props10.displayType,
-	          customInput = _props10.customInput,
-	          renderText = _props10.renderText;
+	      var _props11 = this.props,
+	          type = _props11.type,
+	          displayType = _props11.displayType,
+	          customInput = _props11.customInput,
+	          renderText = _props11.renderText,
+	          getInputRef = _props11.getInputRef;
 	      var value = this.state.value;
 
 
@@ -963,13 +969,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        onKeyDown: this.onKeyDown,
 	        onMouseUp: this.onMouseUp,
 	        onFocus: this.onFocus,
-	        onBlur: this.onBlur
+	        onBlur: this.onBlur,
+	        ref: getInputRef
 	      });
 
 	      if (displayType === 'text') {
 	        return renderText ? renderText(value) || null : _react2.default.createElement(
 	          'span',
-	          otherProps,
+	          _extends({}, otherProps, { ref: getInputRef }),
 	          value
 	        );
 	      } else if (customInput) {
