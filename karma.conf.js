@@ -1,14 +1,17 @@
-var webpack = require('webpack');
+const webpack = require('webpack');
+
+const {TEST_BROWSER} = process.env;
+const runOnNode = TEST_BROWSER === 'ChromeHeadless';
 
 module.exports = function (config) {
     config.set({
-        browsers: ['Chrome'],
-        singleRun: false,
+        browsers: [TEST_BROWSER || 'Chrome'],
+        singleRun: runOnNode,
         frameworks: ['jasmine'],
         files: [
             './test/**/*.spec.js'
         ],
-        reporters: ['kjhtml'],
+        reporters: [runOnNode ? 'spec' : 'kjhtml'],
         preprocessors: {
           './test/**/*.js': [ 'webpack','sourcemap'] //preprocess with webpack
         },
