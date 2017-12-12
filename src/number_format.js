@@ -764,8 +764,7 @@ class NumberFormat extends React.Component {
       onKeyDown: this.onKeyDown,
       onMouseUp: this.onMouseUp,
       onFocus: this.onFocus,
-      onBlur: this.onBlur,
-      ref: getInputRef
+      onBlur: this.onBlur
     })
 
     if( displayType === 'text'){
@@ -784,6 +783,7 @@ class NumberFormat extends React.Component {
     return (
       <input
         {...inputProps}
+        ref = {getInputRef}
       />
     )
   }

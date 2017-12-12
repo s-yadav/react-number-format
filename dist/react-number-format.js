@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.1.0
+ * react-number-format - 3.1.1
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -969,8 +969,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        onKeyDown: this.onKeyDown,
 	        onMouseUp: this.onMouseUp,
 	        onFocus: this.onFocus,
-	        onBlur: this.onBlur,
-	        ref: getInputRef
+	        onBlur: this.onBlur
 	      });
 
 	      if (displayType === 'text') {
@@ -984,7 +983,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return _react2.default.createElement(CustomInput, inputProps);
 	      }
 
-	      return _react2.default.createElement('input', inputProps);
+	      return _react2.default.createElement('input', _extends({}, inputProps, {
+	        ref: getInputRef
+	      }));
 	    }
 	  }]);
 
