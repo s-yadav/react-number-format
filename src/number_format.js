@@ -43,7 +43,7 @@ const propTypes = {
   onChange: PropTypes.func,
   onFocus: PropTypes.func,
   onBlur: PropTypes.func,
-  type: PropTypes.oneOf(['text', 'tel']),
+  type: PropTypes.oneOf(['text', 'tel', 'password']),
   isAllowed: PropTypes.func,
   renderText: PropTypes.func,
   getInputRef: PropTypes.func
