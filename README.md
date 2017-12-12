@@ -49,7 +49,7 @@ import * as NumberFormat from 'react-number-format';
 | type | One of ['text', 'tel'] | text | Input type attribute |
 | format | String : Hash based ex (#### #### #### ####) <br/> Or Function| none | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number. |
 | removeFormatting | (formattedValue) => numericString | none | If you are providing custom format method and it add numbers as format you will need to add custom removeFormatting logic |
-| mask | String (ex : _) | none | If mask defined, component will show non entered placed with masked value. |
+| mask | String (ex : _) | `' '` | If mask defined, component will show non entered placed with masked value. |
 | customInput | Component Reference | input | This allow supporting custom inputs with number format. |
 | onValueChange | (values) => {} | none | onValueChange handler accepts [values object](#values-object) |
 | isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not |
