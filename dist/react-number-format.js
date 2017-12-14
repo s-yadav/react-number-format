@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.1.1
+ * react-number-format - 3.1.2
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -1286,6 +1286,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Not used .round or .fixedTo because that will break with big numbers
 	 */
 	function roundToPrecision(numStr, scale, fixedDecimalScale) {
+	  var shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
 	  var numberParts = numStr.split('.');
 	  var roundedDecimalParts = parseFloat('0.' + (numberParts[1] || '0')).toFixed(scale).split('.');
 	  var intPart = numberParts[0].split('').reverse().reduce(function (roundedStr, current, idx) {
@@ -1297,7 +1298,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  var decimalPart = limitToScale(roundedDecimalParts[1] || '', (numberParts[1] || '').length, fixedDecimalScale);
 
-	  return intPart + (decimalPart ? '.' + decimalPart : '');
+	  return '' + intPart + (shoudHaveDecimalSeparator ? '.' : '') + decimalPart;
 	}
 
 	function omit(obj, keyMaps) {

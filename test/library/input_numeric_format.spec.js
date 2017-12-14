@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 import NumberFormat from '../../src/number_format';
 import {getCustomEvent, simulateKeyInput, simulateBlurEvent, shallow, mount} from '../test_util';
@@ -411,4 +412,28 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('$.');
   });
 
+  //Issue #137 isNumericString=true breaks decimal places
+  it('should not break decimal palces when isNumericString is set to true and decimal scale is provided. Issue #137', () => {
+    class IssueExample extends React.Component {
+      constructor() {
+        super();
+        this.state = {
+          value: '3456'
+        }
+      }
+      render() {
+        const {value} = this.state;
+        return (
+          <NumberFormat isNumericString={true} decimalScale={2} prefix={'$'} value={value} onValueChange={({value}) => {
+            this.setState({value})
+            console.log('value');
+          }}/>
+        )
+      }
+    }
+    const wrapper = mount(<IssueExample/> );
+    simulateKeyInput(wrapper.find('input'), '.', 5);
+    shallow(wrapper.get(0)).update();
+    expect(ReactDOM.findDOMNode(wrapper.instance()).value).toEqual('$3456.');
+  });
 });

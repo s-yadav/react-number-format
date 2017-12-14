@@ -45,6 +45,7 @@ export function limitToScale(numStr: string, scale: number, fixedDecimalScale: b
  * Not used .round or .fixedTo because that will break with big numbers
  */
 export function roundToPrecision(numStr: string, scale: number, fixedDecimalScale: boolean) {
+  const shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
   const numberParts = numStr.split('.');
   const roundedDecimalParts = parseFloat(`0.${numberParts[1] || '0'}`).toFixed(scale).split('.');
   const intPart = numberParts[0].split('').reverse().reduce((roundedStr, current, idx) => {
@@ -56,7 +57,7 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
 
   const decimalPart = limitToScale(roundedDecimalParts[1] || '', (numberParts[1] || '').length, fixedDecimalScale);
 
-  return intPart + (decimalPart ? '.' + decimalPart : '');
+  return `${intPart}${shoudHaveDecimalSeparator ? '.' : ''}${decimalPart}`;
 }
 
 
