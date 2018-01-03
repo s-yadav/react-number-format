@@ -42,7 +42,7 @@ import * as NumberFormat from 'react-number-format';
 | fixedDecimalScale | boolean| false| If true it add 0s to match given decimalScale|
 | allowNegative      | boolean     |   true | allow negative numbers (Only when format option is not provided) |
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
-| suffix | String (ex : /-)      |    none | Add a prefix after the number |
+| suffix | String (ex : /-)      |    none | Add a suffix after the number |
 | value | Number or String | null | Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true. |
 | isNumericString | boolean | false | If value is passed as string representation of numbers (unformatted) then this should be passed as true |
 | displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
