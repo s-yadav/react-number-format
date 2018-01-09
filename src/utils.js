@@ -12,6 +12,24 @@ export function escapeRegExp(str: string) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
+//spilt a float number into different parts beforeDecimal, afterDecimal, and negation
+export function splitDecimal(numStr: string, allowNegative: boolean = true) {
+  const hasNagation = numStr[0] === '-';
+  const addNegation = hasNagation && allowNegative;
+  numStr = numStr.replace('-', '');
+
+  const parts = numStr.split('.');
+  const beforeDecimal = parts[0];
+  const afterDecimal = parts[1] || '';
+
+  return {
+    beforeDecimal,
+    afterDecimal,
+    hasNagation,
+    addNegation
+  }
+}
+
 export function fixLeadingZero(numStr?: string) {
   if (!numStr) return numStr;
   const isNegative = numStr[0] === '-';
@@ -46,18 +64,19 @@ export function limitToScale(numStr: string, scale: number, fixedDecimalScale: b
  */
 export function roundToPrecision(numStr: string, scale: number, fixedDecimalScale: boolean) {
   const shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
-  const numberParts = numStr.split('.');
-  const roundedDecimalParts = parseFloat(`0.${numberParts[1] || '0'}`).toFixed(scale).split('.');
-  const intPart = numberParts[0].split('').reverse().reduce((roundedStr, current, idx) => {
+  const {beforeDecimal, afterDecimal, hasNagation} = splitDecimal(numStr);
+  const roundedDecimalParts = parseFloat(`0.${afterDecimal || '0'}`).toFixed(scale).split('.');
+  const intPart = beforeDecimal.split('').reverse().reduce((roundedStr, current, idx) => {
     if (roundedStr.length > idx) {
       return (Number(roundedStr[0]) + Number(current)).toString() + roundedStr.substring(1, roundedStr.length);
     }
     return current + roundedStr;
   }, roundedDecimalParts[0]);
 
-  const decimalPart = limitToScale(roundedDecimalParts[1] || '', (numberParts[1] || '').length, fixedDecimalScale);
-
-  return `${intPart}${shoudHaveDecimalSeparator ? '.' : ''}${decimalPart}`;
+  const decimalPart = limitToScale(roundedDecimalParts[1] || '', (afterDecimal || '').length, fixedDecimalScale);
+  const negation = hasNagation ? '-' : '';
+  const decimalSeparator = shoudHaveDecimalSeparator ? '.' : '';
+  return `${negation}${intPart}${decimalSeparator}${decimalPart}`;
 }
 
 

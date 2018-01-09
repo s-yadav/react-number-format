@@ -12,7 +12,8 @@ import {
   limitToScale,
   roundToPrecision,
   omit,
-  setCaretPosition
+  setCaretPosition,
+  splitDecimal
 } from './utils';
 
 
@@ -205,25 +206,6 @@ class NumberFormat extends React.Component {
     }
 
   }
-
-  splitDecimal(numStr: string) {
-    const {allowNegative} = this.props;
-    const hasNagation = numStr[0] === '-';
-    const addNegation = hasNagation && allowNegative;
-    numStr = numStr.replace('-', '');
-
-    const parts = numStr.split('.');
-    const beforeDecimal = parts[0];
-    const afterDecimal = parts[1] || '';
-
-    return {
-      beforeDecimal,
-      afterDecimal,
-      hasNagation,
-      addNegation
-    }
-  }
-
   /** Misc methods end **/
 
   /** caret specific methods **/
@@ -416,11 +398,11 @@ class NumberFormat extends React.Component {
    * @return {string} formatted Value
    */
   formatAsNumber(numStr: string) {
-    const {decimalScale, fixedDecimalScale, prefix, suffix} = this.props;
+    const {decimalScale, fixedDecimalScale, prefix, suffix, allowNegative} = this.props;
     const {thousandSeparator, decimalSeparator} = this.getSeparators();
 
     const hasDecimalSeparator = numStr.indexOf('.') !== -1 || (decimalScale && fixedDecimalScale);
-    let {beforeDecimal, afterDecimal, addNegation} = this.splitDecimal(numStr); // eslint-disable-line prefer-const
+    let {beforeDecimal, afterDecimal, addNegation} = splitDecimal(numStr, allowNegative); // eslint-disable-line prefer-const
 
     //apply decimal precision if its defined
     if (decimalScale !== undefined) afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
@@ -550,7 +532,7 @@ class NumberFormat extends React.Component {
    * It will also work as fallback if android chome keyDown handler does not work
    **/
   correctInputValue(caretPos: number, lastValue: string, value: string) {
-    const {format, decimalSeparator} = this.props;
+    const {format, decimalSeparator, allowNegative} = this.props;
     const lastNumStr = this.state.numAsString || '';
 
     //don't do anyhting if something got added, or if value is empty string (when whole input is cleared)
@@ -574,7 +556,7 @@ class NumberFormat extends React.Component {
     //clear all numbers in such case while keeping the - sign
     if (!format) {
       const numericString = this.removeFormatting(value);
-      let {beforeDecimal, afterDecimal, addNegation} = this.splitDecimal(numericString); // eslint-disable-line prefer-const
+      let {beforeDecimal, afterDecimal, addNegation} = splitDecimal(numericString, allowNegative); // eslint-disable-line prefer-const
 
       //clear only if something got deleted
       const isBeforeDecimalPoint = caretPos < value.indexOf(decimalSeparator) + 1;

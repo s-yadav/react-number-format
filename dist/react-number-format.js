@@ -1,7 +1,7 @@
 /*!
- * react-number-format - 3.1.2
+ * react-number-format - 3.1.3
  * Author : Sudhanshu Yadav
- * Copyright (c) 2016,2017 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
+ * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -289,27 +289,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      }
 	    }
-	  }, {
-	    key: 'splitDecimal',
-	    value: function splitDecimal(numStr) {
-	      var allowNegative = this.props.allowNegative;
-
-	      var hasNagation = numStr[0] === '-';
-	      var addNegation = hasNagation && allowNegative;
-	      numStr = numStr.replace('-', '');
-
-	      var parts = numStr.split('.');
-	      var beforeDecimal = parts[0];
-	      var afterDecimal = parts[1] || '';
-
-	      return {
-	        beforeDecimal: beforeDecimal,
-	        afterDecimal: afterDecimal,
-	        hasNagation: hasNagation,
-	        addNegation: addNegation
-	      };
-	    }
-
 	    /** Misc methods end **/
 
 	    /** caret specific methods **/
@@ -538,7 +517,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          decimalScale = _props5.decimalScale,
 	          fixedDecimalScale = _props5.fixedDecimalScale,
 	          prefix = _props5.prefix,
-	          suffix = _props5.suffix;
+	          suffix = _props5.suffix,
+	          allowNegative = _props5.allowNegative;
 
 	      var _getSeparators4 = this.getSeparators(),
 	          thousandSeparator = _getSeparators4.thousandSeparator,
@@ -546,7 +526,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var hasDecimalSeparator = numStr.indexOf('.') !== -1 || decimalScale && fixedDecimalScale;
 
-	      var _splitDecimal = this.splitDecimal(numStr),
+	      var _splitDecimal = (0, _utils.splitDecimal)(numStr, allowNegative),
 	          beforeDecimal = _splitDecimal.beforeDecimal,
 	          afterDecimal = _splitDecimal.afterDecimal,
 	          addNegation = _splitDecimal.addNegation; // eslint-disable-line prefer-const
@@ -712,7 +692,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function correctInputValue(caretPos, lastValue, value) {
 	      var _props9 = this.props,
 	          format = _props9.format,
-	          decimalSeparator = _props9.decimalSeparator;
+	          decimalSeparator = _props9.decimalSeparator,
+	          allowNegative = _props9.allowNegative;
 
 	      var lastNumStr = this.state.numAsString || '';
 
@@ -738,7 +719,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!format) {
 	        var numericString = this.removeFormatting(value);
 
-	        var _splitDecimal2 = this.splitDecimal(numericString),
+	        var _splitDecimal2 = (0, _utils.splitDecimal)(numericString, allowNegative),
 	            beforeDecimal = _splitDecimal2.beforeDecimal,
 	            afterDecimal = _splitDecimal2.afterDecimal,
 	            addNegation = _splitDecimal2.addNegation; // eslint-disable-line prefer-const
@@ -1231,6 +1212,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.returnTrue = returnTrue;
 	exports.charIsNumber = charIsNumber;
 	exports.escapeRegExp = escapeRegExp;
+	exports.splitDecimal = splitDecimal;
 	exports.fixLeadingZero = fixLeadingZero;
 	exports.splitString = splitString;
 	exports.limitToScale = limitToScale;
@@ -1251,6 +1233,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function escapeRegExp(str) {
 	  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+	}
+
+	//spilt a float number into different parts beforeDecimal, afterDecimal, and negation
+	function splitDecimal(numStr) {
+	  var allowNegative = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+	  var hasNagation = numStr[0] === '-';
+	  var addNegation = hasNagation && allowNegative;
+	  numStr = numStr.replace('-', '');
+
+	  var parts = numStr.split('.');
+	  var beforeDecimal = parts[0];
+	  var afterDecimal = parts[1] || '';
+
+	  return {
+	    beforeDecimal: beforeDecimal,
+	    afterDecimal: afterDecimal,
+	    hasNagation: hasNagation,
+	    addNegation: addNegation
+	  };
 	}
 
 	function fixLeadingZero(numStr) {
@@ -1287,18 +1289,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function roundToPrecision(numStr, scale, fixedDecimalScale) {
 	  var shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
-	  var numberParts = numStr.split('.');
-	  var roundedDecimalParts = parseFloat('0.' + (numberParts[1] || '0')).toFixed(scale).split('.');
-	  var intPart = numberParts[0].split('').reverse().reduce(function (roundedStr, current, idx) {
+
+	  var _splitDecimal = splitDecimal(numStr),
+	      beforeDecimal = _splitDecimal.beforeDecimal,
+	      afterDecimal = _splitDecimal.afterDecimal,
+	      hasNagation = _splitDecimal.hasNagation;
+
+	  var roundedDecimalParts = parseFloat('0.' + (afterDecimal || '0')).toFixed(scale).split('.');
+	  var intPart = beforeDecimal.split('').reverse().reduce(function (roundedStr, current, idx) {
 	    if (roundedStr.length > idx) {
 	      return (Number(roundedStr[0]) + Number(current)).toString() + roundedStr.substring(1, roundedStr.length);
 	    }
 	    return current + roundedStr;
 	  }, roundedDecimalParts[0]);
 
-	  var decimalPart = limitToScale(roundedDecimalParts[1] || '', (numberParts[1] || '').length, fixedDecimalScale);
-
-	  return '' + intPart + (shoudHaveDecimalSeparator ? '.' : '') + decimalPart;
+	  var decimalPart = limitToScale(roundedDecimalParts[1] || '', (afterDecimal || '').length, fixedDecimalScale);
+	  var negation = hasNagation ? '-' : '';
+	  var decimalSeparator = shoudHaveDecimalSeparator ? '.' : '';
+	  return '' + negation + intPart + decimalSeparator + decimalPart;
 	}
 
 	function omit(obj, keyMaps) {

@@ -436,4 +436,13 @@ describe('Test NumberFormat as input with numeric format options', () => {
     shallow(wrapper.get(0)).update();
     expect(ReactDOM.findDOMNode(wrapper.instance()).value).toEqual('$3456.');
   });
+
+  //Issue #140
+  it('should not give NaN zeros, when decimalScale is 0 and roundedValue will be multiple of 10s, Issue #140', () => {
+    const wrapper = shallow(<NumberFormat value={-9.5} decimalScale={0}/> );
+    expect(wrapper.state().value).toEqual('-10');
+
+    wrapper.setProps({value: -99.5});
+    expect(wrapper.state().value).toEqual('-100');
+  });
 });
