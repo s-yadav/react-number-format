@@ -540,18 +540,6 @@ class NumberFormat extends React.Component {
       return value;
     }
 
-    const start = caretPos;
-    const lastValueParts = splitString(lastValue, caretPos);
-    const newValueParts = splitString(value, caretPos);
-    const deletedIndex = lastValueParts[1].lastIndexOf(newValueParts[1]);
-    const diff = deletedIndex !== -1 ? lastValueParts[1].substring(0, deletedIndex) : '';
-    const end = start + diff.length;
-
-    //if format got deleted reset the value to last value
-    if (this.checkIfFormatGotDeleted(start, end, lastValue)) {
-      value = lastValue;
-    }
-
     //for numbers check if beforeDecimal got deleted and there is nothing after decimal,
     //clear all numbers in such case while keeping the - sign
     if (!format) {
@@ -575,10 +563,10 @@ class NumberFormat extends React.Component {
     const {state, props} = this;
     const {isAllowed} = props;
     const lastValue = state.value || '';
-
+    
     /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
     const currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);
-
+    
     inputValue =  this.correctInputValue(currentCaretPosition, lastValue, inputValue);
 
     let formattedValue = this.formatInput(inputValue) || '';
