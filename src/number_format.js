@@ -547,8 +547,9 @@ class NumberFormat extends React.Component {
     const diff = deletedIndex !== -1 ? lastValueParts[1].substring(0, deletedIndex) : '';
     const end = start + diff.length;
 
+    const isDeleteAll = newValueParts[1] === '';
     //if format got deleted reset the value to last value
-    if (this.checkIfFormatGotDeleted(start, end, lastValue)) {
+    if (!isDeleteAll && this.checkIfFormatGotDeleted(start, end, lastValue)) {
       value = lastValue;
     }
 
