@@ -95,16 +95,17 @@ export function setCaretPosition(el: HTMLInputElement, caretPos: number) {
   // to make sure we don't have it everything -selected-
   // (it causes an issue in chrome, and having it doesn't hurt any other browser)
   if (el !== null) {
+    const caretPos_ = caretPos < 0 ? 0 : caretPos;
     if (el.createTextRange) {
       const range = el.createTextRange();
-      range.move('character', caretPos);
+      range.move('character', caretPos_);
       range.select();
       return true;
     }
     // (el.selectionStart === 0 added for Firefox bug)
     if (el.selectionStart || el.selectionStart === 0) {
       el.focus();
-      el.setSelectionRange(caretPos, caretPos);
+      el.setSelectionRange(caretPos_, caretPos_);
       return true;
     }
 
