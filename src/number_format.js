@@ -13,7 +13,8 @@ import {
   roundToPrecision,
   omit,
   setCaretPosition,
-  splitDecimal
+  splitDecimal,
+  findChangedIndex
 } from './utils';
 
 
@@ -535,17 +536,20 @@ class NumberFormat extends React.Component {
     const {format, decimalSeparator, allowNegative} = this.props;
     const lastNumStr = this.state.numAsString || '';
 
-    //don't do anyhting if something got added, or if value is empty string (when whole input is cleared)
-    if (value.length >= lastValue.length || !value.length) {
+    const {start, end} = findChangedIndex(lastValue, value);
+
+    /* don't do anyhting if something got added,
+     or if value is empty string (when whole input is cleared)
+     or whole input is replace with a number
+    */
+    if (
+      value.length > lastValue.length
+      || !value.length ||
+      start === end || 
+      (start === 0 && end === lastValue.length)
+    ) {
       return value;
     }
-
-    const start = caretPos;
-    const lastValueParts = splitString(lastValue, caretPos);
-    const newValueParts = splitString(value, caretPos);
-    const deletedIndex = lastValueParts[1].lastIndexOf(newValueParts[1]);
-    const diff = deletedIndex !== -1 ? lastValueParts[1].substring(0, deletedIndex) : '';
-    const end = start + diff.length;
 
     //if format got deleted reset the value to last value
     if (this.checkIfFormatGotDeleted(start, end, lastValue)) {

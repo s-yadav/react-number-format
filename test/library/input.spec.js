@@ -103,6 +103,36 @@ describe('NumberFormat as input', () => {
     expect(input.instance().value).toEqual('4111 11__ ____ ____');
   });
 
+  it('should not update value if formatting got deleted', () => {
+    const wrapper = shallow(<NumberFormat format="+1 (###) ### # ## US" value="+1 (123) 456 7 89 US"/>);
+
+    //when only format character is deleted
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 0, 4);
+    expect(wrapper.state().value).toEqual('+1 (123) 456 7 89 US');
+
+    //when format and number character are delted
+    wrapper.setProps({value: '+1 (999) 999 9 99 US'})
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 6, 10);
+    expect(wrapper.state().value).toEqual('+1 (999) 999 9 99 US');
+
+    //when group of characters (including format character) is replaced with number
+    wrapper.setProps({value: '+1 (888) 888 8 88 US'});
+    simulateKeyInput(wrapper.find('input'), '8', 6, 10);
+    expect(wrapper.state().value).toEqual('+1 (888) 888 8 88 US');
+
+    //when a format character is replaced with number
+    wrapper.setProps({value: '+1 (777) 777 7 77 US'});
+    simulateKeyInput(wrapper.find('input'), '8', 8, 9);
+    expect(wrapper.state().value).toEqual('+1 (777) 777 7 77 US');
+  });
+
+  it('should allow replacing all characters with number when formatting is present', () => {
+    const format = '+1 (###) ### # ## US';
+    const wrapper = shallow(<NumberFormat format={format} value="+1 (123) 456 7 89 US" mask="_"/>);
+    simulateKeyInput(wrapper.find('input'), '8', 0, format.length);
+    expect(wrapper.state().value).toEqual('+1 (8__) ___ _ __ US');
+  });
+
   describe('Test masking', () => {
     it('should allow mask as string', () => {
       const wrapper = shallow(<NumberFormat format="#### #### ####" mask="_"/>);

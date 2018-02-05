@@ -113,3 +113,21 @@ export function setCaretPosition(el: HTMLInputElement, caretPos: number) {
     return false;
   }
 }
+
+/**
+  Given previous value and newValue it returns the index
+  start - end to which values have changed.
+  This function makes assumption about only consecutive
+  characters are changed which is correct assumption for caret input.
+*/
+export function findChangedIndex(prevValue: string, newValue: string) {
+  let i = 0, j = 0;
+  const prevLength = prevValue.length;
+  const newLength = newValue.length;
+  while (prevValue[i] === newValue[i]) i++;
+
+  //check what has been changed from last
+  while (prevValue[prevLength - 1 - j] === newValue[newLength - 1 - j]) j++;
+
+  return {start: i, end: prevLength - j};
+}

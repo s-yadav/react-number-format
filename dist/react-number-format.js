@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.1.3
+ * react-number-format - 3.1.4
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -697,17 +697,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var lastNumStr = this.state.numAsString || '';
 
-	      //don't do anyhting if something got added, or if value is empty string (when whole input is cleared)
-	      if (value.length >= lastValue.length || !value.length) {
+	      var _findChangedIndex = (0, _utils.findChangedIndex)(lastValue, value),
+	          start = _findChangedIndex.start,
+	          end = _findChangedIndex.end;
+
+	      /* don't do anyhting if something got added,
+	       or if value is empty string (when whole input is cleared)
+	       or whole input is replace with a number
+	      */
+
+
+	      if (value.length > lastValue.length || !value.length || start === end || start === 0 && end === lastValue.length) {
 	        return value;
 	      }
-
-	      var start = caretPos;
-	      var lastValueParts = (0, _utils.splitString)(lastValue, caretPos);
-	      var newValueParts = (0, _utils.splitString)(value, caretPos);
-	      var deletedIndex = lastValueParts[1].lastIndexOf(newValueParts[1]);
-	      var diff = deletedIndex !== -1 ? lastValueParts[1].substring(0, deletedIndex) : '';
-	      var end = start + diff.length;
 
 	      //if format got deleted reset the value to last value
 	      if (this.checkIfFormatGotDeleted(start, end, lastValue)) {
@@ -1219,6 +1221,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.roundToPrecision = roundToPrecision;
 	exports.omit = omit;
 	exports.setCaretPosition = setCaretPosition;
+	exports.findChangedIndex = findChangedIndex;
 
 
 	// basic noop function
@@ -1341,6 +1344,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	    el.focus();
 	    return false;
 	  }
+	}
+
+	/**
+	  Given previous value and newValue it returns the index
+	  start - end to which values have changed.
+	  This function makes assumption about only consecutive
+	  characters are changed which is correct assumption for caret input.
+	*/
+	function findChangedIndex(prevValue, newValue) {
+	  var i = 0,
+	      j = 0;
+	  var prevLength = prevValue.length;
+	  var newLength = newValue.length;
+	  while (prevValue[i] === newValue[i]) {
+	    i++;
+	  } //check what has been changed from last
+	  while (prevValue[prevLength - 1 - j] === newValue[newLength - 1 - j]) {
+	    j++;
+	  }return { start: i, end: prevLength - j };
 	}
 
 /***/ })
