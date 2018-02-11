@@ -41,10 +41,6 @@ export function fixLeadingZero(numStr?: string) {
   return `${isNegative ? '-': ''}${beforeDecimal}${afterDecimal ? `.${afterDecimal}` : ''}`;
 }
 
-export function splitString(str: string, index: number) {
-  return [str.substring(0, index), str.substring(index)]
-}
-
 /**
  * limit decimal numbers to given scale
  * Not used .fixedTo because that will break with big numbers

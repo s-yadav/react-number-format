@@ -280,13 +280,6 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('')
   });
 
-  it('should allow replacing all numbers with input number when decimalScale and fixedDecimalScale is defined', () => {
-    const value = '$1.000';
-    const wrapper = shallow(<NumberFormat prefix="$" decimalScale={3} value={value} fixedDecimalScale={true}/>);
-    simulateKeyInput(wrapper.find('input'), '9', 0, value.length);
-    expect(wrapper.state().value).toEqual('$9.000')
-  });
-
   it('should not allow to remove decimalSeparator if decimalScale and fixedDecimalScale is defined', () => {
     const wrapper = shallow(<NumberFormat prefix="$" thousandSeparator={true} decimalScale={3} fixedDecimalScale={true} value="$1,234.000"/>);
     simulateKeyInput(wrapper.find('input'), 'Backspace', 7);

@@ -8,7 +8,6 @@ import {
   charIsNumber,
   escapeRegExp,
   fixLeadingZero,
-  splitString,
   limitToScale,
   roundToPrecision,
   omit,
@@ -80,6 +79,10 @@ class NumberFormat extends React.Component {
   onMouseUp: Function
   onFocus: Function
   onBlur: Function
+  selectionBeforeInput: {
+    selectionStart: number,
+    selectionEnd: number
+  }
   static defaultProps: Object
   constructor(props: Object) {
     super(props);
@@ -93,6 +96,11 @@ class NumberFormat extends React.Component {
       value: formattedValue,
       numAsString: this.removeFormatting(formattedValue)
     }
+
+    this.selectionBeforeInput = {
+      selectionStart: 0,
+      selectionEnd: 0
+    };
 
     this.onChange = this.onChange.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
@@ -535,7 +543,7 @@ class NumberFormat extends React.Component {
   correctInputValue(caretPos: number, lastValue: string, value: string) {
     const {format, decimalSeparator, allowNegative} = this.props;
     const lastNumStr = this.state.numAsString || '';
-
+    const {selectionStart, selectionEnd} = this.selectionBeforeInput;
     const {start, end} = findChangedIndex(lastValue, value);
 
     /* don't do anyhting if something got added,
@@ -545,8 +553,9 @@ class NumberFormat extends React.Component {
     if (
       value.length > lastValue.length
       || !value.length ||
-      start === end || 
-      (start === 0 && end === lastValue.length)
+      start === end ||
+      (start === 0 && end === lastValue.length) ||
+      (selectionStart === 0 && selectionEnd === lastValue.length)
     ) {
       return value;
     }
@@ -649,14 +658,18 @@ class NumberFormat extends React.Component {
   onKeyDown(e: SyntheticKeyboardInputEvent) {
     const el = e.target;
     const {key} = e;
-    const {selectionEnd, value} = el;
-    const {selectionStart} = el;
+    const {selectionStart, selectionEnd, value} = el;
     let expectedCaretPosition;
     const {decimalScale, fixedDecimalScale, prefix, suffix, format, onKeyDown} = this.props;
     const ignoreDecimalSeparator = decimalScale !== undefined && fixedDecimalScale;
     const numRegex = this.getNumberRegex(false, ignoreDecimalSeparator);
     const negativeRegex = new RegExp('-');
     const isPatternFormat = typeof format === 'string';
+
+    this.selectionBeforeInput = {
+      selectionStart,
+      selectionEnd
+    }
 
     //Handle backspace and delete against non numerical/decimal characters or arrow keys
     if (key === 'ArrowLeft' || key === 'Backspace') {

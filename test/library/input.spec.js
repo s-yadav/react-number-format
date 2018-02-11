@@ -131,7 +131,26 @@ describe('NumberFormat as input', () => {
     const wrapper = shallow(<NumberFormat format={format} value="+1 (123) 456 7 89 US" mask="_"/>);
     simulateKeyInput(wrapper.find('input'), '8', 0, format.length);
     expect(wrapper.state().value).toEqual('+1 (8__) ___ _ __ US');
+
+    //check for numeric input
+    const value = '12.000';
+
+    wrapper.setProps({
+      format: undefined,
+      decimalScale: 3,
+      fixedDecimalScale: true,
+      value
+    });
+
+    simulateKeyInput(wrapper.find('input'), '9', 0, value.length);
+    expect(wrapper.state().value).toEqual('9.000')
+
+    //bug #157
+    wrapper.setProps({value});
+    simulateKeyInput(wrapper.find('input'), '1', 0, value.length);
+    expect(wrapper.state().value).toEqual('1.000');
   });
+
 
   describe('Test masking', () => {
     it('should allow mask as string', () => {

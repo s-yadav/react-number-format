@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.1.4
+ * react-number-format - 3.1.5
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -152,6 +152,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _this.state = {
 	      value: formattedValue,
 	      numAsString: _this.removeFormatting(formattedValue)
+	    };
+
+	    _this.selectionBeforeInput = {
+	      selectionStart: 0,
+	      selectionEnd: 0
 	    };
 
 	    _this.onChange = _this.onChange.bind(_this);
@@ -696,6 +701,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          allowNegative = _props9.allowNegative;
 
 	      var lastNumStr = this.state.numAsString || '';
+	      var _selectionBeforeInput = this.selectionBeforeInput,
+	          selectionStart = _selectionBeforeInput.selectionStart,
+	          selectionEnd = _selectionBeforeInput.selectionEnd;
 
 	      var _findChangedIndex = (0, _utils.findChangedIndex)(lastValue, value),
 	          start = _findChangedIndex.start,
@@ -707,7 +715,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      */
 
 
-	      if (value.length > lastValue.length || !value.length || start === end || start === 0 && end === lastValue.length) {
+	      if (value.length > lastValue.length || !value.length || start === end || start === 0 && end === lastValue.length || selectionStart === 0 && selectionEnd === lastValue.length) {
 	        return value;
 	      }
 
@@ -823,9 +831,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function onKeyDown(e) {
 	      var el = e.target;
 	      var key = e.key;
-	      var selectionEnd = el.selectionEnd,
+	      var selectionStart = el.selectionStart,
+	          selectionEnd = el.selectionEnd,
 	          value = el.value;
-	      var selectionStart = el.selectionStart;
 
 	      var expectedCaretPosition = void 0;
 	      var _props10 = this.props,
@@ -841,8 +849,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var negativeRegex = new RegExp('-');
 	      var isPatternFormat = typeof format === 'string';
 
-	      //Handle backspace and delete against non numerical/decimal characters or arrow keys
-	      if (key === 'ArrowLeft' || key === 'Backspace') {
+	      this.selectionBeforeInput = {
+	        selectionStart: selectionStart,
+	        selectionEnd: selectionEnd
+
+	        //Handle backspace and delete against non numerical/decimal characters or arrow keys
+	      };if (key === 'ArrowLeft' || key === 'Backspace') {
 	        expectedCaretPosition = selectionStart - 1;
 	      } else if (key === 'ArrowRight') {
 	        expectedCaretPosition = selectionStart + 1;
@@ -1216,7 +1228,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.escapeRegExp = escapeRegExp;
 	exports.splitDecimal = splitDecimal;
 	exports.fixLeadingZero = fixLeadingZero;
-	exports.splitString = splitString;
 	exports.limitToScale = limitToScale;
 	exports.roundToPrecision = roundToPrecision;
 	exports.omit = omit;
@@ -1267,10 +1278,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var afterDecimal = parts[1] || '';
 
 	  return '' + (isNegative ? '-' : '') + beforeDecimal + (afterDecimal ? '.' + afterDecimal : '');
-	}
-
-	function splitString(str, index) {
-	  return [str.substring(0, index), str.substring(index)];
 	}
 
 	/**
