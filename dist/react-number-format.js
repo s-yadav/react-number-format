@@ -114,7 +114,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  type: _propTypes2.default.oneOf(['text', 'tel']),
 	  isAllowed: _propTypes2.default.func,
 	  renderText: _propTypes2.default.func,
-	  getInputRef: _propTypes2.default.func
+	  getInputRef: _propTypes2.default.func,
+	  emptyFormatting: _propTypes2.default.bool
 	};
 
 	var defaultProps = {
@@ -133,7 +134,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  onFocus: _utils.noop,
 	  onBlur: _utils.noop,
 	  isAllowed: _utils.returnTrue,
-	  getInputRef: _utils.noop
+	  getInputRef: _utils.noop,
+	  emptyFormatting: false
 	};
 
 	var NumberFormat = function (_React$Component) {
@@ -565,17 +567,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var formattedValue = value;
 
 	      if (value === '') {
-	        formattedValue = '';
-	      } else if (value === '-' && !format) {
-	        formattedValue = '-';
-	        value = '';
-	      } else if (typeof format === 'string') {
-	        formattedValue = this.formatWithPattern(formattedValue);
-	      } else if (typeof format === 'function') {
-	        formattedValue = format(formattedValue);
-	      } else {
-	        formattedValue = this.formatAsNumber(formattedValue);
-	      }
+			if (typeof format === 'function' && this.props.emptyFormatting){
+			  formattedValue = format(formattedValue);
+			} else {
+			  formattedValue = '';
+			}
+	 	  } else if (value === '-' && !format) {
+			formattedValue = '-';
+			value = '';
+		  } else if (typeof format === 'string') {
+			formattedValue = this.formatWithPattern(formattedValue);
+		  } else if (typeof format === 'function') {
+			formattedValue = format(formattedValue);
+		  } else {
+			formattedValue = this.formatAsNumber(formattedValue);
+		  }
 
 	      return formattedValue;
 	    }
