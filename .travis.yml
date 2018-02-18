@@ -9,3 +9,8 @@ install:
 script:
   - npm run lint
   - TEST_BROWSER=ChromeHeadless npm run test
+
+sudo: required
+
+addons:
+ chrome: stable
