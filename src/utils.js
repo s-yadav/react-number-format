@@ -120,10 +120,16 @@ export function findChangedIndex(prevValue: string, newValue: string) {
   let i = 0, j = 0;
   const prevLength = prevValue.length;
   const newLength = newValue.length;
-  while (prevValue[i] === newValue[i]) i++;
+  while (prevValue[i] === newValue[i] && i < prevLength) i++;
 
   //check what has been changed from last
-  while (prevValue[prevLength - 1 - j] === newValue[newLength - 1 - j]) j++;
+  while (
+    prevValue[prevLength - 1 - j] === newValue[newLength - 1 - j]
+    && newLength - j > i
+    && prevLength - j > i
+  ) {
+       j++;
+    }
 
   return {start: i, end: prevLength - j};
 }

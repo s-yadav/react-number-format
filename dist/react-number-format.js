@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.1.5
+ * react-number-format - 3.1.6
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -1364,12 +1364,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      j = 0;
 	  var prevLength = prevValue.length;
 	  var newLength = newValue.length;
-	  while (prevValue[i] === newValue[i]) {
+	  while (prevValue[i] === newValue[i] && i < prevLength) {
 	    i++;
 	  } //check what has been changed from last
-	  while (prevValue[prevLength - 1 - j] === newValue[newLength - 1 - j]) {
+	  while (prevValue[prevLength - 1 - j] === newValue[newLength - 1 - j] && newLength - j > i && prevLength - j > i) {
 	    j++;
-	  }return { start: i, end: prevLength - j };
+	  }
+
+	  return { start: i, end: prevLength - j };
 	}
 
 /***/ })
