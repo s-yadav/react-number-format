@@ -2,6 +2,7 @@ import React from 'react';
 import NumberFormat from '../../src/number_format';
 
 import {simulateKeyInput, simulateMousUpEvent, simulateFocusEvent, shallow} from '../test_util';
+import {cardExpiry} from '../../custom_formatters/card_expiry';
 
 describe('Test character insertion', () => {
   it('should add any number properly when input is empty without format prop passed', () => {
@@ -233,6 +234,13 @@ describe('Test arrow keys', () => {
     simulateKeyInput(wrapper.find('input'), 'ArrowLeft', 13, 13, setSelectionRange);
     expect(caretPos).toEqual(12);
   });
+
+  it('should not move caret positon from left most to right most if left key pressed. #154', () => {
+    const wrapper = shallow(<NumberFormat format={cardExpiry} value="11/11"/>);
+    caretPos = undefined;
+    simulateKeyInput(wrapper.find('input'), 'ArrowLeft', 0, 0, setSelectionRange);
+    expect(caretPos).toEqual(0);
+  });
 })
 
 describe('Test click / focus on input', () => {
@@ -305,4 +313,5 @@ describe('Test click / focus on input', () => {
     expect(caretPos).toEqual(6)
     jasmine.clock().uninstall()
   });
+
 });

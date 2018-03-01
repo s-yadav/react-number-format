@@ -51,7 +51,7 @@ import * as NumberFormat from 'react-number-format';
 | removeFormatting | (formattedValue) => numericString | none | If you are providing custom format method and it add numbers as format you will need to add custom removeFormatting logic |
 | mask | String (ex : _) | `' '` | If mask defined, component will show non entered placed with masked value. |
 | customInput | Component Reference | input | This allow supporting custom inputs with number format. |
-| onValueChange | (values) => {} | none | onValueChange handler accepts [values object](#values-object) |
+| onValueChange | (values, e) => {} | none | onValueChange handler accepts [values object](#values-object) and event object (change / blur) as second parameter |
 | isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not |
 | renderText | (formattedValue) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. |
 | getInputRef | (elm) => void | null | Method to get reference of input or span based on displayType prop. See [Getting reference](#getting-reference)
@@ -81,6 +81,8 @@ Its recommended to use formattedValue / value / floatValue based on the initial 
 5. onChange no longer gets values object. You need to use onValueChange instead. onChange/onFocus/onBlur and other input events will be directly passed to the input.
 
 6. Its recommended to use formattedValue / value / floatValue based on the initial state (it should be same as the initial state format) which you are passing as value prop. If you are saving the `value` key on state make sure to pass isNumericString prop to true.
+
+7. onValueChange is not same as onChange. It gets called on different events. So don't make assumption about the event object (second parameter). It can be change event or blur event.
 
 ### Examples
 #### Prefix and thousand separator : Format currency as text

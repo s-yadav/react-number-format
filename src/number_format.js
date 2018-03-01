@@ -13,7 +13,8 @@ import {
   omit,
   setCaretPosition,
   splitDecimal,
-  findChangedIndex
+  findChangedIndex,
+  clamp
 } from './utils';
 
 
@@ -232,10 +233,13 @@ class NumberFormat extends React.Component {
   correctCaretPosition(value: string, caretPos: number, direction?: string) {
     const {prefix, suffix, format} = this.props;
 
+    //caret position should be between 0 and value length
+    caretPos = clamp(caretPos, 0, value.length);
+
     //in case of format as number limit between prefix and suffix
     if (!format) {
       const hasNegation = value[0] === '-';
-      return Math.min(Math.max(caretPos, prefix.length + (hasNegation ? 1 : 0)), (value.length - suffix.length));
+      return clamp(caretPos, prefix.length + (hasNegation ? 1 : 0), value.length - suffix.length);
     }
 
     //in case if custom format method don't do anything
@@ -254,7 +258,7 @@ class NumberFormat extends React.Component {
     const lastHashPosition = format.lastIndexOf('#');
 
     //limit the cursor between the first # position and the last # position
-    caretPos = Math.min(Math.max(caretPos, firstHashPosition), lastHashPosition + 1);
+    caretPos = clamp(caretPos, firstHashPosition, lastHashPosition + 1);
 
     const nextPos = format.substring(caretPos, format.length).indexOf('#');
     let caretLeftBound = caretPos;
@@ -619,7 +623,7 @@ class NumberFormat extends React.Component {
     //change the state
     if (formattedValue !== lastValue) {
       this.setState({value : formattedValue, numAsString}, () => {
-        props.onValueChange(valueObj);
+        props.onValueChange(valueObj, e);
         props.onChange(e);
       });
     } else {
@@ -646,7 +650,7 @@ class NumberFormat extends React.Component {
         // the event needs to be persisted because its properties can be accessed in an asynchronous way
         e.persist();
         this.setState({value : formattedValue, numAsString}, () => {
-          props.onValueChange(valueObj);
+          props.onValueChange(valueObj, e);
           onBlur(e);
         });
         return;

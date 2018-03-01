@@ -133,3 +133,10 @@ export function findChangedIndex(prevValue: string, newValue: string) {
 
   return {start: i, end: prevLength - j};
 }
+
+/*
+  Returns a number whose value is limited to the given range
+*/
+export function clamp(num: number, min: number, max: number) {
+  return Math.min(Math.max(num, min), max);
+}

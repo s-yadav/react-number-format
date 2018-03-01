@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.1.6
+ * react-number-format - 3.2.0
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -320,11 +320,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	          suffix = _props2.suffix,
 	          format = _props2.format;
 
-	      //in case of format as number limit between prefix and suffix
+	      //caret position should be between 0 and value length
 
+	      caretPos = (0, _utils.clamp)(caretPos, 0, value.length);
+
+	      //in case of format as number limit between prefix and suffix
 	      if (!format) {
 	        var hasNegation = value[0] === '-';
-	        return Math.min(Math.max(caretPos, prefix.length + (hasNegation ? 1 : 0)), value.length - suffix.length);
+	        return (0, _utils.clamp)(caretPos, prefix.length + (hasNegation ? 1 : 0), value.length - suffix.length);
 	      }
 
 	      //in case if custom format method don't do anything
@@ -343,7 +346,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var lastHashPosition = format.lastIndexOf('#');
 
 	      //limit the cursor between the first # position and the last # position
-	      caretPos = Math.min(Math.max(caretPos, firstHashPosition), lastHashPosition + 1);
+	      caretPos = (0, _utils.clamp)(caretPos, firstHashPosition, lastHashPosition + 1);
 
 	      var nextPos = format.substring(caretPos, format.length).indexOf('#');
 	      var caretLeftBound = caretPos;
@@ -787,7 +790,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      //change the state
 	      if (formattedValue !== lastValue) {
 	        this.setState({ value: formattedValue, numAsString: numAsString }, function () {
-	          props.onValueChange(valueObj);
+	          props.onValueChange(valueObj, e);
 	          props.onChange(e);
 	        });
 	      } else {
@@ -818,7 +821,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          // the event needs to be persisted because its properties can be accessed in an asynchronous way
 	          e.persist();
 	          this.setState({ value: formattedValue, numAsString: numAsString }, function () {
-	            props.onValueChange(valueObj);
+	            props.onValueChange(valueObj, e);
 	            onBlur(e);
 	          });
 	          return;
@@ -1233,6 +1236,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.omit = omit;
 	exports.setCaretPosition = setCaretPosition;
 	exports.findChangedIndex = findChangedIndex;
+	exports.clamp = clamp;
 
 
 	// basic noop function
@@ -1372,6 +1376,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  return { start: i, end: prevLength - j };
+	}
+
+	/*
+	  Returns a number whose value is limited to the given range
+	*/
+	function clamp(num, min, max) {
+	  return Math.min(Math.max(num, min), max);
 	}
 
 /***/ })
