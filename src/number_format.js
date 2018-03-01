@@ -48,7 +48,8 @@ const propTypes = {
   type: PropTypes.oneOf(['text', 'tel']),
   isAllowed: PropTypes.func,
   renderText: PropTypes.func,
-  getInputRef: PropTypes.func
+  getInputRef: PropTypes.func,
+  emptyFormatting: PropTypes.bool
 };
 
 const defaultProps = {
@@ -67,7 +68,8 @@ const defaultProps = {
   onFocus: noop,
   onBlur: noop,
   isAllowed: returnTrue,
-  getInputRef: noop
+  getInputRef: noop,
+  emptyFormatting: false
 };
 
 class NumberFormat extends React.Component {
@@ -441,7 +443,11 @@ class NumberFormat extends React.Component {
     let formattedValue = value;
 
     if (value === '') {
-      formattedValue = ''
+      if (typeof format === 'function' && this.props.emptyFormatting){
+        formattedValue = format(formattedValue);
+      } else {
+        formattedValue = '';
+      }
     } else if (value === '-' && !format) {
       formattedValue = '-';
       value = '';
@@ -450,7 +456,7 @@ class NumberFormat extends React.Component {
     } else if (typeof format === 'function') {
       formattedValue = format(formattedValue);
     } else {
-      formattedValue = this.formatAsNumber(formattedValue)
+      formattedValue = this.formatAsNumber(formattedValue);
     }
 
     return formattedValue;
