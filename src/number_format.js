@@ -460,8 +460,8 @@ class NumberFormat extends React.Component {
     const {format, decimalScale, fixedDecimalScale} = this.props;
     let {value, isNumericString} = this.props;
 
-    // if value is not defined return empty string
-    if (value === undefined) return '';
+    // if value is not defined or null return empty string
+    if (value === undefined || value === null) return '';
 
     if (typeof value === 'number') {
       value = value.toString();
