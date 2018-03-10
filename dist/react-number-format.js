@@ -243,6 +243,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _getSeparators2 = this.getSeparators(),
 	          decimalSeparator = _getSeparators2.decimalSeparator;
 
+	      if (decimalSeparator === '.' && decimalScale === 0) {
+	        return (/^\d*/g
+	        );
+	      }
 	      return new RegExp('\\d' + (decimalSeparator && decimalScale !== 0 && !ignoreDecimalSeparator && !format ? '|' + (0, _utils.escapeRegExp)(decimalSeparator) : ''), g ? 'g' : undefined);
 	    }
 	  }, {
