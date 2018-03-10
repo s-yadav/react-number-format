@@ -448,7 +448,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
 
   //Issue #145
   it('should give correct formatted value when pasting a number with decimal and decimal scale is set to zero, issue #145', () => {
-    const wrapper = mount(<NumberFormat decimalScale={0}/>);
+    const wrapper = shallow(<NumberFormat decimalScale={0}/>);
     simulateKeyInput(wrapper.find('input'), '9.55');
     expect(wrapper.state().value).toEqual('9');
   })
