@@ -243,7 +243,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _getSeparators2 = this.getSeparators(),
 	          decimalSeparator = _getSeparators2.decimalSeparator;
 
-	      if (decimalSeparator === '.' && decimalScale === 0) {
+	      if (decimalScale === 0) {
 	        return (/^\d*/g
 	        );
 	      }
