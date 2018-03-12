@@ -445,4 +445,11 @@ describe('Test NumberFormat as input with numeric format options', () => {
     wrapper.setProps({value: -99.5});
     expect(wrapper.state().value).toEqual('-100');
   });
+
+  //Issue #162
+  it('should allow additional decimal separators, Issue #162', () => {
+    const wrapper = shallow(<NumberFormat decimalScale={2} decimalSeparator={','} allowedDecimalSeparator={['.']} />);
+    simulateKeyInput(wrapper.find('input'), '9.55');
+    expect(wrapper.state().value).toEqual('9,55');
+  });
 });

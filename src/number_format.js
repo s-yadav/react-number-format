@@ -48,7 +48,8 @@ const propTypes = {
   type: PropTypes.oneOf(['text', 'tel']),
   isAllowed: PropTypes.func,
   renderText: PropTypes.func,
-  getInputRef: PropTypes.func
+  getInputRef: PropTypes.func,
+  allowedDecimalSeparator: PropTypes.arrayOf(PropTypes.string)
 };
 
 const defaultProps = {
@@ -67,7 +68,8 @@ const defaultProps = {
   onFocus: noop,
   onBlur: noop,
   isAllowed: returnTrue,
-  getInputRef: noop
+  getInputRef: noop,
+  allowedDecimalSeparator: []
 };
 
 class NumberFormat extends React.Component {
@@ -144,6 +146,9 @@ class NumberFormat extends React.Component {
     //remove negation for regex check
     const hasNegation = num[0] === '-';
     if(hasNegation) num = num.replace('-', '');
+
+    //replace additionnal decimal separators by main one
+    this.props.allowedDecimalSeparator.forEach(separator => { num = num.replace(separator, decimalSeparator) })
 
     num  = (num.match(numRegex) || []).join('').replace(decimalSeparator, '.');
 

@@ -114,7 +114,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  type: _propTypes2.default.oneOf(['text', 'tel']),
 	  isAllowed: _propTypes2.default.func,
 	  renderText: _propTypes2.default.func,
-	  getInputRef: _propTypes2.default.func
+	  getInputRef: _propTypes2.default.func,
+	  allowedDecimalSeparator: _propTypes2.default.arrayOf(_propTypes2.default.string)
 	};
 
 	var defaultProps = {
@@ -133,7 +134,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  onFocus: _utils.noop,
 	  onBlur: _utils.noop,
 	  isAllowed: _utils.returnTrue,
-	  getInputRef: _utils.noop
+	  getInputRef: _utils.noop,
+	  allowedDecimalSeparator: []
 	};
 
 	var NumberFormat = function (_React$Component) {
@@ -213,6 +215,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      //remove negation for regex check
 	      var hasNegation = num[0] === '-';
 	      if (hasNegation) num = num.replace('-', '');
+
+	      //replace additionnal decimal separators by main one
+	      this.props.allowedDecimalSeparator.forEach(function (separator) {
+	        num = num.replace(separator, decimalSeparator);
+	      });
 
 	      num = (num.match(numRegex) || []).join('').replace(decimalSeparator, '.');
 
