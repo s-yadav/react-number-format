@@ -105,6 +105,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  isNumericString: _propTypes2.default.bool,
 	  customInput: _propTypes2.default.func,
 	  allowNegative: _propTypes2.default.bool,
+	  allowEmptyFormatting: _propTypes2.default.bool,
 	  onValueChange: _propTypes2.default.func,
 	  onKeyDown: _propTypes2.default.func,
 	  onMouseUp: _propTypes2.default.func,
@@ -124,6 +125,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  prefix: '',
 	  suffix: '',
 	  allowNegative: true,
+	  allowEmptyFormatting: false,
 	  isNumericString: false,
 	  type: 'text',
 	  onValueChange: _utils.noop,
@@ -563,11 +565,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'formatNumString',
 	    value: function formatNumString() {
 	      var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-	      var format = this.props.format;
+	      var _props6 = this.props,
+	          format = _props6.format,
+	          allowEmptyFormatting = _props6.allowEmptyFormatting;
 
 	      var formattedValue = value;
 
-	      if (value === '') {
+	      if (value === '' && !allowEmptyFormatting) {
 	        formattedValue = '';
 	      } else if (value === '-' && !format) {
 	        formattedValue = '-';
@@ -585,17 +589,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'formatValueProp',
 	    value: function formatValueProp() {
-	      var _props6 = this.props,
-	          format = _props6.format,
-	          decimalScale = _props6.decimalScale,
-	          fixedDecimalScale = _props6.fixedDecimalScale;
 	      var _props7 = this.props,
-	          value = _props7.value,
-	          isNumericString = _props7.isNumericString;
+	          format = _props7.format,
+	          decimalScale = _props7.decimalScale,
+	          fixedDecimalScale = _props7.fixedDecimalScale,
+	          allowEmptyFormatting = _props7.allowEmptyFormatting;
+	      var _props8 = this.props,
+	          value = _props8.value,
+	          isNumericString = _props8.isNumericString;
+
+
+	      if (value === undefined && allowEmptyFormatting) {
+	        value = '';
+	      }
 
 	      // if value is not defined return empty string
-
-	      if (value === undefined) return '';
+	      if (value === undefined && !allowEmptyFormatting) return '';
 
 	      if (typeof value === 'number') {
 	        value = value.toString();
@@ -659,12 +668,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'isCharacterAFormat',
 	    value: function isCharacterAFormat(caretPos, value) {
-	      var _props8 = this.props,
-	          format = _props8.format,
-	          prefix = _props8.prefix,
-	          suffix = _props8.suffix,
-	          decimalScale = _props8.decimalScale,
-	          fixedDecimalScale = _props8.fixedDecimalScale;
+	      var _props9 = this.props,
+	          format = _props9.format,
+	          prefix = _props9.prefix,
+	          suffix = _props9.suffix,
+	          decimalScale = _props9.decimalScale,
+	          fixedDecimalScale = _props9.fixedDecimalScale;
 
 	      var _getSeparators5 = this.getSeparators(),
 	          decimalSeparator = _getSeparators5.decimalSeparator;
@@ -698,10 +707,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'correctInputValue',
 	    value: function correctInputValue(caretPos, lastValue, value) {
-	      var _props9 = this.props,
-	          format = _props9.format,
-	          decimalSeparator = _props9.decimalSeparator,
-	          allowNegative = _props9.allowNegative;
+	      var _props10 = this.props,
+	          format = _props10.format,
+	          decimalSeparator = _props10.decimalSeparator,
+	          allowNegative = _props10.allowNegative;
 
 	      var lastNumStr = this.state.numAsString || '';
 	      var _selectionBeforeInput = this.selectionBeforeInput,
@@ -839,13 +848,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	          value = el.value;
 
 	      var expectedCaretPosition = void 0;
-	      var _props10 = this.props,
-	          decimalScale = _props10.decimalScale,
-	          fixedDecimalScale = _props10.fixedDecimalScale,
-	          prefix = _props10.prefix,
-	          suffix = _props10.suffix,
-	          format = _props10.format,
-	          onKeyDown = _props10.onKeyDown;
+	      var _props11 = this.props,
+	          decimalScale = _props11.decimalScale,
+	          fixedDecimalScale = _props11.fixedDecimalScale,
+	          prefix = _props11.prefix,
+	          suffix = _props11.suffix,
+	          format = _props11.format,
+	          onKeyDown = _props11.onKeyDown;
 
 	      var ignoreDecimalSeparator = decimalScale !== undefined && fixedDecimalScale;
 	      var numRegex = this.getNumberRegex(false, ignoreDecimalSeparator);
@@ -949,12 +958,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _props11 = this.props,
-	          type = _props11.type,
-	          displayType = _props11.displayType,
-	          customInput = _props11.customInput,
-	          renderText = _props11.renderText,
-	          getInputRef = _props11.getInputRef;
+	      var _props12 = this.props,
+	          type = _props12.type,
+	          displayType = _props12.displayType,
+	          customInput = _props12.customInput,
+	          renderText = _props12.renderText,
+	          getInputRef = _props12.getInputRef;
 	      var value = this.state.value;
 
 
