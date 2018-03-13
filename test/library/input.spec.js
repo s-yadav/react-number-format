@@ -151,6 +151,19 @@ describe('NumberFormat as input', () => {
     expect(wrapper.state().value).toEqual('1.000');
   });
 
+  it('should format value when input value is empty and allowEmptyFormatting is true', () => {
+    expect(() => {
+      const wrapper = shallow(<NumberFormat format="##/##/####" value="" />);
+      expoect(wrapper.state().value).toEqual("  /  /    ");
+    })
+  });
+
+  it('should format value when input value is not set and allowEmptyFormatting is true', () => {
+    expect(() => {
+      const wrapper = shallow(<NumberFormat format="##/##/####" />);
+      expoect(wrapper.state().value).toEqual("  /  /    ");
+    })
+  });
 
   describe('Test masking', () => {
     it('should allow mask as string', () => {

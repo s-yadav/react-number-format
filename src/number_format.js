@@ -39,6 +39,7 @@ const propTypes = {
   isNumericString: PropTypes.bool,
   customInput: PropTypes.func,
   allowNegative: PropTypes.bool,
+  allowEmptyFormatting: PropTypes.bool,
   onValueChange: PropTypes.func,
   onKeyDown: PropTypes.func,
   onMouseUp: PropTypes.func,
@@ -58,6 +59,7 @@ const defaultProps = {
   prefix: '',
   suffix: '',
   allowNegative: true,
+  allowEmptyFormatting: false,
   isNumericString: false,
   type: 'text',
   onValueChange: noop,
@@ -437,10 +439,10 @@ class NumberFormat extends React.Component {
   }
 
   formatNumString(value: string = '') {
-    const {format} = this.props;
+    const {format, allowEmptyFormatting} = this.props;
     let formattedValue = value;
 
-    if (value === '') {
+    if (value === '' && !allowEmptyFormatting) {
       formattedValue = ''
     } else if (value === '-' && !format) {
       formattedValue = '-';
@@ -457,11 +459,15 @@ class NumberFormat extends React.Component {
   }
 
   formatValueProp() {
-    const {format, decimalScale, fixedDecimalScale} = this.props;
+    const {format, decimalScale, fixedDecimalScale, allowEmptyFormatting} = this.props;
     let {value, isNumericString} = this.props;
 
+    if (value === undefined && allowEmptyFormatting) {
+      value = '';
+    }
+
     // if value is not defined return empty string
-    if (value === undefined) return '';
+    if (value === undefined && !allowEmptyFormatting) return '';
 
     if (typeof value === 'number') {
       value = value.toString();

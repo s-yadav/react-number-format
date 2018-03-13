@@ -41,6 +41,7 @@ import * as NumberFormat from 'react-number-format';
 | decimalScale | number| none| If defined it limits to given decimal scale |
 | fixedDecimalScale | boolean| false| If true it add 0s to match given decimalScale|
 | allowNegative      | boolean     |   true | allow negative numbers (Only when format option is not provided) |
+| allowEmptyFormatting | boolean | true | Apply formatting to empty inputs |
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
 | suffix | String (ex : /-)      |    none | Add a suffix after the number |
 | value | Number or String | null | Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true. |

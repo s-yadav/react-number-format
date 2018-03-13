@@ -133,6 +133,13 @@ class App extends React.Component {
 
         <div className="example">
           <h3>
+            Empty input format
+          </h3>
+          <NumberFormat format="+1 (###) ###-####" mask="_" allowEmptyFormatting/>
+        </div>
+
+        <div className="example">
+          <h3>
             Custom input : Format credit card number
           </h3>
           <NumberFormat customInput={TextField} format="#### #### #### ####" />
