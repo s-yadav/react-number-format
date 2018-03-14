@@ -216,11 +216,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var hasNegation = num[0] === '-';
 	      if (hasNegation) num = num.replace('-', '');
 
-	      //replace additionnal decimal separators by main one
-	      this.props.allowedDecimalSeparator.forEach(function (separator) {
-	        num = num.replace(separator, decimalSeparator);
-	      });
-
 	      num = (num.match(numRegex) || []).join('').replace(decimalSeparator, '.');
 
 	      //remove extra decimals
@@ -248,7 +243,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _getSeparators2 = this.getSeparators(),
 	          decimalSeparator = _getSeparators2.decimalSeparator;
 
-	      return new RegExp('\\d' + (decimalSeparator && decimalScale !== 0 && !ignoreDecimalSeparator && !format ? '|' + (0, _utils.escapeRegExp)(decimalSeparator) : ''), g ? 'g' : undefined);
+	      var regexp = '\\d';
+	      if (decimalSeparator && decimalScale !== 0 && !ignoreDecimalSeparator && !format) {
+	        [decimalSeparator].concat(this.props.allowedDecimalSeparator).forEach(function (separator) {
+	          regexp = regexp + '|' + (0, _utils.escapeRegExp)(separator);
+	        });
+	      }
+
+	      return new RegExp(regexp, g ? 'g' : undefined);
 	    }
 	  }, {
 	    key: 'getSeparators',

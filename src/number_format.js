@@ -147,9 +147,6 @@ class NumberFormat extends React.Component {
     const hasNegation = num[0] === '-';
     if(hasNegation) num = num.replace('-', '');
 
-    //replace additionnal decimal separators by main one
-    this.props.allowedDecimalSeparator.forEach(separator => { num = num.replace(separator, decimalSeparator) })
-
     num  = (num.match(numRegex) || []).join('').replace(decimalSeparator, '.');
 
     //remove extra decimals
@@ -169,7 +166,13 @@ class NumberFormat extends React.Component {
   getNumberRegex(g: boolean, ignoreDecimalSeparator?: boolean) {
     const {format, decimalScale} = this.props;
     const {decimalSeparator} = this.getSeparators();
-    return new RegExp('\\d' + (decimalSeparator && decimalScale !== 0 && !ignoreDecimalSeparator && !format ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
+
+    let regexp = '\\d'
+    if (decimalSeparator && decimalScale !== 0 && !ignoreDecimalSeparator && !format) {
+      [decimalSeparator].concat(this.props.allowedDecimalSeparator).forEach(separator => { regexp = regexp + '|' + escapeRegExp(separator) })
+    }
+
+    return new RegExp(regexp, g ? 'g' : undefined);
   }
 
   getSeparators() {
