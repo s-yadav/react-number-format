@@ -243,10 +243,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _getSeparators2 = this.getSeparators(),
 	          decimalSeparator = _getSeparators2.decimalSeparator;
 
-	      if (decimalScale === 0) {
-	        return (/^\d*/g
-	        );
-	      }
 	      return new RegExp('\\d' + (decimalSeparator && decimalScale !== 0 && !ignoreDecimalSeparator && !format ? '|' + (0, _utils.escapeRegExp)(decimalSeparator) : ''), g ? 'g' : undefined);
 	    }
 	  }, {
@@ -775,9 +771,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var inputValue = el.value;
 	      var state = this.state,
 	          props = this.props;
-	      var isAllowed = props.isAllowed;
+	      var isAllowed = props.isAllowed,
+	          decimalScale = props.decimalScale;
 
 	      var lastValue = state.value || '';
+
+	      /*
+	      * get the valid numerical values only before the decimal
+	      * separator when decimal scale is 0, issue #145
+	      */
+
+	      if (decimalScale === 0) {
+	        inputValue = (inputValue.match(/^\d*/g) || []).join('');
+	      }
 
 	      /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
 	      var currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);
