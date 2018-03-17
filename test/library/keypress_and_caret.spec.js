@@ -301,6 +301,17 @@ describe('Test click / focus on input', () => {
     jasmine.clock().uninstall()
   });
 
+  it('should correct wrong caret positon on focus when allowEmptyFormatting is set', () => {
+    jasmine.clock().install()
+    const format = '+1 (###) ### # ## US';
+    const wrapper = shallow(<NumberFormat format="+1 (###) ### # ## US" value="" mask="_"/>);
+
+    simulateFocusEvent(wrapper.find('input'), 1, setSelectionRange);
+    jasmine.clock().tick(1)
+    expect(caretPos).toEqual(4)
+    jasmine.clock().uninstall()
+  })
+
   it('should not reset correct caret position on focus', () => {
     jasmine.clock().install()
     const wrapper = shallow(<NumberFormat  thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);

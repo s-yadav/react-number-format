@@ -264,19 +264,24 @@ class NumberFormat extends React.Component {
 
     const nextPos = format.substring(caretPos, format.length).indexOf('#');
     let caretLeftBound = caretPos;
-    const caretRightBoud = caretPos + (nextPos === -1 ? 0 : nextPos)
+    const caretRightBound = caretPos + (nextPos === -1 ? 0 : nextPos)
 
     //get the position where the last number is present
     while (caretLeftBound > firstHashPosition && (format[caretLeftBound] !== '#' || !charIsNumber(value[caretLeftBound]))) {
       caretLeftBound -= 1;
     }
 
-    const goToLeft = !charIsNumber(value[caretRightBoud])
+    const goToLeft = !charIsNumber(value[caretRightBound])
     || (direction === 'left' && caretPos !== firstHashPosition)
-    || (caretPos - caretLeftBound < caretRightBoud - caretPos);
+    || (caretPos - caretLeftBound < caretRightBound - caretPos);
 
-    return goToLeft ? caretLeftBound + 1 : caretRightBoud;
+    if (goToLeft) {
+      //check if number should be taken after the bound or after it
+      //if number preceding a valid number keep it after
+      return charIsNumber(value[caretLeftBound]) ? caretLeftBound + 1 : caretLeftBound;
+    }
 
+    return caretRightBound;
   }
 
   getCaretPosition(inputValue: string, formattedValue: string, caretPos: number) {
