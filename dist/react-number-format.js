@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.2.0
+ * react-number-format - 3.3.0
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -352,16 +352,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var nextPos = format.substring(caretPos, format.length).indexOf('#');
 	      var caretLeftBound = caretPos;
-	      var caretRightBoud = caretPos + (nextPos === -1 ? 0 : nextPos);
+	      var caretRightBound = caretPos + (nextPos === -1 ? 0 : nextPos);
 
 	      //get the position where the last number is present
 	      while (caretLeftBound > firstHashPosition && (format[caretLeftBound] !== '#' || !(0, _utils.charIsNumber)(value[caretLeftBound]))) {
 	        caretLeftBound -= 1;
 	      }
 
-	      var goToLeft = !(0, _utils.charIsNumber)(value[caretRightBoud]) || direction === 'left' && caretPos !== firstHashPosition || caretPos - caretLeftBound < caretRightBoud - caretPos;
+	      var goToLeft = !(0, _utils.charIsNumber)(value[caretRightBound]) || direction === 'left' && caretPos !== firstHashPosition || caretPos - caretLeftBound < caretRightBound - caretPos;
 
-	      return goToLeft ? caretLeftBound + 1 : caretRightBoud;
+	      if (goToLeft) {
+	        //check if number should be taken after the bound or after it
+	        //if number preceding a valid number keep it after
+	        return (0, _utils.charIsNumber)(value[caretLeftBound]) ? caretLeftBound + 1 : caretLeftBound;
+	      }
+
+	      return caretRightBound;
 	    }
 	  }, {
 	    key: 'getCaretPosition',
