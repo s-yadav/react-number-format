@@ -601,7 +601,7 @@ class NumberFormat extends React.Component {
     const el = e.target;
     let inputValue = el.value;
     const {state, props} = this;
-    const {isAllowed, decimalScale} = props;
+    const {isAllowed, decimalScale, format} = props;
     const lastValue = state.value || '';
 
     /*
@@ -609,7 +609,7 @@ class NumberFormat extends React.Component {
     * separator when decimal scale is 0, issue #145
     */
 
-    if(decimalScale === 0) {
+    if(decimalScale === 0 && !format) {
       inputValue = (inputValue.match(/^\d*/g) || []).join('');
     }
 

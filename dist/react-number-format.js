@@ -772,7 +772,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var state = this.state,
 	          props = this.props;
 	      var isAllowed = props.isAllowed,
-	          decimalScale = props.decimalScale;
+	          decimalScale = props.decimalScale,
+	          format = props.format;
 
 	      var lastValue = state.value || '';
 
@@ -781,7 +782,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      * separator when decimal scale is 0, issue #145
 	      */
 
-	      if (decimalScale === 0) {
+	      if (decimalScale === 0 && !format) {
 	        inputValue = (inputValue.match(/^\d*/g) || []).join('');
 	      }
 

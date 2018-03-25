@@ -165,6 +165,15 @@ describe('NumberFormat as input', () => {
     })
   });
 
+  it('should format the number correctly when decimal scale is 0', () => {
+    const wrapper = shallow(<NumberFormat decimalScale={0} format="#### ## ##"/>);
+
+    simulateKeyInput(wrapper.find('input'), '4111');
+    simulateKeyInput(wrapper.find('input'), '1111');
+
+    expect(wrapper.state().value).toEqual('4111 11 11')
+  });
+
   describe('Test masking', () => {
     it('should allow mask as string', () => {
       const wrapper = shallow(<NumberFormat format="#### #### ####" mask="_"/>);
