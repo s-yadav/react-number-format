@@ -601,8 +601,17 @@ class NumberFormat extends React.Component {
     const el = e.target;
     let inputValue = el.value;
     const {state, props} = this;
-    const {isAllowed} = props;
+    const {isAllowed, decimalScale, format} = props;
     const lastValue = state.value || '';
+
+    /*
+    * get the valid numerical values only before the decimal
+    * separator when decimal scale is 0, issue #145
+    */
+
+    if(decimalScale === 0 && !format) {
+      inputValue = (inputValue.match(/^\d*/g) || []).join('');
+    }
 
     /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
     const currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);

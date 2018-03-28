@@ -445,4 +445,18 @@ describe('Test NumberFormat as input with numeric format options', () => {
     wrapper.setProps({value: -99.5});
     expect(wrapper.state().value).toEqual('-100');
   });
+
+  //Issue #145
+  it('should give correct formatted value when pasting a number with decimal and decimal scale is set to zero, issue #145', () => {
+    const wrapper = shallow(<NumberFormat decimalScale={0}/>);
+    simulateKeyInput(wrapper.find('input'), '9.55');
+    expect(wrapper.state().value).toEqual('9');
+  });
+
+  it('should format the number correctly when thousandSeparator is true and decimal scale is 0', () => {
+    const wrapper = shallow(<NumberFormat decimalScale={0} thousandSeparator={true}/>);
+    simulateKeyInput(wrapper.find('input'), '1000000000');
+
+    expect(wrapper.state().value).toEqual('1,000,000,000');
+  });
 });
