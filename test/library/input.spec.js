@@ -174,6 +174,11 @@ describe('NumberFormat as input', () => {
     expect(wrapper.state().value).toEqual('4111 11 11')
   });
 
+  it('should not convert empty sting to 0 if isNumericString is true', () => {
+    const wrapper = shallow(<NumberFormat isNumericString={true} value={''} decimalScale={2}/>);
+    expect(wrapper.state().value).toEqual('');
+  })
+
   describe('Test masking', () => {
     it('should allow mask as string', () => {
       const wrapper = shallow(<NumberFormat format="#### #### ####" mask="_"/>);

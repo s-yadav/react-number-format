@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.3.0
+ * react-number-format - 3.3.1
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -322,8 +322,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	          suffix = _props2.suffix,
 	          format = _props2.format;
 
-	      //caret position should be between 0 and value length
+	      //if value is empty return 0
 
+	      if (value === '') return 0;
+
+	      //caret position should be between 0 and value length
 	      caretPos = (0, _utils.clamp)(caretPos, 0, value.length);
 
 	      //in case of format as number limit between prefix and suffix
@@ -862,7 +865,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var key = e.key;
 	      var selectionStart = el.selectionStart,
 	          selectionEnd = el.selectionEnd,
-	          value = el.value;
+	          _el$value = el.value,
+	          value = _el$value === undefined ? '' : _el$value;
 
 	      var expectedCaretPosition = void 0;
 	      var _props11 = this.props,
@@ -938,13 +942,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var el = e.target;
 	      var selectionStart = el.selectionStart,
 	          selectionEnd = el.selectionEnd,
-	          value = el.value;
+	          _el$value2 = el.value,
+	          value = _el$value2 === undefined ? '' : _el$value2;
 
 
 	      if (selectionStart === selectionEnd) {
-	        var caretPostion = this.correctCaretPosition(value, selectionStart);
-	        if (caretPostion !== selectionStart) {
-	          this.setPatchedCaretPosition(el, caretPostion, value);
+	        var caretPosition = this.correctCaretPosition(value, selectionStart);
+	        if (caretPosition !== selectionStart) {
+	          this.setPatchedCaretPosition(el, caretPosition, value);
 	        }
 	      }
 
@@ -961,7 +966,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      setTimeout(function () {
 	        var el = e.target;
 	        var selectionStart = el.selectionStart,
-	            value = el.value;
+	            _el$value3 = el.value,
+	            value = _el$value3 === undefined ? '' : _el$value3;
 
 
 	        var caretPosition = _this2.correctCaretPosition(value, selectionStart);
@@ -1328,6 +1334,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Not used .round or .fixedTo because that will break with big numbers
 	 */
 	function roundToPrecision(numStr, scale, fixedDecimalScale) {
+	  //if number is empty don't do anything return empty string
+	  if (numStr === '') return '';
+
 	  var shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
 
 	  var _splitDecimal = splitDecimal(numStr),

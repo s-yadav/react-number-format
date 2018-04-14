@@ -59,6 +59,9 @@ export function limitToScale(numStr: string, scale: number, fixedDecimalScale: b
  * Not used .round or .fixedTo because that will break with big numbers
  */
 export function roundToPrecision(numStr: string, scale: number, fixedDecimalScale: boolean) {
+  //if number is empty don't do anything return empty string
+  if (numStr === '') return '';
+
   const shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
   const {beforeDecimal, afterDecimal, hasNagation} = splitDecimal(numStr);
   const roundedDecimalParts = parseFloat(`0.${afterDecimal || '0'}`).toFixed(scale).split('.');
