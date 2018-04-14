@@ -748,6 +748,11 @@ class NumberFormat extends React.Component {
   /** required to handle the caret position when click anywhere within the input **/
   onMouseUp(e: SyntheticMouseInputEvent) {
     const el = e.target;
+
+    /** 
+     * NOTE: we have to give default value for value as in case when custom input is provided 
+     * value can come as undefined when nothing is provided on value prop.
+    */
     const {selectionStart, selectionEnd, value = ''} = el;
 
     if (selectionStart === selectionEnd) {
