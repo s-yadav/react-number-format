@@ -235,6 +235,9 @@ class NumberFormat extends React.Component {
   correctCaretPosition(value: string, caretPos: number, direction?: string) {
     const {prefix, suffix, format} = this.props;
 
+    //if value is empty return 0
+    if (value === '') return 0;
+
     //caret position should be between 0 and value length
     caretPos = clamp(caretPos, 0, value.length);
 
@@ -682,7 +685,7 @@ class NumberFormat extends React.Component {
   onKeyDown(e: SyntheticKeyboardInputEvent) {
     const el = e.target;
     const {key} = e;
-    const {selectionStart, selectionEnd, value} = el;
+    const {selectionStart, selectionEnd, value = ''} = el;
     let expectedCaretPosition;
     const {decimalScale, fixedDecimalScale, prefix, suffix, format, onKeyDown} = this.props;
     const ignoreDecimalSeparator = decimalScale !== undefined && fixedDecimalScale;
@@ -745,12 +748,12 @@ class NumberFormat extends React.Component {
   /** required to handle the caret position when click anywhere within the input **/
   onMouseUp(e: SyntheticMouseInputEvent) {
     const el = e.target;
-    const {selectionStart, selectionEnd, value} = el;
+    const {selectionStart, selectionEnd, value = ''} = el;
 
     if (selectionStart === selectionEnd) {
-      const caretPostion = this.correctCaretPosition(value, selectionStart);
-      if (caretPostion !== selectionStart) {
-        this.setPatchedCaretPosition(el, caretPostion, value);
+      const caretPosition = this.correctCaretPosition(value, selectionStart);
+      if (caretPosition !== selectionStart) {
+        this.setPatchedCaretPosition(el, caretPosition, value);
       }
     }
 
@@ -763,7 +766,7 @@ class NumberFormat extends React.Component {
     e.persist()
     setTimeout(() => {
       const el = e.target;
-      const {selectionStart, value} = el;
+      const {selectionStart, value = ''} = el;
 
       const caretPosition = this.correctCaretPosition(value, selectionStart);
       if (caretPosition !== selectionStart) {
