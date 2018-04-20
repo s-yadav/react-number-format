@@ -140,12 +140,18 @@ class NumberFormat extends React.Component {
 
   /** Misc methods **/
   getFloatString(num: string = '') {
+    const {decimalScale} = this.props;
     const {decimalSeparator} = this.getSeparators();
     const numRegex = this.getNumberRegex(true);
 
     //remove negation for regex check
     const hasNegation = num[0] === '-';
     if(hasNegation) num = num.replace('-', '');
+
+    //if decimal scale is zero remove decimal and number after decimalSeparator
+    if (decimalSeparator && decimalScale === 0) {
+      num = num.split(decimalSeparator)[0];
+    }
 
     num  = (num.match(numRegex) || []).join('').replace(decimalSeparator, '.');
 
@@ -604,17 +610,8 @@ class NumberFormat extends React.Component {
     const el = e.target;
     let inputValue = el.value;
     const {state, props} = this;
-    const {isAllowed, decimalScale, format} = props;
+    const {isAllowed} = props;
     const lastValue = state.value || '';
-
-    /*
-    * get the valid numerical values only before the decimal
-    * separator when decimal scale is 0, issue #145
-    */
-
-    if(decimalScale === 0 && !format) {
-      inputValue = (inputValue.match(/^\d*/g) || []).join('');
-    }
 
     /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
     const currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);

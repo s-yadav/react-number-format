@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.3.1
+ * react-number-format - 3.3.2
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -206,6 +206,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'getFloatString',
 	    value: function getFloatString() {
 	      var num = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	      var decimalScale = this.props.decimalScale;
 
 	      var _getSeparators = this.getSeparators(),
 	          decimalSeparator = _getSeparators.decimalSeparator;
@@ -215,6 +216,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      //remove negation for regex check
 	      var hasNegation = num[0] === '-';
 	      if (hasNegation) num = num.replace('-', '');
+
+	      //if decimal scale is zero remove decimal and number after decimalSeparator
+	      if (decimalSeparator && decimalScale === 0) {
+	        num = num.split(decimalSeparator)[0];
+	      }
 
 	      num = (num.match(numRegex) || []).join('').replace(decimalSeparator, '.');
 
@@ -774,20 +780,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var inputValue = el.value;
 	      var state = this.state,
 	          props = this.props;
-	      var isAllowed = props.isAllowed,
-	          decimalScale = props.decimalScale,
-	          format = props.format;
+	      var isAllowed = props.isAllowed;
 
 	      var lastValue = state.value || '';
-
-	      /*
-	      * get the valid numerical values only before the decimal
-	      * separator when decimal scale is 0, issue #145
-	      */
-
-	      if (decimalScale === 0 && !format) {
-	        inputValue = (inputValue.match(/^\d*/g) || []).join('');
-	      }
 
 	      /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
 	      var currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);
@@ -940,6 +935,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'onMouseUp',
 	    value: function onMouseUp(e) {
 	      var el = e.target;
+
+	      /** 
+	       * NOTE: we have to give default value for value as in case when custom input is provided 
+	       * value can come as undefined when nothing is provided on value prop.
+	      */
 	      var selectionStart = el.selectionStart,
 	          selectionEnd = el.selectionEnd,
 	          _el$value2 = el.value,

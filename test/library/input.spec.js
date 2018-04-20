@@ -165,14 +165,6 @@ describe('NumberFormat as input', () => {
     })
   });
 
-  it('should format the number correctly when decimal scale is 0', () => {
-    const wrapper = shallow(<NumberFormat decimalScale={0} format="#### ## ##"/>);
-
-    simulateKeyInput(wrapper.find('input'), '4111');
-    simulateKeyInput(wrapper.find('input'), '1111');
-
-    expect(wrapper.state().value).toEqual('4111 11 11')
-  });
 
   it('should not convert empty sting to 0 if isNumericString is true', () => {
     const wrapper = shallow(<NumberFormat isNumericString={true} value={''} decimalScale={2}/>);

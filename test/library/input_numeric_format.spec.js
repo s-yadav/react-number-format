@@ -453,10 +453,12 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('9');
   });
 
-  it('should format the number correctly when thousandSeparator is true and decimal scale is 0', () => {
-    const wrapper = shallow(<NumberFormat decimalScale={0} thousandSeparator={true}/>);
-    simulateKeyInput(wrapper.find('input'), '1000000000');
-
-    expect(wrapper.state().value).toEqual('1,000,000,000');
+  it('should format the number correctly when thousandSeparator is true and decimal scale is 0. Issue #178', () => {
+    const wrapper = shallow(<NumberFormat decimalScale={0} thousandSeparator={true} />);
+    simulateKeyInput(wrapper.find('input'), '10000');
+    expect(wrapper.state().value).toEqual('10,000');
+    simulateKeyInput(wrapper.find('input'), '0', 6);
+    expect(wrapper.state().value).toEqual('100,000');
   });
+
 });
