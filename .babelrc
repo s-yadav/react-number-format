@@ -1,6 +1,6 @@
 {
   "presets": ["react", "es2015"],
-  "plugins": ["transform-object-assign", "transform-flow-strip-types"],
+  "plugins": ["transform-object-assign", "transform-flow-strip-types", "transform-runtime"],
   "env": {
     "development": {
       "plugins": [["react-transform", {
