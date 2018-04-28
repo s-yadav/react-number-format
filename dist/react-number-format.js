@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.3.3
+ * react-number-format - 3.3.4
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -3061,7 +3061,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return current + roundedStr;
 	  }, roundedDecimalParts[0]);
 
-	  var decimalPart = limitToScale(roundedDecimalParts[1] || '', (afterDecimal || '').length, fixedDecimalScale);
+	  var decimalPart = limitToScale(roundedDecimalParts[1] || '', Math.min(scale, afterDecimal.length), fixedDecimalScale);
 	  var negation = hasNagation ? '-' : '';
 	  var decimalSeparator = shoudHaveDecimalSeparator ? '.' : '';
 	  return '' + negation + intPart + decimalSeparator + decimalPart;

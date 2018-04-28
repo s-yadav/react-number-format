@@ -72,7 +72,7 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
     return current + roundedStr;
   }, roundedDecimalParts[0]);
 
-  const decimalPart = limitToScale(roundedDecimalParts[1] || '', (afterDecimal || '').length, fixedDecimalScale);
+  const decimalPart = limitToScale(roundedDecimalParts[1] || '', Math.min(scale, afterDecimal.length), fixedDecimalScale);
   const negation = hasNagation ? '-' : '';
   const decimalSeparator = shoudHaveDecimalSeparator ? '.' : '';
   return `${negation}${intPart}${decimalSeparator}${decimalPart}`;
