@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.3.4
+ * react-number-format - 3.4.0
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -629,12 +629,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	          isNumericString = _props8.isNumericString;
 
 
-	      if (value === undefined && allowEmptyFormatting) {
+	      var isNonNumericFalsy = !value && value !== 0;
+
+	      if (isNonNumericFalsy && allowEmptyFormatting) {
 	        value = '';
 	      }
 
 	      // if value is not defined return empty string
-	      if (value === undefined && !allowEmptyFormatting) return '';
+	      if (isNonNumericFalsy && !allowEmptyFormatting) return '';
 
 	      if (typeof value === 'number') {
 	        value = value.toString();
@@ -798,6 +800,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var isAllowed = props.isAllowed;
 
 	      var lastValue = state.value || '';
+	      var lastNumStr = state.numAsString;
 
 	      /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
 	      var currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);
@@ -806,11 +809,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var formattedValue = this.formatInput(inputValue) || '';
 	      var numAsString = this.removeFormatting(formattedValue);
+	      var floatValue = parseFloat(numAsString);
 
 	      var valueObj = {
 	        formattedValue: formattedValue,
 	        value: numAsString,
-	        floatValue: parseFloat(numAsString)
+	        floatValue: isNaN(floatValue) ? undefined : floatValue
 	      };
 
 	      if (!isAllowed(valueObj)) {
@@ -829,7 +833,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      //change the state
 	      if (formattedValue !== lastValue) {
 	        this.setState({ value: formattedValue, numAsString: numAsString }, function () {
-	          props.onValueChange(valueObj, e);
+	          var lastFloatValue = parseFloat(lastNumStr);
+	          //do not call onValueChange if float value is not a number or float number is not changed
+	          if (numAsString === '' || !isNaN(floatValue) && floatValue !== lastFloatValue) {
+	            props.onValueChange(valueObj, e);
+	          }
 	          props.onChange(e);
 	        });
 	      } else {
@@ -871,6 +879,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'onKeyDown',
 	    value: function onKeyDown(e) {
+	      var _this2 = this;
+
 	      var el = e.target;
 	      var key = e.key;
 	      var selectionStart = el.selectionStart,
@@ -923,11 +933,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	        while (!numRegex.test(value[newCaretPosition]) && newCaretPosition < rightBound) {
 	          newCaretPosition++;
 	        }
-	      } else if (key === 'Backspace' && !numRegex.test(value[expectedCaretPosition]) && !negativeRegex.test(value[expectedCaretPosition])) {
-	        while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound) {
-	          newCaretPosition--;
+	      } else if (key === 'Backspace' && !numRegex.test(value[expectedCaretPosition])) {
+	        /* NOTE: This is special case when backspace is pressed on a 
+	        negative value while the cursor position is after prefix. We can't handle it on onChange because
+	        we will not have any information of keyPress
+	        */
+	        if (selectionStart <= leftBound + 1 && value[0] === '-' && typeof format === 'undefined') {
+	          var newValue = value.substring(1);
+	          var _numAsString = this.removeFormatting(newValue);
+	          this.setState({ value: newValue, numAsString: _numAsString }, function () {
+	            _this2.setPatchedCaretPosition(el, newCaretPosition, newValue);
+	          });
+	        } else if (!negativeRegex.test(value[expectedCaretPosition])) {
+	          while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound) {
+	            newCaretPosition--;
+	          }
+	          newCaretPosition = this.correctCaretPosition(value, newCaretPosition, 'left');
 	        }
-	        newCaretPosition = this.correctCaretPosition(value, newCaretPosition, 'left');
 	      }
 
 	      if (newCaretPosition !== expectedCaretPosition || expectedCaretPosition < leftBound || expectedCaretPosition > rightBound) {
@@ -973,7 +995,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'onFocus',
 	    value: function onFocus(e) {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      // Workaround Chrome and Safari bug https://bugs.chromium.org/p/chromium/issues/detail?id=779328
 	      // (onFocus event target selectionStart is always 0 before setTimeout)
@@ -985,12 +1007,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            value = _el$value3 === undefined ? '' : _el$value3;
 
 
-	        var caretPosition = _this2.correctCaretPosition(value, selectionStart);
+	        var caretPosition = _this3.correctCaretPosition(value, selectionStart);
 	        if (caretPosition !== selectionStart) {
-	          _this2.setPatchedCaretPosition(el, caretPosition, value);
+	          _this3.setPatchedCaretPosition(el, caretPosition, value);
 	        }
 
-	        _this2.props.onFocus(e);
+	        _this3.props.onFocus(e);
 	      }, 0);
 	    }
 	  }, {

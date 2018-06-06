@@ -476,12 +476,14 @@ class NumberFormat extends React.Component {
     const {format, decimalScale, fixedDecimalScale, allowEmptyFormatting} = this.props;
     let {value, isNumericString} = this.props;
 
-    if (value === undefined && allowEmptyFormatting) {
+    const isNonNumericFalsy = !value && value !== 0;
+
+    if (isNonNumericFalsy && allowEmptyFormatting) {
       value = '';
     }
 
     // if value is not defined return empty string
-    if (value === undefined && !allowEmptyFormatting) return '';
+    if (isNonNumericFalsy && !allowEmptyFormatting) return '';
 
     if (typeof value === 'number') {
       value = value.toString();
@@ -612,6 +614,7 @@ class NumberFormat extends React.Component {
     const {state, props} = this;
     const {isAllowed} = props;
     const lastValue = state.value || '';
+    const lastNumStr = state.numAsString;
 
     /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
     const currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);
@@ -620,11 +623,12 @@ class NumberFormat extends React.Component {
 
     let formattedValue = this.formatInput(inputValue) || '';
     const numAsString = this.removeFormatting(formattedValue);
+    const floatValue = parseFloat(numAsString);
 
     const valueObj = {
       formattedValue,
       value: numAsString,
-      floatValue: parseFloat(numAsString)
+      floatValue: isNaN(floatValue) ? undefined : floatValue
     };
 
     if (!isAllowed(valueObj)) {
@@ -643,7 +647,11 @@ class NumberFormat extends React.Component {
     //change the state
     if (formattedValue !== lastValue) {
       this.setState({value : formattedValue, numAsString}, () => {
-        props.onValueChange(valueObj, e);
+        const lastFloatValue = parseFloat(lastNumStr);
+        //do not call onValueChange if float value is not a number or float number is not changed
+        if (numAsString === '' || (!isNaN(floatValue) && floatValue !== lastFloatValue)) {
+          props.onValueChange(valueObj, e);
+        } 
         props.onChange(e);
       });
     } else {
@@ -720,9 +728,21 @@ class NumberFormat extends React.Component {
       newCaretPosition = this.correctCaretPosition(value, expectedCaretPosition, direction);
     } else if (key === 'Delete' && !numRegex.test(value[expectedCaretPosition]) && !negativeRegex.test(value[expectedCaretPosition])) {
       while (!numRegex.test(value[newCaretPosition]) && newCaretPosition < rightBound) newCaretPosition++;
-    } else if (key === 'Backspace' && !numRegex.test(value[expectedCaretPosition]) && !negativeRegex.test(value[expectedCaretPosition])) {
-      while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound){ newCaretPosition--; }
-      newCaretPosition = this.correctCaretPosition(value, newCaretPosition, 'left');
+    } else if (key === 'Backspace' && !numRegex.test(value[expectedCaretPosition])) {
+      /* NOTE: This is special case when backspace is pressed on a 
+      negative value while the cursor position is after prefix. We can't handle it on onChange because
+      we will not have any information of keyPress
+      */
+      if (selectionStart <= leftBound + 1 && value[0] === '-' && typeof format === 'undefined') {
+        const newValue = value.substring(1);
+        const numAsString = this.removeFormatting(newValue);
+        this.setState({value: newValue, numAsString}, () => {
+          this.setPatchedCaretPosition(el, newCaretPosition, newValue);
+        });
+      } else if (!negativeRegex.test(value[expectedCaretPosition])) {
+        while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound){ newCaretPosition--; }
+        newCaretPosition = this.correctCaretPosition(value, newCaretPosition, 'left');
+      }
     }
 
 

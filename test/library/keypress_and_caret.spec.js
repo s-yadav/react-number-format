@@ -104,6 +104,10 @@ describe('Test delete/backspace with format pattern', () => {
     caretPos = pos;
   }
 
+  beforeEach(() => {
+    caretPos = 0;
+  })
+
   it('caret position should not change if its on starting of input area', () => {
     simulateKeyInput(wrapper.find('input'), 'Backspace', 4, 4, setSelectionRange);
     expect(wrapper.state().value).toEqual('+1 (123) 456 7 89 US');
@@ -141,6 +145,10 @@ describe('Test delete/backspace with numeric format', () => {
   const setSelectionRange = (pos) => {
     caretPos = pos;
   }
+  
+  beforeEach(() => {
+    caretPos = 0;
+  })
 
   it('should not remove prefix', () => {
     simulateKeyInput(wrapper.find('input'), 'Backspace', 4, 4, setSelectionRange);
@@ -182,19 +190,27 @@ describe('Test delete/backspace with numeric format', () => {
     simulateKeyInput(wrapper.find('input'), 'Backspace', 10, 10, setSelectionRange);
     expect(wrapper.state().value).toEqual('$234,234');
     expect(caretPos).toEqual(8);
-  })
+  });
 
   it('should maintain correct caret position while removing the second last character and suffix is not defined, Issue #116', () => {
+    wrapper.setProps({
+      suffix: '',
+      prefix: '$',
+      value: '-$1,000'
+    });
+    wrapper.update();
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 2, 2, setSelectionRange);
+    expect(wrapper.state().value).toEqual('$1,000');
+    expect(caretPos).toEqual(1);
+  });
+
+  it('should allow removing negation(-), even if its before suffix', () => {
     wrapper.setProps({
       suffix: '',
       prefix: '',
       value: '1,000'
     });
-    wrapper.update();
-    simulateKeyInput(wrapper.find('input'), 'Backspace', 4, 4, setSelectionRange);
-    expect(wrapper.state().value).toEqual('100');
-    expect(caretPos).toEqual(2);
-  })
+  });
 })
 
 describe('Test arrow keys', () => {
@@ -202,6 +218,10 @@ describe('Test arrow keys', () => {
   const setSelectionRange = (pos) => {
     caretPos = pos;
   }
+
+  beforeEach(() => {
+    caretPos = 0;
+  })
 
   it('should keep caret position between the prefix and suffix', () => {
     const wrapper = shallow(<NumberFormat thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
@@ -248,6 +268,10 @@ describe('Test click / focus on input', () => {
   const setSelectionRange = (pos) => {
     caretPos = pos;
   }
+
+  beforeEach(() => {
+    caretPos = 0;
+  })
 
   it('should always keep caret on typable area when we click on the input', () => {
     const wrapper = shallow(<NumberFormat  format="+1 (###) ### # ## US" value="+1 (123) 456 7 89 US"/>);
@@ -304,7 +328,7 @@ describe('Test click / focus on input', () => {
   it('should correct wrong caret positon on focus when allowEmptyFormatting is set', () => {
     jasmine.clock().install()
     const format = '+1 (###) ### # ## US';
-    const wrapper = shallow(<NumberFormat format="+1 (###) ### # ## US" value="" mask="_"/>);
+    const wrapper = shallow(<NumberFormat format="+1 (###) ### # ## US" allowEmptyFormatting={true} value="" mask="_"/>);
 
     simulateFocusEvent(wrapper.find('input'), 1, setSelectionRange);
     jasmine.clock().tick(1)

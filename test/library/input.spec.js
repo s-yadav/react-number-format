@@ -169,7 +169,52 @@ describe('NumberFormat as input', () => {
   it('should not convert empty sting to 0 if isNumericString is true', () => {
     const wrapper = shallow(<NumberFormat isNumericString={true} value={''} decimalScale={2}/>);
     expect(wrapper.state().value).toEqual('');
-  })
+  });
+
+  it('should not break if null or NaN is provided as value', () => {
+    const wrapper = shallow(<NumberFormat value={null} decimalScale={2}/>);
+    expect(wrapper.state().value).toEqual('');
+
+    wrapper.setProps({value: NaN});
+    expect(wrapper.state().value).toEqual('');
+  });
+
+  it('should allow adding decimals when float value is used to set state', () => {
+    const wrapper = shallow(<NumberFormat value={123} onValueChange={(values) => {
+      wrapper.setProps({value: values.floatValue});
+    }}/>);
+    simulateKeyInput(wrapper.find('input'), '.', 3);
+    expect(wrapper.state().value).toEqual('123.');
+  });
+
+  it('should pass valid floatValue in isAllowed callback', () => {
+    const spy = jasmine.createSpy();
+    const wrapper = shallow(<NumberFormat isAllowed={spy}/>);
+    simulateKeyInput(wrapper.find('input'), '.', 0);
+    expect(spy.calls.argsFor(0)[0]).toEqual({formattedValue: ".", value: ".", floatValue: undefined});
+
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
+    simulateKeyInput(wrapper.find('input'), '0', 0);
+    expect(spy.calls.argsFor(1)[0]).toEqual({formattedValue: "0", value: "0", floatValue: 0});
+    
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
+    simulateKeyInput(wrapper.find('input'), '123.', 0);
+    expect(spy.calls.argsFor(2)[0]).toEqual({formattedValue: "123.", value: "123.", floatValue: 123});
+  });
+
+  it('should allow not call onValueChange if float value is not changed', () => {
+    const spy = jasmine.createSpy();
+    const wrapper = shallow(<NumberFormat onValueChange={spy}/>);
+    simulateKeyInput(wrapper.find('input'), '.', 0);
+    expect(spy.calls.count()).toEqual(0);
+
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
+    simulateKeyInput(wrapper.find('input'), '123', 0);
+    expect(spy.calls.count()).toEqual(2);
+
+    simulateKeyInput(wrapper.find('input'), '.', 3);
+    expect(spy.calls.count()).toEqual(2);
+  });
 
   describe('Test masking', () => {
     it('should allow mask as string', () => {
