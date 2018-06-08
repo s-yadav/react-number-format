@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.4.0
+ * react-number-format - 3.4.1
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -203,13 +203,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var stateValue = state.value;
 
 	        var lastNumStr = state.numAsString || '';
+	        var lastValueWithNewFormat = this.formatNumString(lastNumStr);
 
-	        var formattedValue = props.value === undefined ? this.formatNumString(lastNumStr) : this.formatValueProp();
+	        var formattedValue = props.value === undefined ? lastValueWithNewFormat : this.formatValueProp();
+	        var _numAsString = this.removeFormatting(formattedValue);
 
-	        if (formattedValue !== stateValue) {
+	        if (parseFloat(_numAsString) !== parseFloat(lastNumStr) || lastValueWithNewFormat !== stateValue) {
 	          this.setState({
 	            value: formattedValue,
-	            numAsString: this.removeFormatting(formattedValue)
+	            numAsString: _numAsString
 	          });
 	        }
 	      }
@@ -800,7 +802,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var isAllowed = props.isAllowed;
 
 	      var lastValue = state.value || '';
-	      var lastNumStr = state.numAsString;
 
 	      /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
 	      var currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);
@@ -833,11 +834,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      //change the state
 	      if (formattedValue !== lastValue) {
 	        this.setState({ value: formattedValue, numAsString: numAsString }, function () {
-	          var lastFloatValue = parseFloat(lastNumStr);
-	          //do not call onValueChange if float value is not a number or float number is not changed
-	          if (numAsString === '' || !isNaN(floatValue) && floatValue !== lastFloatValue) {
-	            props.onValueChange(valueObj, e);
-	          }
+	          props.onValueChange(valueObj, e);
 	          props.onChange(e);
 	        });
 	      } else {
@@ -940,8 +937,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        */
 	        if (selectionStart <= leftBound + 1 && value[0] === '-' && typeof format === 'undefined') {
 	          var newValue = value.substring(1);
-	          var _numAsString = this.removeFormatting(newValue);
-	          this.setState({ value: newValue, numAsString: _numAsString }, function () {
+	          var _numAsString2 = this.removeFormatting(newValue);
+	          this.setState({ value: newValue, numAsString: _numAsString2 }, function () {
 	            _this2.setPatchedCaretPosition(el, newCaretPosition, newValue);
 	          });
 	        } else if (!negativeRegex.test(value[expectedCaretPosition])) {

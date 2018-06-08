@@ -179,12 +179,35 @@ describe('NumberFormat as input', () => {
     expect(wrapper.state().value).toEqual('');
   });
 
-  it('should allow adding decimals when float value is used to set state', () => {
-    const wrapper = shallow(<NumberFormat value={123} onValueChange={(values) => {
+  it('should allow adding decimals and negation when float value is used to set state', () => {
+    const wrapper = shallow(<NumberFormat onValueChange={(values) => {
       wrapper.setProps({value: values.floatValue});
     }}/>);
-    simulateKeyInput(wrapper.find('input'), '.', 3);
-    expect(wrapper.state().value).toEqual('123.');
+    
+    //check negation
+    simulateKeyInput(wrapper.find('input'), '-', 0);
+    expect(wrapper.state().value).toEqual('-');
+
+    //check decimal
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
+    simulateKeyInput(wrapper.find('input'), '.', 0);
+    simulateKeyInput(wrapper.find('input'), '2', 1);
+    expect(wrapper.state().value).toEqual('.2');
+
+    //check changing format should change the formatted value
+    wrapper.setProps({prefix: '$'});
+    expect(wrapper.state().value).toEqual('$0.2');
+    
+    //check if trailing decimal is supported
+    wrapper.setProps({value: 123});
+    simulateKeyInput(wrapper.find('input'), '.', 4);
+    expect(wrapper.state().value).toEqual('$123.');
+
+    //test in backspace leads correct formatting if it has trailing .
+    simulateKeyInput(wrapper.find('input'), '4', 5);
+    expect(wrapper.state().value).toEqual('$123.4');
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 6);
+    expect(wrapper.state().value).toEqual('$123.');
   });
 
   it('should pass valid floatValue in isAllowed callback', () => {
@@ -200,20 +223,6 @@ describe('NumberFormat as input', () => {
     simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
     simulateKeyInput(wrapper.find('input'), '123.', 0);
     expect(spy.calls.argsFor(2)[0]).toEqual({formattedValue: "123.", value: "123.", floatValue: 123});
-  });
-
-  it('should allow not call onValueChange if float value is not changed', () => {
-    const spy = jasmine.createSpy();
-    const wrapper = shallow(<NumberFormat onValueChange={spy}/>);
-    simulateKeyInput(wrapper.find('input'), '.', 0);
-    expect(spy.calls.count()).toEqual(0);
-
-    simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
-    simulateKeyInput(wrapper.find('input'), '123', 0);
-    expect(spy.calls.count()).toEqual(2);
-
-    simulateKeyInput(wrapper.find('input'), '.', 3);
-    expect(spy.calls.count()).toEqual(2);
   });
 
   describe('Test masking', () => {

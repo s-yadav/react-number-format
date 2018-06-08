@@ -126,14 +126,16 @@ class NumberFormat extends React.Component {
       const stateValue = state.value;
 
       const lastNumStr = state.numAsString || '';
+      const lastValueWithNewFormat = this.formatNumString(lastNumStr);
 
-      const formattedValue = props.value === undefined ? this.formatNumString(lastNumStr) : this.formatValueProp();
+      const formattedValue = props.value === undefined ? lastValueWithNewFormat : this.formatValueProp();
+      const numAsString = this.removeFormatting(formattedValue);
 
-      if (formattedValue !== stateValue) {
+      if (parseFloat(numAsString) !== parseFloat(lastNumStr) || lastValueWithNewFormat !== stateValue) {
         this.setState({
           value : formattedValue,
-          numAsString: this.removeFormatting(formattedValue)
-        })
+          numAsString,
+        });
       }
     }
   }
@@ -614,7 +616,6 @@ class NumberFormat extends React.Component {
     const {state, props} = this;
     const {isAllowed} = props;
     const lastValue = state.value || '';
-    const lastNumStr = state.numAsString;
 
     /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
     const currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);
@@ -647,11 +648,7 @@ class NumberFormat extends React.Component {
     //change the state
     if (formattedValue !== lastValue) {
       this.setState({value : formattedValue, numAsString}, () => {
-        const lastFloatValue = parseFloat(lastNumStr);
-        //do not call onValueChange if float value is not a number or float number is not changed
-        if (numAsString === '' || (!isNaN(floatValue) && floatValue !== lastFloatValue)) {
-          props.onValueChange(valueObj, e);
-        } 
+        props.onValueChange(valueObj, e);
         props.onChange(e);
       });
     } else {
