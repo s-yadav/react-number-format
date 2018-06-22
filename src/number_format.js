@@ -131,7 +131,11 @@ class NumberFormat extends React.Component {
       const formattedValue = props.value === undefined ? lastValueWithNewFormat : this.formatValueProp();
       const numAsString = this.removeFormatting(formattedValue);
 
-      if (parseFloat(numAsString) !== parseFloat(lastNumStr) || lastValueWithNewFormat !== stateValue) {
+      const numAsStringFloat = parseFloat(numAsString);
+      const lastNumStrFloat = parseFloat(lastNumStr);
+
+      if ((!isNaN(numAsStringFloat) || !isNaN(lastNumStrFloat)) &&
+      	(parseFloat(numAsString) !== parseFloat(lastNumStr) || lastValueWithNewFormat !== stateValue)) {
         this.setState({
           value : formattedValue,
           numAsString,
@@ -139,6 +143,8 @@ class NumberFormat extends React.Component {
       }
     }
   }
+
+  
 
   /** Misc methods **/
   getFloatString(num: string = '') {
