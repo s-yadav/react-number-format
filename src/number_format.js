@@ -144,8 +144,6 @@ class NumberFormat extends React.Component {
     }
   }
 
-  
-
   /** Misc methods **/
   getFloatString(num: string = '') {
     const {decimalScale} = this.props;
