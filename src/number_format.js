@@ -144,8 +144,6 @@ class NumberFormat extends React.Component {
     }
   }
 
-  
-
   /** Misc methods **/
   getFloatString(num: string = '') {
     const {decimalScale} = this.props;
@@ -695,7 +693,7 @@ class NumberFormat extends React.Component {
     const {key} = e;
     const {selectionStart, selectionEnd, value = ''} = el;
     let expectedCaretPosition;
-    const {decimalScale, fixedDecimalScale, prefix, suffix, format, onKeyDown} = this.props;
+    const {decimalScale, fixedDecimalScale, prefix, suffix, format, onKeyDown, onValueChange} = this.props;
     const ignoreDecimalSeparator = decimalScale !== undefined && fixedDecimalScale;
     const numRegex = this.getNumberRegex(false, ignoreDecimalSeparator);
     const negativeRegex = new RegExp('-');
@@ -739,8 +737,16 @@ class NumberFormat extends React.Component {
       if (selectionStart <= leftBound + 1 && value[0] === '-' && typeof format === 'undefined') {
         const newValue = value.substring(1);
         const numAsString = this.removeFormatting(newValue);
+        const floatValue = parseFloat(numAsString);
+
+        const valueObj = {
+          newValue,
+          value: numAsString,
+          floatValue: isNaN(floatValue) ? undefined : floatValue
+        };
         this.setState({value: newValue, numAsString}, () => {
           this.setPatchedCaretPosition(el, newCaretPosition, newValue);
+          onValueChange(valueObj, e);
         });
       } else if (!negativeRegex.test(value[expectedCaretPosition])) {
         while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound){ newCaretPosition--; }
