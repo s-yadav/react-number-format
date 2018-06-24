@@ -131,11 +131,9 @@ class NumberFormat extends React.Component {
       const formattedValue = props.value === undefined ? lastValueWithNewFormat : this.formatValueProp();
       const numAsString = this.removeFormatting(formattedValue);
 
-      const numAsStringFloat = parseFloat(numAsString);
-      const lastNumStrFloat = parseFloat(lastNumStr);
+      const floatValue = parseFloat(numAsString);
 
-      if ((!isNaN(numAsStringFloat) || !isNaN(lastNumStrFloat)) &&
-      	(parseFloat(numAsString) !== parseFloat(lastNumStr) || lastValueWithNewFormat !== stateValue)) {
+      if ((!isNaN(floatValue) && floatValue !== parseFloat(lastNumStr)) || lastValueWithNewFormat !== stateValue) {
         this.setState({
           value : formattedValue,
           numAsString,
@@ -202,6 +200,17 @@ class NumberFormat extends React.Component {
     }
 
     return mask[index] || ' ';
+  }
+
+  getValueObject(formattedValue: string, numAsString: string) {
+    const floatValue = parseFloat(numAsString);
+
+    return {
+      formattedValue,
+      value: numAsString,
+      floatValue: isNaN(floatValue) ? undefined : floatValue
+    };
+
   }
 
   validateProps() {
@@ -628,13 +637,8 @@ class NumberFormat extends React.Component {
 
     let formattedValue = this.formatInput(inputValue) || '';
     const numAsString = this.removeFormatting(formattedValue);
-    const floatValue = parseFloat(numAsString);
 
-    const valueObj = {
-      formattedValue,
-      value: numAsString,
-      floatValue: isNaN(floatValue) ? undefined : floatValue
-    };
+    const valueObj = this.getValueObject(formattedValue, numAsString);
 
     if (!isAllowed(valueObj)) {
       formattedValue = lastValue;
@@ -668,17 +672,13 @@ class NumberFormat extends React.Component {
     if (!format) {
       numAsString = fixLeadingZero(numAsString);
       const formattedValue = this.formatNumString(numAsString);
-      const valueObj = {
-        formattedValue,
-        value: numAsString,
-        floatValue: parseFloat(numAsString)
-      };
 
       //change the state
       if (formattedValue !== lastValue) {
         // the event needs to be persisted because its properties can be accessed in an asynchronous way
         e.persist();
         this.setState({value : formattedValue, numAsString}, () => {
+          const valueObj = this.getValueObject(formattedValue, numAsString);
           props.onValueChange(valueObj, e);
           onBlur(e);
         });
@@ -737,13 +737,8 @@ class NumberFormat extends React.Component {
       if (selectionStart <= leftBound + 1 && value[0] === '-' && typeof format === 'undefined') {
         const newValue = value.substring(1);
         const numAsString = this.removeFormatting(newValue);
-        const floatValue = parseFloat(numAsString);
+        const valueObj = this.getValueObject(newValue, numAsString);
 
-        const valueObj = {
-          newValue,
-          value: numAsString,
-          floatValue: isNaN(floatValue) ? undefined : floatValue
-        };
         this.setState({value: newValue, numAsString}, () => {
           this.setPatchedCaretPosition(el, newCaretPosition, newValue);
           onValueChange(valueObj, e);

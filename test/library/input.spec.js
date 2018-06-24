@@ -166,7 +166,7 @@ describe('NumberFormat as input', () => {
   });
 
 
-  it('should not convert empty sting to 0 if isNumericString is true', () => {
+  it('should not convert empty string to 0 if isNumericString is true', () => {
     const wrapper = shallow(<NumberFormat isNumericString={true} value={''} decimalScale={2}/>);
     expect(wrapper.state().value).toEqual('');
   });
@@ -223,6 +223,14 @@ describe('NumberFormat as input', () => {
     simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
     simulateKeyInput(wrapper.find('input'), '123.', 0);
     expect(spy.calls.argsFor(2)[0]).toEqual({formattedValue: "123.", value: "123.", floatValue: 123});
+  });
+
+  it('should not call setState again if previous and current floatValue is NaN', () => {
+    const wrapper = shallow(<NumberFormat value="" />);
+    const instance = wrapper.instance();
+    spyOn(instance, 'setState');
+    wrapper.setProps({value: ''});
+    expect(instance.setState).not.toHaveBeenCalled();
   });
 
   describe('Test masking', () => {
