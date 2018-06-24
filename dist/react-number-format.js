@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.4.1
+ * react-number-format - 3.4.2
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -208,7 +208,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var formattedValue = props.value === undefined ? lastValueWithNewFormat : this.formatValueProp();
 	        var _numAsString = this.removeFormatting(formattedValue);
 
-	        if (parseFloat(_numAsString) !== parseFloat(lastNumStr) || lastValueWithNewFormat !== stateValue) {
+	        var floatValue = parseFloat(_numAsString);
+	        var lastFloatValue = parseFloat(lastNumStr);
+
+	        if ((!isNaN(floatValue) || !isNaN(lastFloatValue)) && floatValue !== lastFloatValue || lastValueWithNewFormat !== stateValue) {
 	          this.setState({
 	            value: formattedValue,
 	            numAsString: _numAsString
@@ -295,6 +298,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      return mask[index] || ' ';
+	    }
+	  }, {
+	    key: 'getValueObject',
+	    value: function getValueObject(formattedValue, numAsString) {
+	      var floatValue = parseFloat(numAsString);
+
+	      return {
+	        formattedValue: formattedValue,
+	        value: numAsString,
+	        floatValue: isNaN(floatValue) ? undefined : floatValue
+	      };
 	    }
 	  }, {
 	    key: 'validateProps',
@@ -810,13 +824,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var formattedValue = this.formatInput(inputValue) || '';
 	      var numAsString = this.removeFormatting(formattedValue);
-	      var floatValue = parseFloat(numAsString);
 
-	      var valueObj = {
-	        formattedValue: formattedValue,
-	        value: numAsString,
-	        floatValue: isNaN(floatValue) ? undefined : floatValue
-	      };
+	      var valueObj = this.getValueObject(formattedValue, numAsString);
 
 	      if (!isAllowed(valueObj)) {
 	        formattedValue = lastValue;
@@ -844,6 +853,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'onBlur',
 	    value: function onBlur(e) {
+	      var _this2 = this;
+
 	      var props = this.props,
 	          state = this.state;
 	      var format = props.format,
@@ -854,17 +865,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!format) {
 	        numAsString = (0, _utils.fixLeadingZero)(numAsString);
 	        var formattedValue = this.formatNumString(numAsString);
-	        var valueObj = {
-	          formattedValue: formattedValue,
-	          value: numAsString,
-	          floatValue: parseFloat(numAsString)
-	        };
 
 	        //change the state
 	        if (formattedValue !== lastValue) {
 	          // the event needs to be persisted because its properties can be accessed in an asynchronous way
 	          e.persist();
 	          this.setState({ value: formattedValue, numAsString: numAsString }, function () {
+	            var valueObj = _this2.getValueObject(formattedValue, numAsString);
 	            props.onValueChange(valueObj, e);
 	            onBlur(e);
 	          });
@@ -876,7 +883,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'onKeyDown',
 	    value: function onKeyDown(e) {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      var el = e.target;
 	      var key = e.key;
@@ -892,7 +899,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          prefix = _props11.prefix,
 	          suffix = _props11.suffix,
 	          format = _props11.format,
-	          onKeyDown = _props11.onKeyDown;
+	          onKeyDown = _props11.onKeyDown,
+	          onValueChange = _props11.onValueChange;
 
 	      var ignoreDecimalSeparator = decimalScale !== undefined && fixedDecimalScale;
 	      var numRegex = this.getNumberRegex(false, ignoreDecimalSeparator);
@@ -938,8 +946,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (selectionStart <= leftBound + 1 && value[0] === '-' && typeof format === 'undefined') {
 	          var newValue = value.substring(1);
 	          var _numAsString2 = this.removeFormatting(newValue);
+	          var valueObj = this.getValueObject(newValue, _numAsString2);
+
 	          this.setState({ value: newValue, numAsString: _numAsString2 }, function () {
-	            _this2.setPatchedCaretPosition(el, newCaretPosition, newValue);
+	            _this3.setPatchedCaretPosition(el, newCaretPosition, newValue);
+	            onValueChange(valueObj, e);
 	          });
 	        } else if (!negativeRegex.test(value[expectedCaretPosition])) {
 	          while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound) {
@@ -992,7 +1003,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'onFocus',
 	    value: function onFocus(e) {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      // Workaround Chrome and Safari bug https://bugs.chromium.org/p/chromium/issues/detail?id=779328
 	      // (onFocus event target selectionStart is always 0 before setTimeout)
@@ -1004,12 +1015,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            value = _el$value3 === undefined ? '' : _el$value3;
 
 
-	        var caretPosition = _this3.correctCaretPosition(value, selectionStart);
+	        var caretPosition = _this4.correctCaretPosition(value, selectionStart);
 	        if (caretPosition !== selectionStart) {
-	          _this3.setPatchedCaretPosition(el, caretPosition, value);
+	          _this4.setPatchedCaretPosition(el, caretPosition, value);
 	        }
 
-	        _this3.props.onFocus(e);
+	        _this4.props.onFocus(e);
 	      }, 0);
 	    }
 	  }, {

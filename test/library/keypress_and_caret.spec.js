@@ -195,21 +195,31 @@ describe('Test delete/backspace with numeric format', () => {
   it('should maintain correct caret position while removing the second last character and suffix is not defined, Issue #116', () => {
     wrapper.setProps({
       suffix: '',
-      prefix: '$',
-      value: '-$1,000'
-    });
-    wrapper.update();
-    simulateKeyInput(wrapper.find('input'), 'Backspace', 2, 2, setSelectionRange);
-    expect(wrapper.state().value).toEqual('$1,000');
-    expect(caretPos).toEqual(1);
-  });
-
-  it('should allow removing negation(-), even if its before suffix', () => {
-    wrapper.setProps({
-      suffix: '',
       prefix: '',
       value: '1,000'
     });
+
+    wrapper.update();
+
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 4, 4, setSelectionRange);
+    expect(wrapper.state().value).toEqual('100');
+    expect(caretPos).toEqual(2);
+  });
+
+  it('should allow removing negation(-), even if its before suffix', () => {
+    const spy = jasmine.createSpy();
+    wrapper.setProps({
+      suffix: '',
+      prefix: '$',
+      value: '-$1,000',
+      onValueChange: spy
+    });
+    wrapper.update();
+
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 2, 2, setSelectionRange);
+    expect(wrapper.state().value).toEqual('$1,000');
+    expect(caretPos).toEqual(1);
+    expect(spy).toHaveBeenCalled();
   });
 })
 
