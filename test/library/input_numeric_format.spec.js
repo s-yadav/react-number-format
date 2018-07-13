@@ -467,4 +467,28 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('1');
   });
 
+  it(`should not add 0 after minus immediately after minus is entered in case isNumericString and
+    decimalScale props are passed`, () => {
+    class IssueExample extends React.Component {
+      constructor() {
+        super();
+        this.state = {
+          value: ''
+        };
+      }
+      render() {
+        return (
+          <NumberFormat
+            value={this.state.value}
+            isNumericString
+            onValueChange={({value}) => this.setState({value})}
+            decimalScale={2}
+          />
+        )
+      }
+    }
+    const wrapper = mount(<IssueExample/> );
+    simulateKeyInput(wrapper.find('input'), '-');
+    expect(wrapper.find('input').instance().value).toEqual('-');
+  });
 });
