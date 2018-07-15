@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.4.2
+ * react-number-format - 3.4.3
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -3074,7 +3074,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function roundToPrecision(numStr, scale, fixedDecimalScale) {
 	  //if number is empty don't do anything return empty string
-	  if (numStr === '') return '';
+	  if (['', '-'].includes(numStr)) return numStr;
 
 	  var shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
 
