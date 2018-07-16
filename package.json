@@ -5,6 +5,7 @@
   "main": "lib/number_format.js",
   "author": "Sudhanshu Yadav",
   "license": "MIT",
+  "types": "typings/number_format.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/s-yadav/react-number-format"
@@ -75,7 +76,8 @@
   },
   "peerDependencies": {
     "react": "^0.14 || ^15.0.0-rc || ^15.0.0 || ^16.0.0-rc || ^16.0.0",
-    "react-dom": "^0.14 || ^15.0.0-rc || ^15.0.0 || ^16.0.0-rc || ^16.0.0"
+    "react-dom": "^0.14 || ^15.0.0-rc || ^15.0.0 || ^16.0.0-rc || ^16.0.0",
+    "@types/react": "^0.14 || ^15.0.0-rc || ^15.0.0 || ^16.0.0-rc || ^16.0.0"
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",

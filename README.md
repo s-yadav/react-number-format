@@ -29,7 +29,7 @@ const NumberFormat = require('react-number-format');
 
 Typescript
 ```js
-import * as NumberFormat from 'react-number-format';
+import { default as NumberFormat } from 'react-number-format';
 ```
 
 

@@ -1,0 +1,54 @@
+/// <reference types="react" />
+
+declare module "react-number-format" {
+  export interface NumberFormatState {
+    value?: string;
+    numAsString?: string;
+  }
+
+  export interface NumberFormatValues {
+    floatValue: number;
+    formattedValue: string;
+    value: string;
+  }
+
+  type FormatValueFunction = (formattedValue: string) => string;
+
+  export interface NumberFormatProps
+    extends React.HTMLAttributes<HTMLInputElement> {
+    thousandSeparator?: boolean | "," | "." | " ";
+    decimalSeparator?: boolean | "," | ".";
+    decimalScale?: number;
+    fixedDecimalScale?: boolean;
+    displayType?: "input" | "text";
+    prefix?: string;
+    suffix?: string;
+    format?: string | FormatValueFunction;
+    removeFormatting?: (formattedValue: string) => string;
+    mask?: string | string[];
+    value?: number | string;
+    isNumericString?: boolean;
+    customInput?: (inputComponent: React.ComponentType<any>) => void;
+    allowNegative?: boolean;
+    allowEmptyFormatting?: boolean;
+    onValueChange?: (
+      values: NumberFormatValues,
+      e: React.ChangeEvent<HTMLInputElement>
+    ) => void;
+    /**
+     * these are already included in React.HTMLAttributes<HTMLInputElement>
+     * onKeyDown: Function;
+     * onMouseUp: Function;
+     * onChange: Function;
+     * onFocus: Function;
+     * onBlur: Function;
+     */
+    type?: "text" | "tel";
+    isAllowed?: (values: NumberFormatValues) => boolean;
+    renderText?: (formattedValue: string) => React.ReactNode;
+    getInputRef?: (el: HTMLInputElement) => void;
+  }
+
+  class NumberFormat extends React.Component<NumberFormatProps, any> {}
+  export default NumberFormat;
+}
