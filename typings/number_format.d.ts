@@ -12,18 +12,24 @@ declare module "react-number-format" {
     value: string;
   }
 
-  type FormatValueFunction = (formattedValue: string) => string;
+  export type FormatInputValueFunction = (inputValue: string) => string;
+
+  export interface SyntheticInputEvent
+    extends React.SyntheticEvent<HTMLInputElement> {
+    readonly target: HTMLInputElement;
+    data: any;
+  }
 
   export interface NumberFormatProps
     extends React.HTMLAttributes<HTMLInputElement> {
-    thousandSeparator?: boolean | "," | "." | " ";
-    decimalSeparator?: boolean | "," | ".";
+    thousandSeparator?: boolean | string;
+    decimalSeparator?: boolean | string;
     decimalScale?: number;
     fixedDecimalScale?: boolean;
     displayType?: "input" | "text";
     prefix?: string;
     suffix?: string;
-    format?: string | FormatValueFunction;
+    format?: string | FormatInputValueFunction;
     removeFormatting?: (formattedValue: string) => string;
     mask?: string | string[];
     value?: number | string;
@@ -33,7 +39,7 @@ declare module "react-number-format" {
     allowEmptyFormatting?: boolean;
     onValueChange?: (
       values: NumberFormatValues,
-      e: React.ChangeEvent<HTMLInputElement>
+      e: SyntheticInputEvent
     ) => void;
     /**
      * these are already included in React.HTMLAttributes<HTMLInputElement>
