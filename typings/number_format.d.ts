@@ -34,7 +34,7 @@ declare module "react-number-format" {
     mask?: string | string[];
     value?: number | string;
     isNumericString?: boolean;
-    customInput?: (inputComponent: React.ComponentType<any>) => void;
+    customInput?: React.ReactElement,
     allowNegative?: boolean;
     allowEmptyFormatting?: boolean;
     onValueChange?: (
