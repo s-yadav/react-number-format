@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.4.4
+ * react-number-format - 3.5.0
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -67,6 +67,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _extends2 = __webpack_require__(2);
 
@@ -1069,7 +1073,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	NumberFormat.propTypes = propTypes;
 	NumberFormat.defaultProps = defaultProps;
 
-	module.exports = NumberFormat;
+	exports.default = NumberFormat;
+	module.exports = exports['default'];
 
 /***/ }),
 /* 2 */

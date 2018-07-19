@@ -1,7 +1,7 @@
 {
   "name": "react-number-format",
   "description": "React component to format number in an input or as a text.",
-  "version": "3.4.4",
+  "version": "3.5.0",
   "main": "lib/number_format.js",
   "author": "Sudhanshu Yadav",
   "license": "MIT",
@@ -35,6 +35,7 @@
     "babel-core": "^6.7.2",
     "babel-eslint": "^6.0.0",
     "babel-loader": "^6.2.4",
+    "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-react-transform": "^2.0.2",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-assign": "^6.8.0",
@@ -75,9 +76,9 @@
     "webpack-dev-server": "^1.14.1"
   },
   "peerDependencies": {
+    "@types/react": "^0.14 || ^15.0.0-rc || ^15.0.0 || ^16.0.0-rc || ^16.0.0",
     "react": "^0.14 || ^15.0.0-rc || ^15.0.0 || ^16.0.0-rc || ^16.0.0",
-    "react-dom": "^0.14 || ^15.0.0-rc || ^15.0.0 || ^16.0.0-rc || ^16.0.0",
-    "@types/react": "^0.14 || ^15.0.0-rc || ^15.0.0 || ^16.0.0-rc || ^16.0.0"
+    "react-dom": "^0.14 || ^15.0.0-rc || ^15.0.0 || ^16.0.0-rc || ^16.0.0"
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
