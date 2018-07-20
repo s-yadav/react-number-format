@@ -49,7 +49,8 @@ const propTypes = {
   type: PropTypes.oneOf(['text', 'tel']),
   isAllowed: PropTypes.func,
   renderText: PropTypes.func,
-  getInputRef: PropTypes.func
+  getInputRef: PropTypes.func,
+  preEvaluate: PropTypes.func
 };
 
 const defaultProps = {
@@ -69,7 +70,8 @@ const defaultProps = {
   onFocus: noop,
   onBlur: noop,
   isAllowed: returnTrue,
-  getInputRef: noop
+  getInputRef: noop,
+  preEvaluate: noop
 };
 
 class NumberFormat extends React.Component {
@@ -623,12 +625,28 @@ class NumberFormat extends React.Component {
     return value;
   }
 
+  /**
+   * This will sanitaze the value that has been entered, so the number will be something
+   * like XXXX.YYY and it becomes a parsable value.
+   **/
+  sanitizeValue(value: string, thousandSeparator: string, decimalSeparator: string){
+    if(thousandSeparator === true){
+      thousandSeparator = ',';
+    }
+    if(decimalSeparator === true){
+      decimalSeparator = '.';
+    }
+    const regexThousand = new RegExp(thousandSeparator.replace('.', '\\.'), 'g');
+    const regexDecimal = new RegExp(decimalSeparator.replace('.', '\\.'), 'g');
+    return value.replace(regexThousand, '').replace(regexDecimal, '.');
+  }
+
   onChange(e: SyntheticInputEvent) {
     e.persist();
     const el = e.target;
     let inputValue = el.value;
     const {state, props} = this;
-    const {isAllowed} = props;
+    const {isAllowed, preEvaluate, thousandSeparator = '', decimalSeparator} = props;
     const lastValue = state.value || '';
 
     /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
@@ -636,7 +654,11 @@ class NumberFormat extends React.Component {
 
     inputValue =  this.correctInputValue(currentCaretPosition, lastValue, inputValue);
 
-    let formattedValue = this.formatInput(inputValue) || '';
+    const sanitizedValue = this.sanitizeValue(inputValue, thousandSeparator, decimalSeparator);
+    
+    /* We sanitize the value to get something similar as a number for the user but if the user needs to do something with the actual input, we send it as well. */
+    const preEvaluatedValue = preEvaluate(sanitizedValue, inputValue);
+    let formattedValue = this.formatInput(preEvaluatedValue || inputValue) || '';
     const numAsString = this.removeFormatting(formattedValue);
 
     const valueObj = this.getValueObject(formattedValue, numAsString);
@@ -649,7 +671,7 @@ class NumberFormat extends React.Component {
     el.value = formattedValue;
 
     //get the caret position
-    const caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
+    const caretPos = preEvaluatedValue?formattedValue.length:this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
 
     //set caret position
     this.setPatchedCaretPosition(el, caretPos, formattedValue);

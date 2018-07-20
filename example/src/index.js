@@ -8,6 +8,19 @@ import {cardExpiry} from '../../custom_formatters/card_expiry';
 
 
 class App extends React.Component {
+  
+  evaluate(value) {
+    if (value.endsWith("k")) {
+      let v = parseFloat(value) * 1000;
+      return v.toString();
+    } else if (value.endsWith("m")) {
+      return (parseFloat(value) * 1000 * 1000).toString();
+    } else if(value.endsWith('n')){
+      return (parseFloat(value) * 0.01).toString();
+    }
+    return null;
+  }
+
   constructor() {
     super();
     this.state = {test: 1232323.780023};
@@ -143,6 +156,18 @@ class App extends React.Component {
             Custom input : Format credit card number
           </h3>
           <NumberFormat customInput={TextField} format="#### #### #### ####" />
+        </div>
+
+      </div>
+
+        <div className="example">
+          <h3>
+            Custom keys to transform numbers.
+          </h3>
+          <NumberFormat preEvaluate={this.evaluate}/> 
+          <p>k: val * 1000</p> 
+          <p>m: val * 1000000</p> 
+          <p>k: val / 100</p> 
         </div>
 
       </div>
