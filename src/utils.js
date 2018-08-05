@@ -60,7 +60,7 @@ export function limitToScale(numStr: string, scale: number, fixedDecimalScale: b
  */
 export function roundToPrecision(numStr: string, scale: number, fixedDecimalScale: boolean) {
   //if number is empty don't do anything return empty string
-  if (['', '-'].includes(numStr)) return numStr;
+  if (['', '-'].indexOf(numStr) !== -1) return numStr;
 
   const shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
   const {beforeDecimal, afterDecimal, hasNagation} = splitDecimal(numStr);

@@ -29,8 +29,11 @@ const NumberFormat = require('react-number-format');
 
 Typescript
 ```js
+import NumberFormat from 'react-number-format';
+//or
 import { default as NumberFormat } from 'react-number-format';
 ```
+In typescript you also have to enable `"esModuleInterop": true` in your tsconfig.json (https://www.typescriptlang.org/docs/handbook/compiler-options.html).
 
 
 ### Props
