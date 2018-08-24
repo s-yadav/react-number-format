@@ -21,7 +21,7 @@ declare module "react-number-format" {
   }
 
   export interface NumberFormatProps
-    extends React.HTMLAttributes<HTMLInputElement> {
+    extends React.InputHTMLAttributes<HTMLInputElement> {
     thousandSeparator?: boolean | string;
     decimalSeparator?: boolean | string;
     decimalScale?: number;
