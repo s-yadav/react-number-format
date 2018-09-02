@@ -1,7 +1,7 @@
 import React from 'react';
 import NumberFormat from '../../src/number_format';
 
-import {simulateKeyInput, simulateMousUpEvent, simulateFocusEvent, shallow} from '../test_util';
+import {simulateKeyInput, simulateMousUpEvent, simulateFocusEvent, shallow, persist} from '../test_util';
 import {cardExpiry} from '../../custom_formatters/card_expiry';
 
 describe('Test character insertion', () => {
@@ -106,6 +106,7 @@ describe('Test delete/backspace with format pattern', () => {
 
   beforeEach(() => {
     caretPos = 0;
+    persist.calls.reset();
   })
 
   it('caret position should not change if its on starting of input area', () => {
@@ -148,6 +149,7 @@ describe('Test delete/backspace with numeric format', () => {
   
   beforeEach(() => {
     caretPos = 0;
+    persist.calls.reset();
   })
 
   it('should not remove prefix', () => {
@@ -220,6 +222,7 @@ describe('Test delete/backspace with numeric format', () => {
     expect(wrapper.state().value).toEqual('$1,000');
     expect(caretPos).toEqual(1);
     expect(spy).toHaveBeenCalled();
+    expect(persist).toHaveBeenCalledWith('keydown');
   });
 })
 
@@ -281,6 +284,7 @@ describe('Test click / focus on input', () => {
 
   beforeEach(() => {
     caretPos = 0;
+    persist.calls.reset();
   })
 
   it('should always keep caret on typable area when we click on the input', () => {

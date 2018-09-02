@@ -1,5 +1,5 @@
 /*!
- * react-number-format - 3.5.1
+ * react-number-format - 3.5.2
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016,2018 to Sudhanshu Yadav - ignitersworld.com , released under the MIT license.
  */
@@ -952,6 +952,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var _numAsString2 = this.removeFormatting(newValue);
 	          var valueObj = this.getValueObject(newValue, _numAsString2);
 
+	          //persist event before performing async task
+	          e.persist();
 	          this.setState({ value: newValue, numAsString: _numAsString2 }, function () {
 	            _this3.setPatchedCaretPosition(el, newCaretPosition, newValue);
 	            onValueChange(valueObj, e);

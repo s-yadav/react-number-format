@@ -5,10 +5,12 @@ Enzyme.configure({ adapter: new Adapter() });
 
 const noop = function(){};
 
+export const persist = jasmine.createSpy();
+
 export function getCustomEvent(value, selectionStart, selectionEnd) {
   let event =  new Event('custom');
   const el = document.createElement('input');
-  event = Object.assign({}, event, {target: el, persist: noop});
+  event = Object.assign({}, event, {target: el, persist});
   event.target = el;
   el.value = value;
   el.selectionStart = selectionStart;
@@ -49,7 +51,8 @@ export function simulateKeyInput(input, key, selectionStart, selectionEnd, setSe
       defaultPrevented = true;
     },
     key,
-    isUnitTestRun: true
+    isUnitTestRun: true,
+    persist: persist.bind(null, 'keydown')
   }, {
     value: currentValue,
     selectionStart,
@@ -85,7 +88,7 @@ export function simulateKeyInput(input, key, selectionStart, selectionEnd, setSe
     }
 
     const changeEvent = getEvent({
-      persist: noop,
+      persist: persist.bind(null, 'change'),
       key
     }, {
       value: newValue,
@@ -121,7 +124,7 @@ export function simulateFocusEvent(input, selectionStart, setSelectionRange) {
   const currentValue = input.prop('value');
 
   const focusEvent = getEvent({
-    persist: noop,
+    persist: persist.bind(null, 'focus')
   }, {
     value: currentValue,
     selectionStart,
@@ -138,7 +141,7 @@ export function simulateBlurEvent(input) {
   const currentValue = input.prop('value');
 
   const blurEvent = getEvent({
-    persist: noop
+    persist: persist.bind(null, 'blur')
   }, {
     value: currentValue,
   });

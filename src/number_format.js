@@ -740,6 +740,8 @@ class NumberFormat extends React.Component {
         const numAsString = this.removeFormatting(newValue);
         const valueObj = this.getValueObject(newValue, numAsString);
 
+        //persist event before performing async task
+        e.persist();
         this.setState({value: newValue, numAsString}, () => {
           this.setPatchedCaretPosition(el, newCaretPosition, newValue);
           onValueChange(valueObj, e);
