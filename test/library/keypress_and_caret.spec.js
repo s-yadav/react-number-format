@@ -146,7 +146,7 @@ describe('Test delete/backspace with numeric format', () => {
   const setSelectionRange = (pos) => {
     caretPos = pos;
   }
-  
+
   beforeEach(() => {
     caretPos = 0;
     persist.calls.reset();
@@ -333,7 +333,7 @@ describe('Test click / focus on input', () => {
     jasmine.clock().install()
     const wrapper = shallow(<NumberFormat  thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value="Rs. 12,345.50 /sq.feet"/>);
 
-    simulateFocusEvent(wrapper.find('input'), 0, setSelectionRange);
+    simulateFocusEvent(wrapper.find('input'), 0, 0, setSelectionRange);
     jasmine.clock().tick(1)
     expect(caretPos).toEqual(4)
     jasmine.clock().uninstall()
@@ -344,7 +344,7 @@ describe('Test click / focus on input', () => {
     const format = '+1 (###) ### # ## US';
     const wrapper = shallow(<NumberFormat format="+1 (###) ### # ## US" allowEmptyFormatting={true} value="" mask="_"/>);
 
-    simulateFocusEvent(wrapper.find('input'), 1, setSelectionRange);
+    simulateFocusEvent(wrapper.find('input'), 1, 1, setSelectionRange);
     jasmine.clock().tick(1)
     expect(caretPos).toEqual(4)
     jasmine.clock().uninstall()
@@ -357,10 +357,20 @@ describe('Test click / focus on input', () => {
     // Note: init caretPos to `6`. Focus to `6`. In case of bug, selectionStart is `0` and the caret will move to `4`.
     //   otherwise (correct behaviour) the value will not change, and stay `6`
     caretPos = 6
-    simulateFocusEvent(wrapper.find('input'), 6, setSelectionRange);
+    simulateFocusEvent(wrapper.find('input'), 6, 6, setSelectionRange);
     jasmine.clock().tick(1)
     expect(caretPos).toEqual(6)
     jasmine.clock().uninstall()
+  });
+
+  it('should not reset caret position on focus when full value is selected', () => {
+    jasmine.clock().install();
+    const value = "Rs. 12,345.50 /sq.feet";
+    const wrapper = shallow(<NumberFormat  thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value={value}/>);
+
+    simulateFocusEvent(wrapper.find('input'), 0, value.length, setSelectionRange);
+    jasmine.clock().tick(1);
+    expect(caretPos).toEqual(0);
   });
 
 });

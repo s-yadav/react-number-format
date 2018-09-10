@@ -118,8 +118,10 @@ export function simulateMousUpEvent(input, selectionStart, setSelectionRange) {
 
 }
 
-export function simulateFocusEvent(input, selectionStart, setSelectionRange) {
-  const selectionEnd = selectionStart;
+export function simulateFocusEvent(input, selectionStart, selectionEnd, setSelectionRange) {
+  if (selectionEnd === undefined) {
+    selectionEnd = selectionStart;
+  }
 
   const currentValue = input.prop('value');
 
