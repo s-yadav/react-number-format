@@ -52,7 +52,7 @@ declare module "react-number-format" {
     type?: "text" | "tel";
     isAllowed?: (values: NumberFormatValues) => boolean;
     renderText?: (formattedValue: string) => React.ReactNode;
-    getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any> | string;
+    getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any>;
   }
 
   class NumberFormat extends React.Component<NumberFormatProps, any> {}
