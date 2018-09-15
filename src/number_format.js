@@ -731,7 +731,7 @@ class NumberFormat extends React.Component {
     } else if (key === 'Delete' && !numRegex.test(value[expectedCaretPosition]) && !negativeRegex.test(value[expectedCaretPosition])) {
       while (!numRegex.test(value[newCaretPosition]) && newCaretPosition < rightBound) newCaretPosition++;
     } else if (key === 'Backspace' && !numRegex.test(value[expectedCaretPosition])) {
-      /* NOTE: This is special case when backspace is pressed on a 
+      /* NOTE: This is special case when backspace is pressed on a
       negative value while the cursor position is after prefix. We can't handle it on onChange because
       we will not have any information of keyPress
       */
@@ -773,8 +773,8 @@ class NumberFormat extends React.Component {
   onMouseUp(e: SyntheticMouseInputEvent) {
     const el = e.target;
 
-    /** 
-     * NOTE: we have to give default value for value as in case when custom input is provided 
+    /**
+     * NOTE: we have to give default value for value as in case when custom input is provided
      * value can come as undefined when nothing is provided on value prop.
     */
     const {selectionStart, selectionEnd, value = ''} = el;
@@ -795,10 +795,10 @@ class NumberFormat extends React.Component {
     e.persist()
     setTimeout(() => {
       const el = e.target;
-      const {selectionStart, value = ''} = el;
+      const {selectionStart, selectionEnd, value = ''} = el;
 
       const caretPosition = this.correctCaretPosition(value, selectionStart);
-      if (caretPosition !== selectionStart) {
+      if (caretPosition !== selectionStart && !(selectionStart === 0 && selectionEnd === value.length)) {
         this.setPatchedCaretPosition(el, caretPosition, value);
       }
 
