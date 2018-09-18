@@ -345,7 +345,7 @@ function charIsNumber(char) {
   return !!(char || '').match(/\d/);
 }
 function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+  return str.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
 } //spilt a float number into different parts beforeDecimal, afterDecimal, and negation
 
 function splitDecimal(numStr) {
@@ -685,7 +685,7 @@ function (_React$Component) {
           thousandSeparator = _this$getSeparators3.thousandSeparator;
 
       if (decimalSeparator === thousandSeparator) {
-        throw new Error("\n          Decimal separator can't be same as thousand separator.\n\n          thousandSeparator: ".concat(thousandSeparator, " (thousandSeparator = {true} is same as thousandSeparator = \",\")\n          decimalSeparator: ").concat(decimalSeparator, " (default value for decimalSeparator is .)\n       "));
+        throw new Error("\n          Decimal separator can't be same as thousand separator.\n          thousandSeparator: ".concat(thousandSeparator, " (thousandSeparator = {true} is same as thousandSeparator = \",\")\n          decimalSeparator: ").concat(decimalSeparator, " (default value for decimalSeparator is .)\n       "));
       } //validate mask
 
 

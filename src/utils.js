@@ -9,7 +9,7 @@ export function charIsNumber(char?: string) {
 }
 
 export function escapeRegExp(str: string) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+  return str.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
 }
 
 //spilt a float number into different parts beforeDecimal, afterDecimal, and negation

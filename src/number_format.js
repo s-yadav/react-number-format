@@ -220,10 +220,9 @@ class NumberFormat extends React.Component {
     //validate decimalSeparator and thousandSeparator
     const {decimalSeparator, thousandSeparator} = this.getSeparators();
 
-
     if (decimalSeparator === thousandSeparator) {
       throw new Error(`
-          Decimal separator can\'t be same as thousand separator.\n
+          Decimal separator can't be same as thousand separator.
           thousandSeparator: ${thousandSeparator} (thousandSeparator = {true} is same as thousandSeparator = ",")
           decimalSeparator: ${decimalSeparator} (default value for decimalSeparator is .)
        `);
