@@ -1,0 +1,24 @@
+#ignore temprory files
+.cache
+*.log
+*.swp
+.DS_Store
+
+#ignore gitignore
+.gitignore
+
+#ignore build files
+rollup.config.js
+webpack.config.js
+.babelrc
+.eslintrc
+.travis.yml
+karma.conf.js
+.flowconfig
+
+#ignore development files
+node_modules/
+src/
+test/
+tmp/
+flow-typed/

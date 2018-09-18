@@ -2,3 +2,5 @@ node_modules/**/*
 *.swp
 .DS_Store
 *.log
+.cache
+tmp

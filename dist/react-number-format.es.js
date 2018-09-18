@@ -1,64 +1,515 @@
-"use strict";
+/**
+ * react-number-format - 3.6.0
+ * Author : Sudhanshu Yadav
+ * Copyright (c) 2016, 2018 to Sudhanshu Yadav, released under the MIT license.
+ * https://github.com/s-yadav/react-number-format
+ */
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+import React from 'react';
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  return Constructor;
+}
+
+function _extends() {
+  _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) _setPrototypeOf(subClass, superClass);
+}
+
+function _getPrototypeOf(o) {
+  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+    return o.__proto__ || Object.getPrototypeOf(o);
+  };
+  return _getPrototypeOf(o);
+}
+
+function _setPrototypeOf(o, p) {
+  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  };
+
+  return _setPrototypeOf(o, p);
+}
+
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return self;
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (call && (typeof call === "object" || typeof call === "function")) {
+    return call;
+  }
+
+  return _assertThisInitialized(self);
+}
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * 
+ */
+
+function makeEmptyFunction(arg) {
+  return function () {
+    return arg;
+  };
+}
+
+/**
+ * This function accepts and discards inputs; it has no side effects. This is
+ * primarily useful idiomatically for overridable function endpoints which
+ * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
+ */
+var emptyFunction = function emptyFunction() {};
+
+emptyFunction.thatReturns = makeEmptyFunction;
+emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
+emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
+emptyFunction.thatReturnsNull = makeEmptyFunction(null);
+emptyFunction.thatReturnsThis = function () {
+  return this;
+};
+emptyFunction.thatReturnsArgument = function (arg) {
+  return arg;
+};
+
+var emptyFunction_1 = emptyFunction;
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+/**
+ * Use invariant() to assert state which your program assumes to be true.
+ *
+ * Provide sprintf-style format (only %s is supported) and arguments
+ * to provide information about what broke and what you were
+ * expecting.
+ *
+ * The invariant message will be stripped in production, but the invariant
+ * will remain to ensure logic does not differ in production.
+ */
+
+var validateFormat = function validateFormat(format) {};
+
+function invariant(condition, format, a, b, c, d, e, f) {
+  validateFormat(format);
+
+  if (!condition) {
+    var error;
+    if (format === undefined) {
+      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
+    } else {
+      var args = [a, b, c, d, e, f];
+      var argIndex = 0;
+      error = new Error(format.replace(/%s/g, function () {
+        return args[argIndex++];
+      }));
+      error.name = 'Invariant Violation';
+    }
+
+    error.framesToPop = 1; // we don't care about invariant's own frame
+    throw error;
+  }
+}
+
+var invariant_1 = invariant;
+
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+/* eslint-disable no-unused-vars */
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+function shouldUseNative() {
+	try {
+		if (!Object.assign) {
+			return false;
+		}
+
+		// Detect buggy property enumeration order in older V8 versions.
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
+}
+
+var objectAssign = shouldUseNative() ? Object.assign : function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
+
+var ReactPropTypesSecret_1 = ReactPropTypesSecret;
+
+var factoryWithThrowingShims = function() {
+  function shim(props, propName, componentName, location, propFullName, secret) {
+    if (secret === ReactPropTypesSecret_1) {
+      // It is still safe when called from React.
+      return;
+    }
+    invariant_1(
+      false,
+      'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
+      'Use PropTypes.checkPropTypes() to call them. ' +
+      'Read more at http://fb.me/use-check-prop-types'
+    );
+  }  shim.isRequired = shim;
+  function getShim() {
+    return shim;
+  }  // Important!
+  // Keep this list in sync with production version in `./factoryWithTypeCheckers.js`.
+  var ReactPropTypes = {
+    array: shim,
+    bool: shim,
+    func: shim,
+    number: shim,
+    object: shim,
+    string: shim,
+    symbol: shim,
+
+    any: shim,
+    arrayOf: getShim,
+    element: shim,
+    instanceOf: getShim,
+    node: shim,
+    objectOf: getShim,
+    oneOf: getShim,
+    oneOfType: getShim,
+    shape: getShim,
+    exact: getShim
+  };
+
+  ReactPropTypes.checkPropTypes = emptyFunction_1;
+  ReactPropTypes.PropTypes = ReactPropTypes;
+
+  return ReactPropTypes;
+};
+
+var propTypes = createCommonjsModule(function (module) {
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+{
+  // By explicitly using `prop-types` you are opting into new production behavior.
+  // http://fb.me/prop-types-in-prod
+  module.exports = factoryWithThrowingShims();
+}
 });
-exports.default = void 0;
 
-var _propTypes = _interopRequireDefault(require("prop-types"));
+// basic noop function
+function noop() {}
+function returnTrue() {
+  return true;
+}
+function charIsNumber(char) {
+  return !!(char || '').match(/\d/);
+}
+function escapeRegExp(str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+} //spilt a float number into different parts beforeDecimal, afterDecimal, and negation
 
-var _react = _interopRequireDefault(require("react"));
+function splitDecimal(numStr) {
+  var allowNegative = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+  var hasNagation = numStr[0] === '-';
+  var addNegation = hasNagation && allowNegative;
+  numStr = numStr.replace('-', '');
+  var parts = numStr.split('.');
+  var beforeDecimal = parts[0];
+  var afterDecimal = parts[1] || '';
+  return {
+    beforeDecimal: beforeDecimal,
+    afterDecimal: afterDecimal,
+    hasNagation: hasNagation,
+    addNegation: addNegation
+  };
+}
+function fixLeadingZero(numStr) {
+  if (!numStr) return numStr;
+  var isNegative = numStr[0] === '-';
+  if (isNegative) numStr = numStr.substring(1, numStr.length);
+  var parts = numStr.split('.');
+  var beforeDecimal = parts[0].replace(/^0+/, '') || '0';
+  var afterDecimal = parts[1] || '';
+  return "".concat(isNegative ? '-' : '').concat(beforeDecimal).concat(afterDecimal ? ".".concat(afterDecimal) : '');
+}
+/**
+ * limit decimal numbers to given scale
+ * Not used .fixedTo because that will break with big numbers
+ */
 
-var _utils = require("./utils");
+function limitToScale(numStr, scale, fixedDecimalScale) {
+  var str = '';
+  var filler = fixedDecimalScale ? '0' : '';
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  for (var i = 0; i <= scale - 1; i++) {
+    str += numStr[i] || filler;
+  }
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+  return str;
+}
+/**
+ * This method is required to round prop value to given scale.
+ * Not used .round or .fixedTo because that will break with big numbers
+ */
 
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+function roundToPrecision(numStr, scale, fixedDecimalScale) {
+  //if number is empty don't do anything return empty string
+  if (['', '-'].indexOf(numStr) !== -1) return numStr;
+  var shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+  var _splitDecimal = splitDecimal(numStr),
+      beforeDecimal = _splitDecimal.beforeDecimal,
+      afterDecimal = _splitDecimal.afterDecimal,
+      hasNagation = _splitDecimal.hasNagation;
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+  var roundedDecimalParts = parseFloat("0.".concat(afterDecimal || '0')).toFixed(scale).split('.');
+  var intPart = beforeDecimal.split('').reverse().reduce(function (roundedStr, current, idx) {
+    if (roundedStr.length > idx) {
+      return (Number(roundedStr[0]) + Number(current)).toString() + roundedStr.substring(1, roundedStr.length);
+    }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+    return current + roundedStr;
+  }, roundedDecimalParts[0]);
+  var decimalPart = limitToScale(roundedDecimalParts[1] || '', Math.min(scale, afterDecimal.length), fixedDecimalScale);
+  var negation = hasNagation ? '-' : '';
+  var decimalSeparator = shoudHaveDecimalSeparator ? '.' : '';
+  return "".concat(negation).concat(intPart).concat(decimalSeparator).concat(decimalPart);
+}
+function omit(obj, keyMaps) {
+  var filteredObj = {};
+  Object.keys(obj).forEach(function (key) {
+    if (!keyMaps[key]) filteredObj[key] = obj[key];
+  });
+  return filteredObj;
+}
+/** set the caret positon in an input field **/
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+function setCaretPosition(el, caretPos) {
+  el.value = el.value; // ^ this is used to not only get "focus", but
+  // to make sure we don't have it everything -selected-
+  // (it causes an issue in chrome, and having it doesn't hurt any other browser)
 
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+  if (el !== null) {
+    if (el.createTextRange) {
+      var range = el.createTextRange();
+      range.move('character', caretPos);
+      range.select();
+      return true;
+    } // (el.selectionStart === 0 added for Firefox bug)
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+    if (el.selectionStart || el.selectionStart === 0) {
+      el.focus();
+      el.setSelectionRange(caretPos, caretPos);
+      return true;
+    } // fail city, fortunately this never happens (as far as I've tested) :)
 
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-var propTypes = {
-  thousandSeparator: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.oneOf([true])]),
-  decimalSeparator: _propTypes.default.string,
-  decimalScale: _propTypes.default.number,
-  fixedDecimalScale: _propTypes.default.bool,
-  displayType: _propTypes.default.oneOf(['input', 'text']),
-  prefix: _propTypes.default.string,
-  suffix: _propTypes.default.string,
-  format: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.func]),
-  removeFormatting: _propTypes.default.func,
-  mask: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.arrayOf(_propTypes.default.string)]),
-  value: _propTypes.default.oneOfType([_propTypes.default.number, _propTypes.default.string]),
-  isNumericString: _propTypes.default.bool,
-  customInput: _propTypes.default.func,
-  allowNegative: _propTypes.default.bool,
-  allowEmptyFormatting: _propTypes.default.bool,
-  onValueChange: _propTypes.default.func,
-  onKeyDown: _propTypes.default.func,
-  onMouseUp: _propTypes.default.func,
-  onChange: _propTypes.default.func,
-  onFocus: _propTypes.default.func,
-  onBlur: _propTypes.default.func,
-  type: _propTypes.default.oneOf(['text', 'tel']),
-  isAllowed: _propTypes.default.func,
-  renderText: _propTypes.default.func,
-  getInputRef: _propTypes.default.func
+    el.focus();
+    return false;
+  }
+}
+/**
+  Given previous value and newValue it returns the index
+  start - end to which values have changed.
+  This function makes assumption about only consecutive
+  characters are changed which is correct assumption for caret input.
+*/
+
+function findChangedIndex(prevValue, newValue) {
+  var i = 0,
+      j = 0;
+  var prevLength = prevValue.length;
+  var newLength = newValue.length;
+
+  while (prevValue[i] === newValue[i] && i < prevLength) {
+    i++;
+  } //check what has been changed from last
+
+
+  while (prevValue[prevLength - 1 - j] === newValue[newLength - 1 - j] && newLength - j > i && prevLength - j > i) {
+    j++;
+  }
+
+  return {
+    start: i,
+    end: prevLength - j
+  };
+}
+/*
+  Returns a number whose value is limited to the given range
+*/
+
+function clamp(num, min, max) {
+  return Math.min(Math.max(num, min), max);
+}
+
+var propTypes$1 = {
+  thousandSeparator: propTypes.oneOfType([propTypes.string, propTypes.oneOf([true])]),
+  decimalSeparator: propTypes.string,
+  decimalScale: propTypes.number,
+  fixedDecimalScale: propTypes.bool,
+  displayType: propTypes.oneOf(['input', 'text']),
+  prefix: propTypes.string,
+  suffix: propTypes.string,
+  format: propTypes.oneOfType([propTypes.string, propTypes.func]),
+  removeFormatting: propTypes.func,
+  mask: propTypes.oneOfType([propTypes.string, propTypes.arrayOf(propTypes.string)]),
+  value: propTypes.oneOfType([propTypes.number, propTypes.string]),
+  isNumericString: propTypes.bool,
+  customInput: propTypes.func,
+  allowNegative: propTypes.bool,
+  allowEmptyFormatting: propTypes.bool,
+  onValueChange: propTypes.func,
+  onKeyDown: propTypes.func,
+  onMouseUp: propTypes.func,
+  onChange: propTypes.func,
+  onFocus: propTypes.func,
+  onBlur: propTypes.func,
+  type: propTypes.oneOf(['text', 'tel']),
+  isAllowed: propTypes.func,
+  renderText: propTypes.func,
+  getInputRef: propTypes.func
 };
 var defaultProps = {
   displayType: 'input',
@@ -70,14 +521,14 @@ var defaultProps = {
   allowEmptyFormatting: false,
   isNumericString: false,
   type: 'text',
-  onValueChange: _utils.noop,
-  onChange: _utils.noop,
-  onKeyDown: _utils.noop,
-  onMouseUp: _utils.noop,
-  onFocus: _utils.noop,
-  onBlur: _utils.noop,
-  isAllowed: _utils.returnTrue,
-  getInputRef: _utils.noop
+  onValueChange: noop,
+  onChange: noop,
+  onKeyDown: noop,
+  onMouseUp: noop,
+  onFocus: noop,
+  onBlur: noop,
+  isAllowed: returnTrue,
+  getInputRef: noop
 };
 
 var NumberFormat =
@@ -167,7 +618,7 @@ function (_React$Component) {
       var firstDecimalIndex = num.indexOf('.');
 
       if (firstDecimalIndex !== -1) {
-        num = "".concat(num.substring(0, firstDecimalIndex), ".").concat(num.substring(firstDecimalIndex + 1, num.length).replace(new RegExp((0, _utils.escapeRegExp)(decimalSeparator), 'g'), ''));
+        num = "".concat(num.substring(0, firstDecimalIndex), ".").concat(num.substring(firstDecimalIndex + 1, num.length).replace(new RegExp(escapeRegExp(decimalSeparator), 'g'), ''));
       } //add negation back
 
 
@@ -185,7 +636,7 @@ function (_React$Component) {
       var _this$getSeparators2 = this.getSeparators(),
           decimalSeparator = _this$getSeparators2.decimalSeparator;
 
-      return new RegExp('\\d' + (decimalSeparator && decimalScale !== 0 && !ignoreDecimalSeparator && !format ? '|' + (0, _utils.escapeRegExp)(decimalSeparator) : ''), g ? 'g' : undefined);
+      return new RegExp('\\d' + (decimalSeparator && decimalScale !== 0 && !ignoreDecimalSeparator && !format ? '|' + escapeRegExp(decimalSeparator) : ''), g ? 'g' : undefined);
     }
   }, {
     key: "getSeparators",
@@ -256,9 +707,9 @@ function (_React$Component) {
       /* setting caret position within timeout of 0ms is required for mobile chrome,
       otherwise browser resets the caret position after we set it
       We are also setting it without timeout so that in normal browser we don't see the flickering */
-      (0, _utils.setCaretPosition)(el, caretPos);
+      setCaretPosition(el, caretPos);
       setTimeout(function () {
-        if (el.value === currentValue) (0, _utils.setCaretPosition)(el, caretPos);
+        if (el.value === currentValue) setCaretPosition(el, caretPos);
       }, 0);
     }
     /* This keeps the caret within typing area so people can't type in between prefix or suffix */
@@ -273,11 +724,11 @@ function (_React$Component) {
 
       if (value === '') return 0; //caret position should be between 0 and value length
 
-      caretPos = (0, _utils.clamp)(caretPos, 0, value.length); //in case of format as number limit between prefix and suffix
+      caretPos = clamp(caretPos, 0, value.length); //in case of format as number limit between prefix and suffix
 
       if (!format) {
         var hasNegation = value[0] === '-';
-        return (0, _utils.clamp)(caretPos, prefix.length + (hasNegation ? 1 : 0), value.length - suffix.length);
+        return clamp(caretPos, prefix.length + (hasNegation ? 1 : 0), value.length - suffix.length);
       } //in case if custom format method don't do anything
 
 
@@ -285,28 +736,28 @@ function (_React$Component) {
       /* in case format is string find the closest # position from the caret position */
       //in case the caretPos have input value on it don't do anything
 
-      if (format[caretPos] === '#' && (0, _utils.charIsNumber)(value[caretPos])) return caretPos; //if caretPos is just after input value don't do anything
+      if (format[caretPos] === '#' && charIsNumber(value[caretPos])) return caretPos; //if caretPos is just after input value don't do anything
 
-      if (format[caretPos - 1] === '#' && (0, _utils.charIsNumber)(value[caretPos - 1])) return caretPos; //find the nearest caret position
+      if (format[caretPos - 1] === '#' && charIsNumber(value[caretPos - 1])) return caretPos; //find the nearest caret position
 
       var firstHashPosition = format.indexOf('#');
       var lastHashPosition = format.lastIndexOf('#'); //limit the cursor between the first # position and the last # position
 
-      caretPos = (0, _utils.clamp)(caretPos, firstHashPosition, lastHashPosition + 1);
+      caretPos = clamp(caretPos, firstHashPosition, lastHashPosition + 1);
       var nextPos = format.substring(caretPos, format.length).indexOf('#');
       var caretLeftBound = caretPos;
       var caretRightBound = caretPos + (nextPos === -1 ? 0 : nextPos); //get the position where the last number is present
 
-      while (caretLeftBound > firstHashPosition && (format[caretLeftBound] !== '#' || !(0, _utils.charIsNumber)(value[caretLeftBound]))) {
+      while (caretLeftBound > firstHashPosition && (format[caretLeftBound] !== '#' || !charIsNumber(value[caretLeftBound]))) {
         caretLeftBound -= 1;
       }
 
-      var goToLeft = !(0, _utils.charIsNumber)(value[caretRightBound]) || direction === 'left' && caretPos !== firstHashPosition || caretPos - caretLeftBound < caretRightBound - caretPos;
+      var goToLeft = !charIsNumber(value[caretRightBound]) || direction === 'left' && caretPos !== firstHashPosition || caretPos - caretLeftBound < caretRightBound - caretPos;
 
       if (goToLeft) {
         //check if number should be taken after the bound or after it
         //if number preceding a valid number keep it after
-        return (0, _utils.charIsNumber)(value[caretLeftBound]) ? caretLeftBound + 1 : caretLeftBound;
+        return charIsNumber(value[caretLeftBound]) ? caretLeftBound + 1 : caretLeftBound;
       }
 
       return caretRightBound;
@@ -474,14 +925,14 @@ function (_React$Component) {
 
       var hasDecimalSeparator = numStr.indexOf('.') !== -1 || decimalScale && fixedDecimalScale;
 
-      var _splitDecimal = (0, _utils.splitDecimal)(numStr, allowNegative),
+      var _splitDecimal = splitDecimal(numStr, allowNegative),
           beforeDecimal = _splitDecimal.beforeDecimal,
           afterDecimal = _splitDecimal.afterDecimal,
           addNegation = _splitDecimal.addNegation; // eslint-disable-line prefer-const
       //apply decimal precision if its defined
 
 
-      if (decimalScale !== undefined) afterDecimal = (0, _utils.limitToScale)(afterDecimal, decimalScale, fixedDecimalScale);
+      if (decimalScale !== undefined) afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
 
       if (thousandSeparator) {
         beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
@@ -547,7 +998,7 @@ function (_React$Component) {
 
 
       if (isNumericString && !format && typeof decimalScale === 'number') {
-        value = (0, _utils.roundToPrecision)(value, decimalScale, fixedDecimalScale);
+        value = roundToPrecision(value, decimalScale, fixedDecimalScale);
       }
 
       var formattedValue = isNumericString ? this.formatNumString(value) : this.formatInput(value);
@@ -637,7 +1088,7 @@ function (_React$Component) {
           selectionStart = _this$selectionBefore.selectionStart,
           selectionEnd = _this$selectionBefore.selectionEnd;
 
-      var _findChangedIndex = (0, _utils.findChangedIndex)(lastValue, value),
+      var _findChangedIndex = findChangedIndex(lastValue, value),
           start = _findChangedIndex.start,
           end = _findChangedIndex.end;
       /* don't do anyhting if something got added,
@@ -660,7 +1111,7 @@ function (_React$Component) {
       if (!format) {
         var numericString = this.removeFormatting(value);
 
-        var _splitDecimal2 = (0, _utils.splitDecimal)(numericString, allowNegative),
+        var _splitDecimal2 = splitDecimal(numericString, allowNegative),
             beforeDecimal = _splitDecimal2.beforeDecimal,
             afterDecimal = _splitDecimal2.afterDecimal,
             addNegation = _splitDecimal2.addNegation; // eslint-disable-line prefer-const
@@ -730,7 +1181,7 @@ function (_React$Component) {
       var lastValue = state.value;
 
       if (!format) {
-        numAsString = (0, _utils.fixLeadingZero)(numAsString);
+        numAsString = fixLeadingZero(numAsString);
         var formattedValue = this.formatNumString(numAsString); //change the state
 
         if (formattedValue !== lastValue) {
@@ -909,7 +1360,7 @@ function (_React$Component) {
           renderText = _this$props12.renderText,
           getInputRef = _this$props12.getInputRef;
       var value = this.state.value;
-      var otherProps = (0, _utils.omit)(this.props, propTypes);
+      var otherProps = omit(this.props, propTypes$1);
       var inputProps = Object.assign({}, otherProps, {
         type: type,
         value: value,
@@ -921,25 +1372,24 @@ function (_React$Component) {
       });
 
       if (displayType === 'text') {
-        return renderText ? renderText(value) || null : _react.default.createElement("span", _extends({}, otherProps, {
+        return renderText ? renderText(value) || null : React.createElement("span", _extends({}, otherProps, {
           ref: getInputRef
         }), value);
       } else if (customInput) {
         var CustomInput = customInput;
-        return _react.default.createElement(CustomInput, inputProps);
+        return React.createElement(CustomInput, inputProps);
       }
 
-      return _react.default.createElement("input", _extends({}, inputProps, {
+      return React.createElement("input", _extends({}, inputProps, {
         ref: getInputRef
       }));
     }
   }]);
 
   return NumberFormat;
-}(_react.default.Component);
+}(React.Component);
 
-NumberFormat.propTypes = propTypes;
+NumberFormat.propTypes = propTypes$1;
 NumberFormat.defaultProps = defaultProps;
-var _default = NumberFormat;
-exports.default = _default;
-module.exports = exports.default;
+
+export default NumberFormat;
