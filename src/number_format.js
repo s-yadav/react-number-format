@@ -797,6 +797,8 @@ class NumberFormat extends React.Component {
       const {selectionStart, selectionEnd, value = ''} = el;
 
       const caretPosition = this.correctCaretPosition(value, selectionStart);
+      
+      //setPatchedCaretPosition only when everything is not selected on focus (while tabbing into the field)
       if (caretPosition !== selectionStart && !(selectionStart === 0 && selectionEnd === value.length)) {
         this.setPatchedCaretPosition(el, caretPosition, value);
       }
