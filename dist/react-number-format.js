@@ -1088,7 +1088,9 @@
         var _this$props10 = this.props,
             format = _this$props10.format,
             decimalSeparator = _this$props10.decimalSeparator,
-            allowNegative = _this$props10.allowNegative;
+            allowNegative = _this$props10.allowNegative,
+            prefix = _this$props10.prefix,
+            suffix = _this$props10.suffix;
         var lastNumStr = this.state.numAsString || '';
         var _this$selectionBefore = this.selectionBeforeInput,
             selectionStart = _this$selectionBefore.selectionStart,
@@ -1103,7 +1105,10 @@
         */
 
 
-        if (value.length > lastValue.length || !value.length || start === end || start === 0 && end === lastValue.length || selectionStart === 0 && selectionEnd === lastValue.length) {
+        var leftBound = !!format ? 0 : prefix.length;
+        var rightBound = lastValue.length - (!!format ? 0 : suffix.length);
+
+        if (value.length > lastValue.length || !value.length || start === end || start === 0 && end === lastValue.length || selectionStart === 0 && selectionEnd === lastValue.length || start === leftBound && end === rightBound || selectionStart === leftBound && selectionEnd === rightBound) {
           return value;
         } //if format got deleted reset the value to last value
 
@@ -1347,7 +1352,8 @@
               _el$value3 = el.value,
               value = _el$value3 === void 0 ? '' : _el$value3;
 
-          var caretPosition = _this4.correctCaretPosition(value, selectionStart);
+          var caretPosition = _this4.correctCaretPosition(value, selectionStart); //setPatchedCaretPosition only when everything is not selected on focus (while tabbing into the field)
+
 
           if (caretPosition !== selectionStart && !(selectionStart === 0 && selectionEnd === value.length)) {
             _this4.setPatchedCaretPosition(el, caretPosition, value);

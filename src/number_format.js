@@ -582,7 +582,7 @@ class NumberFormat extends React.Component {
    * It will also work as fallback if android chome keyDown handler does not work
    **/
   correctInputValue(caretPos: number, lastValue: string, value: string) {
-    const {format, decimalSeparator, allowNegative} = this.props;
+    const {format, decimalSeparator, allowNegative, prefix, suffix} = this.props;
     const lastNumStr = this.state.numAsString || '';
     const {selectionStart, selectionEnd} = this.selectionBeforeInput;
     const {start, end} = findChangedIndex(lastValue, value);
@@ -591,12 +591,16 @@ class NumberFormat extends React.Component {
      or if value is empty string (when whole input is cleared)
      or whole input is replace with a number
     */
+    const leftBound = !!format ? 0 : prefix.length;
+    const rightBound = lastValue.length - (!!format ? 0 : suffix.length);
     if (
       value.length > lastValue.length
       || !value.length ||
       start === end ||
       (start === 0 && end === lastValue.length) ||
-      (selectionStart === 0 && selectionEnd === lastValue.length)
+      (selectionStart === 0 && selectionEnd === lastValue.length) ||
+      (start === leftBound && end === rightBound) ||
+      (selectionStart === leftBound && selectionEnd === rightBound)
     ) {
       return value;
     }
