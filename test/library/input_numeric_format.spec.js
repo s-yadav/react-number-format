@@ -291,6 +291,23 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('$1,234,000');
   });
 
+  it(`should allow replacing all digits (without prefix and/or suffix) with input
+    digit(s) when decimalScale and fixedDecimalScale is defined. Issue #159`, () => {
+    const wrapper = shallow(<NumberFormat prefix="$" thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} value="$1,234.00"/>);
+    simulateKeyInput(wrapper.find('input'), '56', 1, 9);
+    expect(wrapper.state().value).toEqual('$56.00');
+
+    wrapper.setProps({prefix: '', suffix: '%', value: '98.76%'});
+    wrapper.update();
+    simulateKeyInput(wrapper.find('input'), '1', 0, 5);
+    expect(wrapper.state().value).toEqual('1.00%');
+
+    wrapper.setProps({prefix: '$', value: '$23.00%'});
+    wrapper.update();
+    simulateKeyInput(wrapper.find('input'), '15', 1, 6);
+    expect(wrapper.state().value).toEqual('$15.00%');
+  });
+
   it('should not round by default', () => {
     const wrapper = shallow(<NumberFormat/>);
     const input = wrapper.find('input');
