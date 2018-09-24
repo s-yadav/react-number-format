@@ -591,12 +591,16 @@ class NumberFormat extends React.Component {
      or if value is empty string (when whole input is cleared)
      or whole input is replace with a number
     */
+    const leftBound = !!format ? 0 : prefix.length;
+    const rightBound = lastValue.length - (!!format ? 0 : suffix.length);
     if (
       value.length > lastValue.length
       || !value.length ||
       start === end ||
-      (start <= prefix.length && end >= lastValue.length - suffix.length) ||
-      (selectionStart <= prefix.length && selectionEnd >= lastValue.length - suffix.length)
+      (start === 0 && end === lastValue.length) ||
+      (selectionStart === 0 && selectionEnd === lastValue.length) ||
+      (start === leftBound && end === rightBound) ||
+      (selectionStart === leftBound && selectionEnd === rightBound)
     ) {
       return value;
     }
