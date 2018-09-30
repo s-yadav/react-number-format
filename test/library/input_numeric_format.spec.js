@@ -425,7 +425,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
 
   it('should should allow ctrl + a -> decimalSeparator', () => {
     const wrapper = shallow(<NumberFormat decimalSeparator={'.'} prefix={'$'} value="$34.35"/> );
-    wrapper.find('input').simulate('change', getCustomEvent('.', 1, 1));
+    simulateKeyInput(wrapper.find('input'), '.', 0, 6);
     expect(wrapper.state().value).toEqual('$.');
   });
 

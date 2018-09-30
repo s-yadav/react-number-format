@@ -597,9 +597,7 @@ class NumberFormat extends React.Component {
       value.length > lastValue.length
       || !value.length ||
       start === end ||
-      (start === 0 && end === lastValue.length) ||
       (selectionStart === 0 && selectionEnd === lastValue.length) ||
-      (start === leftBound && end === rightBound) ||
       (selectionStart === leftBound && selectionEnd === rightBound)
     ) {
       return value;
