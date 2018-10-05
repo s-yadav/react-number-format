@@ -1,5 +1,5 @@
 /**
- * react-number-format - 3.6.1
+ * react-number-format - 3.6.2
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016, 2018 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
@@ -1367,7 +1367,8 @@ function (_React$Component) {
           getInputRef = _this$props12.getInputRef;
       var value = this.state.value;
       var otherProps = omit(this.props, propTypes$1);
-      var inputProps = Object.assign({}, otherProps, {
+
+      var inputProps = _extends({}, otherProps, {
         type: type,
         value: value,
         onChange: this.onChange,

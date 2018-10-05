@@ -10,7 +10,7 @@ export const persist = jasmine.createSpy();
 export function getCustomEvent(value, selectionStart, selectionEnd) {
   let event =  new Event('custom');
   const el = document.createElement('input');
-  event = Object.assign({}, event, {target: el, persist});
+  event = {...event, target: el, persist};
   event.target = el;
   el.value = value;
   el.selectionStart = selectionStart;
@@ -26,7 +26,7 @@ function getEvent(eventProps, targetProps) {
     el[key] = targetProps[key];
   })
 
-  event = Object.assign({}, event, eventProps, {target: el});
+  event = {...event, ...eventProps, target: el};
 
   return event;
 }
