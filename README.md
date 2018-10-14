@@ -55,7 +55,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | removeFormatting | (formattedValue) => numericString | none | If you are providing custom format method and it add numbers as format you will need to add custom removeFormatting logic |
 | mask | String (ex : _) | `' '` | If mask defined, component will show non entered placed with masked value. |
 | customInput | Component Reference | input | This allow supporting custom inputs with number format. |
-| onValueChange | (values, e) => {} | none | onValueChange handler accepts [values object](#values-object) and event object (change / blur) as second parameter |
+| onValueChange | (values) => {} | none | onValueChange handler accepts [values object](#values-object) |
 | isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not |
 | renderText | (formattedValue) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. |
 | getInputRef | (elm) => void | null | Method to get reference of input or span based on displayType prop. See [Getting reference](#getting-reference)

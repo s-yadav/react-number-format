@@ -12,6 +12,18 @@ export function escapeRegExp(str: string) {
   return str.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
 }
 
+export function getThousandsGroupRegex(thousandsGroupStyle: string) {
+  switch (thousandsGroupStyle) {
+    case 'lakh':
+      return /(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/g;
+    case 'wan':
+      return /(\d)(?=(\d{4})+(?!\d))/g;
+    case 'thousand':
+    default:
+      return /(\d)(?=(\d{3})+(?!\d))/g;
+  }
+}
+
 //spilt a float number into different parts beforeDecimal, afterDecimal, and negation
 export function splitDecimal(numStr: string, allowNegative: boolean = true) {
   const hasNagation = numStr[0] === '-';

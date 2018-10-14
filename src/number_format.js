@@ -14,13 +14,15 @@ import {
   setCaretPosition,
   splitDecimal,
   findChangedIndex,
-  clamp
+  clamp,
+  getThousandsGroupRegex,
 } from './utils';
 
 
 const propTypes = {
   thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([true])]),
   decimalSeparator: PropTypes.string,
+  thousandsGroupStyle: PropTypes.oneOf(['thousand', 'lakh', 'wan']), 
   decimalScale: PropTypes.number,
   fixedDecimalScale: PropTypes.bool,
   displayType: PropTypes.oneOf(['input', 'text']),
@@ -36,6 +38,10 @@ const propTypes = {
     PropTypes.number,
     PropTypes.string
   ]),
+  defaultValue: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string
+  ]),
   isNumericString: PropTypes.bool,
   customInput: PropTypes.func,
   allowNegative: PropTypes.bool,
@@ -46,7 +52,7 @@ const propTypes = {
   onChange: PropTypes.func,
   onFocus: PropTypes.func,
   onBlur: PropTypes.func,
-  type: PropTypes.oneOf(['text', 'tel']),
+  type: PropTypes.oneOf(['text', 'tel', 'password']),
   isAllowed: PropTypes.func,
   renderText: PropTypes.func,
   getInputRef: PropTypes.func
@@ -55,6 +61,7 @@ const propTypes = {
 const defaultProps = {
   displayType: 'input',
   decimalSeparator: '.',
+  thousandsGroupStyle: 'thousand',
   fixedDecimalScale: false,
   prefix: '',
   suffix: '',
@@ -90,10 +97,12 @@ class NumberFormat extends React.Component {
   constructor(props: Object) {
     super(props);
 
+    const {defaultValue} = props;
+    
     //validate props
     this.validateProps();
 
-    const formattedValue = this.formatValueProp();
+    const formattedValue = this.formatValueProp(defaultValue);
 
     this.state = {
       value: formattedValue,
@@ -118,6 +127,7 @@ class NumberFormat extends React.Component {
 
   updateValueIfRequired(prevProps: Object) {
     const {props, state} = this;
+    const {onValueChange} = props;
 
     if(prevProps !== props) {
       //validate props
@@ -139,6 +149,8 @@ class NumberFormat extends React.Component {
           value : formattedValue,
           numAsString,
         });
+
+        onValueChange(this.getValueObject(formattedValue, numAsString));
       }
     }
   }
@@ -442,7 +454,7 @@ class NumberFormat extends React.Component {
    * @return {string} formatted Value
    */
   formatAsNumber(numStr: string) {
-    const {decimalScale, fixedDecimalScale, prefix, suffix, allowNegative} = this.props;
+    const {decimalScale, fixedDecimalScale, prefix, suffix, allowNegative, thousandsGroupStyle} = this.props;
     const {thousandSeparator, decimalSeparator} = this.getSeparators();
 
     const hasDecimalSeparator = numStr.indexOf('.') !== -1 || (decimalScale && fixedDecimalScale);
@@ -452,7 +464,8 @@ class NumberFormat extends React.Component {
     if (decimalScale !== undefined) afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
 
     if(thousandSeparator) {
-      beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
+      const thousandsGroupRegex = getThousandsGroupRegex(thousandsGroupStyle);
+      beforeDecimal = beforeDecimal.replace(thousandsGroupRegex, '$1' + thousandSeparator);
     }
 
     //add prefix and suffix
@@ -487,9 +500,9 @@ class NumberFormat extends React.Component {
     return formattedValue;
   }
 
-  formatValueProp() {
+  formatValueProp(defaultValue: string|number) {
     const {format, decimalScale, fixedDecimalScale, allowEmptyFormatting} = this.props;
-    let {value, isNumericString} = this.props;
+    let {value = defaultValue, isNumericString} = this.props;
 
     const isNonNumericFalsy = !value && value !== 0;
 
@@ -658,7 +671,7 @@ class NumberFormat extends React.Component {
     //change the state
     if (formattedValue !== lastValue) {
       this.setState({value : formattedValue, numAsString}, () => {
-        props.onValueChange(valueObj, e);
+        props.onValueChange(valueObj);
         props.onChange(e);
       });
     } else {
@@ -681,7 +694,7 @@ class NumberFormat extends React.Component {
         e.persist();
         this.setState({value : formattedValue, numAsString}, () => {
           const valueObj = this.getValueObject(formattedValue, numAsString);
-          props.onValueChange(valueObj, e);
+          props.onValueChange(valueObj);
           onBlur(e);
         });
         return;
@@ -745,7 +758,7 @@ class NumberFormat extends React.Component {
         e.persist();
         this.setState({value: newValue, numAsString}, () => {
           this.setPatchedCaretPosition(el, newCaretPosition, newValue);
-          onValueChange(valueObj, e);
+          onValueChange(valueObj);
         });
       } else if (!negativeRegex.test(value[expectedCaretPosition])) {
         while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound){ newCaretPosition--; }
