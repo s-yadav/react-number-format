@@ -5,8 +5,6 @@ import NumberFormat from '../../src/number_format';
 import TextField from 'material-ui/TextField';
 import {cardExpiry} from '../../custom_formatters/card_expiry';
 
-
-
 class App extends React.Component {
   constructor() {
     super();
@@ -47,6 +45,28 @@ class App extends React.Component {
             value={this.state.test}
             prefix="$"
             onValueChange={(values) => this.setState({test: values.formattedValue})}
+          />
+        </div>
+
+        <div className="example">
+          <h3>
+            Indian (lakh) style number grouping
+          </h3>
+          <NumberFormat
+            thousandSeparator={true}
+            prefix="₹"
+            thousandsGroupStyle="lakh"
+          />
+        </div>
+
+        <div className="example">
+          <h3>
+            Chinese (wan) style number grouping
+          </h3>
+          <NumberFormat
+            thousandSeparator={true}
+            prefix="¥"
+            thousandsGroupStyle="wan"
           />
         </div>
 

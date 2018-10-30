@@ -76,19 +76,20 @@ const defaultProps = {
   onFocus: noop,
   onBlur: noop,
   isAllowed: returnTrue,
-  getInputRef: noop
+  getInputRef: noop,
 };
 
 class NumberFormat extends React.Component {
   state: {
     value?: string,
-    numAsString?: string
+    numAsString?: string,
   }
   onChange: Function
   onKeyDown: Function
   onMouseUp: Function
   onFocus: Function
   onBlur: Function
+  inFocus: boolean
   selectionBeforeInput: {
     selectionStart: number,
     selectionEnd: number
@@ -126,16 +127,14 @@ class NumberFormat extends React.Component {
   }
 
   updateValueIfRequired(prevProps: Object) {
-    const {props, state} = this;
+    const {props, state, inFocus} = this;
     const {onValueChange} = props;
+    const {value: stateValue, numAsString: lastNumStr = ''} = state;
 
     if(prevProps !== props) {
       //validate props
       this.validateProps();
 
-      const stateValue = state.value;
-
-      const lastNumStr = state.numAsString || '';
       const lastValueWithNewFormat = this.formatNumString(lastNumStr);
 
       const formattedValue = props.value === undefined ? lastValueWithNewFormat : this.formatValueProp();
@@ -144,7 +143,14 @@ class NumberFormat extends React.Component {
       const floatValue = parseFloat(numAsString);
       const lastFloatValue = parseFloat(lastNumStr);
 
-      if (((!isNaN(floatValue) || !isNaN(lastFloatValue)) && floatValue !== lastFloatValue) || lastValueWithNewFormat !== stateValue) {
+      if (
+        //while typing set state only when float value changes
+        ((!isNaN(floatValue) || !isNaN(lastFloatValue)) && floatValue !== lastFloatValue) || 
+        //can also set state when float value is same and the format props changes
+        lastValueWithNewFormat !== stateValue ||
+        //set state always when not in focus and formatted value is changed
+        (inFocus === false && formattedValue !== stateValue)
+      ) {
         this.setState({
           value : formattedValue,
           numAsString,
@@ -595,10 +601,16 @@ class NumberFormat extends React.Component {
    * It will also work as fallback if android chome keyDown handler does not work
    **/
   correctInputValue(caretPos: number, lastValue: string, value: string) {
-    const {format, decimalSeparator, allowNegative, prefix, suffix} = this.props;
+    const {format, allowNegative, prefix, suffix} = this.props;
+    const {decimalSeparator} = this.getSeparators();
     const lastNumStr = this.state.numAsString || '';
     const {selectionStart, selectionEnd} = this.selectionBeforeInput;
     const {start, end} = findChangedIndex(lastValue, value);
+
+    /** Check if only . is added in the numeric format and replace it with decimal separator */
+    if (!format && decimalSeparator !== '.' && start === end && value[selectionStart] === '.') {
+      return value.substr(0, selectionStart) + decimalSeparator + value.substr(selectionStart + 1, value.length);
+    }
 
     /* don't do anyhting if something got added,
      or if value is empty string (when whole input is cleared)
@@ -684,6 +696,9 @@ class NumberFormat extends React.Component {
     const {format, onBlur} = props;
     let {numAsString} = state;
     const lastValue = state.value;
+
+    this.inFocus = false;
+
     if (!format) {
       numAsString = fixLeadingZero(numAsString);
       const formattedValue = this.formatNumString(numAsString);
@@ -806,7 +821,10 @@ class NumberFormat extends React.Component {
   onFocus(e: SyntheticInputEvent) {
     // Workaround Chrome and Safari bug https://bugs.chromium.org/p/chromium/issues/detail?id=779328
     // (onFocus event target selectionStart is always 0 before setTimeout)
-    e.persist()
+    e.persist();
+
+    this.inFocus = true;
+
     setTimeout(() => {
       const el = e.target;
       const {selectionStart, selectionEnd, value = ''} = el;

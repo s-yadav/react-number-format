@@ -6,7 +6,7 @@ React component to format number in an input or as a text
 2. Custom format pattern.
 3. Masking.
 4. Custom formatting handler.
-5. Formatting a input or a simple text.
+5. Format number in an input or format as a simple text.
 
 ### Install
 [![npm](https://img.shields.io/npm/dm/react-number-format.svg)](https://www.npmjs.com/package/react-number-format)
@@ -41,6 +41,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | ------------- |-------------| -----| -------- |
 | thousandSeparator | mixed: single character string or boolean true (true is default to ,) |none| Add thousand separators on number |
 | decimalSeparator | single character string| . | Support decimal point on a number |
+| thousandsGroupStyle | One of ['thousand', 'lakh', 'wan'] |thousand| Define the thousand grouping style, It support three types. thousand style (thousand) : `123,456,789`, indian style (lakh) : `12,34,56,789`, chinese style (wan) : `1,2345,6789`|
 | decimalScale | number| none| If defined it limits to given decimal scale |
 | fixedDecimalScale | boolean| false| If true it add 0s to match given decimalScale|
 | allowNegative      | boolean     |   true | allow negative numbers (Only when format option is not provided) |
@@ -48,9 +49,10 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
 | suffix | String (ex : /-)      |    none | Add a suffix after the number |
 | value | Number or String | null | Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true. |
+| defaultValue | Number or String | null | Value to the used as default value if value is not provided. The format of defaultValue should be similar as defined for the value. |
 | isNumericString | boolean | false | If value is passed as string representation of numbers (unformatted) then this should be passed as true |
 | displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
-| type | One of ['text', 'tel'] | text | Input type attribute |
+| type | One of ['text', 'tel', 'password'] | text | Input type attribute |
 | format | String : Hash based ex (#### #### #### ####) <br/> Or Function| none | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number. |
 | removeFormatting | (formattedValue) => numericString | none | If you are providing custom format method and it add numbers as format you will need to add custom removeFormatting logic |
 | mask | String (ex : _) | `' '` | If mask defined, component will show non entered placed with masked value. |
@@ -86,7 +88,7 @@ Its recommended to use formattedValue / value / floatValue based on the initial 
 
 6. Its recommended to use formattedValue / value / floatValue based on the initial state (it should be same as the initial state format) which you are passing as value prop. If you are saving the `value` key on state make sure to pass isNumericString prop to true.
 
-7. onValueChange is not same as onChange. It gets called on different events. So don't make assumption about the event object (second parameter). It can be change event or blur event.
+7. onValueChange is not same as onChange. It gets called on whenever there is change in value which can be caused by any event like change or blur event or by a prop change. It no longer receives event object as second parameter.
 
 ### Examples
 #### Prefix and thousand separator : Format currency as text
@@ -116,6 +118,20 @@ Output : 4111 1111 1111 1111
 <NumberFormat thousandSeparator={true} prefix={'$'} />
 ```
 ![Screencast example](https://i.imgur.com/d0P2Db1.gif)
+
+#### Indian(lakh) style and chinese(wan) style number grouping
+Indian (lakh) style grouping
+```jsx
+<NumberFormat thousandSeparator={true} thousandsGroupStyle="lakh" prefix={'₹'} value={123456789}/>
+```
+Output: ₹12,34,56,789
+
+Chinese (wan) style grouping
+```jsx
+<NumberFormat thousandSeparator={true} thousandsGroupStyle="wan" prefix={'¥'} value={123456789}/>
+```
+Output: ¥1,2345,6789
+
 
 #### Maintaining change value on state
 ```jsx
@@ -231,6 +247,19 @@ If you can't get in both way you can try ReactDOM.findDOMNode. You may need to t
 For regular updates follow me on [_syadav](https://twitter.com/_syadav)
 
 #### Major updates
+
+#### v4.0.0
+Breaking Changes
+
+- onValueChange no longer receives event object as second parameter, so if you accessing it, it will break.
+
+Feature Addition
+- Support defaultValue prop.
+- Trigger onValueChange if the value is formatted due to prop change.
+- Allow password as type prop.
+- Support indian (lakh) and chinese (wan) style thousand grouping.
+- Always allow . to be typed as decimal separator, even when decimal separator is defined differently
+
 
 #### v3.0.0
 - onChange no longer gets values object. You need to use onValueChange instead. This is done because formatted value may change on onBlur event. calling onChange on onBlur doesn't feel right.

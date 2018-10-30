@@ -4,7 +4,13 @@ import TextField from 'material-ui/TextField';
 
 import NumberFormat from '../../src/number_format';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {simulateKeyInput, shallow, mount} from '../test_util';
+import {
+  simulateKeyInput,
+  simulateFocusEvent,
+  simulateBlurEvent,
+  shallow,
+  mount
+} from '../test_util';
 
 /*** format_number input as input ****/
 describe('NumberFormat as input', () => {
@@ -13,7 +19,7 @@ describe('NumberFormat as input', () => {
     expect(wrapper.find('input').instance().getAttribute('type')).toEqual('text');
   });
 
-  it('should render input as type tel', () => {
+  it('should render input as defined type', () => {
     const wrapper = mount(<NumberFormat type="tel" />);
     expect(wrapper.find('input').instance().getAttribute('type')).toEqual('tel');
   });
@@ -24,7 +30,23 @@ describe('NumberFormat as input', () => {
     expect(wrapper.find('input').instance().value).toEqual('$2,456,981');
   });
 
+  it('should use defaultValue as initial value', () => {
+    const wrapper = mount(<NumberFormat defaultValue={2456981} thousandSeparator={true} prefix={'$'} />);
+    expect(wrapper.state().value).toEqual('$2,456,981');
+  });
 
+  it('should not reset value by default value once it is changed', () => {
+    const wrapper = mount(<NumberFormat defaultValue={2456981} thousandSeparator={true} prefix={'$'} />);
+    simulateKeyInput(wrapper.find('input'), '2', 9);
+    expect(wrapper.state().value).toEqual('$24,569,821');
+
+    wrapper.setProps({
+      thousandSeparator: '.',
+      decimalSeparator: ',',
+    });
+
+    expect(wrapper.state().value).toEqual('$24.569.821');
+  });
 
   it('should not reset number inputs value if number input renders again with same props', () => {
     class WrapperComponent extends React.Component {
@@ -231,6 +253,29 @@ describe('NumberFormat as input', () => {
     spyOn(instance, 'setState');
     wrapper.setProps({value: ''});
     expect(instance.setState).not.toHaveBeenCalled();
+  });
+
+  it('should always call setState when input is not on focus and value formatting is changed from outside', () => {
+    const wrapper = shallow(<NumberFormat value="1.1" />);
+    simulateFocusEvent(wrapper.find('input'));
+    simulateKeyInput(wrapper.find('input'), '0', 3)
+    
+    expect(wrapper.state().value).toEqual('1.10');
+
+    simulateBlurEvent(wrapper.find('input'))
+
+    wrapper.setProps({
+      value: '1.1'
+    });
+
+    expect(wrapper.state().value).toEqual('1.1');
+  });
+
+  it('should call onValueChange in change caused by prop change', () => {
+    const spy = jasmine.createSpy();
+    const wrapper = shallow(<NumberFormat value="1234" onValueChange={spy}/>);
+    wrapper.setProps({thousandSeparator: true});
+    expect(spy.calls.argsFor(0)[0]).toEqual({formattedValue: "1,234", value: "1234", floatValue: 1234});
   });
 
   describe('Test masking', () => {

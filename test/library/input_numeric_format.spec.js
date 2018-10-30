@@ -490,4 +490,40 @@ describe('Test NumberFormat as input with numeric format options', () => {
     simulateKeyInput(wrapper.find('input'), '-', 0, 0);
     expect(wrapper.find('input').instance().value).toEqual('-');
   });
+
+  it('should allow typing . as decimal separator when some other decimal separator is given', () => {
+    const wrapper = shallow(<NumberFormat decimalSeparator="," thousandSeparator="." value="234.456 Sq. ft" suffix=" Sq. ft"/>);
+    simulateKeyInput(wrapper.find('input'), '.', 5, 5);
+    expect(wrapper.state().value).toEqual('2.344,56 Sq. ft');
+
+    //it should allow typing actual separator
+    simulateKeyInput(wrapper.find('input'), ',', 3, 3);
+    expect(wrapper.state().value).toEqual('23,4456 Sq. ft');
+  });
+
+
+  
+
+  describe('Test thousand group style', () => {
+    it('should format on english style thousand grouping', () => {
+      const wrapper = shallow(<NumberFormat thousandSeparator={true} value={12345678}/>);
+      expect(wrapper.state().value).toEqual('12,345,678');
+      simulateKeyInput(wrapper.find('input'), '9', 10, 10);
+      expect(wrapper.state().value).toEqual('123,456,789');
+    });
+
+    it('should format on indian (lakh) style thousand grouping', () => {
+      const wrapper = shallow(<NumberFormat thousandSeparator={true} thousandsGroupStyle="lakh" value={12345678}/>);
+      expect(wrapper.state().value).toEqual('1,23,45,678');
+      simulateKeyInput(wrapper.find('input'), '9', 11, 11);
+      expect(wrapper.state().value).toEqual('12,34,56,789');
+    });
+
+    it('should format on chinese (wan) style thousand grouping', () => {
+      const wrapper = shallow(<NumberFormat thousandSeparator={true} thousandsGroupStyle="wan" value={12345678}/>);
+      expect(wrapper.state().value).toEqual('1234,5678');
+      simulateKeyInput(wrapper.find('input'), '9', 9, 9);
+      expect(wrapper.state().value).toEqual('1,2345,6789');
+    });
+  });
 });

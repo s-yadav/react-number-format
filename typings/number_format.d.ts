@@ -24,15 +24,17 @@ declare module "react-number-format" {
     extends React.InputHTMLAttributes<HTMLInputElement> {
     thousandSeparator?: boolean | string;
     decimalSeparator?: boolean | string;
+    thousandsGroupStyle?: 'thousand' | 'lakh' | 'wan';
     decimalScale?: number;
     fixedDecimalScale?: boolean;
-    displayType?: "input" | "text";
+    displayType?: 'input' | 'text';
     prefix?: string;
     suffix?: string;
     format?: string | FormatInputValueFunction;
     removeFormatting?: (formattedValue: string) => string;
     mask?: string | string[];
     value?: number | string;
+    defaultValue?: number | string;
     isNumericString?: boolean;
     customInput?: React.ComponentType<any>;
     allowNegative?: boolean;
@@ -49,7 +51,7 @@ declare module "react-number-format" {
      * onFocus: Function;
      * onBlur: Function;
      */
-    type?: "text" | "tel";
+    type?: 'text' | 'tel'  | 'password';
     isAllowed?: (values: NumberFormatValues) => boolean;
     renderText?: (formattedValue: string) => React.ReactNode;
     getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any>;

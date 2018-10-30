@@ -1,5 +1,5 @@
 /**
- * react-number-format - 3.6.2
+ * react-number-format - 4.0.0
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016, 2018 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
@@ -346,6 +346,19 @@ function charIsNumber(char) {
 }
 function escapeRegExp(str) {
   return str.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
+}
+function getThousandsGroupRegex(thousandsGroupStyle) {
+  switch (thousandsGroupStyle) {
+    case 'lakh':
+      return /(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/g;
+
+    case 'wan':
+      return /(\d)(?=(\d{4})+(?!\d))/g;
+
+    case 'thousand':
+    default:
+      return /(\d)(?=(\d{3})+(?!\d))/g;
+  }
 } //spilt a float number into different parts beforeDecimal, afterDecimal, and negation
 
 function splitDecimal(numStr) {
@@ -487,6 +500,7 @@ function clamp(num, min, max) {
 var propTypes$1 = {
   thousandSeparator: propTypes.oneOfType([propTypes.string, propTypes.oneOf([true])]),
   decimalSeparator: propTypes.string,
+  thousandsGroupStyle: propTypes.oneOf(['thousand', 'lakh', 'wan']),
   decimalScale: propTypes.number,
   fixedDecimalScale: propTypes.bool,
   displayType: propTypes.oneOf(['input', 'text']),
@@ -496,6 +510,7 @@ var propTypes$1 = {
   removeFormatting: propTypes.func,
   mask: propTypes.oneOfType([propTypes.string, propTypes.arrayOf(propTypes.string)]),
   value: propTypes.oneOfType([propTypes.number, propTypes.string]),
+  defaultValue: propTypes.oneOfType([propTypes.number, propTypes.string]),
   isNumericString: propTypes.bool,
   customInput: propTypes.func,
   allowNegative: propTypes.bool,
@@ -506,7 +521,7 @@ var propTypes$1 = {
   onChange: propTypes.func,
   onFocus: propTypes.func,
   onBlur: propTypes.func,
-  type: propTypes.oneOf(['text', 'tel']),
+  type: propTypes.oneOf(['text', 'tel', 'password']),
   isAllowed: propTypes.func,
   renderText: propTypes.func,
   getInputRef: propTypes.func
@@ -514,6 +529,7 @@ var propTypes$1 = {
 var defaultProps = {
   displayType: 'input',
   decimalSeparator: '.',
+  thousandsGroupStyle: 'thousand',
   fixedDecimalScale: false,
   prefix: '',
   suffix: '',
@@ -541,11 +557,12 @@ function (_React$Component) {
 
     _classCallCheck(this, NumberFormat);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(NumberFormat).call(this, props)); //validate props
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(NumberFormat).call(this, props));
+    var defaultValue = props.defaultValue; //validate props
 
     _this.validateProps();
 
-    var formattedValue = _this.formatValueProp();
+    var formattedValue = _this.formatValueProp(defaultValue);
 
     _this.state = {
       value: formattedValue,
@@ -572,24 +589,31 @@ function (_React$Component) {
     key: "updateValueIfRequired",
     value: function updateValueIfRequired(prevProps) {
       var props = this.props,
-          state = this.state;
+          state = this.state,
+          inFocus = this.inFocus;
+      var onValueChange = props.onValueChange;
+      var stateValue = state.value,
+          _state$numAsString = state.numAsString,
+          lastNumStr = _state$numAsString === void 0 ? '' : _state$numAsString;
 
       if (prevProps !== props) {
         //validate props
         this.validateProps();
-        var stateValue = state.value;
-        var lastNumStr = state.numAsString || '';
         var lastValueWithNewFormat = this.formatNumString(lastNumStr);
         var formattedValue = props.value === undefined ? lastValueWithNewFormat : this.formatValueProp();
         var numAsString = this.removeFormatting(formattedValue);
         var floatValue = parseFloat(numAsString);
         var lastFloatValue = parseFloat(lastNumStr);
 
-        if ((!isNaN(floatValue) || !isNaN(lastFloatValue)) && floatValue !== lastFloatValue || lastValueWithNewFormat !== stateValue) {
+        if ( //while typing set state only when float value changes
+        (!isNaN(floatValue) || !isNaN(lastFloatValue)) && floatValue !== lastFloatValue || //can also set state when float value is same and the format props changes
+        lastValueWithNewFormat !== stateValue || //set state always when not in focus and formatted value is changed
+        inFocus === false && formattedValue !== stateValue) {
           this.setState({
             value: formattedValue,
             numAsString: numAsString
           });
+          onValueChange(this.getValueObject(formattedValue, numAsString));
         }
       }
     }
@@ -917,7 +941,8 @@ function (_React$Component) {
           fixedDecimalScale = _this$props5.fixedDecimalScale,
           prefix = _this$props5.prefix,
           suffix = _this$props5.suffix,
-          allowNegative = _this$props5.allowNegative;
+          allowNegative = _this$props5.allowNegative,
+          thousandsGroupStyle = _this$props5.thousandsGroupStyle;
 
       var _this$getSeparators4 = this.getSeparators(),
           thousandSeparator = _this$getSeparators4.thousandSeparator,
@@ -935,7 +960,8 @@ function (_React$Component) {
       if (decimalScale !== undefined) afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
 
       if (thousandSeparator) {
-        beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
+        var thousandsGroupRegex = getThousandsGroupRegex(thousandsGroupStyle);
+        beforeDecimal = beforeDecimal.replace(thousandsGroupRegex, '$1' + thousandSeparator);
       } //add prefix and suffix
 
 
@@ -972,14 +998,15 @@ function (_React$Component) {
     }
   }, {
     key: "formatValueProp",
-    value: function formatValueProp() {
+    value: function formatValueProp(defaultValue) {
       var _this$props7 = this.props,
           format = _this$props7.format,
           decimalScale = _this$props7.decimalScale,
           fixedDecimalScale = _this$props7.fixedDecimalScale,
           allowEmptyFormatting = _this$props7.allowEmptyFormatting;
       var _this$props8 = this.props,
-          value = _this$props8.value,
+          _this$props8$value = _this$props8.value,
+          value = _this$props8$value === void 0 ? defaultValue : _this$props8$value,
           isNumericString = _this$props8.isNumericString;
       var isNonNumericFalsy = !value && value !== 0;
 
@@ -1081,10 +1108,13 @@ function (_React$Component) {
     value: function correctInputValue(caretPos, lastValue, value) {
       var _this$props10 = this.props,
           format = _this$props10.format,
-          decimalSeparator = _this$props10.decimalSeparator,
           allowNegative = _this$props10.allowNegative,
           prefix = _this$props10.prefix,
           suffix = _this$props10.suffix;
+
+      var _this$getSeparators6 = this.getSeparators(),
+          decimalSeparator = _this$getSeparators6.decimalSeparator;
+
       var lastNumStr = this.state.numAsString || '';
       var _this$selectionBefore = this.selectionBeforeInput,
           selectionStart = _this$selectionBefore.selectionStart,
@@ -1093,6 +1123,12 @@ function (_React$Component) {
       var _findChangedIndex = findChangedIndex(lastValue, value),
           start = _findChangedIndex.start,
           end = _findChangedIndex.end;
+      /** Check if only . is added in the numeric format and replace it with decimal separator */
+
+
+      if (!format && decimalSeparator !== '.' && start === end && value[selectionStart] === '.') {
+        return value.substr(0, selectionStart) + decimalSeparator + value.substr(selectionStart + 1, value.length);
+      }
       /* don't do anyhting if something got added,
        or if value is empty string (when whole input is cleared)
        or whole input is replace with a number
@@ -1166,7 +1202,7 @@ function (_React$Component) {
           value: formattedValue,
           numAsString: numAsString
         }, function () {
-          props.onValueChange(valueObj, e);
+          props.onValueChange(valueObj);
           props.onChange(e);
         });
       } else {
@@ -1184,6 +1220,7 @@ function (_React$Component) {
           onBlur = props.onBlur;
       var numAsString = state.numAsString;
       var lastValue = state.value;
+      this.inFocus = false;
 
       if (!format) {
         numAsString = fixLeadingZero(numAsString);
@@ -1198,7 +1235,7 @@ function (_React$Component) {
           }, function () {
             var valueObj = _this2.getValueObject(formattedValue, numAsString);
 
-            props.onValueChange(valueObj, e);
+            props.onValueChange(valueObj);
             onBlur(e);
           });
           return;
@@ -1280,7 +1317,7 @@ function (_React$Component) {
           }, function () {
             _this3.setPatchedCaretPosition(el, newCaretPosition, newValue);
 
-            onValueChange(valueObj, e);
+            onValueChange(valueObj);
           });
         } else if (!negativeRegex.test(value[expectedCaretPosition])) {
           while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound) {
@@ -1339,6 +1376,7 @@ function (_React$Component) {
       // Workaround Chrome and Safari bug https://bugs.chromium.org/p/chromium/issues/detail?id=779328
       // (onFocus event target selectionStart is always 0 before setTimeout)
       e.persist();
+      this.inFocus = true;
       setTimeout(function () {
         var el = e.target;
         var selectionStart = el.selectionStart,
