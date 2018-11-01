@@ -1,6 +1,12 @@
 /// <reference types="react" />
 
+//exclude types from the InputHTMLAttributes
+declare const {defaultValue, value, ...inputAttributes}: React.InputHTMLAttributes<HTMLInputElement>;
+type InputAttributes = typeof inputAttributes;
+
+
 declare module "react-number-format" {
+
   export interface NumberFormatState {
     value?: string;
     numAsString?: string;
@@ -21,7 +27,7 @@ declare module "react-number-format" {
   }
 
   export interface NumberFormatProps
-    extends React.InputHTMLAttributes<HTMLInputElement> {
+    extends InputAttributes {
     thousandSeparator?: boolean | string;
     decimalSeparator?: boolean | string;
     thousandsGroupStyle?: 'thousand' | 'lakh' | 'wan';

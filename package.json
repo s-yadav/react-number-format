@@ -25,11 +25,12 @@
   ],
   "scripts": {
     "start": "webpack-dev-server --hot",
-    "bundle": "cross-env yarn compile && yarn bundle-dist && yarn test-build",
+    "bundle": "cross-env yarn compile && yarn bundle-dist && yarn test-build && yarn test-ts",
     "bundle-dist": "cross-env NODE_ENV=production rollup -c rollup.config.js",
     "compile": "cross-env NODE_ENV=production babel src --out-dir lib",
     "test": "cross-env NODE_ENV=test karma start",
     "test-build": "cross-env NODE_ENV=production TEST_BROWSER=ChromeHeadless karma start",
+    "test-ts": "yarn tsc -p typings",
     "lint": "cross-env eslint src/**"
   },
   "devDependencies": {
@@ -41,6 +42,7 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.0.0",
+    "@types/react": "^16.4.18",
     "babel-eslint": "^9.0.0",
     "babel-loader": "^8.0.2",
     "babel-plugin-add-module-exports": "^1.0.0",
@@ -79,6 +81,7 @@
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-uglify": "^5.0.2",
+    "typescript": "^3.1.5",
     "webpack": "^4.17.1",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.7"
