@@ -1,5 +1,5 @@
 /**
- * react-number-format - 4.0.0
+ * react-number-format - 4.0.1
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016, 2018 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
@@ -1064,6 +1064,7 @@
         var format = this.props.format; //format negation only if we are formatting as number
 
         if (!format) {
+          value = this.removePrefixAndSuffix(value);
           value = this.formatNegation(value);
         } //remove formatting from number
 
