@@ -501,6 +501,18 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('23,4456 Sq. ft');
   });
 
+  it('should not break if suffix/prefix has negation sign. Issue #245', () => {
+    const wrapper = shallow(<NumberFormat suffix="-"/>);
+
+    simulateKeyInput(wrapper.find('input'), '2', 0);
+    expect(wrapper.state().value).toEqual('2-');
+
+    simulateKeyInput(wrapper.find('input'), '1', 1);
+    expect(wrapper.state().value).toEqual('21-');
+
+    simulateKeyInput(wrapper.find('input'), '-', 2);
+    expect(wrapper.state().value).toEqual('-21-');
+  });
 
   
 

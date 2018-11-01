@@ -561,6 +561,7 @@ class NumberFormat extends React.Component {
 
     //format negation only if we are formatting as number
     if (!format) {
+      value = this.removePrefixAndSuffix(value);
       value = this.formatNegation(value);
     }
 
