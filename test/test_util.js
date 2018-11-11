@@ -7,6 +7,9 @@ const noop = function(){};
 
 export const persist = jasmine.createSpy();
 
+//keep input element singleton
+const target = document.createElement('input');
+
 export function getCustomEvent(value, selectionStart, selectionEnd) {
   let event =  new Event('custom');
   const el = document.createElement('input');
@@ -20,13 +23,12 @@ export function getCustomEvent(value, selectionStart, selectionEnd) {
 
 function getEvent(eventProps, targetProps) {
   let event =  new Event('custom');
-  const el = document.createElement('input');
 
   Object.keys(targetProps).forEach((key) => {
-    el[key] = targetProps[key];
-  })
+    target[key] = targetProps[key];
+  });
 
-  event = {...event, ...eventProps, target: el};
+  event = {...event, ...eventProps, target};
 
   return event;
 }

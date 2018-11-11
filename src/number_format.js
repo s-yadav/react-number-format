@@ -16,6 +16,7 @@ import {
   findChangedIndex,
   clamp,
   getThousandsGroupRegex,
+  getCurrentCaretPosition,
 } from './utils';
 
 
@@ -89,7 +90,7 @@ class NumberFormat extends React.Component {
   onMouseUp: Function
   onFocus: Function
   onBlur: Function
-  inFocus: boolean
+  focusedElm: HTMLElement
   selectionBeforeInput: {
     selectionStart: number,
     selectionEnd: number
@@ -127,8 +128,7 @@ class NumberFormat extends React.Component {
   }
 
   updateValueIfRequired(prevProps: Object) {
-    const {props, state, inFocus} = this;
-    const {onValueChange} = props;
+    const {props, state, focusedElm} = this;
     const {value: stateValue, numAsString: lastNumStr = ''} = state;
 
     if(prevProps !== props) {
@@ -149,14 +149,9 @@ class NumberFormat extends React.Component {
         //can also set state when float value is same and the format props changes
         lastValueWithNewFormat !== stateValue ||
         //set state always when not in focus and formatted value is changed
-        (inFocus === false && formattedValue !== stateValue)
+        (focusedElm === null && formattedValue !== stateValue)
       ) {
-        this.setState({
-          value : formattedValue,
-          numAsString,
-        });
-
-        onValueChange(this.getValueObject(formattedValue, numAsString));
+        this.updateValue({ formattedValue, numAsString, input: focusedElm });
       }
     }
   }
@@ -650,6 +645,57 @@ class NumberFormat extends React.Component {
     return value;
   }
 
+  /** Update value and caret position */
+  updateValue(params: {
+      formattedValue: string,
+      numAsString: string,
+      inputValue: string,
+      input: HTMLInputElement,
+      caretPos: number,
+    },
+    onUpdate?: Function = noop
+  ) {
+    const {formattedValue, input} = params;
+    let {numAsString, caretPos} = params;
+    const {onValueChange} = this.props;
+    const {value: lastValue} = this.state;
+
+    //set caret position, and value imperatively when element is provided
+    if (input) {
+
+      //calculate caret position if not defined
+      if (!caretPos) {
+        const inputValue = params.inputValue || input.value;
+
+        const currentCaretPosition = getCurrentCaretPosition(input);
+      
+        //get the caret position
+        caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
+      }
+
+      //set the value imperatively, this is required for IE fix
+      input.value = formattedValue;
+
+      //set caret position
+      this.setPatchedCaretPosition(input, caretPos, formattedValue);
+    }
+
+    //calculate numeric string if not passed
+    if (numAsString === undefined) {
+      numAsString = this.removeFormatting(formattedValue);
+    }
+    
+    //update state if value is changed
+    if (formattedValue !== lastValue) {
+      this.setState({value : formattedValue, numAsString}, () => {
+        onValueChange(this.getValueObject(formattedValue, numAsString));
+        onUpdate();
+      });      
+    } else {
+      onUpdate();
+    }
+  }
+
   onChange(e: SyntheticInputEvent) {
     e.persist();
     const el = e.target;
@@ -658,8 +704,7 @@ class NumberFormat extends React.Component {
     const {isAllowed} = props;
     const lastValue = state.value || '';
 
-    /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
-    const currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);
+    const currentCaretPosition = getCurrentCaretPosition(el);
 
     inputValue =  this.correctInputValue(currentCaretPosition, lastValue, inputValue);
 
@@ -671,25 +716,11 @@ class NumberFormat extends React.Component {
     if (!isAllowed(valueObj)) {
       formattedValue = lastValue;
     }
-
-    //set the value imperatively, this is required for IE fix
-    el.value = formattedValue;
-
-    //get the caret position
-    const caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
-
-    //set caret position
-    this.setPatchedCaretPosition(el, caretPos, formattedValue);
-
-    //change the state
-    if (formattedValue !== lastValue) {
-      this.setState({value : formattedValue, numAsString}, () => {
-        props.onValueChange(valueObj);
-        props.onChange(e);
-      });
-    } else {
+    
+    this.updateValue({ formattedValue, numAsString, inputValue, input: el }, () => {
       props.onChange(e);
-    }
+    });
+
   }
 
   onBlur(e: SyntheticInputEvent) {
@@ -698,7 +729,7 @@ class NumberFormat extends React.Component {
     let {numAsString} = state;
     const lastValue = state.value;
 
-    this.inFocus = false;
+    this.focusedElm = null;
 
     if (!format) {
       numAsString = fixLeadingZero(numAsString);
@@ -708,9 +739,7 @@ class NumberFormat extends React.Component {
       if (formattedValue !== lastValue) {
         // the event needs to be persisted because its properties can be accessed in an asynchronous way
         e.persist();
-        this.setState({value : formattedValue, numAsString}, () => {
-          const valueObj = this.getValueObject(formattedValue, numAsString);
-          props.onValueChange(valueObj);
+        this.updateValue({ formattedValue, numAsString }, () => {
           onBlur(e);
         });
         return;
@@ -767,15 +796,10 @@ class NumberFormat extends React.Component {
       */
       if (selectionStart <= leftBound + 1 && value[0] === '-' && typeof format === 'undefined') {
         const newValue = value.substring(1);
-        const numAsString = this.removeFormatting(newValue);
-        const valueObj = this.getValueObject(newValue, numAsString);
-
         //persist event before performing async task
         e.persist();
-        this.setState({value: newValue, numAsString}, () => {
-          this.setPatchedCaretPosition(el, newCaretPosition, newValue);
-          onValueChange(valueObj);
-        });
+
+        this.updateValue({formattedValue: newValue, caretPos: newCaretPosition, input: el});
       } else if (!negativeRegex.test(value[expectedCaretPosition])) {
         while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound){ newCaretPosition--; }
         newCaretPosition = this.correctCaretPosition(value, newCaretPosition, 'left');
@@ -824,7 +848,7 @@ class NumberFormat extends React.Component {
     // (onFocus event target selectionStart is always 0 before setTimeout)
     e.persist();
 
-    this.inFocus = true;
+    this.focusedElm = e.target;
 
     setTimeout(() => {
       const el = e.target;

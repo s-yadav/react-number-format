@@ -155,3 +155,8 @@ export function findChangedIndex(prevValue: string, newValue: string) {
 export function clamp(num: number, min: number, max: number) {
   return Math.min(Math.max(num, min), max);
 }
+
+export function getCurrentCaretPosition(el: HTMLInputElement ) {
+  /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
+  return Math.max(el.selectionStart, el.selectionEnd);
+}

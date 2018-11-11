@@ -1,5 +1,5 @@
 /**
- * react-number-format - 4.0.3
+ * react-number-format - 4.0.4
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016, 2018 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
@@ -502,6 +502,10 @@
   function clamp(num, min, max) {
     return Math.min(Math.max(num, min), max);
   }
+  function getCurrentCaretPosition(el) {
+    /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
+    return Math.max(el.selectionStart, el.selectionEnd);
+  }
 
   var propTypes$1 = {
     thousandSeparator: propTypes.oneOfType([propTypes.string, propTypes.oneOf([true])]),
@@ -596,8 +600,7 @@
       value: function updateValueIfRequired(prevProps) {
         var props = this.props,
             state = this.state,
-            inFocus = this.inFocus;
-        var onValueChange = props.onValueChange;
+            focusedElm = this.focusedElm;
         var stateValue = state.value,
             _state$numAsString = state.numAsString,
             lastNumStr = _state$numAsString === void 0 ? '' : _state$numAsString;
@@ -614,12 +617,12 @@
           if ( //while typing set state only when float value changes
           (!isNaN(floatValue) || !isNaN(lastFloatValue)) && floatValue !== lastFloatValue || //can also set state when float value is same and the format props changes
           lastValueWithNewFormat !== stateValue || //set state always when not in focus and formatted value is changed
-          inFocus === false && formattedValue !== stateValue) {
-            this.setState({
-              value: formattedValue,
-              numAsString: numAsString
+          focusedElm === null && formattedValue !== stateValue) {
+            this.updateValue({
+              formattedValue: formattedValue,
+              numAsString: numAsString,
+              input: focusedElm
             });
-            onValueChange(this.getValueObject(formattedValue, numAsString));
           }
         }
       }
@@ -1175,6 +1178,54 @@
 
         return value;
       }
+      /** Update value and caret position */
+
+    }, {
+      key: "updateValue",
+      value: function updateValue(params) {
+        var _this2 = this;
+
+        var onUpdate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
+        var formattedValue = params.formattedValue,
+            input = params.input;
+        var numAsString = params.numAsString,
+            caretPos = params.caretPos;
+        var onValueChange = this.props.onValueChange;
+        var lastValue = this.state.value; //set caret position, and value imperatively when element is provided
+
+        if (input) {
+          //calculate caret position if not defined
+          if (!caretPos) {
+            var inputValue = params.inputValue || input.value;
+            var currentCaretPosition = getCurrentCaretPosition(input); //get the caret position
+
+            caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
+          } //set the value imperatively, this is required for IE fix
+
+
+          input.value = formattedValue; //set caret position
+
+          this.setPatchedCaretPosition(input, caretPos, formattedValue);
+        } //calculate numeric string if not passed
+
+
+        if (numAsString === undefined) {
+          numAsString = this.removeFormatting(formattedValue);
+        } //update state if value is changed
+
+
+        if (formattedValue !== lastValue) {
+          this.setState({
+            value: formattedValue,
+            numAsString: numAsString
+          }, function () {
+            onValueChange(_this2.getValueObject(formattedValue, numAsString));
+            onUpdate();
+          });
+        } else {
+          onUpdate();
+        }
+      }
     }, {
       key: "onChange",
       value: function onChange(e) {
@@ -1185,9 +1236,7 @@
             props = this.props;
         var isAllowed = props.isAllowed;
         var lastValue = state.value || '';
-        /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
-
-        var currentCaretPosition = Math.max(el.selectionStart, el.selectionEnd);
+        var currentCaretPosition = getCurrentCaretPosition(el);
         inputValue = this.correctInputValue(currentCaretPosition, lastValue, inputValue);
         var formattedValue = this.formatInput(inputValue) || '';
         var numAsString = this.removeFormatting(formattedValue);
@@ -1195,39 +1244,27 @@
 
         if (!isAllowed(valueObj)) {
           formattedValue = lastValue;
-        } //set the value imperatively, this is required for IE fix
-
-
-        el.value = formattedValue; //get the caret position
-
-        var caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition); //set caret position
-
-        this.setPatchedCaretPosition(el, caretPos, formattedValue); //change the state
-
-        if (formattedValue !== lastValue) {
-          this.setState({
-            value: formattedValue,
-            numAsString: numAsString
-          }, function () {
-            props.onValueChange(valueObj);
-            props.onChange(e);
-          });
-        } else {
-          props.onChange(e);
         }
+
+        this.updateValue({
+          formattedValue: formattedValue,
+          numAsString: numAsString,
+          inputValue: inputValue,
+          input: el
+        }, function () {
+          props.onChange(e);
+        });
       }
     }, {
       key: "onBlur",
       value: function onBlur(e) {
-        var _this2 = this;
-
         var props = this.props,
             state = this.state;
         var format = props.format,
             onBlur = props.onBlur;
         var numAsString = state.numAsString;
         var lastValue = state.value;
-        this.inFocus = false;
+        this.focusedElm = null;
 
         if (!format) {
           numAsString = fixLeadingZero(numAsString);
@@ -1236,13 +1273,10 @@
           if (formattedValue !== lastValue) {
             // the event needs to be persisted because its properties can be accessed in an asynchronous way
             e.persist();
-            this.setState({
-              value: formattedValue,
+            this.updateValue({
+              formattedValue: formattedValue,
               numAsString: numAsString
             }, function () {
-              var valueObj = _this2.getValueObject(formattedValue, numAsString);
-
-              props.onValueChange(valueObj);
               onBlur(e);
             });
             return;
@@ -1254,8 +1288,6 @@
     }, {
       key: "onKeyDown",
       value: function onKeyDown(e) {
-        var _this3 = this;
-
         var el = e.target;
         var key = e.key;
         var selectionStart = el.selectionStart,
@@ -1313,18 +1345,13 @@
           we will not have any information of keyPress
           */
           if (selectionStart <= leftBound + 1 && value[0] === '-' && typeof format === 'undefined') {
-            var newValue = value.substring(1);
-            var numAsString = this.removeFormatting(newValue);
-            var valueObj = this.getValueObject(newValue, numAsString); //persist event before performing async task
+            var newValue = value.substring(1); //persist event before performing async task
 
             e.persist();
-            this.setState({
-              value: newValue,
-              numAsString: numAsString
-            }, function () {
-              _this3.setPatchedCaretPosition(el, newCaretPosition, newValue);
-
-              onValueChange(valueObj);
+            this.updateValue({
+              formattedValue: newValue,
+              caretPos: newCaretPosition,
+              input: el
             });
           } else if (!negativeRegex.test(value[expectedCaretPosition])) {
             while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound) {
@@ -1378,12 +1405,12 @@
     }, {
       key: "onFocus",
       value: function onFocus(e) {
-        var _this4 = this;
+        var _this3 = this;
 
         // Workaround Chrome and Safari bug https://bugs.chromium.org/p/chromium/issues/detail?id=779328
         // (onFocus event target selectionStart is always 0 before setTimeout)
         e.persist();
-        this.inFocus = true;
+        this.focusedElm = e.target;
         setTimeout(function () {
           var el = e.target;
           var selectionStart = el.selectionStart,
@@ -1391,14 +1418,14 @@
               _el$value3 = el.value,
               value = _el$value3 === void 0 ? '' : _el$value3;
 
-          var caretPosition = _this4.correctCaretPosition(value, selectionStart); //setPatchedCaretPosition only when everything is not selected on focus (while tabbing into the field)
+          var caretPosition = _this3.correctCaretPosition(value, selectionStart); //setPatchedCaretPosition only when everything is not selected on focus (while tabbing into the field)
 
 
           if (caretPosition !== selectionStart && !(selectionStart === 0 && selectionEnd === value.length)) {
-            _this4.setPatchedCaretPosition(el, caretPosition, value);
+            _this3.setPatchedCaretPosition(el, caretPosition, value);
           }
 
-          _this4.props.onFocus(e);
+          _this3.props.onFocus(e);
         }, 0);
       }
     }, {

@@ -492,9 +492,16 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should allow typing . as decimal separator when some other decimal separator is given', () => {
+    let caretPos;
+    const setSelectionRange = (pos) => {
+      caretPos = pos;
+    }
+
     const wrapper = shallow(<NumberFormat decimalSeparator="," thousandSeparator="." value="234.456 Sq. ft" suffix=" Sq. ft"/>);
-    simulateKeyInput(wrapper.find('input'), '.', 5, 5);
+    simulateKeyInput(wrapper.find('input'), '.', 5, 5, setSelectionRange);
     expect(wrapper.state().value).toEqual('2.344,56 Sq. ft');
+    //check if caret position is maintained
+    expect(caretPos).toEqual(6);
 
     //it should allow typing actual separator
     simulateKeyInput(wrapper.find('input'), ',', 3, 3);
@@ -513,7 +520,6 @@ describe('Test NumberFormat as input with numeric format options', () => {
     simulateKeyInput(wrapper.find('input'), '-', 2);
     expect(wrapper.state().value).toEqual('-21-');
   });
-
   
 
   describe('Test thousand group style', () => {
