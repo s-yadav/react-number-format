@@ -363,16 +363,11 @@ class NumberFormat extends React.Component {
     let ascii = '';
     for(let i=0, l=val.length; i<l; i++) {
         let c = val[i].charCodeAt(0);
-        // convert only fullwidth and halfwidth numbers
-        // allow ０１２３４５６７８９and
-        // allow 0123456789
-        if( (c >= 65296 && c<= 65305) || (c>=48 && c<=57)  ){
-            // make sure we only convert half-full width char
-            if (c >= 0xFF00 && c <= 0xFFEF) {
-              c = 0xFF & (c + 0x20);
-            }
-            ascii += String.fromCharCode(c);
+        // make sure we only convert half-full width char
+        if (c >= 0xFF00 && c <= 0xFFEF) {
+          c = 0xFF & (c + 0x20);
         }
+        ascii += String.fromCharCode(c);
     }
     return ascii
   }
