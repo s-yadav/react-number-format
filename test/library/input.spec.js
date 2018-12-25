@@ -278,6 +278,11 @@ describe('NumberFormat as input', () => {
     expect(spy.calls.argsFor(0)[0]).toEqual({formattedValue: "1,234", value: "1234", floatValue: 1234});
   });
 
+  it('should treat Infinity value as empty string', () => {
+    const wrapper = shallow(<NumberFormat value={Infinity}/>);
+    expect(wrapper.state().value).toEqual('');
+  });
+
   describe('Test masking', () => {
     it('should allow mask as string', () => {
       const wrapper = shallow(<NumberFormat format="#### #### ####" mask="_"/>);

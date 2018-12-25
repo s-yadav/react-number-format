@@ -481,15 +481,14 @@ class NumberFormat extends React.Component {
     return numStr;
   }
 
-  formatNumString(value: string = '') {
+  formatNumString(numStr: string = '') {
     const {format, allowEmptyFormatting} = this.props;
-    let formattedValue = value;
+    let formattedValue = numStr;
 
-    if (value === '' && !allowEmptyFormatting) {
+    if (numStr === '' && !allowEmptyFormatting) {
       formattedValue = ''
-    } else if (value === '-' && !format) {
+    } else if (numStr === '-' && !format) {
       formattedValue = '-';
-      value = '';
     } else if (typeof format === 'string') {
       formattedValue = this.formatWithPattern(formattedValue);
     } else if (typeof format === 'function') {
@@ -517,6 +516,11 @@ class NumberFormat extends React.Component {
     if (typeof value === 'number') {
       value = value.toString();
       isNumericString = true;
+    }
+
+    //change infinity value to empty string
+    if (value === 'Infinity' && isNumericString) {
+      value = '';
     }
 
     //round the number based on decimalScale

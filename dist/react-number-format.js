@@ -1,5 +1,5 @@
 /**
- * react-number-format - 4.0.5
+ * react-number-format - 4.0.6
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016, 2018 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
@@ -984,17 +984,16 @@
     }, {
       key: "formatNumString",
       value: function formatNumString() {
-        var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+        var numStr = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
         var _this$props6 = this.props,
             format = _this$props6.format,
             allowEmptyFormatting = _this$props6.allowEmptyFormatting;
-        var formattedValue = value;
+        var formattedValue = numStr;
 
-        if (value === '' && !allowEmptyFormatting) {
+        if (numStr === '' && !allowEmptyFormatting) {
           formattedValue = '';
-        } else if (value === '-' && !format) {
+        } else if (numStr === '-' && !format) {
           formattedValue = '-';
-          value = '';
         } else if (typeof format === 'string') {
           formattedValue = this.formatWithPattern(formattedValue);
         } else if (typeof format === 'function') {
@@ -1029,6 +1028,11 @@
         if (typeof value === 'number') {
           value = value.toString();
           isNumericString = true;
+        } //change infinity value to empty string
+
+
+        if (value === 'Infinity' && isNumericString) {
+          value = '';
         } //round the number based on decimalScale
         //format only if non formatted value is provided
 
