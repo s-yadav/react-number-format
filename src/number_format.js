@@ -628,8 +628,9 @@ class NumberFormat extends React.Component {
       return value;
     }
 
-    //if format got deleted reset the value to last value
-    if (this.checkIfFormatGotDeleted(start, end, lastValue)) {
+    //if format got deleted reset the value to last value, unless the user has
+    //a selection spanning multiple characters
+    if (this.checkIfFormatGotDeleted(start, end, lastValue) && start === end) {
       value = lastValue;
     }
 
