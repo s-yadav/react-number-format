@@ -692,7 +692,10 @@ class NumberFormat extends React.Component {
     //update state if value is changed
     if (formattedValue !== lastValue) {
       this.setState({value : formattedValue, numAsString}, () => {
-        onValueChange(this.getValueObject(formattedValue, numAsString));
+        //prevent a "maximum update depth exceeded" error in React (issue #277)
+        if (formattedValue) {
+          onValueChange(this.getValueObject(formattedValue, numAsString));
+        }
         onUpdate();
       });      
     } else {
