@@ -55,6 +55,7 @@ const propTypes = {
   onBlur: PropTypes.func,
   type: PropTypes.oneOf(['text', 'tel', 'password']),
   isAllowed: PropTypes.func,
+  disabled: PropTypes.bool,
   renderText: PropTypes.func,
   getInputRef: PropTypes.func
 };
@@ -69,6 +70,7 @@ const defaultProps = {
   allowNegative: true,
   allowEmptyFormatting: false,
   isNumericString: false,
+  disabled: false,
   type: 'text',
   onValueChange: noop,
   onChange: noop,
@@ -870,7 +872,7 @@ class NumberFormat extends React.Component {
   }
 
   render() {
-    const {type, displayType, customInput, renderText, getInputRef} = this.props;
+    const {type, displayType, customInput, renderText, getInputRef, disabled} = this.props;
     const {value} = this.state;
 
     const otherProps = omit(this.props, propTypes);
@@ -878,6 +880,7 @@ class NumberFormat extends React.Component {
     const inputProps = Object.assign({}, otherProps, {
       type,
       value,
+      disabled,
       onChange: this.onChange,
       onKeyDown: this.onKeyDown,
       onMouseUp: this.onMouseUp,
