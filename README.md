@@ -60,6 +60,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | onValueChange | (values) => {} | none | onValueChange handler accepts [values object](#values-object) |
 | isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not |
 | renderText | (formattedValue) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. |
+| disabled | boolean | false | If true it will disable the input field and not include the input value when the form is submitted |
 | getInputRef | (elm) => void | null | Method to get reference of input or span based on displayType prop. See [Getting reference](#getting-reference)
 
 **Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
