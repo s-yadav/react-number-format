@@ -72,6 +72,19 @@ class App extends React.Component {
 
         <div className="example">
           <h3>
+            Disabled input field
+          </h3>
+          <NumberFormat
+            prefix="$"
+            thousandSeparator={true}
+            decimalScale={3}
+            fixedDecimalScale={true}
+            disabled
+            />
+        </div>
+
+        <div className="example">
+          <h3>
             Decimal scale : Format currency in input with decimal scale
           </h3>
           <NumberFormat thousandSeparator={true} decimalScale={3} fixedDecimalScale={true} prefix="$" />
