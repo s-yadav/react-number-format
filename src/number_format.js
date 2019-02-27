@@ -492,7 +492,7 @@ class NumberFormat extends React.Component {
     } else if (typeof format === 'string') {
       formattedValue = this.formatWithPattern(formattedValue);
     } else if (typeof format === 'function') {
-      formattedValue = format(formattedValue);
+      formattedValue = format(formattedValue, this.formatAsNumber);
     } else {
       formattedValue = this.formatAsNumber(formattedValue)
     }
