@@ -83,14 +83,14 @@ class App extends React.Component {
             Custom thousand separator : Format currency in input
           </h3>
           <div>
-            ThousandSeperator: '.', decimalSeparator=','
+            thousandSeperator: '.', decimalSeparator=','
           </div>
           <div>
             <NumberFormat thousandSeparator="." decimalSeparator="," prefix="$" />
           </div>
           <br/>
           <div>
-            ThousandSeperator: ' ', decimalSeparator='.'
+            thousandSeperator: ' ', decimalSeparator='.'
           </div>
           <div>
             <NumberFormat thousandSeparator=" " decimalSeparator="." prefix="$" />
@@ -102,17 +102,32 @@ class App extends React.Component {
             Custom thousand separator with decimal precision
           </h3>
           <div>
-            ThousandSeperator: ',', decimalSeparator='.', decimalScale:2
+            thousandSeparator: ',', decimalSeparator='.', decimalScale:2
           </div>
           <div>
             <NumberFormat thousandSeparator=","  decimalSeparator="." decimalScale={2} />
           </div>
           <br/>
           <div>
-            ThousandSeperator: '.', decimalSeparator=',', decimalScale:2
+            thousandSeperator: '.', decimalSeparator=',', decimalScale:2
           </div>
           <div>
             <NumberFormat thousandSeparator="."  decimalSeparator=","  decimalScale={2} />
+          </div>
+        </div>
+
+        <div className="example">
+          <h3>
+            Accounting format : displays negative numbers in parentheses
+          </h3>
+          <div>
+            accounting: true
+          </div>
+          <div>
+            <NumberFormat thousandSeparator="," decimalSeparator="." prefix="$" accounting={true} />
+          </div>
+          <div>
+            <NumberFormat value={-2456981} thousandSeparator="," decimalSeparator="." prefix="$" accounting={true} displayType="text" />
           </div>
         </div>
 
