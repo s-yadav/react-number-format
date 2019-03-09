@@ -55,6 +55,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
 | type | One of ['text', 'tel', 'password'] | text | Input type attribute |
 | format | String : Hash based ex (#### #### #### ####) <br/> Or Function| none | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number. |
+| accounting | boolean | false | Formats ammount in accounting mode, displays negative numbers in parentheses |
 | removeFormatting | (formattedValue) => numericString | none | If you are providing custom format method and it add numbers as format you will need to add custom removeFormatting logic |
 | mask | String (ex : _) | `' '` | If mask defined, component will show non entered placed with masked value. |
 | customInput | Component Reference | input | This allow supporting custom inputs with number format. |
@@ -120,6 +121,11 @@ Output : 4111 1111 1111 1111
 <NumberFormat thousandSeparator={true} prefix={'$'} />
 ```
 ![Screencast example](https://i.imgur.com/d0P2Db1.gif)
+
+#### Format currency : with negative numbers in parentheses
+```jsx
+<NumberFormat thousandSeparator={true} prefix={'$'} accounting={true} />
+```
 
 #### Indian(lakh) style and chinese(wan) style number grouping
 Indian (lakh) style grouping

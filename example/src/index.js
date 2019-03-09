@@ -97,14 +97,14 @@ class App extends React.Component {
             Custom thousand separator : Format currency in input
           </h3>
           <div>
-            ThousandSeparator: '.', decimalSeparator=','
+            thousandSeparator: '.', decimalSeparator=','
           </div>
           <div>
             <NumberFormat thousandSeparator="." decimalSeparator="," prefix="$" />
           </div>
           <br/>
           <div>
-            ThousandSeparator: ' ', decimalSeparator='.'
+            thousandSeparator: ' ', decimalSeparator='.'
           </div>
           <div>
             <NumberFormat thousandSeparator=" " decimalSeparator="." prefix="$" />
@@ -116,14 +116,14 @@ class App extends React.Component {
             Custom thousand separator with decimal precision
           </h3>
           <div>
-            ThousandSeparator: ',', decimalSeparator='.', decimalScale:2
+            thousandSeparator: ',', decimalSeparator='.', decimalScale:2
           </div>
           <div>
             <NumberFormat thousandSeparator=","  decimalSeparator="." decimalScale={2} />
           </div>
           <br/>
           <div>
-            ThousandSeparator: '.', decimalSeparator=',', decimalScale:2
+            thousandSeparator: '.', decimalSeparator=',', decimalScale:2
           </div>
           <div>
             <NumberFormat thousandSeparator="."  decimalSeparator=","  decimalScale={2} />
@@ -133,6 +133,21 @@ class App extends React.Component {
         <div className="example">
           <h3>Custom allowed decimal separators</h3>
           <NumberFormat thousandSeparator=" "  decimalSeparator="." allowedDecimalSeparators={['.', ',']} />
+        </div>
+
+        <div className="example">
+          <h3>
+            Accounting format : displays negative numbers in parentheses
+          </h3>
+          <div>
+            accounting: true
+          </div>
+          <div>
+            <NumberFormat thousandSeparator="," decimalSeparator="." prefix="$" accounting={true} />
+          </div>
+          <div>
+            <NumberFormat value={-2456981} thousandSeparator="," decimalSeparator="." prefix="$" accounting={true} displayType="text" />
+          </div>
         </div>
 
         <div className="example">
