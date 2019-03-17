@@ -1,7 +1,7 @@
 /**
- * react-number-format - 4.0.6
+ * react-number-format - 4.0.7
  * Author : Sudhanshu Yadav
- * Copyright (c) 2016, 2018 to Sudhanshu Yadav, released under the MIT license.
+ * Copyright (c) 2016, 2019 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
  */
 
@@ -365,6 +365,11 @@
       default:
         return /(\d)(?=(\d{3})+(?!\d))/g;
     }
+  }
+  function applyThousandSeparator(str, thousandSeparator, thousandsGroupStyle) {
+    var thousandsGroupRegex = getThousandsGroupRegex(thousandsGroupStyle);
+    var index = str.search(/[1-9]/);
+    return str.substring(0, index) + str.substring(index, str.length).replace(thousandsGroupRegex, '$1' + thousandSeparator);
   } //spilt a float number into different parts beforeDecimal, afterDecimal, and negation
 
   function splitDecimal(numStr) {
@@ -969,8 +974,7 @@
         if (decimalScale !== undefined) afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
 
         if (thousandSeparator) {
-          var thousandsGroupRegex = getThousandsGroupRegex(thousandsGroupStyle);
-          beforeDecimal = beforeDecimal.replace(thousandsGroupRegex, '$1' + thousandSeparator);
+          beforeDecimal = applyThousandSeparator(beforeDecimal, thousandSeparator, thousandsGroupStyle);
         } //add prefix and suffix
 
 

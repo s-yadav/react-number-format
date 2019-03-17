@@ -521,6 +521,12 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('-21-');
   });
   
+  it('should not apply thousand separator on the leading zeros #289', () => {
+    const wrapper = shallow(<NumberFormat prefix="$" thousandSeparator=","/>);
+
+    simulateKeyInput(wrapper.find('input'), '000012345678', 0);
+    expect(wrapper.state().value).toEqual('$000012,345,678');
+  });
 
   describe('Test thousand group style', () => {
     it('should format on english style thousand grouping', () => {

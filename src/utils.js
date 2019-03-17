@@ -24,6 +24,12 @@ export function getThousandsGroupRegex(thousandsGroupStyle: string) {
   }
 }
 
+export function applyThousandSeparator(str: string, thousandSeparator: string, thousandsGroupStyle: string) {
+  const thousandsGroupRegex = getThousandsGroupRegex(thousandsGroupStyle);
+  const index = str.search(/[1-9]/);
+  return str.substring(0, index) + str.substring(index, str.length).replace(thousandsGroupRegex, '$1' + thousandSeparator);
+}
+
 //spilt a float number into different parts beforeDecimal, afterDecimal, and negation
 export function splitDecimal(numStr: string, allowNegative: boolean = true) {
   const hasNagation = numStr[0] === '-';
