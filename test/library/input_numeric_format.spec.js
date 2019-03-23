@@ -48,6 +48,17 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('-$123.55');
   });
 
+  it('supports negative numbers when using parentheses negationFormat', () => {
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} negationFormat={'parentheses'} />);
+
+    simulateKeyInput(wrapper.find('input'), '-', 0);
+
+    expect(wrapper.state().value).toEqual('-');
+
+    simulateKeyInput(wrapper.find('input'), '123.55', 1);
+
+    expect(wrapper.state().value).toEqual('($123.55)');
+  });
 
   it('removes negation when double negation is done', () => {
     const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} value={-2456981.89} />);
@@ -64,12 +75,40 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('');
   });
 
+  it('removes negation when double negation is done when using parentheses negationFormat', () => {
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} value={-2456981.89} negationFormat={'parentheses'} />);
+
+    expect(wrapper.state().value).toEqual('($2,456,981.89)');
+
+    simulateKeyInput(wrapper.find('input'), '-', 1);
+
+    expect(wrapper.state().value).toEqual('$2,456,981.89');
+
+    wrapper.setProps({value: ''});
+    wrapper.update();
+    simulateKeyInput(wrapper.find('input'), '--', 0);
+    expect(wrapper.state().value).toEqual('');
+  });
+
   it('allows negation and double negation any cursor position in the input', () => {
-    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} value={2456981.89}/>);
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} value={2456981.89} />);
 
     simulateKeyInput(wrapper.find('input'), '-', 5);
 
     expect(wrapper.state().value).toEqual('-$2,456,981.89');
+
+    //restore negation back
+    simulateKeyInput(wrapper.find('input'), '-', 7);
+
+    expect(wrapper.state().value).toEqual('$2,456,981.89');
+  });
+
+  it('allows negation and double negation any cursor position in the input when using parentheses negationFormat', () => {
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} value={2456981.89} negationFormat={'parentheses'} />);
+
+    simulateKeyInput(wrapper.find('input'), '-', 5);
+
+    expect(wrapper.state().value).toEqual('($2,456,981.89)');
 
     //restore negation back
     simulateKeyInput(wrapper.find('input'), '-', 7);
@@ -520,8 +559,31 @@ describe('Test NumberFormat as input with numeric format options', () => {
     simulateKeyInput(wrapper.find('input'), '-', 2);
     expect(wrapper.state().value).toEqual('-21-');
   });
-  
 
+  it('should not break if suffix/prefix has parentheses', () => {
+    const wrapperPrefix = shallow(<NumberFormat prefix="(test)" negationFormat="parentheses" value={-12345} />);
+
+    simulateKeyInput(wrapperPrefix.find('input'), '0', 11);
+    expect(wrapperPrefix.state().value).toEqual('((test)123405)');
+
+    simulateKeyInput(wrapperPrefix.find('input'), '0', 8);
+    expect(wrapperPrefix.state().value).toEqual('((test)1023405)');
+
+    simulateKeyInput(wrapperPrefix.find('input'), '-', 8);
+    expect(wrapperPrefix.state().value).toEqual('(test)1023405');
+
+    const wrapperSuffix = shallow(<NumberFormat suffix="(test)" negationFormat="parentheses" value={-12345} />);
+
+    simulateKeyInput(wrapperSuffix.find('input'), '0', 2);
+    expect(wrapperSuffix.state().value).toEqual('(102345(test))');
+
+    simulateKeyInput(wrapperSuffix.find('input'), '0', 5);
+    expect(wrapperSuffix.state().value).toEqual('(1023045(test))');
+
+    simulateKeyInput(wrapperSuffix.find('input'), '-', 2);
+    expect(wrapperSuffix.state().value).toEqual('1023045(test)');
+  });
+  
   describe('Test thousand group style', () => {
     it('should format on english style thousand grouping', () => {
       const wrapper = shallow(<NumberFormat thousandSeparator={true} value={12345678}/>);
