@@ -10,6 +10,16 @@ describe('NumberFormat as text', () => {
     expect(wrapper.find('span').text()).toEqual('$2,456,981');
   });
 
+  it('should format numbers to negative (type minus) currency', () => {
+    const wrapper = shallow(<NumberFormat value={-2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />);
+    expect(wrapper.find('span').text()).toEqual('-$2,456,981');
+  });
+
+  it('should format numbers to negative (type parentheses) currency', () => {
+    const wrapper = shallow(<NumberFormat value={-2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} negationFormat={'parentheses'} />);
+    expect(wrapper.find('span').text()).toEqual('($2,456,981)');
+  });
+
   it('should format as given format', () => {
     const wrapper = shallow(<NumberFormat value={4111111111111111} displayType={'text'} format="#### #### #### ####" />);
     expect(wrapper.find('span').text()).toEqual('4111 1111 1111 1111');

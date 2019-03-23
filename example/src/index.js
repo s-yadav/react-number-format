@@ -137,16 +137,20 @@ class App extends React.Component {
 
         <div className="example">
           <h3>
-            Accounting format : displays negative numbers in parentheses
+            negationFormat: Displays negative numbers with a minus or within parentheses
           </h3>
           <div>
-            accounting: true
+            negationFormat='parentheses'
           </div>
           <div>
-            <NumberFormat thousandSeparator="," decimalSeparator="." prefix="$" accounting={true} />
+            <NumberFormat thousandSeparator="," decimalSeparator="." prefix="$" negationFormat="parentheses" />
+          </div>
+          <br/>
+          <div>
+            negationFormat='parentheses', displayType='text'
           </div>
           <div>
-            <NumberFormat value={-2456981} thousandSeparator="," decimalSeparator="." prefix="$" accounting={true} displayType="text" />
+            <NumberFormat value={-2456981} thousandSeparator="," decimalSeparator="." prefix="$" negationFormat="parentheses" displayType="text" />
           </div>
         </div>
 
@@ -196,7 +200,7 @@ class App extends React.Component {
           <h3>
             Custom input : Format credit card number
           </h3>
-          <NumberFormat customInput={TextField} format="#### #### #### ####" />
+          <NumberFormat customInput={TextField} id="customInput" format="#### #### #### ####" />
         </div>
 
 

@@ -141,7 +141,7 @@ describe('NumberFormat as input', () => {
       )
     }
 
-    const wrapper = mount(<WrapperComponent customInput={TextField} thousandSeparator={'.'} decimalSeparator={','}/>);
+    const wrapper = mount(<WrapperComponent customInput={TextField} id="customInput" thousandSeparator={'.'} decimalSeparator={','}/>);
     const input = wrapper.find('input');
 
     simulateKeyInput(input, '2456981,89', 0);
@@ -368,5 +368,13 @@ describe('NumberFormat as input', () => {
         shallow(<NumberFormat format="#### #### ####" mask={['D', 'D', 'M', '1', '2', 'Y', 'Y', 'Y']}/>)
       }).toThrow()
     })
-  })
+  });
+
+  it('should allow negationFormat to be parentheses', () => {
+    const wrapper = shallow(<NumberFormat value={null} decimalScale={2} negationFormat="parentheses" />);
+    expect(wrapper.state().value).toEqual('');
+
+    wrapper.setProps({value: NaN});
+    expect(wrapper.state().value).toEqual('');
+  });
 });

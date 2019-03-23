@@ -55,7 +55,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
 | type | One of ['text', 'tel', 'password'] | text | Input type attribute |
 | format | String : Hash based ex (#### #### #### ####) <br/> Or Function| none | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number. |
-| accounting | boolean | false | Formats ammount in accounting mode, displays negative numbers in parentheses |
+| negationFormat | One of ['minus', 'parentheses'] | minus | Display negative numbers with minus or within parentheses |
 | removeFormatting | (formattedValue) => numericString | none | If you are providing custom format method and it add numbers as format you will need to add custom removeFormatting logic |
 | mask | String (ex : _) | `' '` | If mask defined, component will show non entered placed with masked value. |
 | customInput | Component Reference | input | This allow supporting custom inputs with number format. |
@@ -221,14 +221,14 @@ You can easily extend your custom input with number format. But custom input sho
 ```
 
 ```jsx
-  <NumberFormat customInput={TextField} format="#### #### #### ####"/>
+  <NumberFormat customInput={TextField} id="customInput" format="#### #### #### ####"/>
 ```
 ![Screencast example](https://media.giphy.com/media/3og0IH0LJhIQWFxztC/giphy.gif)
 
 **Passing custom input props**
 All custom input props and number input props are passed together.
 ```jsx
-  <NumberFormat hintText="Some placeholder" value={this.state.card} customInput={TextField} format="#### #### #### ####"/>
+  <NumberFormat hintText="Some placeholder" value={this.state.card} customInput={TextField} id="customInput" format="#### #### #### ####"/>
 ```
 
 ### Getting reference
