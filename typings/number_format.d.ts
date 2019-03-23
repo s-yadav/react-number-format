@@ -43,7 +43,7 @@ declare module "react-number-format" {
     isNumericString?: boolean;
     customInput?: React.ComponentType<any>;
     allowNegative?: boolean;
-    negationFormat: 'minus' | 'parentheses';
+    negationFormat?: 'minus' | 'parentheses';
     allowEmptyFormatting?: boolean;
     allowLeadingZeros?: boolean;
     onValueChange?: (values: NumberFormatValues) => void;
