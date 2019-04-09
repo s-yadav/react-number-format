@@ -365,7 +365,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('$20,000.25');
   });
 
-  it('should remove leading 0s while user go out of focus', () => {
+  it('should remove leading 0s while user go out of focus and allowLeadingZeros is false', () => {
     const wrapper = shallow(<NumberFormat value={23456.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'}/> );
 
     simulateKeyInput(wrapper.find('input'), '0', 1);
@@ -379,6 +379,22 @@ describe('Test NumberFormat as input with numeric format options', () => {
     simulateKeyInput(wrapper.find('input'), 'Backspace', 2);
     simulateBlurEvent(wrapper.find('input'));
     expect(wrapper.state().value).toEqual('$0.25');
+  });
+
+  it('should not remove leading 0s while user go out of focus and allowLeadingZeros is true', () => {
+    const wrapper = shallow(<NumberFormat value={23456.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'} allowLeadingZeros={true}/> );
+
+    simulateKeyInput(wrapper.find('input'), '0', 1);
+    simulateBlurEvent(wrapper.find('input'));
+
+    expect(wrapper.state().value).toEqual('$023,456.78');
+
+    wrapper.setProps({value: 10000.25});
+    wrapper.update();
+
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 2);
+    simulateBlurEvent(wrapper.find('input'));
+    expect(wrapper.state().value).toEqual('$0,000.25');
   });
 
   it('should add 0 before decimal if user is in focus', () => {

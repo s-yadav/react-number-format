@@ -47,6 +47,7 @@ const propTypes = {
   customInput: PropTypes.func,
   allowNegative: PropTypes.bool,
   allowEmptyFormatting: PropTypes.bool,
+  allowLeadingZeros: PropTypes.bool,
   onValueChange: PropTypes.func,
   onKeyDown: PropTypes.func,
   onMouseUp: PropTypes.func,
@@ -68,6 +69,7 @@ const defaultProps = {
   suffix: '',
   allowNegative: true,
   allowEmptyFormatting: false,
+  allowLeadingZeros: false,
   isNumericString: false,
   type: 'text',
   onValueChange: noop,
@@ -728,14 +730,14 @@ class NumberFormat extends React.Component {
 
   onBlur(e: SyntheticInputEvent) {
     const {props, state} = this;
-    const {format, onBlur} = props;
+    const {format, onBlur, allowLeadingZeros} = props;
     let {numAsString} = state;
     const lastValue = state.value;
 
     this.focusedElm = null;
 
     if (!format) {
-      numAsString = fixLeadingZero(numAsString);
+      numAsString = allowLeadingZeros ? numAsString : fixLeadingZero(numAsString);
       const formattedValue = this.formatNumString(numAsString);
 
       //change the state
