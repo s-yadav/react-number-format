@@ -23,7 +23,7 @@ import {
 const propTypes = {
   thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([true])]),
   decimalSeparator: PropTypes.string,
-  thousandsGroupStyle: PropTypes.oneOf(['thousand', 'lakh', 'wan']), 
+  thousandsGroupStyle: PropTypes.oneOf(['thousand', 'lakh', 'wan']),
   decimalScale: PropTypes.number,
   fixedDecimalScale: PropTypes.bool,
   displayType: PropTypes.oneOf(['input', 'text']),
@@ -44,7 +44,7 @@ const propTypes = {
     PropTypes.string
   ]),
   isNumericString: PropTypes.bool,
-  customInput: PropTypes.func,
+  customInput: PropTypes.elementType,
   allowNegative: PropTypes.bool,
   allowEmptyFormatting: PropTypes.bool,
   onValueChange: PropTypes.func,
@@ -100,7 +100,7 @@ class NumberFormat extends React.Component {
     super(props);
 
     const {defaultValue} = props;
-    
+
     //validate props
     this.validateProps();
 
@@ -145,7 +145,7 @@ class NumberFormat extends React.Component {
 
       if (
         //while typing set state only when float value changes
-        ((!isNaN(floatValue) || !isNaN(lastFloatValue)) && floatValue !== lastFloatValue) || 
+        ((!isNaN(floatValue) || !isNaN(lastFloatValue)) && floatValue !== lastFloatValue) ||
         //can also set state when float value is same and the format props changes
         lastValueWithNewFormat !== stateValue ||
         //set state always when not in focus and formatted value is changed
@@ -671,7 +671,7 @@ class NumberFormat extends React.Component {
         const inputValue = params.inputValue || input.value;
 
         const currentCaretPosition = getCurrentCaretPosition(input);
-      
+
         //get the caret position
         caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
       }
@@ -687,13 +687,13 @@ class NumberFormat extends React.Component {
     if (numAsString === undefined) {
       numAsString = this.removeFormatting(formattedValue);
     }
-    
+
     //update state if value is changed
     if (formattedValue !== lastValue) {
       this.setState({value : formattedValue, numAsString}, () => {
         onValueChange(this.getValueObject(formattedValue, numAsString));
         onUpdate();
-      });      
+      });
     } else {
       onUpdate();
     }
@@ -719,7 +719,7 @@ class NumberFormat extends React.Component {
     if (!isAllowed(valueObj)) {
       formattedValue = lastValue;
     }
-    
+
     this.updateValue({ formattedValue, numAsString, inputValue, input: el }, () => {
       props.onChange(e);
     });
@@ -858,7 +858,7 @@ class NumberFormat extends React.Component {
       const {selectionStart, selectionEnd, value = ''} = el;
 
       const caretPosition = this.correctCaretPosition(value, selectionStart);
-      
+
       //setPatchedCaretPosition only when everything is not selected on focus (while tabbing into the field)
       if (caretPosition !== selectionStart && !(selectionStart === 0 && selectionEnd === value.length)) {
         this.setPatchedCaretPosition(el, caretPosition, value);
