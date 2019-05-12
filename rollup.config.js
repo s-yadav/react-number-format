@@ -41,14 +41,14 @@ const defaultConfig = {
       babelrc: false,
       ...babelConfig,
       exclude: "node_modules/**",
-      presets: ['@babel/preset-react', ['@babel/env', { modules: false }]]
+      presets: ['@babel/preset-react', ['@babel/env', { modules: false }]],
+    }),
+    replace({
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)
     }),
     resolve(),
     commonjs({
       include: /node_modules/
-    }),
-    replace({
-      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)
     }),
     fileSize(),
     license({
