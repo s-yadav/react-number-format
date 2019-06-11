@@ -13,13 +13,7 @@ export function escapeRegExp(str: string) {
 }
 
 export function negativeRegExp(negationFormat: string) {
-  switch (negationFormat) {
-    case 'parentheses':
-      return /\(/;
-    case 'negative':
-    default:
-      return /-/;
-  }
+  return negationFormat === 'parentheses' ? /\(/ : /-/;
 }
 
 export function getThousandsGroupRegex(thousandsGroupStyle: string) {
@@ -42,23 +36,11 @@ export function applyThousandSeparator(str: string, thousandSeparator: string, t
 }
 
 export function getNegationPrefixSymbol(negationFormat: string) {
-  switch (negationFormat) {
-    case 'parentheses':
-      return '(';
-    case 'negative':
-    default:
-      return '-';
-  }
+  return negationFormat === 'parentheses' ? '(' : '-';
 }
 
 export function getNegationSuffixSymbol(negationFormat: string) {
-  switch (negationFormat) {
-    case 'parentheses':
-      return ')';
-    case 'negative':
-    default:
-      return '';
-  }
+  return negationFormat === 'parentheses' ? ')' : '';
 }
 
 //spilt a float number into different parts beforeDecimal, afterDecimal, and negation

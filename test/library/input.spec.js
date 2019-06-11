@@ -370,7 +370,7 @@ describe('NumberFormat as input', () => {
     })
   });
 
-  it('should allow negationFormat to be parentheses', () => {
+  it('should not break if null or NaN is provided as value when negationFormat is set to parentheses', () => {
     const wrapper = shallow(<NumberFormat value={null} decimalScale={2} negationFormat="parentheses" />);
     expect(wrapper.state().value).toEqual('');
 
