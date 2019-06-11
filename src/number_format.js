@@ -47,7 +47,7 @@ const propTypes = {
     PropTypes.string
   ]),
   isNumericString: PropTypes.bool,
-  customInput: PropTypes.func,
+  customInput: PropTypes.elementType,
   allowNegative: PropTypes.bool,
   negationFormat: PropTypes.oneOf(['minus', 'parentheses']),
   allowEmptyFormatting: PropTypes.bool,
@@ -491,7 +491,7 @@ class NumberFormat extends React.Component {
     //apply decimal precision if its defined
     if (decimalScale !== undefined) afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
 
-    if (thousandSeparator) {
+    if(thousandSeparator) {
       beforeDecimal = applyThousandSeparator(beforeDecimal, thousandSeparator, thousandsGroupStyle);
     }
 
