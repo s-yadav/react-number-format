@@ -512,13 +512,13 @@ class NumberFormat extends React.Component {
   }
 
   formatNumString(numStr: string = '') {
-    const {format, allowEmptyFormatting} = this.props;
+    const {format, allowEmptyFormatting, negationFormat} = this.props;
     let formattedValue = numStr;
 
     if (numStr === '' && !allowEmptyFormatting) {
       formattedValue = '';
     } else if (numStr === '-' && !format) {
-      formattedValue = '-';
+      formattedValue = negationFormat === 'parentheses' ? '()' : '-';
     } else if (typeof format === 'string') {
       formattedValue = this.formatWithPattern(formattedValue);
     } else if (typeof format === 'function') {

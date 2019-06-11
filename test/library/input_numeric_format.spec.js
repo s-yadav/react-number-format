@@ -53,7 +53,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
 
     simulateKeyInput(wrapper.find('input'), '-', 0);
 
-    expect(wrapper.state().value).toEqual('-');
+    expect(wrapper.state().value).toEqual('()');
 
     simulateKeyInput(wrapper.find('input'), '123.55', 1);
 
