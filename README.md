@@ -122,7 +122,7 @@ Output : 4111 1111 1111 1111
 
 #### Format currency : with negative numbers in parentheses
 ```jsx
-<NumberFormat thousandSeparator={true} prefix={'$'} accounting={true} />
+<NumberFormat thousandSeparator={true} prefix={'$'} negationFormat='parentheses' />
 ```
 
 #### Indian(lakh) style and chinese(wan) style number grouping
