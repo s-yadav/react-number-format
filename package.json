@@ -3,6 +3,7 @@
   "description": "React component to format number in an input or as a text.",
   "version": "4.0.8",
   "main": "lib/number_format.js",
+  "module": "dist/react-number-format.es.js",
   "author": "Sudhanshu Yadav",
   "license": "MIT",
   "types": "typings/number_format.d.ts",
