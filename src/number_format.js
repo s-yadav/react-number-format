@@ -502,7 +502,7 @@ class NumberFormat extends React.Component {
     //apply decimal precision if its defined
     if (decimalScale !== undefined) afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
 
-    if(thousandSeparator) {
+    if (thousandSeparator) {
       beforeDecimal = applyThousandSeparator(beforeDecimal, thousandSeparator, thousandsGroupStyle);
     }
 
