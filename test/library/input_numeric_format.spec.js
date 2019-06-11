@@ -560,6 +560,13 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('-21-');
   });
 
+  it('should not apply thousand separator on the leading zeros #289', () => {
+    const wrapper = shallow(<NumberFormat prefix="$" thousandSeparator=","/>);
+
+    simulateKeyInput(wrapper.find('input'), '000012345678', 0);
+    expect(wrapper.state().value).toEqual('$000012,345,678');
+  });
+
   it('should not break if suffix/prefix has parentheses', () => {
     const wrapperPrefix = shallow(<NumberFormat prefix="(test)" negationFormat="parentheses" value={-12345} />);
 

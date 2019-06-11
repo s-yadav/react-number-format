@@ -18,7 +18,7 @@ import {
   splitDecimal,
   findChangedIndex,
   clamp,
-  getThousandsGroupRegex,
+  applyThousandSeparator,
   getCurrentCaretPosition,
 } from './utils';
 
@@ -492,8 +492,7 @@ class NumberFormat extends React.Component {
     if (decimalScale !== undefined) afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
 
     if (thousandSeparator) {
-      const thousandsGroupRegex = getThousandsGroupRegex(thousandsGroupStyle);
-      beforeDecimal = beforeDecimal.replace(thousandsGroupRegex, '$1' + thousandSeparator);
+      beforeDecimal = applyThousandSeparator(beforeDecimal, thousandSeparator, thousandsGroupStyle);
     }
 
     //add prefix and suffix

@@ -28,6 +28,12 @@ export function getThousandsGroupRegex(thousandsGroupStyle: string) {
   }
 }
 
+export function applyThousandSeparator(str: string, thousandSeparator: string, thousandsGroupStyle: string) {
+  const thousandsGroupRegex = getThousandsGroupRegex(thousandsGroupStyle);
+  const index = str.search(/[1-9]/);
+  return str.substring(0, index) + str.substring(index, str.length).replace(thousandsGroupRegex, '$1' + thousandSeparator);
+}
+
 export function getNegationPrefixSymbol(negationFormat: string) {
   return negationFormat === 'parentheses' ? '(' : '-';
 }
