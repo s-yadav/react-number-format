@@ -5,7 +5,7 @@ declare const {defaultValue, value, ...inputAttributes}: React.InputHTMLAttribut
 type InputAttributes = typeof inputAttributes;
 
 
-declare module "react-number-format" {
+declare module "react-number-format-cesco" {
 
   export interface NumberFormatState {
     value?: string;
@@ -43,6 +43,7 @@ declare module "react-number-format" {
     defaultValue?: number | string;
     isNumericString?: boolean;
     customInput?: React.ComponentType<any>;
+    customInputProps?: any;
     allowNegative?: boolean;
     allowEmptyFormatting?: boolean;
     onValueChange?: (values: NumberFormatValues) => void;

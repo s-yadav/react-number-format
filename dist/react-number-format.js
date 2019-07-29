@@ -1,8 +1,8 @@
 /**
- * react-number-format - 4.0.8
+ * react-number-format-cesco - 4.0.12
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016, 2019 to Sudhanshu Yadav, released under the MIT license.
- * https://github.com/s-yadav/react-number-format
+ * https://github.com/cescoferraro/react-number-format
  */
 
 (function (global, factory) {
@@ -368,6 +368,7 @@
     defaultValue: propTypes.oneOfType([propTypes.number, propTypes.string]),
     isNumericString: propTypes.bool,
     customInput: propTypes.elementType,
+    customInputProps: propTypes.any,
     allowNegative: propTypes.bool,
     allowEmptyFormatting: propTypes.bool,
     onValueChange: propTypes.func,
@@ -389,6 +390,7 @@
     prefix: '',
     suffix: '',
     allowNegative: true,
+    customInputProps: {},
     allowEmptyFormatting: false,
     isNumericString: false,
     type: 'text',
@@ -427,11 +429,11 @@
         selectionStart: 0,
         selectionEnd: 0
       };
-      _this.onChange = _this.onChange.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-      _this.onKeyDown = _this.onKeyDown.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-      _this.onMouseUp = _this.onMouseUp.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-      _this.onFocus = _this.onFocus.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-      _this.onBlur = _this.onBlur.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+      _this.onChange = _this.onChange.bind(_assertThisInitialized(_this));
+      _this.onKeyDown = _this.onKeyDown.bind(_assertThisInitialized(_this));
+      _this.onMouseUp = _this.onMouseUp.bind(_assertThisInitialized(_this));
+      _this.onFocus = _this.onFocus.bind(_assertThisInitialized(_this));
+      _this.onBlur = _this.onBlur.bind(_assertThisInitialized(_this));
       return _this;
     }
 
@@ -1280,6 +1282,7 @@
       key: "render",
       value: function render() {
         var _this$props12 = this.props,
+            customInputProps = _this$props12.customInputProps,
             type = _this$props12.type,
             displayType = _this$props12.displayType,
             customInput = _this$props12.customInput,
@@ -1296,7 +1299,7 @@
           onMouseUp: this.onMouseUp,
           onFocus: this.onFocus,
           onBlur: this.onBlur
-        });
+        }, customInputProps);
 
         if (displayType === 'text') {
           return renderText ? renderText(value) || null : React.createElement("span", _extends({}, otherProps, {
