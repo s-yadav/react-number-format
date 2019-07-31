@@ -113,7 +113,7 @@ describe('NumberFormat as input', () => {
       )
     }
 
-    const wrapper = mount(<WrapperComponent customInput={TextField} id="customInput" thousandSeparator={'.'} decimalSeparator={','}/>);
+    const wrapper = mount(<WrapperComponent customInput={TextField} id="customInput" thousandSeparator="." decimalSeparator=","/>);
     const input = wrapper.find('input');
 
     simulateKeyInput(input, '2456981,89', 0);
