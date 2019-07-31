@@ -76,7 +76,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('removes negation when double negation is done when using parentheses negationFormat', () => {
-    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} value={-2456981.89} negationFormat={'parentheses'} />);
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix="$" value={-2456981.89} negationFormat="parentheses" />);
 
     expect(wrapper.state().value).toEqual('($2,456,981.89)');
 
