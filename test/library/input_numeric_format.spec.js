@@ -49,7 +49,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('supports negative numbers when using parentheses negationFormat', () => {
-    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} negationFormat={'parentheses'} />);
+    const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix="$" negationFormat="parentheses" />);
 
     simulateKeyInput(wrapper.find('input'), '-', 0);
 
