@@ -893,6 +893,7 @@ class NumberFormat extends React.Component {
       return (
         <CustomInput
           {...inputProps}
+          ref = {getInputRef}
         />
       )
     }
