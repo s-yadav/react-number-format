@@ -312,6 +312,13 @@ describe('NumberFormat as input', () => {
       expect(() => {
         shallow(<NumberFormat format="#### #### ####" mask={['D', 'D', 'M', '1', '2', 'Y', 'Y', 'Y']}/>)
       }).toThrow()
+    });
+
+    it('should allow to use decimal separator for a format prop as a function', () => {
+      const wrapper = shallow(<NumberFormat format={val => val}/>);
+
+      simulateKeyInput(wrapper.find('input'), '123.24', 0);
+      expect(wrapper.state().value).toEqual('123.24');
     })
   })
 });
