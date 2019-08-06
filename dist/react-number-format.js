@@ -1,5 +1,5 @@
 /**
- * react-number-format - 4.0.8
+ * react-number-format - 4.1.1
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016, 2019 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
@@ -1304,7 +1304,9 @@
           }), value);
         } else if (customInput) {
           var CustomInput = customInput;
-          return React.createElement(CustomInput, inputProps);
+          return React.createElement(CustomInput, _extends({}, inputProps, {
+            ref: getInputRef
+          }));
         }
 
         return React.createElement("input", _extends({}, inputProps, {
