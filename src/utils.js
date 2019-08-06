@@ -12,6 +12,10 @@ export function escapeRegExp(str: string) {
   return str.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
 }
 
+export function negativeRegExp(negationFormat: string) {
+  return negationFormat === 'parentheses' ? /\(/ : /-/;
+}
+
 export function getThousandsGroupRegex(thousandsGroupStyle: string) {
   switch (thousandsGroupStyle) {
     case 'lakh':
@@ -28,6 +32,14 @@ export function applyThousandSeparator(str: string, thousandSeparator: string, t
   const thousandsGroupRegex = getThousandsGroupRegex(thousandsGroupStyle);
   const index = str.search(/[1-9]/);
   return str.substring(0, index) + str.substring(index, str.length).replace(thousandsGroupRegex, '$1' + thousandSeparator);
+}
+
+export function getNegationPrefixSymbol(negationFormat: string) {
+  return negationFormat === 'parentheses' ? '(' : '-';
+}
+
+export function getNegationSuffixSymbol(negationFormat: string) {
+  return negationFormat === 'parentheses' ? ')' : '';
 }
 
 //spilt a float number into different parts beforeDecimal, afterDecimal, and negation
@@ -95,7 +107,6 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
   const decimalSeparator = shoudHaveDecimalSeparator ? '.' : '';
   return `${negation}${intPart}${decimalSeparator}${decimalPart}`;
 }
-
 
 export function omit(obj: Object, keyMaps: Object) {
   const filteredObj = {};

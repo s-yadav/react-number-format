@@ -83,14 +83,14 @@ class App extends React.Component {
             Custom thousand separator : Format currency in input
           </h3>
           <div>
-            ThousandSeperator: '.', decimalSeparator=','
+            thousandSeperator: '.', decimalSeparator=','
           </div>
           <div>
             <NumberFormat thousandSeparator="." decimalSeparator="," prefix="$" />
           </div>
           <br/>
           <div>
-            ThousandSeperator: ' ', decimalSeparator='.'
+            thousandSeperator: ' ', decimalSeparator='.'
           </div>
           <div>
             <NumberFormat thousandSeparator=" " decimalSeparator="." prefix="$" />
@@ -102,17 +102,36 @@ class App extends React.Component {
             Custom thousand separator with decimal precision
           </h3>
           <div>
-            ThousandSeperator: ',', decimalSeparator='.', decimalScale:2
+            thousandSeparator: ',', decimalSeparator='.', decimalScale:2
           </div>
           <div>
             <NumberFormat thousandSeparator=","  decimalSeparator="." decimalScale={2} />
           </div>
           <br/>
           <div>
-            ThousandSeperator: '.', decimalSeparator=',', decimalScale:2
+            thousandSeperator: '.', decimalSeparator=',', decimalScale:2
           </div>
           <div>
             <NumberFormat thousandSeparator="."  decimalSeparator=","  decimalScale={2} />
+          </div>
+        </div>
+
+        <div className="example">
+          <h3>
+            negationFormat: Displays negative numbers with a minus or within parentheses
+          </h3>
+          <div>
+            negationFormat='parentheses'
+          </div>
+          <div>
+            <NumberFormat thousandSeparator="," decimalSeparator="." prefix="$" negationFormat="parentheses" />
+          </div>
+          <br/>
+          <div>
+            negationFormat='parentheses', displayType='text'
+          </div>
+          <div>
+            <NumberFormat value={-2456981} thousandSeparator="," decimalSeparator="." prefix="$" negationFormat="parentheses" displayType="text" />
           </div>
         </div>
 
@@ -162,7 +181,7 @@ class App extends React.Component {
           <h3>
             Custom input : Format credit card number
           </h3>
-          <NumberFormat customInput={TextField} format="#### #### #### ####" />
+          <NumberFormat customInput={TextField} id="customInput" format="#### #### #### ####" />
         </div>
 
       </div>
