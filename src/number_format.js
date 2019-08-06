@@ -47,6 +47,7 @@ const propTypes = {
   customInput: PropTypes.elementType,
   allowNegative: PropTypes.bool,
   allowEmptyFormatting: PropTypes.bool,
+  allowLeadingZeros: PropTypes.bool,
   onValueChange: PropTypes.func,
   onKeyDown: PropTypes.func,
   onMouseUp: PropTypes.func,
@@ -68,6 +69,7 @@ const defaultProps = {
   suffix: '',
   allowNegative: true,
   allowEmptyFormatting: false,
+  allowLeadingZeros: false,
   isNumericString: false,
   type: 'text',
   onValueChange: noop,
@@ -455,7 +457,7 @@ class NumberFormat extends React.Component {
    * @return {string} formatted Value
    */
   formatAsNumber(numStr: string) {
-    const {decimalScale, fixedDecimalScale, prefix, suffix, allowNegative, thousandsGroupStyle} = this.props;
+    const {decimalScale, fixedDecimalScale, prefix, suffix, allowNegative, thousandsGroupStyle, value} = this.props;
     const {thousandSeparator, decimalSeparator} = this.getSeparators();
 
     const hasDecimalSeparator = numStr.indexOf('.') !== -1 || (decimalScale && fixedDecimalScale);
@@ -465,7 +467,9 @@ class NumberFormat extends React.Component {
     if (decimalScale !== undefined) afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
 
     if(thousandSeparator) {
-      beforeDecimal = applyThousandSeparator(beforeDecimal, thousandSeparator, thousandsGroupStyle);
+      const beforeDecimalNumAsString = this.removeFormatting(beforeDecimal);
+      const beforeDecimalFloatValue = parseFloat(beforeDecimalNumAsString);
+      if (beforeDecimalFloatValue !== 0) beforeDecimal = applyThousandSeparator(beforeDecimal, thousandSeparator, thousandsGroupStyle);
     }
 
     //add prefix and suffix
@@ -728,14 +732,14 @@ class NumberFormat extends React.Component {
 
   onBlur(e: SyntheticInputEvent) {
     const {props, state} = this;
-    const {format, onBlur} = props;
+    const {format, onBlur, allowLeadingZeros} = props;
     let {numAsString} = state;
     const lastValue = state.value;
 
     this.focusedElm = null;
 
     if (!format) {
-      numAsString = fixLeadingZero(numAsString);
+      numAsString = allowLeadingZeros ? numAsString : fixLeadingZero(numAsString);
       const formattedValue = this.formatNumString(numAsString);
 
       //change the state

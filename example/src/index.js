@@ -50,6 +50,13 @@ class App extends React.Component {
 
         <div className="example">
           <h3>
+            Allow Leading Zeros: Will retain leading zeros onBlur
+          </h3>
+          <NumberFormat allowLeadingZeros={true}/>
+        </div>
+
+        <div className="example">
+          <h3>
             Indian (lakh) style number grouping
           </h3>
           <NumberFormat
@@ -83,14 +90,14 @@ class App extends React.Component {
             Custom thousand separator : Format currency in input
           </h3>
           <div>
-            ThousandSeperator: '.', decimalSeparator=','
+            ThousandSeparator: '.', decimalSeparator=','
           </div>
           <div>
             <NumberFormat thousandSeparator="." decimalSeparator="," prefix="$" />
           </div>
           <br/>
           <div>
-            ThousandSeperator: ' ', decimalSeparator='.'
+            ThousandSeparator: ' ', decimalSeparator='.'
           </div>
           <div>
             <NumberFormat thousandSeparator=" " decimalSeparator="." prefix="$" />
@@ -102,14 +109,14 @@ class App extends React.Component {
             Custom thousand separator with decimal precision
           </h3>
           <div>
-            ThousandSeperator: ',', decimalSeparator='.', decimalScale:2
+            ThousandSeparator: ',', decimalSeparator='.', decimalScale:2
           </div>
           <div>
             <NumberFormat thousandSeparator=","  decimalSeparator="." decimalScale={2} />
           </div>
           <br/>
           <div>
-            ThousandSeperator: '.', decimalSeparator=',', decimalScale:2
+            ThousandSeparator: '.', decimalSeparator=',', decimalScale:2
           </div>
           <div>
             <NumberFormat thousandSeparator="."  decimalSeparator=","  decimalScale={2} />
