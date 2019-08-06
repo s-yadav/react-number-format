@@ -467,9 +467,7 @@ class NumberFormat extends React.Component {
     if (decimalScale !== undefined) afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
 
     if(thousandSeparator) {
-      const beforeDecimalNumAsString = this.removeFormatting(beforeDecimal);
-      const beforeDecimalFloatValue = parseFloat(beforeDecimalNumAsString);
-      if (beforeDecimalFloatValue !== 0) beforeDecimal = applyThousandSeparator(beforeDecimal, thousandSeparator, thousandsGroupStyle);
+      beforeDecimal = applyThousandSeparator(beforeDecimal, thousandSeparator, thousandsGroupStyle);
     }
 
     //add prefix and suffix
@@ -739,7 +737,10 @@ class NumberFormat extends React.Component {
     this.focusedElm = null;
 
     if (!format) {
-      numAsString = allowLeadingZeros ? numAsString : fixLeadingZero(numAsString);
+      if (!allowLeadingZeros) {
+        numAsString = fixLeadingZero(numAsString);
+      }
+      
       const formattedValue = this.formatNumString(numAsString);
 
       //change the state

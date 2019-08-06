@@ -26,7 +26,8 @@ export function getThousandsGroupRegex(thousandsGroupStyle: string) {
 
 export function applyThousandSeparator(str: string, thousandSeparator: string, thousandsGroupStyle: string) {
   const thousandsGroupRegex = getThousandsGroupRegex(thousandsGroupStyle);
-  const index = str.search(/[1-9]/);
+  let index = str.search(/[1-9]/);
+  index = index === -1 ? str.length : index;
   return str.substring(0, index) + str.substring(index, str.length).replace(thousandsGroupRegex, '$1' + thousandSeparator);
 }
 
