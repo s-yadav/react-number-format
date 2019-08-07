@@ -78,7 +78,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
 
-  it('should support custom thousand seperator', () => {
+  it('should support custom thousand separator', () => {
     const wrapper = shallow(<NumberFormat thousandSeparator={'.'} decimalSeparator={','} prefix={'$'} />);
     simulateKeyInput(wrapper.find('input'), '2456981,89', 0);
 
@@ -339,7 +339,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('1,235');
   });
 
-  it('should allow decimal seperator and thousand separator on suffix prefix', () => {
+  it('should allow decimal separator and thousand separator on suffix prefix', () => {
     const wrapper = shallow(<NumberFormat value={1231237.56} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'} suffix={' per sq. ft.'}/> );
     expect(wrapper.state().value).toEqual('$1,231,237.56 per sq. ft.');
 
@@ -359,13 +359,13 @@ describe('Test NumberFormat as input with numeric format options', () => {
 
     simulateKeyInput(wrapper.find('input'), 'Backspace', 2);
 
-    expect(wrapper.state().value).toEqual('$0,000.25');
+    expect(wrapper.state().value).toEqual('$0000.25');
 
     simulateKeyInput(wrapper.find('input'), '2', 1);
     expect(wrapper.state().value).toEqual('$20,000.25');
   });
 
-  it('should remove leading 0s while user go out of focus', () => {
+  it('should remove leading 0s while user go out of focus and allowLeadingZeros is false', () => {
     const wrapper = shallow(<NumberFormat value={23456.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'}/> );
 
     simulateKeyInput(wrapper.find('input'), '0', 1);
@@ -379,6 +379,22 @@ describe('Test NumberFormat as input with numeric format options', () => {
     simulateKeyInput(wrapper.find('input'), 'Backspace', 2);
     simulateBlurEvent(wrapper.find('input'));
     expect(wrapper.state().value).toEqual('$0.25');
+  });
+
+  it('should not remove leading 0s while user go out of focus and allowLeadingZeros is true', () => {
+    const wrapper = shallow(<NumberFormat value={23456.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'} allowLeadingZeros={true}/> );
+
+    simulateKeyInput(wrapper.find('input'), '0', 1);
+    simulateBlurEvent(wrapper.find('input'));
+
+    expect(wrapper.state().value).toEqual('$023,456.78');
+
+    wrapper.setProps({value: 10000.25});
+    wrapper.update();
+
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 2);
+    simulateBlurEvent(wrapper.find('input'));
+    expect(wrapper.state().value).toEqual('$0000.25');
   });
 
   it('should add 0 before decimal if user is in focus', () => {
