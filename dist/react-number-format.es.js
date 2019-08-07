@@ -1,5 +1,5 @@
 /**
- * react-number-format - 4.1.1
+ * react-number-format - 4.2.0
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016, 2019 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
@@ -203,6 +203,7 @@ function getThousandsGroupRegex(thousandsGroupStyle) {
 function applyThousandSeparator(str, thousandSeparator, thousandsGroupStyle) {
   var thousandsGroupRegex = getThousandsGroupRegex(thousandsGroupStyle);
   var index = str.search(/[1-9]/);
+  index = index === -1 ? str.length : index;
   return str.substring(0, index) + str.substring(index, str.length).replace(thousandsGroupRegex, '$1' + thousandSeparator);
 } //spilt a float number into different parts beforeDecimal, afterDecimal, and negation
 
@@ -364,6 +365,7 @@ var propTypes$1 = {
   customInput: propTypes.elementType,
   allowNegative: propTypes.bool,
   allowEmptyFormatting: propTypes.bool,
+  allowLeadingZeros: propTypes.bool,
   onValueChange: propTypes.func,
   onKeyDown: propTypes.func,
   onMouseUp: propTypes.func,
@@ -384,6 +386,7 @@ var defaultProps = {
   suffix: '',
   allowNegative: true,
   allowEmptyFormatting: false,
+  allowLeadingZeros: false,
   isNumericString: false,
   type: 'text',
   onValueChange: noop,
@@ -1103,13 +1106,17 @@ function (_React$Component) {
       var props = this.props,
           state = this.state;
       var format = props.format,
-          onBlur = props.onBlur;
+          onBlur = props.onBlur,
+          allowLeadingZeros = props.allowLeadingZeros;
       var numAsString = state.numAsString;
       var lastValue = state.value;
       this.focusedElm = null;
 
       if (!format) {
-        numAsString = fixLeadingZero(numAsString);
+        if (!allowLeadingZeros) {
+          numAsString = fixLeadingZero(numAsString);
+        }
+
         var formattedValue = this.formatNumString(numAsString); //change the state
 
         if (formattedValue !== lastValue) {
