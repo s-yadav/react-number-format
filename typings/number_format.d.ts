@@ -45,6 +45,7 @@ declare module "react-number-format" {
     customInput?: React.ComponentType<any>;
     allowNegative?: boolean;
     allowEmptyFormatting?: boolean;
+    allowLeadingZeros?: boolean;
     onValueChange?: (values: NumberFormatValues) => void;
     /**
      * these are already included in React.HTMLAttributes<HTMLInputElement>
