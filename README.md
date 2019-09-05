@@ -44,6 +44,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | thousandsGroupStyle | One of ['thousand', 'lakh', 'wan'] |thousand| Define the thousand grouping style, It support three types. thousand style (thousand) : `123,456,789`, indian style (lakh) : `12,34,56,789`, chinese style (wan) : `1,2345,6789`|
 | decimalScale | number| none| If defined it limits to given decimal scale |
 | fixedDecimalScale | boolean| false| If true it add 0s to match given decimalScale|
+| fixedDecimalScaleEvent | One of ['onKeyDown', 'onBlur']| onKeyDown| If true it add 0s to match given decimalScale on selected event|
 | allowNegative      | boolean     |   true | allow negative numbers (Only when format option is not provided) |
 | allowEmptyFormatting | boolean | true | Apply formatting to empty inputs |
 | allowLeadingZeros | boolean | false | Allow leading zeros at beginning of number |

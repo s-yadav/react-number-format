@@ -84,6 +84,12 @@ class App extends React.Component {
           <NumberFormat thousandSeparator={true} decimalScale={3} fixedDecimalScale={true} prefix="$" />
         </div>
 
+         <div className="example">
+          <h3>
+            Decimal scale (onBlur): Format currency in input with decimal scale
+          </h3>
+          <NumberFormat thousandSeparator={true} decimalScale={3} fixedDecimalScale={true} fixedDecimalScaleEvent="onBlur" prefix="$" />
+        </div>
 
         <div className="example">
           <h3>

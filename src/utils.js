@@ -64,9 +64,17 @@ export function fixLeadingZero(numStr?: string) {
  * limit decimal numbers to given scale
  * Not used .fixedTo because that will break with big numbers
  */
-export function limitToScale(numStr: string, scale: number, fixedDecimalScale: boolean) {
+export function limitToScale(numStr: string, scale: number, fixedDecimalScale: boolean, fixedDecimalScaleEvent: string,  isOnBlur: boolean) {
   let str = ''
-  const filler = fixedDecimalScale ? '0' : '';
+  let filler = '';
+
+  if (fixedDecimalScale) {
+    filler = '0';
+    if (fixedDecimalScaleEvent === "onBlur" && !isOnBlur) {
+      filler = ''
+    }
+  }
+
   for (let i=0; i<=scale - 1; i++) {
     str += numStr[i] || filler;
   }

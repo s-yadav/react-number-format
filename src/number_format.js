@@ -26,6 +26,7 @@ const propTypes = {
   thousandsGroupStyle: PropTypes.oneOf(['thousand', 'lakh', 'wan']),
   decimalScale: PropTypes.number,
   fixedDecimalScale: PropTypes.bool,
+  fixedDecimalScaleEvent: PropTypes.oneOf(['onKeyDown', 'onBlur']),
   displayType: PropTypes.oneOf(['input', 'text']),
   prefix: PropTypes.string,
   suffix: PropTypes.string,
@@ -65,6 +66,7 @@ const defaultProps = {
   decimalSeparator: '.',
   thousandsGroupStyle: 'thousand',
   fixedDecimalScale: false,
+  fixedDecimalScaleEvent: 'onKeyDown',
   prefix: '',
   suffix: '',
   allowNegative: true,
@@ -456,15 +458,15 @@ class NumberFormat extends React.Component {
    * @param  {string} numStr Numeric string/floatString] It always have decimalSeparator as .
    * @return {string} formatted Value
    */
-  formatAsNumber(numStr: string) {
-    const {decimalScale, fixedDecimalScale, prefix, suffix, allowNegative, thousandsGroupStyle} = this.props;
+  formatAsNumber(numStr: string, isOnBlur: boolean = false) {
+    const {decimalScale, fixedDecimalScale,fixedDecimalScaleEvent, prefix, suffix, allowNegative, thousandsGroupStyle} = this.props;
     const {thousandSeparator, decimalSeparator} = this.getSeparators();
 
-    const hasDecimalSeparator = numStr.indexOf('.') !== -1 || (decimalScale && fixedDecimalScale);
+    const hasDecimalSeparator = numStr.indexOf('.') !== -1 || (decimalScale && fixedDecimalScale && ((fixedDecimalScaleEvent === "onBlur" && isOnBlur) ||  fixedDecimalScaleEvent === "onKeyDown" ));
     let {beforeDecimal, afterDecimal, addNegation} = splitDecimal(numStr, allowNegative); // eslint-disable-line prefer-const
 
     //apply decimal precision if its defined
-    if (decimalScale !== undefined) afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
+    if (decimalScale !== undefined) afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale, fixedDecimalScaleEvent, isOnBlur);
 
     if(thousandSeparator) {
       beforeDecimal = applyThousandSeparator(beforeDecimal, thousandSeparator, thousandsGroupStyle);
@@ -482,7 +484,7 @@ class NumberFormat extends React.Component {
     return numStr;
   }
 
-  formatNumString(numStr: string = '') {
+  formatNumString(numStr: string = '', isOnBlur : boolean = false) {
     const {format, allowEmptyFormatting} = this.props;
     let formattedValue = numStr;
 
@@ -495,7 +497,7 @@ class NumberFormat extends React.Component {
     } else if (typeof format === 'function') {
       formattedValue = format(formattedValue);
     } else {
-      formattedValue = this.formatAsNumber(formattedValue)
+      formattedValue = this.formatAsNumber(formattedValue, isOnBlur)
     }
 
     return formattedValue;
@@ -741,7 +743,7 @@ class NumberFormat extends React.Component {
         numAsString = fixLeadingZero(numAsString);
       }
       
-      const formattedValue = this.formatNumString(numAsString);
+      const formattedValue = this.formatNumString(numAsString, true);
 
       //change the state
       if (formattedValue !== lastValue) {
