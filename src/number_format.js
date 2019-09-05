@@ -139,7 +139,7 @@ class NumberFormat extends React.Component {
       //validate props
       this.validateProps();
 
-      const lastValueWithNewFormat = this.formatNumString(lastNumStr);
+      const lastValueWithNewFormat = this.formatNumString(lastNumStr, true);
 
       const formattedValue = props.value === undefined ? lastValueWithNewFormat : this.formatValueProp();
       const numAsString = this.removeFormatting(formattedValue);
