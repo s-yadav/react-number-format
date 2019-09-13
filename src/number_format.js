@@ -693,7 +693,11 @@ class NumberFormat extends React.Component {
     //update state if value is changed
     if (formattedValue !== lastValue) {
       this.setState({value : formattedValue, numAsString}, () => {
-        onValueChange(this.getValueObject(formattedValue, numAsString));
+        const valueObject = this.getValueObject(formattedValue, numAsString);
+        onValueChange({
+          ...valueObject,
+          name: input && input.name
+        });
         onUpdate();
       });
     } else {
