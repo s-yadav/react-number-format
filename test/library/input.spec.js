@@ -275,7 +275,7 @@ describe('NumberFormat as input', () => {
     const spy = jasmine.createSpy();
     const wrapper = shallow(<NumberFormat value="1234" onValueChange={spy}/>);
     wrapper.setProps({thousandSeparator: true});
-    expect(spy.calls.argsFor(0)[0]).toEqual({formattedValue: "1,234", value: "1234", floatValue: 1234});
+    expect(spy.calls.argsFor(0)[0]).toEqual({formattedValue: "1,234", value: "1234", floatValue: 1234, name: undefined});
   });
 
   it('should treat Infinity value as empty string', () => {
