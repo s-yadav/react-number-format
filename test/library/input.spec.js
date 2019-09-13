@@ -273,9 +273,9 @@ describe('NumberFormat as input', () => {
 
   it('should call onValueChange in change caused by prop change', () => {
     const spy = jasmine.createSpy();
-    const wrapper = shallow(<NumberFormat value="1234" onValueChange={spy}/>);
+    const wrapper = shallow(<NumberFormat name="myInput" value="1234" onValueChange={spy}/>);
     wrapper.setProps({thousandSeparator: true});
-    expect(spy.calls.argsFor(0)[0]).toEqual({formattedValue: "1,234", value: "1234", floatValue: 1234, name: undefined});
+    expect(spy.calls.argsFor(0)[0]).toEqual({formattedValue: "1,234", value: "1234", floatValue: 1234, name: "myInput"});
   });
 
   it('should treat Infinity value as empty string', () => {
