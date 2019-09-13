@@ -662,7 +662,7 @@ class NumberFormat extends React.Component {
   ) {
     const {formattedValue, input} = params;
     let {numAsString, caretPos} = params;
-    const {onValueChange} = this.props;
+    const {onValueChange, name} = this.props;
     const {value: lastValue} = this.state;
 
     //set caret position, and value imperatively when element is provided
@@ -696,7 +696,7 @@ class NumberFormat extends React.Component {
         const valueObject = this.getValueObject(formattedValue, numAsString);
         onValueChange({
           ...valueObject,
-          name: input && input.name
+          name
         });
         onUpdate();
       });
