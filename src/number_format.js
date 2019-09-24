@@ -23,6 +23,7 @@ import {
 const propTypes = {
   thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([true])]),
   decimalSeparator: PropTypes.string,
+  allowedDecimalSeparators: PropTypes.arrayOf(PropTypes.string),
   thousandsGroupStyle: PropTypes.oneOf(['thousand', 'lakh', 'wan']),
   decimalScale: PropTypes.number,
   fixedDecimalScale: PropTypes.bool,
@@ -197,15 +198,22 @@ class NumberFormat extends React.Component {
 
   getSeparators() {
     const {decimalSeparator} = this.props;
-    let {thousandSeparator} = this.props;
+    let {thousandSeparator, allowedDecimalSeparators} = this.props;
 
     if (thousandSeparator === true) {
       thousandSeparator = ','
     }
+    if (!allowedDecimalSeparators) {
+      allowedDecimalSeparators = [decimalSeparator]
+      if (decimalSeparator !== '.') {
+        allowedDecimalSeparators = allowedDecimalSeparators.concat(['.'])
+      }
+    }
 
     return {
       decimalSeparator,
-      thousandSeparator
+      thousandSeparator,
+      allowedDecimalSeparators,
     }
   }
 
@@ -603,13 +611,13 @@ class NumberFormat extends React.Component {
    **/
   correctInputValue(caretPos: number, lastValue: string, value: string) {
     const {format, allowNegative, prefix, suffix} = this.props;
-    const {decimalSeparator} = this.getSeparators();
+    const {allowedDecimalSeparators, decimalSeparator} = this.getSeparators();
     const lastNumStr = this.state.numAsString || '';
     const {selectionStart, selectionEnd} = this.selectionBeforeInput;
     const {start, end} = findChangedIndex(lastValue, value);
 
-    /** Check if only . is added in the numeric format and replace it with decimal separator */
-    if (!format && decimalSeparator !== '.' && start === end && value[selectionStart] === '.') {
+    /** Check for any allowed decimal separator is added in the numeric format and replace it with decimal separator */
+    if (!format && start === end && allowedDecimalSeparators.includes(value[selectionStart])) {
       return value.substr(0, selectionStart) + decimalSeparator + value.substr(selectionStart + 1, value.length);
     }
 
