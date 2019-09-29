@@ -204,10 +204,7 @@ class NumberFormat extends React.Component {
       thousandSeparator = ','
     }
     if (!allowedDecimalSeparators) {
-      allowedDecimalSeparators = [decimalSeparator]
-      if (decimalSeparator !== '.') {
-        allowedDecimalSeparators = allowedDecimalSeparators.concat(['.'])
-      }
+      allowedDecimalSeparators = [decimalSeparator, '.']
     }
 
     return {
@@ -617,7 +614,7 @@ class NumberFormat extends React.Component {
     const {start, end} = findChangedIndex(lastValue, value);
 
     /** Check for any allowed decimal separator is added in the numeric format and replace it with decimal separator */
-    if (!format && start === end && allowedDecimalSeparators.includes(value[selectionStart])) {
+    if (!format && start === end && allowedDecimalSeparators.indexOf(value[selectionStart]) !== -1  ) {
       return value.substr(0, selectionStart) + decimalSeparator + value.substr(selectionStart + 1, value.length);
     }
 
