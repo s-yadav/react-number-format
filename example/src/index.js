@@ -172,6 +172,10 @@ class App extends React.Component {
           <NumberFormat customInput={TextField} format="#### #### #### ####" />
         </div>
 
+        <div className="example">
+          <h3>Custom allowed decimal separators</h3>
+          <NumberFormat thousandSeparator=" "  decimalSeparator="." allowedDecimalSeparators={['.', ',']} />
+        </div>
       </div>
     )
   }

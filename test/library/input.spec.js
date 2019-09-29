@@ -104,6 +104,25 @@ describe('NumberFormat as input', () => {
   })
 
 
+  it('handles multiple different allowed decimal separators', () => {
+    const allowedDecimalSeparators = [',', '.', 'm']
+
+    const wrapper = shallow(<NumberFormat decimalSeparator={','} allowedDecimalSeparators={allowedDecimalSeparators} />);
+
+    allowedDecimalSeparators.forEach((separator) => {
+      wrapper.setProps({value: '12'});
+      simulateKeyInput(wrapper.find('input'), separator, 2);
+      expect(wrapper.state().value).toEqual('12,');
+    });
+  });
+
+  it('accepts dot as even when decimal separator is separate', () => {
+    const wrapper = shallow(<NumberFormat decimalSeparator={','} />);
+    wrapper.setProps({value: '12'});
+    simulateKeyInput(wrapper.find('input'), '.', 2);
+    expect(wrapper.state().value).toEqual('12,');
+  });
+
   it('works with custom input', () => {
     const WrapperComponent = (props) => {
       return (
