@@ -124,6 +124,11 @@ class App extends React.Component {
         </div>
 
         <div className="example">
+          <h3>Custom allowed decimal separators</h3>
+          <NumberFormat thousandSeparator=" "  decimalSeparator="." allowedDecimalSeparators={['.', ',']} />
+        </div>
+
+        <div className="example">
           <h3>
             Format with pattern : Format credit card in an input
           </h3>
@@ -172,10 +177,7 @@ class App extends React.Component {
           <NumberFormat customInput={TextField} format="#### #### #### ####" />
         </div>
 
-        <div className="example">
-          <h3>Custom allowed decimal separators</h3>
-          <NumberFormat thousandSeparator=" "  decimalSeparator="." allowedDecimalSeparators={['.', ',']} />
-        </div>
+
       </div>
     )
   }
