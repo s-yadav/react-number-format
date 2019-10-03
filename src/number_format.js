@@ -79,8 +79,7 @@ const defaultProps = {
   onMouseUp: noop,
   onFocus: noop,
   onBlur: noop,
-  isAllowed: returnTrue,
-  getInputRef: noop,
+  isAllowed: returnTrue
 };
 
 class NumberFormat extends React.Component {
