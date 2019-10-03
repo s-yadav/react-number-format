@@ -286,8 +286,9 @@ Feature Addition
 
 
 ### Development
-- Download the zip
-- `npm install`
+- Clone the repository or download the zip
+- `npm i -g yarn` to download Yarn
+- `yarn` to install dependencies
 - `npm start` to run example server
 - `npm run test` to test changes
 - `npm run bundle` to bundle files
