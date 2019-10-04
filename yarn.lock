@@ -2906,6 +2906,11 @@ execa@^1.0.0:
     signal-exit "^3.0.0"
     strip-eof "^1.0.0"
 
+exit@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/exit/-/exit-0.1.2.tgz#0632638f8d877cc82107d30a0fff1a17cba1cd0c"
+  integrity sha1-BjJjj42HfMghB9MKD/8aF8uhzQw=
+
 expand-brackets@^2.1.4:
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/expand-brackets/-/expand-brackets-2.1.4.tgz#b77735e315ce30f6b6eff0f83b04151a22449622"
@@ -3349,7 +3354,7 @@ glob-parent@^5.0.0, glob-parent@~5.1.0:
   dependencies:
     is-glob "^4.0.1"
 
-glob@7.1.4, glob@^7.0.0, glob@^7.0.3, glob@^7.1.1, glob@^7.1.3, glob@^7.1.4:
+glob@7.1.4, glob@^7.0.0, glob@^7.0.3, glob@^7.0.6, glob@^7.1.1, glob@^7.1.3, glob@^7.1.4:
   version "7.1.4"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.4.tgz#aa608a2f6c577ad357e1ae5a5c26d9a8d1969255"
   integrity sha512-hkLPepehmnKk41pUGm3sYxoFs/umurYfYJCerbXEyFIWcAzvpipAgVkBqqT9RBKMGjnq6kMuyYwha6csxbiM1A==
@@ -4134,18 +4139,19 @@ isomorphic-fetch@^2.1.1:
     node-fetch "^1.0.1"
     whatwg-fetch ">=0.10.0"
 
-jasmine-core@^3.3, jasmine-core@^3.5.0, jasmine-core@~3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.5.0.tgz#132c23e645af96d85c8bca13c8758b18429fc1e4"
-  integrity sha512-nCeAiw37MIMA9w9IXso7bRaLl+c/ef3wnxsoSAlYrzS+Ot0zTG6nU8G/cIfGkqpkjX2wNaIW9RFG0TwIFnG6bA==
+jasmine-core@^2.4.1, jasmine-core@~2.99.0:
+  version "2.99.1"
+  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-2.99.1.tgz#e6400df1e6b56e130b61c4bcd093daa7f6e8ca15"
+  integrity sha1-5kAN8ea1bhMLYcS80JPap/boyhU=
 
-jasmine@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-3.5.0.tgz#7101eabfd043a1fc82ac24e0ab6ec56081357f9e"
-  integrity sha512-DYypSryORqzsGoMazemIHUfMkXM7I7easFaxAvNM3Mr6Xz3Fy36TupTrAOxZWN8MVKEU5xECv22J4tUQf3uBzQ==
+jasmine@^2.4.1:
+  version "2.99.0"
+  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-2.99.0.tgz#8ca72d102e639b867c6489856e0e18a9c7aa42b7"
+  integrity sha1-jKctEC5jm4Z8ZImFbg4YqceqQrc=
   dependencies:
-    glob "^7.1.4"
-    jasmine-core "~3.5.0"
+    exit "^0.1.2"
+    glob "^7.0.6"
+    jasmine-core "~2.99.0"
 
 jest-worker@^24.0.0:
   version "24.9.0"
@@ -4246,17 +4252,22 @@ karma-cli@^2.0.0:
   dependencies:
     resolve "^1.3.3"
 
-karma-jasmine-html-reporter@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/karma-jasmine-html-reporter/-/karma-jasmine-html-reporter-1.4.2.tgz#16d100fd701271192d27fd28ddc90b710ad36fff"
-  integrity sha512-7g0gPj8+9JepCNJR9WjDyQ2RkZ375jpdurYQyAYv8PorUCadepl8vrD6LmMqOGcM17cnrynBawQYZHaumgDjBw==
-
-karma-jasmine@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/karma-jasmine/-/karma-jasmine-2.0.1.tgz#26e3e31f2faf272dd80ebb0e1898914cc3a19763"
-  integrity sha512-iuC0hmr9b+SNn1DaUD2QEYtUxkS1J+bSJSn7ejdEexs7P8EYvA1CWkEdrDQ+8jVH3AgWlCNwjYsT1chjcNW9lA==
+karma-jasmine-html-reporter@^0.2.0:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/karma-jasmine-html-reporter/-/karma-jasmine-html-reporter-0.2.2.tgz#48a8e5ef18807617ee2b5e33c1194c35b439524c"
+  integrity sha1-SKjl7xiAdhfuK14zwRlMNbQ5Ukw=
   dependencies:
-    jasmine-core "^3.3"
+    karma-jasmine "^1.0.2"
+
+karma-jasmine@^0.3.7:
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/karma-jasmine/-/karma-jasmine-0.3.8.tgz#5b6457791ad9b89aa173f079e3ebe1b8c805236c"
+  integrity sha1-W2RXeRrZuJqhc/B54+vhuMgFI2w=
+
+karma-jasmine@^1.0.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/karma-jasmine/-/karma-jasmine-1.1.2.tgz#394f2b25ffb4a644b9ada6f22d443e2fd08886c3"
+  integrity sha1-OU8rJf+0pkS5rabyLUQ+L9CIhsM=
 
 karma-rollup-preprocessor@^7.0.2:
   version "7.0.2"
