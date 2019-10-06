@@ -286,13 +286,14 @@ Feature Addition
 
 
 ### Development
-- Download the zip
-- `npm install`
-- `npm start` to run example server
-- `npm run test` to test changes
-- `npm run bundle` to bundle files
+- Clone the repository or download the zip
+- `npm i -g yarn` to download Yarn
+- `yarn` to install dependencies
+- `yarn start` to run example server
+- `yarn test` to test changes
+- `yarn bundle` to bundle files
 
 #### Testing
 Test cases are written in jasmine and run by karma
 Test file : /test/test_input.js
-To run test : `npm run test`
+To run test : `yarn test`
