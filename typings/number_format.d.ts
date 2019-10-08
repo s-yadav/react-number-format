@@ -58,6 +58,7 @@ declare module "react-number-format" {
     isAllowed?: (values: NumberFormatValues) => boolean;
     renderText?: (formattedValue: string) => React.ReactNode;
     getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any>;
+    allowedDecimalSeparators?: Array<string>;
     [key: string]: any;
   }
 
