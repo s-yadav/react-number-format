@@ -13,7 +13,7 @@ declare module "react-number-format" {
   }
 
   export interface NumberFormatValues {
-    floatValue: number;
+    floatValue: number | undefined;
     formattedValue: string;
     value: string;
   }
