@@ -305,8 +305,9 @@ describe('NumberFormat as input', () => {
   it('should call onFocus prop when focused', (done) => {
     const spy = jasmine.createSpy('onFocus');
     const wrapper = shallow(<NumberFormat onFocus={spy} />);
+    const input = wrapper.find('input');
 
-    simulateFocusEvent(wrapper.find('input'));
+    simulateFocusEvent(input);
 
     setTimeout(() => {
       expect(spy).toHaveBeenCalled();
@@ -317,9 +318,10 @@ describe('NumberFormat as input', () => {
   it('should not call onFocus prop when focused then blurred in the same event loop', (done) => {
     const spy = jasmine.createSpy('onFocus');
     const wrapper = shallow(<NumberFormat onFocus={spy} />);
+    const input = wrapper.find('input');
 
-    simulateFocusEvent(wrapper.find('input'));
-    simulateBlurEvent(wrapper.find('input'));
+    simulateFocusEvent(input);
+    simulateBlurEvent(input);
 
     setTimeout(() => {
       expect(spy).not.toHaveBeenCalled();
