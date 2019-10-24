@@ -92,6 +92,7 @@ class NumberFormat extends React.Component {
   onMouseUp: Function
   onFocus: Function
   onBlur: Function
+  focusTimeout: number
   focusedElm: HTMLElement
   selectionBeforeInput: {
     selectionStart: number,
@@ -737,8 +738,11 @@ class NumberFormat extends React.Component {
     const {format, onBlur, allowLeadingZeros} = props;
     let {numAsString} = state;
     const lastValue = state.value;
-
     this.focusedElm = null;
+    if (this.focusTimeout){
+      clearTimeout(this.focusTimeout);
+    }
+
 
     if (!format) {
       if (!allowLeadingZeros) {
@@ -861,8 +865,7 @@ class NumberFormat extends React.Component {
     e.persist();
 
     this.focusedElm = e.target;
-
-    setTimeout(() => {
+    this.focusTimeout = setTimeout(() => {
       const el = e.target;
       const {selectionStart, selectionEnd, value = ''} = el;
 
