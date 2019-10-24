@@ -302,6 +302,33 @@ describe('NumberFormat as input', () => {
     expect(wrapper.state().value).toEqual('');
   });
 
+  it('should call onFocus prop when focused', (done) => {
+    const spy = jasmine.createSpy('onFocus');
+    const wrapper = shallow(<NumberFormat onFocus={spy} />);
+    const input = wrapper.find('input');
+
+    simulateFocusEvent(input);
+
+    setTimeout(() => {
+      expect(spy).toHaveBeenCalled();
+      done();
+    }, 0);
+  });
+
+  it('should not call onFocus prop when focused then blurred in the same event loop', (done) => {
+    const spy = jasmine.createSpy('onFocus');
+    const wrapper = shallow(<NumberFormat onFocus={spy} />);
+    const input = wrapper.find('input');
+
+    simulateFocusEvent(input);
+    simulateBlurEvent(input);
+
+    setTimeout(() => {
+      expect(spy).not.toHaveBeenCalled();
+      done();
+    }, 0);
+  });
+
   describe('Test masking', () => {
     it('should allow mask as string', () => {
       const wrapper = shallow(<NumberFormat format="#### #### ####" mask="_"/>);
