@@ -1,5 +1,5 @@
 /**
- * react-number-format - 4.3.0
+ * react-number-format - 4.3.1
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016, 2019 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
@@ -402,8 +402,7 @@
     onMouseUp: noop,
     onFocus: noop,
     onBlur: noop,
-    isAllowed: returnTrue,
-    getInputRef: noop
+    isAllowed: returnTrue
   };
 
   var NumberFormat =
@@ -1127,6 +1126,10 @@
         var lastValue = state.value;
         this.focusedElm = null;
 
+        if (this.focusTimeout) {
+          clearTimeout(this.focusTimeout);
+        }
+
         if (!format) {
           if (!allowLeadingZeros) {
             numAsString = fixLeadingZero(numAsString);
@@ -1275,7 +1278,7 @@
         // (onFocus event target selectionStart is always 0 before setTimeout)
         e.persist();
         this.focusedElm = e.target;
-        setTimeout(function () {
+        this.focusTimeout = setTimeout(function () {
           var el = e.target;
           var selectionStart = el.selectionStart,
               selectionEnd = el.selectionEnd,
