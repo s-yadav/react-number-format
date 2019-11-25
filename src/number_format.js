@@ -884,6 +884,8 @@ class NumberFormat extends React.Component {
     const {type, displayType, customInput, renderText, getInputRef} = this.props;
     const {value} = this.state;
 
+    const otherProps = omit(this.props, propTypes);
+    
     const inputProps = Object.assign({}, {
       type,
       value,
