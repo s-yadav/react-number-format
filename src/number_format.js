@@ -884,9 +884,7 @@ class NumberFormat extends React.Component {
     const {type, displayType, customInput, renderText, getInputRef} = this.props;
     const {value} = this.state;
 
-    const otherProps = omit(this.props, propTypes);
-
-    const inputProps = Object.assign({}, otherProps, {
+    const inputProps = Object.assign({}, {
       type,
       value,
       onChange: this.onChange,
@@ -894,7 +892,7 @@ class NumberFormat extends React.Component {
       onMouseUp: this.onMouseUp,
       onFocus: this.onFocus,
       onBlur: this.onBlur
-    })
+    }, this.props)
 
     if( displayType === 'text'){
       return renderText ? (renderText(value) || null) : <span {...otherProps} ref={getInputRef}>{value}</span>;
