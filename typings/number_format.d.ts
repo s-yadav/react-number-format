@@ -1,7 +1,7 @@
 /// <reference types="react" />
 
 //exclude types from the InputHTMLAttributes
-declare const {defaultValue, value, ...inputAttributes}: React.InputHTMLAttributes<HTMLInputElement>;
+const {defaultValue, value, ...inputAttributes}: React.InputHTMLAttributes<HTMLInputElement>;
 type InputAttributes = typeof inputAttributes;
 
 
