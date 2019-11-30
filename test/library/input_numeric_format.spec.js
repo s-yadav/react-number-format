@@ -544,6 +544,17 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('$000012,345,678');
   });
 
+  //Issue #375
+  it('should give correct formatted value when pasting the dot symbol with decimal scale is set to zero, issue #375', () => {
+    const wrapper = shallow(<NumberFormat
+      value={4200}
+      thousandSeparator={true}
+      decimalScale={0}
+    />);
+    simulateKeyInput(wrapper.find('input'), '.', 2, 2);
+    expect(wrapper.state().value).toEqual('4,200');
+  });
+
   describe('Test thousand group style', () => {
     it('should format on english style thousand grouping', () => {
       const wrapper = shallow(<NumberFormat thousandSeparator={true} value={12345678}/>);
