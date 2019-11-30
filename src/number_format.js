@@ -615,7 +615,8 @@ class NumberFormat extends React.Component {
 
     /** Check for any allowed decimal separator is added in the numeric format and replace it with decimal separator */
     if (!format && start === end && allowedDecimalSeparators.indexOf(value[selectionStart]) !== -1  ) {
-      return value.substr(0, selectionStart) + decimalSeparator + value.substr(selectionStart + 1, value.length);
+      const separator = this.props.decimalScale === 0 ? '' : decimalSeparator;
+      return value.substr(0, selectionStart) + separator + value.substr(selectionStart + 1, value.length);
     }
 
     /* don't do anyhting if something got added,
