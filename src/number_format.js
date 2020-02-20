@@ -595,12 +595,7 @@ class NumberFormat extends React.Component {
     return false;
   }
 
-  checkIfFormatGotDeleted(start: number, end: number, value: string) {
-    for (let i = start; i < end; i++) {
-      if (this.isCharacterAFormat(i, value)) return true;
-    }
-    return false;
-  }
+
 
   /**
    * This will check if any formatting got removed by the delete or backspace and reset the value
@@ -635,10 +630,7 @@ class NumberFormat extends React.Component {
       return value;
     }
 
-    //if format got deleted reset the value to last value
-    if (this.checkIfFormatGotDeleted(start, end, lastValue)) {
-      value = lastValue;
-    }
+  
 
     //for numbers check if beforeDecimal got deleted and there is nothing after decimal,
     //clear all numbers in such case while keeping the - sign
@@ -698,10 +690,9 @@ class NumberFormat extends React.Component {
 
     //update state if value is changed
     if (formattedValue !== lastValue) {
-      this.setState({value : formattedValue, numAsString}, () => {
-        onValueChange(this.getValueObject(formattedValue, numAsString));
-        onUpdate();
-      });
+      this.setState({value : formattedValue, numAsString});
+      onValueChange(this.getValueObject(formattedValue, numAsString));
+      onUpdate();
     } else {
       onUpdate();
     }
@@ -749,7 +740,7 @@ class NumberFormat extends React.Component {
       if (!allowLeadingZeros) {
         numAsString = fixLeadingZero(numAsString);
       }
-      
+
       const formattedValue = this.formatNumString(numAsString);
 
       //change the state
