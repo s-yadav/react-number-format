@@ -58,7 +58,10 @@ const propTypes = {
   type: PropTypes.oneOf(['text', 'tel', 'password']),
   isAllowed: PropTypes.func,
   renderText: PropTypes.func,
-  getInputRef: PropTypes.func
+  getInputRef: PropTypes.oneOfType([
+    PropTypes.func, // for legacy refs
+    PropTypes.shape({ current: PropTypes.any })
+  ])
 };
 
 const defaultProps = {
@@ -134,6 +137,7 @@ class NumberFormat extends React.Component {
     const {props, state, focusedElm} = this;
     const {value: stateValue, numAsString: lastNumStr = ''} = state;
 
+    // If only state changed no need to do any thing
     if(prevProps !== props) {
       //validate props
       this.validateProps();
@@ -607,7 +611,7 @@ class NumberFormat extends React.Component {
    * It will also work as fallback if android chome keyDown handler does not work
    **/
   correctInputValue(caretPos: number, lastValue: string, value: string) {
-    const {format, allowNegative, prefix, suffix} = this.props;
+    const {format, allowNegative, prefix, suffix, decimalScale} = this.props;
     const {allowedDecimalSeparators, decimalSeparator} = this.getSeparators();
     const lastNumStr = this.state.numAsString || '';
     const {selectionStart, selectionEnd} = this.selectionBeforeInput;
@@ -615,7 +619,7 @@ class NumberFormat extends React.Component {
 
     /** Check for any allowed decimal separator is added in the numeric format and replace it with decimal separator */
     if (!format && start === end && allowedDecimalSeparators.indexOf(value[selectionStart]) !== -1  ) {
-      const separator = this.props.decimalScale === 0 ? '' : decimalSeparator;
+      const separator = decimalScale === 0 ? '' : decimalSeparator;
       return value.substr(0, selectionStart) + separator + value.substr(selectionStart + 1, value.length);
     }
 
@@ -746,10 +750,15 @@ class NumberFormat extends React.Component {
 
 
     if (!format) {
+      // if the numAsString is not a valid number reset it to empty
+      if (isNaN(parseFloat(numAsString))) {
+        numAsString = '';
+      }
+
       if (!allowLeadingZeros) {
         numAsString = fixLeadingZero(numAsString);
       }
-      
+
       const formattedValue = this.formatNumString(numAsString);
 
       //change the state
@@ -887,7 +896,7 @@ class NumberFormat extends React.Component {
 
     const otherProps = omit(this.props, propTypes);
 
-    const inputProps = Object.assign({}, otherProps, {
+    const inputProps = Object.assign({inputMode: 'numeric'}, otherProps, {
       type,
       value,
       onChange: this.onChange,

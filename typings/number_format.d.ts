@@ -1,11 +1,10 @@
 /// <reference types="react" />
 
-//exclude types from the InputHTMLAttributes
-const {defaultValue, value, ...inputAttributes}: React.InputHTMLAttributes<HTMLInputElement>;
-type InputAttributes = typeof inputAttributes;
-
-
 declare module "react-number-format" {
+
+  //exclude types from the InputHTMLAttributes
+  const {defaultValue, value, ...inputAttributes}: React.InputHTMLAttributes<HTMLInputElement>;
+  type InputAttributes = typeof inputAttributes;
 
   export interface NumberFormatState {
     value?: string;
@@ -45,6 +44,7 @@ declare module "react-number-format" {
     customInput?: React.ComponentType<any>;
     allowNegative?: boolean;
     allowEmptyFormatting?: boolean;
+    allowLeadingZeros?: boolean;
     onValueChange?: (values: NumberFormatValues) => void;
     /**
      * these are already included in React.HTMLAttributes<HTMLInputElement>

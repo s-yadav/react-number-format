@@ -397,6 +397,14 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('$0000.25');
   });
 
+  it('should make input empty when there is only non numeric values (ie just -) on blur', () => {
+    const wrapper = shallow(<NumberFormat decimalScale={2}/> );
+    simulateKeyInput(wrapper.find('input'), '-', 0);
+    simulateBlurEvent(wrapper.find('input'));
+
+    expect(wrapper.state().value).toEqual('');
+  });
+
   it('should add 0 before decimal if user is in focus', () => {
     const wrapper = shallow(<NumberFormat value={0.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'}/> );
 
@@ -494,7 +502,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('100,000');
   });
 
-  it(`should give correct formatted value when decimal value is passed as prop and 
+  it(`should give correct formatted value when decimal value is passed as prop and
     decimal scale is set to zero and fixedDecimalScale is true, issue #183`, () => {
     const wrapper = shallow(<NumberFormat decimalScale={0} fixedDecimalScale={true} value={1.333333333}/>);
     expect(wrapper.state().value).toEqual('1');
@@ -536,7 +544,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     simulateKeyInput(wrapper.find('input'), '-', 2);
     expect(wrapper.state().value).toEqual('-21-');
   });
-  
+
   it('should not apply thousand separator on the leading zeros #289', () => {
     const wrapper = shallow(<NumberFormat prefix="$" thousandSeparator=","/>);
 

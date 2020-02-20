@@ -1,7 +1,7 @@
 /**
- * react-number-format - 4.3.1
+ * react-number-format - 4.4.0
  * Author : Sudhanshu Yadav
- * Copyright (c) 2016, 2019 to Sudhanshu Yadav, released under the MIT license.
+ * Copyright (c) 2016, 2020 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
  */
 
@@ -382,7 +382,10 @@
     type: propTypes.oneOf(['text', 'tel', 'password']),
     isAllowed: propTypes.func,
     renderText: propTypes.func,
-    getInputRef: propTypes.func
+    getInputRef: propTypes.oneOfType([propTypes.func, // for legacy refs
+    propTypes.shape({
+      current: propTypes.any
+    })])
   };
   var defaultProps = {
     displayType: 'input',
@@ -451,7 +454,7 @@
             focusedElm = this.focusedElm;
         var stateValue = state.value,
             _state$numAsString = state.numAsString,
-            lastNumStr = _state$numAsString === void 0 ? '' : _state$numAsString;
+            lastNumStr = _state$numAsString === void 0 ? '' : _state$numAsString; // If only state changed no need to do any thing
 
         if (prevProps !== props) {
           //validate props
@@ -978,7 +981,8 @@
             format = _this$props11.format,
             allowNegative = _this$props11.allowNegative,
             prefix = _this$props11.prefix,
-            suffix = _this$props11.suffix;
+            suffix = _this$props11.suffix,
+            decimalScale = _this$props11.decimalScale;
 
         var _this$getSeparators6 = this.getSeparators(),
             allowedDecimalSeparators = _this$getSeparators6.allowedDecimalSeparators,
@@ -996,7 +1000,8 @@
 
 
         if (!format && start === end && allowedDecimalSeparators.indexOf(value[selectionStart]) !== -1) {
-          return value.substr(0, selectionStart) + decimalSeparator + value.substr(selectionStart + 1, value.length);
+          var separator = decimalScale === 0 ? '' : decimalSeparator;
+          return value.substr(0, selectionStart) + separator + value.substr(selectionStart + 1, value.length);
         }
         /* don't do anyhting if something got added,
          or if value is empty string (when whole input is cleared)
@@ -1131,6 +1136,11 @@
         }
 
         if (!format) {
+          // if the numAsString is not a valid number reset it to empty
+          if (isNaN(parseFloat(numAsString))) {
+            numAsString = '';
+          }
+
           if (!allowLeadingZeros) {
             numAsString = fixLeadingZero(numAsString);
           }
@@ -1307,7 +1317,9 @@
         var value = this.state.value;
         var otherProps = omit(this.props, propTypes$1);
 
-        var inputProps = _extends({}, otherProps, {
+        var inputProps = _extends({
+          inputMode: 'numeric'
+        }, otherProps, {
           type: type,
           value: value,
           onChange: this.onChange,

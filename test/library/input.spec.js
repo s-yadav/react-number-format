@@ -24,6 +24,15 @@ describe('NumberFormat as input', () => {
     expect(wrapper.find('input').instance().getAttribute('type')).toEqual('tel');
   });
 
+  it('should add inputMode numeric by default to input element', () => {
+    const wrapper = mount(<NumberFormat />);
+    expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual('numeric');
+
+    //should allow updating the inputMode value
+    wrapper.setProps({inputMode: 'search'});
+    expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual('search');
+  });
+
   it('should have initial value', () => {
     const wrapper = mount(<NumberFormat value={2456981} thousandSeparator={true} prefix={'$'} />);
     expect(wrapper.state().value).toEqual('$2,456,981');
@@ -224,7 +233,7 @@ describe('NumberFormat as input', () => {
     const wrapper = shallow(<NumberFormat onValueChange={(values) => {
       wrapper.setProps({value: values.floatValue});
     }}/>);
-    
+
     //check negation
     simulateKeyInput(wrapper.find('input'), '-', 0);
     expect(wrapper.state().value).toEqual('-');
@@ -238,7 +247,7 @@ describe('NumberFormat as input', () => {
     //check changing format should change the formatted value
     wrapper.setProps({prefix: '$'});
     expect(wrapper.state().value).toEqual('$0.2');
-    
+
     //check if trailing decimal is supported
     wrapper.setProps({value: 123});
     simulateKeyInput(wrapper.find('input'), '.', 4);
@@ -260,7 +269,7 @@ describe('NumberFormat as input', () => {
     simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
     simulateKeyInput(wrapper.find('input'), '0', 0);
     expect(spy.calls.argsFor(1)[0]).toEqual({formattedValue: "0", value: "0", floatValue: 0});
-    
+
     simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
     simulateKeyInput(wrapper.find('input'), '123.', 0);
     expect(spy.calls.argsFor(2)[0]).toEqual({formattedValue: "123.", value: "123.", floatValue: 123});
@@ -278,7 +287,7 @@ describe('NumberFormat as input', () => {
     const wrapper = shallow(<NumberFormat value="1.1" />);
     simulateFocusEvent(wrapper.find('input'));
     simulateKeyInput(wrapper.find('input'), '0', 3)
-    
+
     expect(wrapper.state().value).toEqual('1.10');
 
     simulateBlurEvent(wrapper.find('input'))
