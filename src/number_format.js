@@ -133,6 +133,12 @@ class NumberFormat extends React.Component {
     this.updateValueIfRequired(prevProps);
   }
 
+  componentWillUnmount() {
+    if (this.focusTimeout != null) {
+      clearTimeout(this.focusTimeout);
+    }
+  }
+
   updateValueIfRequired(prevProps: Object) {
     const {props, state, focusedElm} = this;
     const {value: stateValue, numAsString: lastNumStr = ''} = state;
