@@ -202,6 +202,12 @@ function cardExpiry(val) {
 ```
 ![Screencast example](https://media.giphy.com/media/l1J9wJ6ZSONO7cXkI/giphy.gif)
 
+### Show mask on empty input
+```jsx
+<NumberFormat format="+1 (###) ###-####" allowEmptyFormatting mask="_"/>
+```
+![Screencast example](https://media.giphy.com/media/jnavoo7mbNeQ7LJCHI/source.gif)
+
 ### Custom Inputs
 You can easily extend your custom input with number format. But custom input should have all input props.
 ```jsx

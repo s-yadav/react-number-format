@@ -1,7 +1,7 @@
 {
   "name": "react-number-format",
   "description": "React component to format number in an input or as a text.",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "main": "lib/number_format.js",
   "module": "dist/react-number-format.es.js",
   "author": "Sudhanshu Yadav",
@@ -56,7 +56,7 @@
     "eslint-loader": "^3.0.2",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-react": "^7.15.1",
-    "flow-bin": "0.109.0",
+    "flow-bin": "^0.118.0",
     "jasmine": "^2.4.1",
     "jasmine-core": "^2.4.1",
     "karma": "^4.3.0",

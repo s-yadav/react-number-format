@@ -8,7 +8,11 @@ import {cardExpiry} from '../../custom_formatters/card_expiry';
 class App extends React.Component {
   constructor() {
     super();
-    this.state = {test: 1232323.780023};
+    this.state = {test: 1232323.780023, thousandSeparator: '.'};
+
+    setTimeout(() => {
+      this.setState({thousandSeparator: ' '});
+    }, 5000)
   }
 
   render() {
@@ -40,12 +44,15 @@ class App extends React.Component {
             Prefix and thousand separator : Format currency in input
           </h3>
           <NumberFormat
-            thousandSeparator="."
+            thousandSeparator={this.state.thousandSeparator}
             decimalSeparator=","
             value={this.state.test}
             prefix="$"
-            onValueChange={(values) => this.setState({test: values.formattedValue})}
+            onValueChange={(values) => this.setState({test: values.value})}
+            onChange={(e) => console.log(e.target.value)}
+            onBlur={(e) => console.log(e.target.value)}
           />
+          <button onClick={() => this.setState({thousandSeparator: ' '})}>Ok</button>
         </div>
 
         <div className="example">
@@ -165,7 +172,7 @@ class App extends React.Component {
 
         <div className="example">
           <h3>
-            Empty input format
+            Show mask on empty input
           </h3>
           <NumberFormat format="+1 (###) ###-####" mask="_" allowEmptyFormatting/>
         </div>

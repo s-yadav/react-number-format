@@ -1,5 +1,5 @@
 /**
- * react-number-format - 4.4.0
+ * react-number-format - 4.4.1
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016, 2020 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
@@ -187,8 +187,8 @@
   function returnTrue() {
     return true;
   }
-  function charIsNumber(char) {
-    return !!(char || '').match(/\d/);
+  function charIsNumber(_char) {
+    return !!(_char || '').match(/\d/);
   }
   function escapeRegExp(str) {
     return str.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
@@ -433,11 +433,11 @@
         selectionStart: 0,
         selectionEnd: 0
       };
-      _this.onChange = _this.onChange.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-      _this.onKeyDown = _this.onKeyDown.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-      _this.onMouseUp = _this.onMouseUp.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-      _this.onFocus = _this.onFocus.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-      _this.onBlur = _this.onBlur.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+      _this.onChange = _this.onChange.bind(_assertThisInitialized(_this));
+      _this.onKeyDown = _this.onKeyDown.bind(_assertThisInitialized(_this));
+      _this.onMouseUp = _this.onMouseUp.bind(_assertThisInitialized(_this));
+      _this.onFocus = _this.onFocus.bind(_assertThisInitialized(_this));
+      _this.onBlur = _this.onBlur.bind(_assertThisInitialized(_this));
       return _this;
     }
 
@@ -1047,29 +1047,42 @@
     }, {
       key: "updateValue",
       value: function updateValue(params) {
-        var _this2 = this;
-
-        var onUpdate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
         var formattedValue = params.formattedValue,
-            input = params.input;
+            input = params.input,
+            _params$setCaretPosit = params.setCaretPosition,
+            setCaretPosition = _params$setCaretPosit === void 0 ? true : _params$setCaretPosit;
         var numAsString = params.numAsString,
             caretPos = params.caretPos;
         var onValueChange = this.props.onValueChange;
-        var lastValue = this.state.value; //set caret position, and value imperatively when element is provided
+        var lastValue = this.state.value;
 
         if (input) {
-          //calculate caret position if not defined
-          if (!caretPos) {
-            var inputValue = params.inputValue || input.value;
-            var currentCaretPosition = getCurrentCaretPosition(input); //get the caret position
+          //set caret position, and value imperatively when element is provided
+          if (setCaretPosition) {
+            //calculate caret position if not defined
+            if (!caretPos) {
+              var inputValue = params.inputValue || input.value;
+              var currentCaretPosition = getCurrentCaretPosition(input);
+              /**
+               * set the value imperatively, this is required for IE fix
+               * This is also required as if new caret position is beyond the previous value.
+               * Caret position will not be set correctly
+               */
 
-            caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
-          } //set the value imperatively, this is required for IE fix
+              input.value = formattedValue; //get the caret position
+
+              caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
+            } //set caret position
 
 
-          input.value = formattedValue; //set caret position
-
-          this.setPatchedCaretPosition(input, caretPos, formattedValue);
+            this.setPatchedCaretPosition(input, caretPos, formattedValue);
+          } else {
+            /**
+             * if we are not setting caret position set the value imperatively.
+             * This is required on onBlur method
+             */
+            input.value = formattedValue;
+          }
         } //calculate numeric string if not passed
 
 
@@ -1082,18 +1095,14 @@
           this.setState({
             value: formattedValue,
             numAsString: numAsString
-          }, function () {
-            onValueChange(_this2.getValueObject(formattedValue, numAsString));
-            onUpdate();
-          });
-        } else {
-          onUpdate();
+          }); // trigger onValueChange synchronously, so parent is updated along with the number format. Fix for #277, #287
+
+          onValueChange(this.getValueObject(formattedValue, numAsString));
         }
       }
     }, {
       key: "onChange",
       value: function onChange(e) {
-        e.persist();
         var el = e.target;
         var inputValue = el.value;
         var state = this.state,
@@ -1115,9 +1124,8 @@
           numAsString: numAsString,
           inputValue: inputValue,
           input: el
-        }, function () {
-          props.onChange(e);
         });
+        props.onChange(e);
       }
     }, {
       key: "onBlur",
@@ -1149,13 +1157,13 @@
 
           if (formattedValue !== lastValue) {
             // the event needs to be persisted because its properties can be accessed in an asynchronous way
-            e.persist();
             this.updateValue({
               formattedValue: formattedValue,
-              numAsString: numAsString
-            }, function () {
-              onBlur(e);
+              numAsString: numAsString,
+              input: e.target,
+              setCaretPosition: false
             });
+            onBlur(e);
             return;
           }
         }
@@ -1178,17 +1186,15 @@
             prefix = _this$props12.prefix,
             suffix = _this$props12.suffix,
             format = _this$props12.format,
-            onKeyDown = _this$props12.onKeyDown,
-            onValueChange = _this$props12.onValueChange;
+            onKeyDown = _this$props12.onKeyDown;
         var ignoreDecimalSeparator = decimalScale !== undefined && fixedDecimalScale;
         var numRegex = this.getNumberRegex(false, ignoreDecimalSeparator);
         var negativeRegex = new RegExp('-');
         var isPatternFormat = typeof format === 'string';
         this.selectionBeforeInput = {
           selectionStart: selectionStart,
-          selectionEnd: selectionEnd //Handle backspace and delete against non numerical/decimal characters or arrow keys
-
-        };
+          selectionEnd: selectionEnd
+        }; //Handle backspace and delete against non numerical/decimal characters or arrow keys
 
         if (key === 'ArrowLeft' || key === 'Backspace') {
           expectedCaretPosition = selectionStart - 1;
@@ -1222,9 +1228,7 @@
           we will not have any information of keyPress
           */
           if (selectionStart <= leftBound + 1 && value[0] === '-' && typeof format === 'undefined') {
-            var newValue = value.substring(1); //persist event before performing async task
-
-            e.persist();
+            var newValue = value.substring(1);
             this.updateValue({
               formattedValue: newValue,
               caretPos: newCaretPosition,
@@ -1251,7 +1255,7 @@
           this.setPatchedCaretPosition(el, newCaretPosition, value);
         }
 
-        this.props.onKeyDown(e);
+        onKeyDown(e);
       }
       /** required to handle the caret position when click anywhere within the input **/
 
@@ -1282,7 +1286,7 @@
     }, {
       key: "onFocus",
       value: function onFocus(e) {
-        var _this3 = this;
+        var _this2 = this;
 
         // Workaround Chrome and Safari bug https://bugs.chromium.org/p/chromium/issues/detail?id=779328
         // (onFocus event target selectionStart is always 0 before setTimeout)
@@ -1295,14 +1299,14 @@
               _el$value3 = el.value,
               value = _el$value3 === void 0 ? '' : _el$value3;
 
-          var caretPosition = _this3.correctCaretPosition(value, selectionStart); //setPatchedCaretPosition only when everything is not selected on focus (while tabbing into the field)
+          var caretPosition = _this2.correctCaretPosition(value, selectionStart); //setPatchedCaretPosition only when everything is not selected on focus (while tabbing into the field)
 
 
           if (caretPosition !== selectionStart && !(selectionStart === 0 && selectionEnd === value.length)) {
-            _this3.setPatchedCaretPosition(el, caretPosition, value);
+            _this2.setPatchedCaretPosition(el, caretPosition, value);
           }
 
-          _this3.props.onFocus(e);
+          _this2.props.onFocus(e);
         }, 0);
       }
     }, {
