@@ -342,6 +342,26 @@ describe('Test keypress and caret position changes', () => {
       jasmine.clock().uninstall()
     });
 
+    it('should clear active timers', () => {
+      jasmine.clock().install();
+      const spy = spyOn(console, 'error');
+
+      const wrapper = mount(<NumberFormat />);
+      const instance = wrapper.instance();
+
+      simulateFocusEvent(wrapper.find('input'), 0, 0, setSelectionRange);
+
+      expect(instance.focusTimeout).toBeTruthy();
+
+      wrapper.unmount();
+      jasmine.clock().tick(1);
+
+      expect(instance.focusTimeout).toBeFalsy();
+
+      spy.calls.reset();
+      jasmine.clock().uninstall();
+    });
+
     it('should correct wrong caret positon on focus when allowEmptyFormatting is set', () => {
       jasmine.clock().install()
       const wrapper = shallow(<NumberFormat format="+1 (###) ### # ## US" allowEmptyFormatting={true} value="" mask="_"/>);

@@ -136,6 +136,7 @@ class NumberFormat extends React.Component {
   componentWillUnmount() {
     if (this.focusTimeout != null) {
       clearTimeout(this.focusTimeout);
+      this.focusTimeout = undefined;
     }
   }
 
@@ -761,6 +762,7 @@ class NumberFormat extends React.Component {
     this.focusedElm = null;
     if (this.focusTimeout){
       clearTimeout(this.focusTimeout);
+      this.focusTimeout = undefined;
     }
 
 
