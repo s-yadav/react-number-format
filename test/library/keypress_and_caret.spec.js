@@ -290,6 +290,10 @@ describe('Test keypress and caret position changes', () => {
 
   describe('Test click / focus on input', () => {
 
+    afterEach(() => {
+      jasmine.clock().uninstall()
+    });
+
     it('should always keep caret on typable area when we click on the input', () => {
       const wrapper = shallow(<NumberFormat  format="+1 (###) ### # ## US" value="+1 (123) 456 7 89 US"/>);
 
@@ -340,6 +344,19 @@ describe('Test keypress and caret position changes', () => {
       jasmine.clock().tick(1)
       expect(caretPos).toEqual(4)
       jasmine.clock().uninstall()
+    });
+
+    it('should clear active timers', () => {
+      jasmine.clock().install();
+      const onFocus = jasmine.createSpy();
+      const wrapper = mount(<NumberFormat onFocus={onFocus} />);
+
+      simulateFocusEvent(wrapper.find('input'), 0, 0, setSelectionRange);
+
+      wrapper.unmount();
+      jasmine.clock().tick(1);
+
+      expect(onFocus).toHaveBeenCalledTimes(0);
     });
 
     it('should correct wrong caret positon on focus when allowEmptyFormatting is set', () => {
