@@ -344,7 +344,6 @@ describe('Test keypress and caret position changes', () => {
 
     it('should clear active timers', () => {
       jasmine.clock().install();
-      const spy = spyOn(console, 'error');
 
       const wrapper = mount(<NumberFormat />);
       const instance = wrapper.instance();
@@ -358,7 +357,6 @@ describe('Test keypress and caret position changes', () => {
 
       expect(instance.focusTimeout).toBeFalsy();
 
-      spy.calls.reset();
       jasmine.clock().uninstall();
     });
 
