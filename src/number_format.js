@@ -134,10 +134,7 @@ class NumberFormat extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this.focusTimeout != null) {
-      clearTimeout(this.focusTimeout);
-      this.focusTimeout = undefined;
-    }
+    clearTimeout(this.focusTimeout);
   }
 
   updateValueIfRequired(prevProps: Object) {
@@ -760,10 +757,8 @@ class NumberFormat extends React.Component {
     let {numAsString} = state;
     const lastValue = state.value;
     this.focusedElm = null;
-    if (this.focusTimeout){
-      clearTimeout(this.focusTimeout);
-      this.focusTimeout = undefined;
-    }
+
+    clearTimeout(this.focusTimeout);
 
 
     if (!format) {
