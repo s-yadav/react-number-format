@@ -737,10 +737,19 @@ class NumberFormat extends React.Component {
 
     inputValue =  this.correctInputValue(currentCaretPosition, lastValue, inputValue);
 
+
     let formattedValue = this.formatInput(inputValue) || '';
     const numAsString = this.removeFormatting(formattedValue);
 
     const valueObj = this.getValueObject(formattedValue, numAsString);
+
+    const {allowNegative, decimalScale} = this.props;
+
+    const {afterDecimal} = splitDecimal(inputValue, allowNegative);
+
+    if(afterDecimal.length > decimalScale) {
+      formattedValue = lastValue;
+    }
 
     if (!isAllowed(valueObj)) {
       formattedValue = lastValue;

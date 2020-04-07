@@ -9,9 +9,9 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('react')) :
   typeof define === 'function' && define.amd ? define(['react'], factory) :
   (global = global || self, global.NumberFormat = factory(global.React));
-}(this, function (React) { 'use strict';
+}(this, (function (React) { 'use strict';
 
-  React = React && React.hasOwnProperty('default') ? React['default'] : React;
+  React = React && Object.prototype.hasOwnProperty.call(React, 'default') ? React['default'] : React;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -84,6 +84,19 @@
     return _setPrototypeOf(o, p);
   }
 
+  function _isNativeReflectConstruct() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+
+    try {
+      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   function _assertThisInitialized(self) {
     if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -98,6 +111,23 @@
     }
 
     return _assertThisInitialized(self);
+  }
+
+  function _createSuper(Derived) {
+    return function () {
+      var Super = _getPrototypeOf(Derived),
+          result;
+
+      if (_isNativeReflectConstruct()) {
+        var NewTarget = _getPrototypeOf(this).constructor;
+
+        result = Reflect.construct(Super, arguments, NewTarget);
+      } else {
+        result = Super.apply(this, arguments);
+      }
+
+      return _possibleConstructorReturn(this, result);
+    };
   }
 
   function createCommonjsModule(fn, module) {
@@ -408,17 +438,17 @@
     isAllowed: returnTrue
   };
 
-  var NumberFormat =
-  /*#__PURE__*/
-  function (_React$Component) {
+  var NumberFormat = /*#__PURE__*/function (_React$Component) {
     _inherits(NumberFormat, _React$Component);
+
+    var _super = _createSuper(NumberFormat);
 
     function NumberFormat(props) {
       var _this;
 
       _classCallCheck(this, NumberFormat);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(NumberFormat).call(this, props));
+      _this = _super.call(this, props);
       var defaultValue = props.defaultValue; //validate props
 
       _this.validateProps();
@@ -445,6 +475,11 @@
       key: "componentDidUpdate",
       value: function componentDidUpdate(prevProps) {
         this.updateValueIfRequired(prevProps);
+      }
+    }, {
+      key: "componentWillUnmount",
+      value: function componentWillUnmount() {
+        clearTimeout(this.focusTimeout);
       }
     }, {
       key: "updateValueIfRequired",
@@ -1114,6 +1149,16 @@
         var formattedValue = this.formatInput(inputValue) || '';
         var numAsString = this.removeFormatting(formattedValue);
         var valueObj = this.getValueObject(formattedValue, numAsString);
+        var _this$props12 = this.props,
+            allowNegative = _this$props12.allowNegative,
+            decimalScale = _this$props12.decimalScale;
+
+        var _splitDecimal3 = splitDecimal(inputValue, allowNegative),
+            afterDecimal = _splitDecimal3.afterDecimal;
+
+        if (afterDecimal.length > decimalScale) {
+          formattedValue = lastValue;
+        }
 
         if (!isAllowed(valueObj)) {
           formattedValue = lastValue;
@@ -1138,10 +1183,7 @@
         var numAsString = state.numAsString;
         var lastValue = state.value;
         this.focusedElm = null;
-
-        if (this.focusTimeout) {
-          clearTimeout(this.focusTimeout);
-        }
+        clearTimeout(this.focusTimeout);
 
         if (!format) {
           // if the numAsString is not a valid number reset it to empty
@@ -1180,13 +1222,13 @@
             _el$value = el.value,
             value = _el$value === void 0 ? '' : _el$value;
         var expectedCaretPosition;
-        var _this$props12 = this.props,
-            decimalScale = _this$props12.decimalScale,
-            fixedDecimalScale = _this$props12.fixedDecimalScale,
-            prefix = _this$props12.prefix,
-            suffix = _this$props12.suffix,
-            format = _this$props12.format,
-            onKeyDown = _this$props12.onKeyDown;
+        var _this$props13 = this.props,
+            decimalScale = _this$props13.decimalScale,
+            fixedDecimalScale = _this$props13.fixedDecimalScale,
+            prefix = _this$props13.prefix,
+            suffix = _this$props13.suffix,
+            format = _this$props13.format,
+            onKeyDown = _this$props13.onKeyDown;
         var ignoreDecimalSeparator = decimalScale !== undefined && fixedDecimalScale;
         var numRegex = this.getNumberRegex(false, ignoreDecimalSeparator);
         var negativeRegex = new RegExp('-');
@@ -1312,12 +1354,12 @@
     }, {
       key: "render",
       value: function render() {
-        var _this$props13 = this.props,
-            type = _this$props13.type,
-            displayType = _this$props13.displayType,
-            customInput = _this$props13.customInput,
-            renderText = _this$props13.renderText,
-            getInputRef = _this$props13.getInputRef;
+        var _this$props14 = this.props,
+            type = _this$props14.type,
+            displayType = _this$props14.displayType,
+            customInput = _this$props14.customInput,
+            renderText = _this$props14.renderText,
+            getInputRef = _this$props14.getInputRef;
         var value = this.state.value;
         var otherProps = omit(this.props, propTypes$1);
 
@@ -1334,17 +1376,17 @@
         });
 
         if (displayType === 'text') {
-          return renderText ? renderText(value) || null : React.createElement("span", _extends({}, otherProps, {
+          return renderText ? renderText(value) || null : /*#__PURE__*/React.createElement("span", _extends({}, otherProps, {
             ref: getInputRef
           }), value);
         } else if (customInput) {
           var CustomInput = customInput;
-          return React.createElement(CustomInput, _extends({}, inputProps, {
+          return /*#__PURE__*/React.createElement(CustomInput, _extends({}, inputProps, {
             ref: getInputRef
           }));
         }
 
-        return React.createElement("input", _extends({}, inputProps, {
+        return /*#__PURE__*/React.createElement("input", _extends({}, inputProps, {
           ref: getInputRef
         }));
       }
@@ -1358,4 +1400,4 @@
 
   return NumberFormat;
 
-}));
+})));
