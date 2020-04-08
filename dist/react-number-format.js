@@ -630,11 +630,9 @@
     }, {
       key: "setPatchedCaretPosition",
       value: function setPatchedCaretPosition(el, caretPos, currentValue) {
-        console.log('act');
         /* setting caret position within timeout of 0ms is required for mobile chrome,
         otherwise browser resets the caret position after we set it
         We are also setting it without timeout so that in normal browser we don't see the flickering */
-
         setCaretPosition(el, caretPos);
         setTimeout(function () {
           if (el.value === currentValue) setCaretPosition(el, caretPos);
@@ -1162,23 +1160,17 @@
             decimalScale = _this$props12.decimalScale;
         var numAsStringCopy = numAsString;
         var lastValueCopy = lastValue;
-        lastValueCopy = this.removeFormatting(lastValueCopy);
+        var lastValueAsStringCopy = this.removeFormatting(lastValueCopy);
 
         var _splitDecimal3 = splitDecimal(numAsStringCopy, allowNegative),
             afterDecimal = _splitDecimal3.afterDecimal;
 
-        var _splitDecimal4 = splitDecimal(lastValueCopy, allowNegative),
+        var _splitDecimal4 = splitDecimal(lastValueAsStringCopy, allowNegative),
             afterDecimalLast = _splitDecimal4.afterDecimal;
-
-        console.log(afterDecimal);
-        console.log(afterDecimalLast);
-        console.log(lastValue);
 
         if (afterDecimal.length >= decimalScale && afterDecimalLast.length >= decimalScale || !isAllowed(valueObj)) {
           formattedValue = lastValue;
-          numAsString = this.removeFormatting(formattedValue); // console.log(numAsString);
-          // console.log(formattedValue);
-
+          numAsString = this.removeFormatting(formattedValue);
           this.updateValue({
             useLastCaretPosition: true,
             formattedValue: formattedValue,
