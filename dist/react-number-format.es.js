@@ -624,9 +624,11 @@ var NumberFormat = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "setPatchedCaretPosition",
     value: function setPatchedCaretPosition(el, caretPos, currentValue) {
+      console.log('act');
       /* setting caret position within timeout of 0ms is required for mobile chrome,
       otherwise browser resets the caret position after we set it
       We are also setting it without timeout so that in normal browser we don't see the flickering */
+
       setCaretPosition(el, caretPos);
       setTimeout(function () {
         if (el.value === currentValue) setCaretPosition(el, caretPos);
@@ -1079,7 +1081,8 @@ var NumberFormat = /*#__PURE__*/function (_React$Component) {
       var formattedValue = params.formattedValue,
           input = params.input,
           _params$setCaretPosit = params.setCaretPosition,
-          setCaretPosition = _params$setCaretPosit === void 0 ? true : _params$setCaretPosit;
+          setCaretPosition = _params$setCaretPosit === void 0 ? true : _params$setCaretPosit,
+          useLastCaretPosition = params.useLastCaretPosition;
       var numAsString = params.numAsString,
           caretPos = params.caretPos;
       var onValueChange = this.props.onValueChange;
@@ -1092,11 +1095,16 @@ var NumberFormat = /*#__PURE__*/function (_React$Component) {
           if (!caretPos) {
             var inputValue = params.inputValue || input.value;
             var currentCaretPosition = getCurrentCaretPosition(input);
+
+            if (useLastCaretPosition) {
+              currentCaretPosition -= 1;
+            }
             /**
              * set the value imperatively, this is required for IE fix
              * This is also required as if new caret position is beyond the previous value.
              * Caret position will not be set correctly
              */
+
 
             input.value = formattedValue; //get the caret position
 
@@ -1146,24 +1154,41 @@ var NumberFormat = /*#__PURE__*/function (_React$Component) {
       var _this$props12 = this.props,
           allowNegative = _this$props12.allowNegative,
           decimalScale = _this$props12.decimalScale;
+      var numAsStringCopy = numAsString;
+      var lastValueCopy = lastValue;
+      lastValueCopy = this.removeFormatting(lastValueCopy);
 
-      var _splitDecimal3 = splitDecimal(inputValue, allowNegative),
+      var _splitDecimal3 = splitDecimal(numAsStringCopy, allowNegative),
           afterDecimal = _splitDecimal3.afterDecimal;
 
-      if (afterDecimal.length > decimalScale) {
+      var _splitDecimal4 = splitDecimal(lastValueCopy, allowNegative),
+          afterDecimalLast = _splitDecimal4.afterDecimal;
+
+      console.log(afterDecimal);
+      console.log(afterDecimalLast);
+      console.log(lastValue);
+
+      if (afterDecimal.length >= decimalScale && afterDecimalLast.length >= decimalScale || !isAllowed(valueObj)) {
         formattedValue = lastValue;
+        numAsString = this.removeFormatting(formattedValue); // console.log(numAsString);
+        // console.log(formattedValue);
+
+        this.updateValue({
+          useLastCaretPosition: true,
+          formattedValue: formattedValue,
+          numAsString: numAsString,
+          inputValue: formattedValue,
+          input: el
+        });
+      } else {
+        this.updateValue({
+          formattedValue: formattedValue,
+          numAsString: numAsString,
+          inputValue: inputValue,
+          input: el
+        });
       }
 
-      if (!isAllowed(valueObj)) {
-        formattedValue = lastValue;
-      }
-
-      this.updateValue({
-        formattedValue: formattedValue,
-        numAsString: numAsString,
-        inputValue: inputValue,
-        input: el
-      });
       props.onChange(e);
     }
   }, {

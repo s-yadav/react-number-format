@@ -672,9 +672,10 @@ class NumberFormat extends React.Component {
       input: HTMLInputElement,
       caretPos: number,
       setCaretPosition: Boolean,
+      useLastCaretPosition: boolean,
     }
   ) {
-    const {formattedValue, input, setCaretPosition = true} = params;
+    const {formattedValue, input, setCaretPosition = true, useLastCaretPosition} = params;
     let {numAsString, caretPos} = params;
     const {onValueChange} = this.props;
     const {value: lastValue} = this.state;
@@ -687,7 +688,11 @@ class NumberFormat extends React.Component {
         if (!caretPos) {
           const inputValue = params.inputValue || input.value;
 
-          const currentCaretPosition = getCurrentCaretPosition(input);
+          let currentCaretPosition = getCurrentCaretPosition(input);
+
+          if(useLastCaretPosition) {
+            currentCaretPosition -= 1;
+          }
 
           /**
            * set the value imperatively, this is required for IE fix
@@ -739,23 +744,27 @@ class NumberFormat extends React.Component {
 
 
     let formattedValue = this.formatInput(inputValue) || '';
-    const numAsString = this.removeFormatting(formattedValue);
+    let numAsString = this.removeFormatting(formattedValue);
 
     const valueObj = this.getValueObject(formattedValue, numAsString);
 
     const {allowNegative, decimalScale} = this.props;
 
-    const {afterDecimal} = splitDecimal(inputValue, allowNegative);
+    const numAsStringCopy = numAsString;
+    const lastValueCopy = lastValue;
 
-    if(afterDecimal.length > decimalScale) {
+    const lastValueAsStringCopy = this.removeFormatting(lastValueCopy);
+
+    const {afterDecimal} = splitDecimal(numAsStringCopy, allowNegative);
+    const {afterDecimal: afterDecimalLast} = splitDecimal(lastValueAsStringCopy, allowNegative);
+
+    if(afterDecimal.length >= decimalScale && afterDecimalLast.length >= decimalScale || !isAllowed(valueObj)) {
       formattedValue = lastValue;
+      numAsString = this.removeFormatting(formattedValue);
+      this.updateValue({useLastCaretPosition: true, formattedValue, numAsString, inputValue: formattedValue, input: el });
+    } else {
+      this.updateValue({ formattedValue, numAsString, inputValue, input: el });
     }
-
-    if (!isAllowed(valueObj)) {
-      formattedValue = lastValue;
-    }
-
-    this.updateValue({ formattedValue, numAsString, inputValue, input: el });
 
     props.onChange(e);
   }
