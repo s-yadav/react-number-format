@@ -1158,8 +1158,6 @@
         var _this$props12 = this.props,
             allowNegative = _this$props12.allowNegative,
             decimalScale = _this$props12.decimalScale;
-        console.log(inputValue);
-        console.log(formattedValue);
         var clearValue = this.removePrefixAndSuffix(inputValue);
 
         var _splitDecimal3 = splitDecimal(clearValue, allowNegative),
