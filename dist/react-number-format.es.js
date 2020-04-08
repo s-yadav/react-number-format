@@ -1152,19 +1152,16 @@ var NumberFormat = /*#__PURE__*/function (_React$Component) {
       var _this$props12 = this.props,
           allowNegative = _this$props12.allowNegative,
           decimalScale = _this$props12.decimalScale;
-      var numAsStringCopy = numAsString;
-      var lastValueCopy = lastValue;
-      var lastValueAsStringCopy = this.removeFormatting(lastValueCopy);
+      console.log(inputValue);
+      console.log(formattedValue);
+      var clearValue = this.removePrefixAndSuffix(inputValue);
 
-      var _splitDecimal3 = splitDecimal(numAsStringCopy, allowNegative),
+      var _splitDecimal3 = splitDecimal(clearValue, allowNegative),
           afterDecimal = _splitDecimal3.afterDecimal;
 
-      var _splitDecimal4 = splitDecimal(lastValueAsStringCopy, allowNegative),
-          afterDecimalLast = _splitDecimal4.afterDecimal;
-
-      if (afterDecimal.length >= decimalScale && afterDecimalLast.length >= decimalScale || !isAllowed(valueObj)) {
+      if (afterDecimal.length > decimalScale || !isAllowed(valueObj)) {
         formattedValue = lastValue;
-        numAsString = this.removeFormatting(formattedValue);
+        numAsString = this.removeFormatting(lastValue);
         this.updateValue({
           useLastCaretPosition: true,
           formattedValue: formattedValue,

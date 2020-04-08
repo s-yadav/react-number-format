@@ -742,7 +742,6 @@ class NumberFormat extends React.Component {
 
     inputValue =  this.correctInputValue(currentCaretPosition, lastValue, inputValue);
 
-
     let formattedValue = this.formatInput(inputValue) || '';
     let numAsString = this.removeFormatting(formattedValue);
 
@@ -750,17 +749,13 @@ class NumberFormat extends React.Component {
 
     const {allowNegative, decimalScale} = this.props;
 
-    const numAsStringCopy = numAsString;
-    const lastValueCopy = lastValue;
+    const clearValue = this.removePrefixAndSuffix(inputValue);
+    const {afterDecimal} = splitDecimal(clearValue, allowNegative);
 
-    const lastValueAsStringCopy = this.removeFormatting(lastValueCopy);
-
-    const {afterDecimal} = splitDecimal(numAsStringCopy, allowNegative);
-    const {afterDecimal: afterDecimalLast} = splitDecimal(lastValueAsStringCopy, allowNegative);
-
-    if(afterDecimal.length >= decimalScale && afterDecimalLast.length >= decimalScale || !isAllowed(valueObj)) {
+    if(afterDecimal.length > decimalScale || !isAllowed(valueObj)) {
       formattedValue = lastValue;
-      numAsString = this.removeFormatting(formattedValue);
+      numAsString = this.removeFormatting(lastValue);
+
       this.updateValue({useLastCaretPosition: true, formattedValue, numAsString, inputValue: formattedValue, input: el });
     } else {
       this.updateValue({ formattedValue, numAsString, inputValue, input: el });
