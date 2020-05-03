@@ -14,6 +14,12 @@ import {
 
 /*** format_number input as input ****/
 describe('NumberFormat as input', () => {
+  beforeAll(() => {
+    navigator['__defineGetter__']('platform', () => {
+      return 'MacIntel';
+    });
+  })
+
   it('should render input as type text by default', () => {
     const wrapper = mount(<NumberFormat />);
     expect(wrapper.find('input').instance().getAttribute('type')).toEqual('text');
@@ -24,13 +30,24 @@ describe('NumberFormat as input', () => {
     expect(wrapper.find('input').instance().getAttribute('type')).toEqual('tel');
   });
 
-  it('should add inputMode numeric by default to input element', () => {
+  it('should add inputMode numeric to non Iphone/IPad device by default to input element', () => {
     const wrapper = mount(<NumberFormat />);
     expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual('numeric');
 
     //should allow updating the inputMode value
     wrapper.setProps({inputMode: 'search'});
     expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual('search');
+  });
+
+  it('should add inputMode numeric to Iphone/IPad device to input element only if there is a custom format', () => {
+    navigator['__defineGetter__']('platform', () => {
+      return 'iPhone';
+    });
+    const wrapper = mount(<NumberFormat />);
+    expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual(null);
+
+    wrapper.setProps({format: '## ###'});
+    expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual('numeric');
   });
 
   it('should have initial value', () => {
