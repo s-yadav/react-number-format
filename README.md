@@ -45,7 +45,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | decimalScale | number| none| If defined it limits to given decimal scale |
 | fixedDecimalScale | boolean| false| If true it add 0s to match given decimalScale|
 | allowNegative      | boolean     |   true | allow negative numbers (Only when format option is not provided) |
-| allowEmptyFormatting | boolean | true | Apply formatting to empty inputs |
+| allowEmptyFormatting | boolean | false | Apply formatting to empty inputs |
 | allowLeadingZeros | boolean | false | Allow leading zeros at beginning of number |
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
 | suffix | String (ex : /-)      |    none | Add a suffix after the number |
