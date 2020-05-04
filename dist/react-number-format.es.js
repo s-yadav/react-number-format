@@ -1,5 +1,5 @@
 /**
- * react-number-format - 4.4.1
+ * react-number-format - 4.4.2
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016, 2020 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
@@ -346,6 +346,9 @@ function getCurrentCaretPosition(el) {
   /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
   return Math.max(el.selectionStart, el.selectionEnd);
 }
+function addInputMode(format) {
+  return format || !(navigator.platform && /iPhone|iPod/.test(navigator.platform));
+}
 
 var propTypes$1 = {
   thousandSeparator: propTypes.oneOfType([propTypes.string, propTypes.oneOf([true])]),
@@ -439,6 +442,11 @@ function (_React$Component) {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       this.updateValueIfRequired(prevProps);
+    }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      clearTimeout(this.focusTimeout);
     }
   }, {
     key: "updateValueIfRequired",
@@ -1132,10 +1140,7 @@ function (_React$Component) {
       var numAsString = state.numAsString;
       var lastValue = state.value;
       this.focusedElm = null;
-
-      if (this.focusTimeout) {
-        clearTimeout(this.focusTimeout);
-      }
+      clearTimeout(this.focusTimeout);
 
       if (!format) {
         // if the numAsString is not a valid number reset it to empty
@@ -1311,12 +1316,14 @@ function (_React$Component) {
           displayType = _this$props13.displayType,
           customInput = _this$props13.customInput,
           renderText = _this$props13.renderText,
-          getInputRef = _this$props13.getInputRef;
+          getInputRef = _this$props13.getInputRef,
+          format = _this$props13.format;
       var value = this.state.value;
       var otherProps = omit(this.props, propTypes$1);
+      var inputMode = addInputMode(format) ? 'numeric' : undefined;
 
       var inputProps = _extends({
-        inputMode: 'numeric'
+        inputMode: inputMode
       }, otherProps, {
         type: type,
         value: value,

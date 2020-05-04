@@ -17,6 +17,7 @@ import {
   clamp,
   applyThousandSeparator,
   getCurrentCaretPosition,
+  addInputMode,
 } from './utils';
 
 
@@ -898,12 +899,14 @@ class NumberFormat extends React.Component {
   }
 
   render() {
-    const {type, displayType, customInput, renderText, getInputRef} = this.props;
+    const {type, displayType, customInput, renderText, getInputRef, format} = this.props;
     const {value} = this.state;
 
     const otherProps = omit(this.props, propTypes);
 
-    const inputProps = Object.assign({inputMode: 'numeric'}, otherProps, {
+    const inputMode = addInputMode(format) ? 'numeric' : undefined;
+
+    const inputProps = Object.assign({ inputMode }, otherProps, {
       type,
       value,
       onChange: this.onChange,

@@ -1,5 +1,7 @@
 //@flow
 
+type FormatInputValueFunction = (inputValue: string) => string;
+
 // basic noop function
 export function noop(){}
 export function returnTrue(){ return true; }
@@ -166,4 +168,8 @@ export function clamp(num: number, min: number, max: number) {
 export function getCurrentCaretPosition(el: HTMLInputElement ) {
   /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
   return Math.max(el.selectionStart, el.selectionEnd);
+}
+
+export function addInputMode(format: string | FormatInputValueFunction){
+  return format || !(navigator.platform && /iPhone|iPod/.test(navigator.platform));
 }
