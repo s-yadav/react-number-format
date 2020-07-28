@@ -50,7 +50,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
 | suffix | String (ex : /-)      |    none | Add a suffix after the number |
 | value | Number or String | null | Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true. |
-| defaultValue | Number or String | null | Value to the used as default value if value is not provided. The format of defaultValue should be similar as defined for the value. |
+| defaultValue | Number or String | null | Value to be used as default value if value is not provided. The format of defaultValue should be similar as defined for the value. |
 | isNumericString | boolean | false | If value is passed as string representation of numbers (unformatted) then this should be passed as true |
 | displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
 | type | One of ['text', 'tel', 'password'] | text | Input type attribute |
