@@ -22,3 +22,5 @@ src/
 test/
 tmp/
 flow-typed/
+.idea/
+.vscode/

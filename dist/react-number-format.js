@@ -263,9 +263,10 @@
   function roundToPrecision(numStr, scale, fixedDecimalScale) {
     //if number is empty don't do anything return empty string
     if (['', '-'].indexOf(numStr) !== -1) return numStr;
-    var shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
+    var normalizedNum = getRidOfScientificNotation(numStr);
+    var shoudHaveDecimalSeparator = normalizedNum.indexOf('.') !== -1 && scale;
 
-    var _splitDecimal = splitDecimal(numStr),
+    var _splitDecimal = splitDecimal(normalizedNum),
         beforeDecimal = _splitDecimal.beforeDecimal,
         afterDecimal = _splitDecimal.afterDecimal,
         hasNagation = _splitDecimal.hasNagation;
@@ -282,6 +283,34 @@
     var negation = hasNagation ? '-' : '';
     var decimalSeparator = shoudHaveDecimalSeparator ? '.' : '';
     return "".concat(negation).concat(intPart).concat(decimalSeparator).concat(decimalPart);
+  }
+  var SCIENTIFIC_NUMBER_REGEX = /\d+\.?\d*e[\+\-]?\d+/i;
+  function getRidOfScientificNotation(value) {
+    if (!SCIENTIFIC_NUMBER_REGEX.test(value)) {
+      return value;
+    } // This looks like a scientific notation. We will use parseFloat this time as this is not gonna be a limitation in this case
+
+
+    var number = parseFloat(value);
+
+    if (Math.abs(number) < 1.0) {
+      var e = parseInt(number.toString().split("e-")[1]);
+
+      if (e) {
+        number *= Math.pow(10, e - 1);
+        return "0." + new Array(e).join("0") + number.toString().substring(2);
+      }
+    } else {
+      var _e = parseInt(number.toString().split("+")[1]);
+
+      if (_e > 20) {
+        _e -= 20;
+        number /= Math.pow(10, _e);
+        return number + new Array(_e + 1).join("0");
+      }
+    }
+
+    return number.toString();
   }
   function omit(obj, keyMaps) {
     var filteredObj = {};
