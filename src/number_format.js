@@ -540,7 +540,6 @@ class NumberFormat extends React.Component {
 
     // if value is not defined return empty string
     if (isNonNumericFalsy && !allowEmptyFormatting) return '';
-
     if (typeof value === 'number') {
       value = value.toString();
       isNumericString = true;

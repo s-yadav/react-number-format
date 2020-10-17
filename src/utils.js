@@ -87,8 +87,9 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
   //if number is empty don't do anything return empty string
   if (['', '-'].indexOf(numStr) !== -1) return numStr;
 
-  const shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
-  const {beforeDecimal, afterDecimal, hasNagation} = splitDecimal(numStr);
+  const normalizedNum = getRidOfScientificNotation(numStr);
+  const shoudHaveDecimalSeparator = normalizedNum.indexOf('.') !== -1 && scale;
+  const {beforeDecimal, afterDecimal, hasNagation} = splitDecimal(normalizedNum);
   const roundedDecimalParts = parseFloat(`0.${afterDecimal || '0'}`).toFixed(scale).split('.');
   const intPart = beforeDecimal.split('').reverse().reduce((roundedStr, current, idx) => {
     if (roundedStr.length > idx) {
@@ -101,6 +102,32 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
   const negation = hasNagation ? '-' : '';
   const decimalSeparator = shoudHaveDecimalSeparator ? '.' : '';
   return `${negation}${intPart}${decimalSeparator}${decimalPart}`;
+}
+
+const SCIENTIFIC_NUMBER_REGEX = /\d+\.?\d*e[\+\-]?\d+/i;
+
+export function getRidOfScientificNotation(value: string) {
+  if (!SCIENTIFIC_NUMBER_REGEX.test(value)) {
+    return value;
+  }
+
+  // This looks like a scientific notation. We will use parseFloat this time as this is not gonna be a limitation in this case
+  let number = parseFloat(value);
+  if (Math.abs(number) < 1.0) {
+    let e = parseInt(number.toString().split("e-")[1]);
+    if (e) {
+      number *= Math.pow(10, e - 1);
+      return "0." + new Array(e).join("0") + number.toString().substring(2);
+    }
+  } else {
+    let e = parseInt(number.toString().split("+")[1]);
+    if (e > 20) {
+      e -= 20;
+      number /= Math.pow(10, e);
+      return number + new Array(e + 1).join("0");
+    }
+  }
+  return number.toString();
 }
 
 
