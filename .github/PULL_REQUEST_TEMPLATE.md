@@ -10,7 +10,7 @@
 
 ## Please check which browsers were used for testing
 
-- [] Chrome
-- [] Safari (OSX)
-- [] Safari (iOS)
-- [] Firefox
+- [ ] Chrome
+- [ ] Safari (OSX)
+- [ ] Safari (iOS)
+- [ ] Firefox
