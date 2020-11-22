@@ -4,9 +4,9 @@
 
 ## Link Github issue if this PR solved an existing issue
 
-## Example usage (If appilable)
+## Example usage (If applicable)
 
-## Screenshot (If appilable)
+## Screenshot (If applicable)
 
 ## Please check which browsers were used for testing
 
