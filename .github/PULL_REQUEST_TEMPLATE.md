@@ -1,5 +1,7 @@
 ## Describe the issue/change
 
+## Describe specs for failing cases if this is an issue (If application)
+
 ## Describe the changes proposed/implemented in this PR
 
 ## Link Github issue if this PR solved an existing issue
