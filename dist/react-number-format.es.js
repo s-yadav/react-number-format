@@ -1,7 +1,7 @@
 /**
- * react-number-format - 4.2.0
+ * react-number-format - 4.4.2
  * Author : Sudhanshu Yadav
- * Copyright (c) 2016, 2019 to Sudhanshu Yadav, released under the MIT license.
+ * Copyright (c) 2016, 2020 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
  */
 
@@ -181,8 +181,8 @@ function noop() {}
 function returnTrue() {
   return true;
 }
-function charIsNumber(char) {
-  return !!(char || '').match(/\d/);
+function charIsNumber(_char) {
+  return !!(_char || '').match(/\d/);
 }
 function escapeRegExp(str) {
   return str.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
@@ -346,10 +346,14 @@ function getCurrentCaretPosition(el) {
   /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
   return Math.max(el.selectionStart, el.selectionEnd);
 }
+function addInputMode(format) {
+  return format || !(navigator.platform && /iPhone|iPod/.test(navigator.platform));
+}
 
 var propTypes$1 = {
   thousandSeparator: propTypes.oneOfType([propTypes.string, propTypes.oneOf([true])]),
   decimalSeparator: propTypes.string,
+  allowedDecimalSeparators: propTypes.arrayOf(propTypes.string),
   thousandsGroupStyle: propTypes.oneOf(['thousand', 'lakh', 'wan']),
   decimalScale: propTypes.number,
   fixedDecimalScale: propTypes.bool,
@@ -375,7 +379,10 @@ var propTypes$1 = {
   type: propTypes.oneOf(['text', 'tel', 'password']),
   isAllowed: propTypes.func,
   renderText: propTypes.func,
-  getInputRef: propTypes.func
+  getInputRef: propTypes.oneOfType([propTypes.func, // for legacy refs
+  propTypes.shape({
+    current: propTypes.any
+  })])
 };
 var defaultProps = {
   displayType: 'input',
@@ -395,8 +402,7 @@ var defaultProps = {
   onMouseUp: noop,
   onFocus: noop,
   onBlur: noop,
-  isAllowed: returnTrue,
-  getInputRef: noop
+  isAllowed: returnTrue
 };
 
 var NumberFormat =
@@ -424,11 +430,11 @@ function (_React$Component) {
       selectionStart: 0,
       selectionEnd: 0
     };
-    _this.onChange = _this.onChange.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.onKeyDown = _this.onKeyDown.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.onMouseUp = _this.onMouseUp.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.onFocus = _this.onFocus.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.onBlur = _this.onBlur.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.onChange = _this.onChange.bind(_assertThisInitialized(_this));
+    _this.onKeyDown = _this.onKeyDown.bind(_assertThisInitialized(_this));
+    _this.onMouseUp = _this.onMouseUp.bind(_assertThisInitialized(_this));
+    _this.onFocus = _this.onFocus.bind(_assertThisInitialized(_this));
+    _this.onBlur = _this.onBlur.bind(_assertThisInitialized(_this));
     return _this;
   }
 
@@ -438,6 +444,11 @@ function (_React$Component) {
       this.updateValueIfRequired(prevProps);
     }
   }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      clearTimeout(this.focusTimeout);
+    }
+  }, {
     key: "updateValueIfRequired",
     value: function updateValueIfRequired(prevProps) {
       var props = this.props,
@@ -445,7 +456,7 @@ function (_React$Component) {
           focusedElm = this.focusedElm;
       var stateValue = state.value,
           _state$numAsString = state.numAsString,
-          lastNumStr = _state$numAsString === void 0 ? '' : _state$numAsString;
+          lastNumStr = _state$numAsString === void 0 ? '' : _state$numAsString; // If only state changed no need to do any thing
 
       if (prevProps !== props) {
         //validate props
@@ -517,15 +528,22 @@ function (_React$Component) {
     key: "getSeparators",
     value: function getSeparators() {
       var decimalSeparator = this.props.decimalSeparator;
-      var thousandSeparator = this.props.thousandSeparator;
+      var _this$props2 = this.props,
+          thousandSeparator = _this$props2.thousandSeparator,
+          allowedDecimalSeparators = _this$props2.allowedDecimalSeparators;
 
       if (thousandSeparator === true) {
         thousandSeparator = ',';
       }
 
+      if (!allowedDecimalSeparators) {
+        allowedDecimalSeparators = [decimalSeparator, '.'];
+      }
+
       return {
         decimalSeparator: decimalSeparator,
-        thousandSeparator: thousandSeparator
+        thousandSeparator: thousandSeparator,
+        allowedDecimalSeparators: allowedDecimalSeparators
       };
     }
   }, {
@@ -592,10 +610,10 @@ function (_React$Component) {
   }, {
     key: "correctCaretPosition",
     value: function correctCaretPosition(value, caretPos, direction) {
-      var _this$props2 = this.props,
-          prefix = _this$props2.prefix,
-          suffix = _this$props2.suffix,
-          format = _this$props2.format; //if value is empty return 0
+      var _this$props3 = this.props,
+          prefix = _this$props3.prefix,
+          suffix = _this$props3.suffix,
+          format = _this$props3.format; //if value is empty return 0
 
       if (value === '') return 0; //caret position should be between 0 and value length
 
@@ -681,10 +699,10 @@ function (_React$Component) {
   }, {
     key: "removePrefixAndSuffix",
     value: function removePrefixAndSuffix(val) {
-      var _this$props3 = this.props,
-          format = _this$props3.format,
-          prefix = _this$props3.prefix,
-          suffix = _this$props3.suffix; //remove prefix and suffix
+      var _this$props4 = this.props,
+          format = _this$props4.format,
+          prefix = _this$props4.prefix,
+          suffix = _this$props4.suffix; //remove prefix and suffix
 
       if (!format && val) {
         var isNegative = val[0] === '-'; //remove negation sign
@@ -734,9 +752,9 @@ function (_React$Component) {
   }, {
     key: "removeFormatting",
     value: function removeFormatting(val) {
-      var _this$props4 = this.props,
-          format = _this$props4.format,
-          removeFormatting = _this$props4.removeFormatting;
+      var _this$props5 = this.props,
+          format = _this$props5.format,
+          removeFormatting = _this$props5.removeFormatting;
       if (!val) return val;
 
       if (!format) {
@@ -787,13 +805,13 @@ function (_React$Component) {
   }, {
     key: "formatAsNumber",
     value: function formatAsNumber(numStr) {
-      var _this$props5 = this.props,
-          decimalScale = _this$props5.decimalScale,
-          fixedDecimalScale = _this$props5.fixedDecimalScale,
-          prefix = _this$props5.prefix,
-          suffix = _this$props5.suffix,
-          allowNegative = _this$props5.allowNegative,
-          thousandsGroupStyle = _this$props5.thousandsGroupStyle;
+      var _this$props6 = this.props,
+          decimalScale = _this$props6.decimalScale,
+          fixedDecimalScale = _this$props6.fixedDecimalScale,
+          prefix = _this$props6.prefix,
+          suffix = _this$props6.suffix,
+          allowNegative = _this$props6.allowNegative,
+          thousandsGroupStyle = _this$props6.thousandsGroupStyle;
 
       var _this$getSeparators4 = this.getSeparators(),
           thousandSeparator = _this$getSeparators4.thousandSeparator,
@@ -826,9 +844,9 @@ function (_React$Component) {
     key: "formatNumString",
     value: function formatNumString() {
       var numStr = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-      var _this$props6 = this.props,
-          format = _this$props6.format,
-          allowEmptyFormatting = _this$props6.allowEmptyFormatting;
+      var _this$props7 = this.props,
+          format = _this$props7.format,
+          allowEmptyFormatting = _this$props7.allowEmptyFormatting;
       var formattedValue = numStr;
 
       if (numStr === '' && !allowEmptyFormatting) {
@@ -848,15 +866,15 @@ function (_React$Component) {
   }, {
     key: "formatValueProp",
     value: function formatValueProp(defaultValue) {
-      var _this$props7 = this.props,
-          format = _this$props7.format,
-          decimalScale = _this$props7.decimalScale,
-          fixedDecimalScale = _this$props7.fixedDecimalScale,
-          allowEmptyFormatting = _this$props7.allowEmptyFormatting;
       var _this$props8 = this.props,
-          _this$props8$value = _this$props8.value,
-          value = _this$props8$value === void 0 ? defaultValue : _this$props8$value,
-          isNumericString = _this$props8.isNumericString;
+          format = _this$props8.format,
+          decimalScale = _this$props8.decimalScale,
+          fixedDecimalScale = _this$props8.fixedDecimalScale,
+          allowEmptyFormatting = _this$props8.allowEmptyFormatting;
+      var _this$props9 = this.props,
+          _this$props9$value = _this$props9.value,
+          value = _this$props9$value === void 0 ? defaultValue : _this$props9$value,
+          isNumericString = _this$props9.isNumericString;
       var isNonNumericFalsy = !value && value !== 0;
 
       if (isNonNumericFalsy && allowEmptyFormatting) {
@@ -925,12 +943,12 @@ function (_React$Component) {
   }, {
     key: "isCharacterAFormat",
     value: function isCharacterAFormat(caretPos, value) {
-      var _this$props9 = this.props,
-          format = _this$props9.format,
-          prefix = _this$props9.prefix,
-          suffix = _this$props9.suffix,
-          decimalScale = _this$props9.decimalScale,
-          fixedDecimalScale = _this$props9.fixedDecimalScale;
+      var _this$props10 = this.props,
+          format = _this$props10.format,
+          prefix = _this$props10.prefix,
+          suffix = _this$props10.suffix,
+          decimalScale = _this$props10.decimalScale,
+          fixedDecimalScale = _this$props10.fixedDecimalScale;
 
       var _this$getSeparators5 = this.getSeparators(),
           decimalSeparator = _this$getSeparators5.decimalSeparator; //check within format pattern
@@ -961,13 +979,15 @@ function (_React$Component) {
   }, {
     key: "correctInputValue",
     value: function correctInputValue(caretPos, lastValue, value) {
-      var _this$props10 = this.props,
-          format = _this$props10.format,
-          allowNegative = _this$props10.allowNegative,
-          prefix = _this$props10.prefix,
-          suffix = _this$props10.suffix;
+      var _this$props11 = this.props,
+          format = _this$props11.format,
+          allowNegative = _this$props11.allowNegative,
+          prefix = _this$props11.prefix,
+          suffix = _this$props11.suffix,
+          decimalScale = _this$props11.decimalScale;
 
       var _this$getSeparators6 = this.getSeparators(),
+          allowedDecimalSeparators = _this$getSeparators6.allowedDecimalSeparators,
           decimalSeparator = _this$getSeparators6.decimalSeparator;
 
       var lastNumStr = this.state.numAsString || '';
@@ -978,11 +998,12 @@ function (_React$Component) {
       var _findChangedIndex = findChangedIndex(lastValue, value),
           start = _findChangedIndex.start,
           end = _findChangedIndex.end;
-      /** Check if only . is added in the numeric format and replace it with decimal separator */
+      /** Check for any allowed decimal separator is added in the numeric format and replace it with decimal separator */
 
 
-      if (!format && decimalSeparator !== '.' && start === end && value[selectionStart] === '.') {
-        return value.substr(0, selectionStart) + decimalSeparator + value.substr(selectionStart + 1, value.length);
+      if (!format && start === end && allowedDecimalSeparators.indexOf(value[selectionStart]) !== -1) {
+        var separator = decimalScale === 0 ? '' : decimalSeparator;
+        return value.substr(0, selectionStart) + separator + value.substr(selectionStart + 1, value.length);
       }
       /* don't do anyhting if something got added,
        or if value is empty string (when whole input is cleared)
@@ -1028,29 +1049,42 @@ function (_React$Component) {
   }, {
     key: "updateValue",
     value: function updateValue(params) {
-      var _this2 = this;
-
-      var onUpdate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
       var formattedValue = params.formattedValue,
-          input = params.input;
+          input = params.input,
+          _params$setCaretPosit = params.setCaretPosition,
+          setCaretPosition = _params$setCaretPosit === void 0 ? true : _params$setCaretPosit;
       var numAsString = params.numAsString,
           caretPos = params.caretPos;
       var onValueChange = this.props.onValueChange;
-      var lastValue = this.state.value; //set caret position, and value imperatively when element is provided
+      var lastValue = this.state.value;
 
       if (input) {
-        //calculate caret position if not defined
-        if (!caretPos) {
-          var inputValue = params.inputValue || input.value;
-          var currentCaretPosition = getCurrentCaretPosition(input); //get the caret position
+        //set caret position, and value imperatively when element is provided
+        if (setCaretPosition) {
+          //calculate caret position if not defined
+          if (!caretPos) {
+            var inputValue = params.inputValue || input.value;
+            var currentCaretPosition = getCurrentCaretPosition(input);
+            /**
+             * set the value imperatively, this is required for IE fix
+             * This is also required as if new caret position is beyond the previous value.
+             * Caret position will not be set correctly
+             */
 
-          caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
-        } //set the value imperatively, this is required for IE fix
+            input.value = formattedValue; //get the caret position
+
+            caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
+          } //set caret position
 
 
-        input.value = formattedValue; //set caret position
-
-        this.setPatchedCaretPosition(input, caretPos, formattedValue);
+          this.setPatchedCaretPosition(input, caretPos, formattedValue);
+        } else {
+          /**
+           * if we are not setting caret position set the value imperatively.
+           * This is required on onBlur method
+           */
+          input.value = formattedValue;
+        }
       } //calculate numeric string if not passed
 
 
@@ -1063,18 +1097,14 @@ function (_React$Component) {
         this.setState({
           value: formattedValue,
           numAsString: numAsString
-        }, function () {
-          onValueChange(_this2.getValueObject(formattedValue, numAsString));
-          onUpdate();
-        });
-      } else {
-        onUpdate();
+        }); // trigger onValueChange synchronously, so parent is updated along with the number format. Fix for #277, #287
+
+        onValueChange(this.getValueObject(formattedValue, numAsString));
       }
     }
   }, {
     key: "onChange",
     value: function onChange(e) {
-      e.persist();
       var el = e.target;
       var inputValue = el.value;
       var state = this.state,
@@ -1096,9 +1126,8 @@ function (_React$Component) {
         numAsString: numAsString,
         inputValue: inputValue,
         input: el
-      }, function () {
-        props.onChange(e);
       });
+      props.onChange(e);
     }
   }, {
     key: "onBlur",
@@ -1111,8 +1140,14 @@ function (_React$Component) {
       var numAsString = state.numAsString;
       var lastValue = state.value;
       this.focusedElm = null;
+      clearTimeout(this.focusTimeout);
 
       if (!format) {
+        // if the numAsString is not a valid number reset it to empty
+        if (isNaN(parseFloat(numAsString))) {
+          numAsString = '';
+        }
+
         if (!allowLeadingZeros) {
           numAsString = fixLeadingZero(numAsString);
         }
@@ -1121,13 +1156,13 @@ function (_React$Component) {
 
         if (formattedValue !== lastValue) {
           // the event needs to be persisted because its properties can be accessed in an asynchronous way
-          e.persist();
           this.updateValue({
             formattedValue: formattedValue,
-            numAsString: numAsString
-          }, function () {
-            onBlur(e);
+            numAsString: numAsString,
+            input: e.target,
+            setCaretPosition: false
           });
+          onBlur(e);
           return;
         }
       }
@@ -1144,23 +1179,21 @@ function (_React$Component) {
           _el$value = el.value,
           value = _el$value === void 0 ? '' : _el$value;
       var expectedCaretPosition;
-      var _this$props11 = this.props,
-          decimalScale = _this$props11.decimalScale,
-          fixedDecimalScale = _this$props11.fixedDecimalScale,
-          prefix = _this$props11.prefix,
-          suffix = _this$props11.suffix,
-          format = _this$props11.format,
-          onKeyDown = _this$props11.onKeyDown,
-          onValueChange = _this$props11.onValueChange;
+      var _this$props12 = this.props,
+          decimalScale = _this$props12.decimalScale,
+          fixedDecimalScale = _this$props12.fixedDecimalScale,
+          prefix = _this$props12.prefix,
+          suffix = _this$props12.suffix,
+          format = _this$props12.format,
+          onKeyDown = _this$props12.onKeyDown;
       var ignoreDecimalSeparator = decimalScale !== undefined && fixedDecimalScale;
       var numRegex = this.getNumberRegex(false, ignoreDecimalSeparator);
       var negativeRegex = new RegExp('-');
       var isPatternFormat = typeof format === 'string';
       this.selectionBeforeInput = {
         selectionStart: selectionStart,
-        selectionEnd: selectionEnd //Handle backspace and delete against non numerical/decimal characters or arrow keys
-
-      };
+        selectionEnd: selectionEnd
+      }; //Handle backspace and delete against non numerical/decimal characters or arrow keys
 
       if (key === 'ArrowLeft' || key === 'Backspace') {
         expectedCaretPosition = selectionStart - 1;
@@ -1194,9 +1227,7 @@ function (_React$Component) {
         we will not have any information of keyPress
         */
         if (selectionStart <= leftBound + 1 && value[0] === '-' && typeof format === 'undefined') {
-          var newValue = value.substring(1); //persist event before performing async task
-
-          e.persist();
+          var newValue = value.substring(1);
           this.updateValue({
             formattedValue: newValue,
             caretPos: newCaretPosition,
@@ -1223,7 +1254,7 @@ function (_React$Component) {
         this.setPatchedCaretPosition(el, newCaretPosition, value);
       }
 
-      this.props.onKeyDown(e);
+      onKeyDown(e);
     }
     /** required to handle the caret position when click anywhere within the input **/
 
@@ -1254,42 +1285,46 @@ function (_React$Component) {
   }, {
     key: "onFocus",
     value: function onFocus(e) {
-      var _this3 = this;
+      var _this2 = this;
 
       // Workaround Chrome and Safari bug https://bugs.chromium.org/p/chromium/issues/detail?id=779328
       // (onFocus event target selectionStart is always 0 before setTimeout)
       e.persist();
       this.focusedElm = e.target;
-      setTimeout(function () {
+      this.focusTimeout = setTimeout(function () {
         var el = e.target;
         var selectionStart = el.selectionStart,
             selectionEnd = el.selectionEnd,
             _el$value3 = el.value,
             value = _el$value3 === void 0 ? '' : _el$value3;
 
-        var caretPosition = _this3.correctCaretPosition(value, selectionStart); //setPatchedCaretPosition only when everything is not selected on focus (while tabbing into the field)
+        var caretPosition = _this2.correctCaretPosition(value, selectionStart); //setPatchedCaretPosition only when everything is not selected on focus (while tabbing into the field)
 
 
         if (caretPosition !== selectionStart && !(selectionStart === 0 && selectionEnd === value.length)) {
-          _this3.setPatchedCaretPosition(el, caretPosition, value);
+          _this2.setPatchedCaretPosition(el, caretPosition, value);
         }
 
-        _this3.props.onFocus(e);
+        _this2.props.onFocus(e);
       }, 0);
     }
   }, {
     key: "render",
     value: function render() {
-      var _this$props12 = this.props,
-          type = _this$props12.type,
-          displayType = _this$props12.displayType,
-          customInput = _this$props12.customInput,
-          renderText = _this$props12.renderText,
-          getInputRef = _this$props12.getInputRef;
+      var _this$props13 = this.props,
+          type = _this$props13.type,
+          displayType = _this$props13.displayType,
+          customInput = _this$props13.customInput,
+          renderText = _this$props13.renderText,
+          getInputRef = _this$props13.getInputRef,
+          format = _this$props13.format;
       var value = this.state.value;
       var otherProps = omit(this.props, propTypes$1);
+      var inputMode = addInputMode(format) ? 'numeric' : undefined;
 
-      var inputProps = _extends({}, otherProps, {
+      var inputProps = _extends({
+        inputMode: inputMode
+      }, otherProps, {
         type: type,
         value: value,
         onChange: this.onChange,

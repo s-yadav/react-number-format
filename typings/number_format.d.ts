@@ -1,11 +1,10 @@
 /// <reference types="react" />
 
-//exclude types from the InputHTMLAttributes
-declare const {defaultValue, value, ...inputAttributes}: React.InputHTMLAttributes<HTMLInputElement>;
-type InputAttributes = typeof inputAttributes;
-
-
 declare module "react-number-format" {
+
+  //exclude types from the InputHTMLAttributes
+  const {defaultValue, value, ...inputAttributes}: React.InputHTMLAttributes<HTMLInputElement>;
+  type InputAttributes = typeof inputAttributes;
 
   export interface NumberFormatState {
     value?: string;
@@ -13,7 +12,7 @@ declare module "react-number-format" {
   }
 
   export interface NumberFormatValues {
-    floatValue: number;
+    floatValue: number | undefined;
     formattedValue: string;
     value: string;
   }
@@ -45,6 +44,7 @@ declare module "react-number-format" {
     customInput?: React.ComponentType<any>;
     allowNegative?: boolean;
     allowEmptyFormatting?: boolean;
+    allowLeadingZeros?: boolean;
     onValueChange?: (values: NumberFormatValues) => void;
     /**
      * these are already included in React.HTMLAttributes<HTMLInputElement>
@@ -58,6 +58,7 @@ declare module "react-number-format" {
     isAllowed?: (values: NumberFormatValues) => boolean;
     renderText?: (formattedValue: string) => React.ReactNode;
     getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any>;
+    allowedDecimalSeparators?: Array<string>;
     [key: string]: any;
   }
 

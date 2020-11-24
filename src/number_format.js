@@ -17,12 +17,14 @@ import {
   clamp,
   applyThousandSeparator,
   getCurrentCaretPosition,
+  addInputMode,
 } from './utils';
 
 
 const propTypes = {
   thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([true])]),
   decimalSeparator: PropTypes.string,
+  allowedDecimalSeparators: PropTypes.arrayOf(PropTypes.string),
   thousandsGroupStyle: PropTypes.oneOf(['thousand', 'lakh', 'wan']),
   decimalScale: PropTypes.number,
   fixedDecimalScale: PropTypes.bool,
@@ -57,7 +59,10 @@ const propTypes = {
   type: PropTypes.oneOf(['text', 'tel', 'password']),
   isAllowed: PropTypes.func,
   renderText: PropTypes.func,
-  getInputRef: PropTypes.func
+  getInputRef: PropTypes.oneOfType([
+    PropTypes.func, // for legacy refs
+    PropTypes.shape({ current: PropTypes.any })
+  ])
 };
 
 const defaultProps = {
@@ -78,8 +83,7 @@ const defaultProps = {
   onMouseUp: noop,
   onFocus: noop,
   onBlur: noop,
-  isAllowed: returnTrue,
-  getInputRef: noop,
+  isAllowed: returnTrue
 };
 
 class NumberFormat extends React.Component {
@@ -92,6 +96,7 @@ class NumberFormat extends React.Component {
   onMouseUp: Function
   onFocus: Function
   onBlur: Function
+  focusTimeout: number
   focusedElm: HTMLElement
   selectionBeforeInput: {
     selectionStart: number,
@@ -129,10 +134,15 @@ class NumberFormat extends React.Component {
     this.updateValueIfRequired(prevProps);
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.focusTimeout);
+  }
+
   updateValueIfRequired(prevProps: Object) {
     const {props, state, focusedElm} = this;
     const {value: stateValue, numAsString: lastNumStr = ''} = state;
 
+    // If only state changed no need to do any thing
     if(prevProps !== props) {
       //validate props
       this.validateProps();
@@ -197,15 +207,19 @@ class NumberFormat extends React.Component {
 
   getSeparators() {
     const {decimalSeparator} = this.props;
-    let {thousandSeparator} = this.props;
+    let {thousandSeparator, allowedDecimalSeparators} = this.props;
 
     if (thousandSeparator === true) {
       thousandSeparator = ','
     }
+    if (!allowedDecimalSeparators) {
+      allowedDecimalSeparators = [decimalSeparator, '.']
+    }
 
     return {
       decimalSeparator,
-      thousandSeparator
+      thousandSeparator,
+      allowedDecimalSeparators,
     }
   }
 
@@ -602,15 +616,16 @@ class NumberFormat extends React.Component {
    * It will also work as fallback if android chome keyDown handler does not work
    **/
   correctInputValue(caretPos: number, lastValue: string, value: string) {
-    const {format, allowNegative, prefix, suffix} = this.props;
-    const {decimalSeparator} = this.getSeparators();
+    const {format, allowNegative, prefix, suffix, decimalScale} = this.props;
+    const {allowedDecimalSeparators, decimalSeparator} = this.getSeparators();
     const lastNumStr = this.state.numAsString || '';
     const {selectionStart, selectionEnd} = this.selectionBeforeInput;
     const {start, end} = findChangedIndex(lastValue, value);
 
-    /** Check if only . is added in the numeric format and replace it with decimal separator */
-    if (!format && decimalSeparator !== '.' && start === end && value[selectionStart] === '.') {
-      return value.substr(0, selectionStart) + decimalSeparator + value.substr(selectionStart + 1, value.length);
+    /** Check for any allowed decimal separator is added in the numeric format and replace it with decimal separator */
+    if (!format && start === end && allowedDecimalSeparators.indexOf(value[selectionStart]) !== -1  ) {
+      const separator = decimalScale === 0 ? '' : decimalSeparator;
+      return value.substr(0, selectionStart) + separator + value.substr(selectionStart + 1, value.length);
     }
 
     /* don't do anyhting if something got added,
@@ -657,33 +672,46 @@ class NumberFormat extends React.Component {
       inputValue: string,
       input: HTMLInputElement,
       caretPos: number,
-    },
-    onUpdate?: Function = noop
+      setCaretPosition: Boolean,
+    }
   ) {
-    const {formattedValue, input} = params;
+    const {formattedValue, input, setCaretPosition = true} = params;
     let {numAsString, caretPos} = params;
     const {onValueChange, name} = this.props;
     const {value: lastValue} = this.state;
 
-    //set caret position, and value imperatively when element is provided
     if (input) {
+      //set caret position, and value imperatively when element is provided
+      if (setCaretPosition) {
 
-      //calculate caret position if not defined
-      if (!caretPos) {
-        const inputValue = params.inputValue || input.value;
+        //calculate caret position if not defined
+        if (!caretPos) {
+          const inputValue = params.inputValue || input.value;
 
-        const currentCaretPosition = getCurrentCaretPosition(input);
+          const currentCaretPosition = getCurrentCaretPosition(input);
 
-        //get the caret position
-        caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
+          /**
+           * set the value imperatively, this is required for IE fix
+           * This is also required as if new caret position is beyond the previous value.
+           * Caret position will not be set correctly
+           */
+          input.value = formattedValue;
+
+          //get the caret position
+          caretPos = this.getCaretPosition(inputValue, formattedValue, currentCaretPosition);
+        }
+
+        //set caret position
+        this.setPatchedCaretPosition(input, caretPos, formattedValue);
+      } else {
+        /**
+         * if we are not setting caret position set the value imperatively.
+         * This is required on onBlur method
+         */
+        input.value = formattedValue;
       }
-
-      //set the value imperatively, this is required for IE fix
-      input.value = formattedValue;
-
-      //set caret position
-      this.setPatchedCaretPosition(input, caretPos, formattedValue);
     }
+
 
     //calculate numeric string if not passed
     if (numAsString === undefined) {
@@ -692,21 +720,18 @@ class NumberFormat extends React.Component {
 
     //update state if value is changed
     if (formattedValue !== lastValue) {
-      this.setState({value : formattedValue, numAsString}, () => {
-        const valueObject = this.getValueObject(formattedValue, numAsString);
+      this.setState({ value : formattedValue, numAsString });
+
+      // trigger onValueChange synchronously, so parent is updated along with the number format. Fix for #277, #287
+      const valueObject = this.getValueObject(formattedValue, numAsString);
         onValueChange({
           ...valueObject,
           name
         });
-        onUpdate();
-      });
-    } else {
-      onUpdate();
     }
   }
 
   onChange(e: SyntheticInputEvent) {
-    e.persist();
     const el = e.target;
     let inputValue = el.value;
     const {state, props} = this;
@@ -726,10 +751,9 @@ class NumberFormat extends React.Component {
       formattedValue = lastValue;
     }
 
-    this.updateValue({ formattedValue, numAsString, inputValue, input: el }, () => {
-      props.onChange(e);
-    });
+    this.updateValue({ formattedValue, numAsString, inputValue, input: el });
 
+    props.onChange(e);
   }
 
   onBlur(e: SyntheticInputEvent) {
@@ -737,23 +761,28 @@ class NumberFormat extends React.Component {
     const {format, onBlur, allowLeadingZeros} = props;
     let {numAsString} = state;
     const lastValue = state.value;
-
     this.focusedElm = null;
 
+    clearTimeout(this.focusTimeout);
+
+
     if (!format) {
+      // if the numAsString is not a valid number reset it to empty
+      if (isNaN(parseFloat(numAsString))) {
+        numAsString = '';
+      }
+
       if (!allowLeadingZeros) {
         numAsString = fixLeadingZero(numAsString);
       }
-      
+
       const formattedValue = this.formatNumString(numAsString);
 
       //change the state
       if (formattedValue !== lastValue) {
         // the event needs to be persisted because its properties can be accessed in an asynchronous way
-        e.persist();
-        this.updateValue({ formattedValue, numAsString }, () => {
-          onBlur(e);
-        });
+        this.updateValue({ formattedValue, numAsString, input: e.target, setCaretPosition: false });
+        onBlur(e);
         return;
       }
     }
@@ -765,7 +794,7 @@ class NumberFormat extends React.Component {
     const {key} = e;
     const {selectionStart, selectionEnd, value = ''} = el;
     let expectedCaretPosition;
-    const {decimalScale, fixedDecimalScale, prefix, suffix, format, onKeyDown, onValueChange} = this.props;
+    const {decimalScale, fixedDecimalScale, prefix, suffix, format, onKeyDown} = this.props;
     const ignoreDecimalSeparator = decimalScale !== undefined && fixedDecimalScale;
     const numRegex = this.getNumberRegex(false, ignoreDecimalSeparator);
     const negativeRegex = new RegExp('-');
@@ -808,9 +837,6 @@ class NumberFormat extends React.Component {
       */
       if (selectionStart <= leftBound + 1 && value[0] === '-' && typeof format === 'undefined') {
         const newValue = value.substring(1);
-        //persist event before performing async task
-        e.persist();
-
         this.updateValue({formattedValue: newValue, caretPos: newCaretPosition, input: el});
       } else if (!negativeRegex.test(value[expectedCaretPosition])) {
         while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound){ newCaretPosition--; }
@@ -831,7 +857,7 @@ class NumberFormat extends React.Component {
     }
 
 
-    this.props.onKeyDown(e);
+    onKeyDown(e);
 
   }
 
@@ -861,8 +887,7 @@ class NumberFormat extends React.Component {
     e.persist();
 
     this.focusedElm = e.target;
-
-    setTimeout(() => {
+    this.focusTimeout = setTimeout(() => {
       const el = e.target;
       const {selectionStart, selectionEnd, value = ''} = el;
 
@@ -878,12 +903,14 @@ class NumberFormat extends React.Component {
   }
 
   render() {
-    const {type, displayType, customInput, renderText, getInputRef} = this.props;
+    const {type, displayType, customInput, renderText, getInputRef, format} = this.props;
     const {value} = this.state;
 
     const otherProps = omit(this.props, propTypes);
 
-    const inputProps = Object.assign({}, otherProps, {
+    const inputMode = addInputMode(format) ? 'numeric' : undefined;
+
+    const inputProps = Object.assign({ inputMode }, otherProps, {
       type,
       value,
       onChange: this.onChange,

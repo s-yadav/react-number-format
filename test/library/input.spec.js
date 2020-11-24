@@ -14,6 +14,12 @@ import {
 
 /*** format_number input as input ****/
 describe('NumberFormat as input', () => {
+  beforeAll(() => {
+    navigator['__defineGetter__']('platform', () => {
+      return 'MacIntel';
+    });
+  })
+
   it('should render input as type text by default', () => {
     const wrapper = mount(<NumberFormat />);
     expect(wrapper.find('input').instance().getAttribute('type')).toEqual('text');
@@ -22,6 +28,26 @@ describe('NumberFormat as input', () => {
   it('should render input as defined type', () => {
     const wrapper = mount(<NumberFormat type="tel" />);
     expect(wrapper.find('input').instance().getAttribute('type')).toEqual('tel');
+  });
+
+  it('should add inputMode numeric to non Iphone/IPad device by default to input element', () => {
+    const wrapper = mount(<NumberFormat />);
+    expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual('numeric');
+
+    //should allow updating the inputMode value
+    wrapper.setProps({inputMode: 'search'});
+    expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual('search');
+  });
+
+  it('should add inputMode numeric to Iphone/IPad device to input element only if there is a custom format', () => {
+    navigator['__defineGetter__']('platform', () => {
+      return 'iPhone';
+    });
+    const wrapper = mount(<NumberFormat />);
+    expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual(null);
+
+    wrapper.setProps({format: '## ###'});
+    expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual('numeric');
   });
 
   it('should have initial value', () => {
@@ -103,6 +129,25 @@ describe('NumberFormat as input', () => {
     expect(wrapper.state().value).toEqual('9999');
   })
 
+
+  it('handles multiple different allowed decimal separators', () => {
+    const allowedDecimalSeparators = [',', '.', 'm']
+
+    const wrapper = shallow(<NumberFormat decimalSeparator={','} allowedDecimalSeparators={allowedDecimalSeparators} />);
+
+    allowedDecimalSeparators.forEach((separator) => {
+      wrapper.setProps({value: '12'});
+      simulateKeyInput(wrapper.find('input'), separator, 2);
+      expect(wrapper.state().value).toEqual('12,');
+    });
+  });
+
+  it('accepts dot as even when decimal separator is separate', () => {
+    const wrapper = shallow(<NumberFormat decimalSeparator={','} />);
+    wrapper.setProps({value: '12'});
+    simulateKeyInput(wrapper.find('input'), '.', 2);
+    expect(wrapper.state().value).toEqual('12,');
+  });
 
   it('works with custom input', () => {
     const WrapperComponent = (props) => {
@@ -205,7 +250,7 @@ describe('NumberFormat as input', () => {
     const wrapper = shallow(<NumberFormat onValueChange={(values) => {
       wrapper.setProps({value: values.floatValue});
     }}/>);
-    
+
     //check negation
     simulateKeyInput(wrapper.find('input'), '-', 0);
     expect(wrapper.state().value).toEqual('-');
@@ -219,7 +264,7 @@ describe('NumberFormat as input', () => {
     //check changing format should change the formatted value
     wrapper.setProps({prefix: '$'});
     expect(wrapper.state().value).toEqual('$0.2');
-    
+
     //check if trailing decimal is supported
     wrapper.setProps({value: 123});
     simulateKeyInput(wrapper.find('input'), '.', 4);
@@ -241,7 +286,7 @@ describe('NumberFormat as input', () => {
     simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
     simulateKeyInput(wrapper.find('input'), '0', 0);
     expect(spy.calls.argsFor(1)[0]).toEqual({formattedValue: "0", value: "0", floatValue: 0});
-    
+
     simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
     simulateKeyInput(wrapper.find('input'), '123.', 0);
     expect(spy.calls.argsFor(2)[0]).toEqual({formattedValue: "123.", value: "123.", floatValue: 123});
@@ -259,7 +304,7 @@ describe('NumberFormat as input', () => {
     const wrapper = shallow(<NumberFormat value="1.1" />);
     simulateFocusEvent(wrapper.find('input'));
     simulateKeyInput(wrapper.find('input'), '0', 3)
-    
+
     expect(wrapper.state().value).toEqual('1.10');
 
     simulateBlurEvent(wrapper.find('input'))
@@ -281,6 +326,33 @@ describe('NumberFormat as input', () => {
   it('should treat Infinity value as empty string', () => {
     const wrapper = shallow(<NumberFormat value={Infinity}/>);
     expect(wrapper.state().value).toEqual('');
+  });
+
+  it('should call onFocus prop when focused', (done) => {
+    const spy = jasmine.createSpy('onFocus');
+    const wrapper = shallow(<NumberFormat onFocus={spy} />);
+    const input = wrapper.find('input');
+
+    simulateFocusEvent(input);
+
+    setTimeout(() => {
+      expect(spy).toHaveBeenCalled();
+      done();
+    }, 0);
+  });
+
+  it('should not call onFocus prop when focused then blurred in the same event loop', (done) => {
+    const spy = jasmine.createSpy('onFocus');
+    const wrapper = shallow(<NumberFormat onFocus={spy} />);
+    const input = wrapper.find('input');
+
+    simulateFocusEvent(input);
+    simulateBlurEvent(input);
+
+    setTimeout(() => {
+      expect(spy).not.toHaveBeenCalled();
+      done();
+    }, 0);
   });
 
   describe('Test masking', () => {

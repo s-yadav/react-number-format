@@ -45,12 +45,12 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | decimalScale | number| none| If defined it limits to given decimal scale |
 | fixedDecimalScale | boolean| false| If true it add 0s to match given decimalScale|
 | allowNegative      | boolean     |   true | allow negative numbers (Only when format option is not provided) |
-| allowEmptyFormatting | boolean | true | Apply formatting to empty inputs |
+| allowEmptyFormatting | boolean | false | Apply formatting to empty inputs |
 | allowLeadingZeros | boolean | false | Allow leading zeros at beginning of number |
 | prefix      | String (ex : $)     |   none | Add a prefix before the number |
 | suffix | String (ex : /-)      |    none | Add a suffix after the number |
 | value | Number or String | null | Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true. |
-| defaultValue | Number or String | null | Value to the used as default value if value is not provided. The format of defaultValue should be similar as defined for the value. |
+| defaultValue | Number or String | null | Value to be used as default value if value is not provided. The format of defaultValue should be similar as defined for the value. |
 | isNumericString | boolean | false | If value is passed as string representation of numbers (unformatted) then this should be passed as true |
 | displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
 | type | One of ['text', 'tel', 'password'] | text | Input type attribute |
@@ -62,6 +62,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not |
 | renderText | (formattedValue) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. |
 | getInputRef | (elm) => void | null | Method to get reference of input, span (based on displayType prop) or the customInput's reference. See [Getting reference](#getting-reference)
+| allowedDecimalSeparators | array of char | none | Characters which when pressed result in a decimal separator. When missing, decimal separator and '.' are used |
 
 **Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
 
@@ -70,7 +71,7 @@ values object is on following format
 ```js
 {
   formattedValue: '$23,234,235.56', //value after applying formatting
-  value: '23234235.56', //non formatted value as numeric string 23234235.56, if your are setting this value to state make sure to pass isNumericString prop to true
+  value: '23234235.56', //non formatted value as numeric string 23234235.56, if you are setting this value to state make sure to pass isNumericString prop to true
   floatValue: 23234235.56 //floating point representation. For big numbers it can have exponential syntax
 }
 ```
@@ -201,6 +202,12 @@ function cardExpiry(val) {
 ```
 ![Screencast example](https://media.giphy.com/media/l1J9wJ6ZSONO7cXkI/giphy.gif)
 
+### Show mask on empty input
+```jsx
+<NumberFormat format="+1 (###) ###-####" allowEmptyFormatting mask="_"/>
+```
+![Screencast example](https://media.giphy.com/media/jnavoo7mbNeQ7LJCHI/source.gif)
+
 ### Custom Inputs
 You can easily extend your custom input with number format. But custom input should have all input props.
 ```jsx
@@ -285,13 +292,14 @@ Feature Addition
 
 
 ### Development
-- Download the zip
-- `npm install`
-- `npm start` to run example server
-- `npm run test` to test changes
-- `npm run bundle` to bundle files
+- Clone the repository or download the zip
+- `npm i -g yarn` to download Yarn
+- `yarn` to install dependencies
+- `yarn start` to run example server
+- `yarn test` to test changes
+- `yarn bundle` to bundle files
 
 #### Testing
 Test cases are written in jasmine and run by karma
 Test file : /test/test_input.js
-To run test : `npm run test`
+To run test : `yarn test`
