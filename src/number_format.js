@@ -724,10 +724,10 @@ class NumberFormat extends React.Component {
 
       // trigger onValueChange synchronously, so parent is updated along with the number format. Fix for #277, #287
       const valueObject = this.getValueObject(formattedValue, numAsString);
-        onValueChange({
-          ...valueObject,
-          name
-        });
+      onValueChange({
+        ...valueObject,
+        name
+      });
     }
   }
 
