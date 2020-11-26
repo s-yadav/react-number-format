@@ -1,6 +1,6 @@
 ## Describe the issue/change
 
-## Describe specs for failing cases if this is an issue (If application)
+## Describe specs for failing cases if this is an issue (If applicable)
 
 ## Describe the changes proposed/implemented in this PR
 
