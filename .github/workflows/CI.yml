@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches-ignore:
+      - master
+
+  pull_request_target:
+    branches-ignore:
+      - master
+
+jobs:
+  test:
+    name: Test on node ${{ matrix.node }} and ${{ matrix.os }}
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [8, 10, 12, 15]
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use node ${{ matrix.node }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+          registry-url: https://registry.npmjs.org
+      - name: install
+        run: yarn
+      - name: yarn lint
+        run: yarn run lint
+      - name: test
+        run: TEST_BROWSER=ChromeHeadless yarn test --coverage
+      - name: coverage
+        uses: coverallsapp/github-action@v1.1.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

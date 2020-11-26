@@ -1,0 +1,42 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish:
+    name: Package publish using node ${{ matrix.node }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [10]
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use node ${{ matrix.node }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+          registry-url: https://registry.npmjs.org
+      - name: install
+        run: yarn
+      - name: yarn lint
+        run: yarn run lint
+      - name: test
+        run: TEST_BROWSER=ChromeHeadless yarn test --coverage
+      - name: coverage
+        uses: coverallsapp/github-action@v1.1.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: build
+        run: yarn run bundle
+      - name: release
+        run: yarn publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
