@@ -42,7 +42,7 @@ describe('NumberFormat as text', () => {
     expect(wrapper.find('span').text()).toEqual('4111.36');
   });
 
-  it('it should add zeros if fixedDecimalScale is provided', () => {
+  it('should add zeros if fixedDecimalScale is provided', () => {
     const wrapper = shallow(<NumberFormat value="4111.11" displayType={'text'} decimalScale={4} fixedDecimalScale={true}/>);
     expect(wrapper.find('span').text()).toEqual('4111.1100');
 

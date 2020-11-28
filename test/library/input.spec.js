@@ -11,6 +11,7 @@ import {
   shallow,
   mount
 } from '../test_util';
+import { exact } from 'prop-types';
 
 /*** format_number input as input ****/
 describe('NumberFormat as input', () => {
@@ -54,6 +55,33 @@ describe('NumberFormat as input', () => {
     const wrapper = mount(<NumberFormat value={2456981} thousandSeparator={true} prefix={'$'} />);
     expect(wrapper.state().value).toEqual('$2,456,981');
     expect(wrapper.find('input').instance().value).toEqual('$2,456,981');
+  });
+
+  it('should load the default value when initial value is null', () => {
+    const wrapper = mount(<NumberFormat value={null} defaultValue={89} />);
+    expect(wrapper.state().value).toEqual('89');
+  });
+
+  it('should load the prevous valid value if the state is changed to null', () => {
+    class WrapperComponent extends React.Component {
+      constructor() {
+        super ();
+        this.state = {
+          testState: 90,
+        };
+      }
+      render() {
+        return (<NumberFormat value={this.state.testState} />)
+      }
+    }
+
+    const wrapper = mount(<WrapperComponent />);
+    const input = wrapper.find('input');
+    const domInput = input.instance();
+
+    expect(domInput.value).toEqual('90');
+    wrapper.setState({testState: null});
+    expect(domInput.value).toEqual('90');
   });
 
   it('should use defaultValue as initial value', () => {
