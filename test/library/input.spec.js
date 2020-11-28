@@ -11,7 +11,6 @@ import {
   shallow,
   mount
 } from '../test_util';
-import { exact } from 'prop-types';
 
 /*** format_number input as input ****/
 describe('NumberFormat as input', () => {
