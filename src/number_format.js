@@ -149,7 +149,7 @@ class NumberFormat extends React.Component {
 
       const lastValueWithNewFormat = this.formatNumString(lastNumStr);
 
-      const formattedValue = props.value === undefined ? lastValueWithNewFormat : this.formatValueProp();
+      const formattedValue = props.value === undefined || props.value === null ? lastValueWithNewFormat : this.formatValueProp();
       const numAsString = this.removeFormatting(formattedValue);
 
       const floatValue = parseFloat(numAsString);
