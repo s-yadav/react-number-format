@@ -38,7 +38,7 @@ declare module "react-number-format" {
     format?: string | FormatInputValueFunction;
     removeFormatting?: (formattedValue: string) => string;
     mask?: string | string[];
-    value?: number | string;
+    value?: number | string | null;
     defaultValue?: number | string;
     isNumericString?: boolean;
     customInput?: React.ComponentType<any>;
