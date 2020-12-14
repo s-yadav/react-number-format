@@ -204,21 +204,22 @@ describe('NumberFormat as input', () => {
     simulateKeyInput(wrapper.find('input'), 'Backspace', 0, 4);
     expect(wrapper.state().value).toEqual('+1 (123) 456 7 89 US');
 
-    //when format and number character are delted
-    wrapper.setProps({value: '+1 (999) 999 9 99 US'})
-    simulateKeyInput(wrapper.find('input'), 'Backspace', 6, 10);
-    expect(wrapper.state().value).toEqual('+1 (999) 999 9 99 US');
-
-    //when group of characters (including format character) is replaced with number
-    wrapper.setProps({value: '+1 (888) 888 8 88 US'});
-    simulateKeyInput(wrapper.find('input'), '8', 6, 10);
-    expect(wrapper.state().value).toEqual('+1 (888) 888 8 88 US');
-
     //when a format character is replaced with number
     wrapper.setProps({value: '+1 (777) 777 7 77 US'});
     simulateKeyInput(wrapper.find('input'), '8', 8, 9);
     expect(wrapper.state().value).toEqual('+1 (777) 777 7 77 US');
   });
+
+  it('should update value if group of characters got deleted with format', () => {
+    const wrapper = shallow(<NumberFormat format="+1 (###) ### # ## US" value="+1 (999) 999 9 99 US"/>);
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 6, 10);
+    expect(wrapper.state().value).toEqual('+1 (999) 999 9    US');
+
+    //when group of characters (including format character) is replaced with number
+    wrapper.setProps({value: '+1 (888) 888 8 88 US'});
+    simulateKeyInput(wrapper.find('input'), '8', 6, 10);
+    expect(wrapper.state().value).toEqual('+1 (888) 888 8 8  US');
+  })
 
   it('should allow replacing all characters with number when formatting is present', () => {
     const format = '+1 (###) ### # ## US';
