@@ -637,12 +637,11 @@ class NumberFormat extends React.Component {
       return value;
     }
 
-    // check whether the deleted portion has a non numeric field
-    // this means that it may be a format pattern symbol or a separator
+    // check whether the deleted portion has a character that is part of a format
     const deletedValues = lastValue.substr(start, end - start);
     const hasNonNumeric = !![...deletedValues].find((deletedVal, idx) => this.isCharacterAFormat(idx + start, lastValue));
 
-    // if it has, only remove the numeric portion
+    // if it has, only remove characters that are not part of the format
     if(hasNonNumeric) {
       const deletedValuePortion = lastValue.substr(start)
       const recordIndexOfFormatCharacters = {};
