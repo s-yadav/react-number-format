@@ -18,6 +18,7 @@ import {
   applyThousandSeparator,
   getCurrentCaretPosition,
   addInputMode,
+  isNil,
 } from './utils';
 
 
@@ -149,7 +150,7 @@ class NumberFormat extends React.Component {
 
       const lastValueWithNewFormat = this.formatNumString(lastNumStr);
 
-      const formattedValue = props.value === undefined || props.value === null ? lastValueWithNewFormat : this.formatValueProp();
+      const formattedValue = isNil(props.value) ? lastValueWithNewFormat : this.formatValueProp();
       const numAsString = this.removeFormatting(formattedValue);
 
       const floatValue = parseFloat(numAsString);
@@ -517,7 +518,10 @@ class NumberFormat extends React.Component {
 
   formatValueProp(defaultValue: string|number) {
     const {format, decimalScale, fixedDecimalScale, allowEmptyFormatting} = this.props;
-    let {value = defaultValue, isNumericString} = this.props;
+    let {value, isNumericString} = this.props;
+
+    // if value is undefined or null, use defaultValue instead
+    value = isNil(value) ? defaultValue : value;
 
     const isNonNumericFalsy = !value && value !== 0;
 
