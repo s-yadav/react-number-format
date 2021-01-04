@@ -1,7 +1,7 @@
 /**
  * react-number-format - 4.4.2
  * Author : Sudhanshu Yadav
- * Copyright (c) 2016, 2020 to Sudhanshu Yadav, released under the MIT license.
+ * Copyright (c) 2016, 2021 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
  */
 
@@ -189,6 +189,9 @@
   }
   function charIsNumber(_char) {
     return !!(_char || '').match(/\d/);
+  }
+  function isNil(val) {
+    return val === null || val === undefined;
   }
   function escapeRegExp(str) {
     return str.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
@@ -468,7 +471,7 @@
           //validate props
           this.validateProps();
           var lastValueWithNewFormat = this.formatNumString(lastNumStr);
-          var formattedValue = props.value === undefined ? lastValueWithNewFormat : this.formatValueProp();
+          var formattedValue = isNil(props.value) ? lastValueWithNewFormat : this.formatValueProp();
           var numAsString = this.removeFormatting(formattedValue);
           var floatValue = parseFloat(numAsString);
           var lastFloatValue = parseFloat(lastNumStr);
@@ -878,9 +881,10 @@
             fixedDecimalScale = _this$props8.fixedDecimalScale,
             allowEmptyFormatting = _this$props8.allowEmptyFormatting;
         var _this$props9 = this.props,
-            _this$props9$value = _this$props9.value,
-            value = _this$props9$value === void 0 ? defaultValue : _this$props9$value,
-            isNumericString = _this$props9.isNumericString;
+            value = _this$props9.value,
+            isNumericString = _this$props9.isNumericString; // if value is undefined or null, use defaultValue instead
+
+        value = isNil(value) ? defaultValue : value;
         var isNonNumericFalsy = !value && value !== 0;
 
         if (isNonNumericFalsy && allowEmptyFormatting) {
