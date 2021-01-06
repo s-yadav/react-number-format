@@ -27,8 +27,6 @@ jobs:
         run: yarn
       - name: yarn lint
         run: yarn run lint
-      - name: test
-        run: TEST_BROWSER=ChromeHeadless yarn test --coverage
       - name: build
         run: yarn run bundle
       - name: release
