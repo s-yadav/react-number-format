@@ -86,11 +86,11 @@ const defaultProps = {
   onBlur: noop,
   isAllowed: returnTrue
 };
-
 class NumberFormat extends React.Component {
   state: {
     value?: string,
     numAsString?: string,
+    mounted: boolean,
   }
   onChange: Function
   onKeyDown: Function
@@ -116,7 +116,8 @@ class NumberFormat extends React.Component {
 
     this.state = {
       value: formattedValue,
-      numAsString: this.removeFormatting(formattedValue)
+      numAsString: this.removeFormatting(formattedValue),
+      mounted: false,
     }
 
     this.selectionBeforeInput = {
@@ -129,6 +130,14 @@ class NumberFormat extends React.Component {
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onFocus = this.onFocus.bind(this);
     this.onBlur = this.onBlur.bind(this);
+  }
+
+  componentDidMount() {
+    // set mounted state
+    // eslint-disable-next-line react/no-did-mount-set-state
+    this.setState({
+      mounted: true
+    });
   }
 
   componentDidUpdate(prevProps: Object) {
@@ -904,11 +913,12 @@ class NumberFormat extends React.Component {
 
   render() {
     const {type, displayType, customInput, renderText, getInputRef, format} = this.props;
-    const {value} = this.state;
+    const {value, mounted} = this.state;
 
     const otherProps = omit(this.props, propTypes);
 
-    const inputMode = addInputMode(format) ? 'numeric' : undefined;
+    // add input mode on element based on format prop and device once the component is mounted 
+    const inputMode = mounted && addInputMode(format) ? 'numeric' : undefined;
 
     const inputProps = Object.assign({ inputMode }, otherProps, {
       type,

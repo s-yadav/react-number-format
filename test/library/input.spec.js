@@ -39,6 +39,14 @@ describe('NumberFormat as input', () => {
     expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual('search');
   });
 
+  it('should add inputMode numeric only when app is mounted', () => {
+    const wrapper = shallow(<NumberFormat />, {disableLifecycleMethods: true});
+    expect(wrapper.find('input').prop('inputMode')).toEqual(undefined);
+
+    const wrapper2 = shallow(<NumberFormat />, {disableLifecycleMethods: false});
+    expect(wrapper2.find('input').prop('inputMode')).toEqual('numeric');
+  });
+
   it('should add inputMode numeric to Iphone/IPad device to input element only if there is a custom format', () => {
     navigator['__defineGetter__']('platform', () => {
       return 'iPhone';
@@ -49,6 +57,7 @@ describe('NumberFormat as input', () => {
     wrapper.setProps({format: '## ###'});
     expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual('numeric');
   });
+
 
   it('should have initial value', () => {
     const wrapper = mount(<NumberFormat value={2456981} thousandSeparator={true} prefix={'$'} />);

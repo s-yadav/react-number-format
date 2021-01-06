@@ -1,5 +1,5 @@
 /**
- * react-number-format - 4.4.3
+ * react-number-format - 4.4.4
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016, 2021 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
@@ -427,7 +427,8 @@ function (_React$Component) {
 
     _this.state = {
       value: formattedValue,
-      numAsString: _this.removeFormatting(formattedValue)
+      numAsString: _this.removeFormatting(formattedValue),
+      mounted: false
     };
     _this.selectionBeforeInput = {
       selectionStart: 0,
@@ -442,6 +443,15 @@ function (_React$Component) {
   }
 
   _createClass(NumberFormat, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      // set mounted state
+      // eslint-disable-next-line react/no-did-mount-set-state
+      this.setState({
+        mounted: true
+      });
+    }
+  }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       this.updateValueIfRequired(prevProps);
@@ -1322,9 +1332,12 @@ function (_React$Component) {
           renderText = _this$props13.renderText,
           getInputRef = _this$props13.getInputRef,
           format = _this$props13.format;
-      var value = this.state.value;
-      var otherProps = omit(this.props, propTypes$1);
-      var inputMode = addInputMode(format) ? 'numeric' : undefined;
+      var _this$state = this.state,
+          value = _this$state.value,
+          mounted = _this$state.mounted;
+      var otherProps = omit(this.props, propTypes$1); // add input mode on element based on format prop and device once the component is mounted 
+
+      var inputMode = mounted && addInputMode(format) ? 'numeric' : undefined;
 
       var inputProps = _extends({
         inputMode: inputMode
