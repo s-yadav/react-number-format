@@ -76,7 +76,7 @@ describe('NumberFormat as input', () => {
 
     const wrapper = mount(<WrapperComponent />);
 
-    expect(wrapper.find('input').instance().value).toEqual('90');
+    expect(wrapper.find('input').instance().value).toEqual('9');
     wrapper.setState({testState: null});
     expect(wrapper.find('input').instance().value).toEqual('90');
   });
