@@ -39,6 +39,14 @@ describe('NumberFormat as input', () => {
     expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual('search');
   });
 
+  it('should add inputMode numeric only when app is mounted', () => {
+    const wrapper = shallow(<NumberFormat />, {disableLifecycleMethods: true});
+    expect(wrapper.find('input').prop('inputMode')).toEqual(undefined);
+
+    const wrapper2 = shallow(<NumberFormat />, {disableLifecycleMethods: false});
+    expect(wrapper2.find('input').prop('inputMode')).toEqual('numeric');
+  });
+
   it('should add inputMode numeric to Iphone/IPad device to input element only if there is a custom format', () => {
     navigator['__defineGetter__']('platform', () => {
       return 'iPhone';
@@ -50,18 +58,19 @@ describe('NumberFormat as input', () => {
     expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual('numeric');
   });
 
+
   it('should have initial value', () => {
     const wrapper = mount(<NumberFormat value={2456981} thousandSeparator={true} prefix={'$'} />);
-    expect(wrapper.state().value).toEqual('$2,456,981');
+    expect(wrapper.find('input').instance().value).toEqual('$2,456,981');
     expect(wrapper.find('input').instance().value).toEqual('$2,456,981');
   });
 
   it('should load the default value when initial value is null', () => {
     const wrapper = mount(<NumberFormat value={null} defaultValue={89} />);
-    expect(wrapper.state().value).toEqual('89');
+    expect(wrapper.find('input').instance().value).toEqual('89');
   });
 
-  it('should load the prevous valid value if the state is changed to null', () => {
+  it('should hold the previous valid value if the prop is changed to null', () => {
     class WrapperComponent extends React.Component {
       constructor() {
         super ();
@@ -75,12 +84,10 @@ describe('NumberFormat as input', () => {
     }
 
     const wrapper = mount(<WrapperComponent />);
-    const input = wrapper.find('input');
-    const domInput = input.instance();
 
-    expect(domInput.value).toEqual('90');
+    expect(wrapper.find('input').instance().value).toEqual('90');
     wrapper.setState({testState: null});
-    expect(domInput.value).toEqual('90');
+    expect(wrapper.find('input').instance().value).toEqual('90');
   });
 
   it('should use defaultValue as initial value', () => {

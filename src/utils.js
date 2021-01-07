@@ -10,6 +10,10 @@ export function charIsNumber(char?: string) {
   return !!(char || '').match(/\d/);
 }
 
+export function isNil(val: any) {
+  return val === null || val === undefined;
+}
+
 export function escapeRegExp(str: string) {
   return str.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
 }

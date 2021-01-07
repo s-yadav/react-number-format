@@ -1,7 +1,7 @@
 /**
- * react-number-format - 4.4.2
+ * react-number-format - 4.4.4
  * Author : Sudhanshu Yadav
- * Copyright (c) 2016, 2020 to Sudhanshu Yadav, released under the MIT license.
+ * Copyright (c) 2016, 2021 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
  */
 
@@ -189,6 +189,9 @@
   }
   function charIsNumber(_char) {
     return !!(_char || '').match(/\d/);
+  }
+  function isNil(val) {
+    return val === null || val === undefined;
   }
   function escapeRegExp(str) {
     return str.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
@@ -430,7 +433,8 @@
 
       _this.state = {
         value: formattedValue,
-        numAsString: _this.removeFormatting(formattedValue)
+        numAsString: _this.removeFormatting(formattedValue),
+        mounted: false
       };
       _this.selectionBeforeInput = {
         selectionStart: 0,
@@ -445,6 +449,15 @@
     }
 
     _createClass(NumberFormat, [{
+      key: "componentDidMount",
+      value: function componentDidMount() {
+        // set mounted state
+        // eslint-disable-next-line react/no-did-mount-set-state
+        this.setState({
+          mounted: true
+        });
+      }
+    }, {
       key: "componentDidUpdate",
       value: function componentDidUpdate(prevProps) {
         this.updateValueIfRequired(prevProps);
@@ -468,7 +481,7 @@
           //validate props
           this.validateProps();
           var lastValueWithNewFormat = this.formatNumString(lastNumStr);
-          var formattedValue = props.value === undefined ? lastValueWithNewFormat : this.formatValueProp();
+          var formattedValue = isNil(props.value) ? lastValueWithNewFormat : this.formatValueProp();
           var numAsString = this.removeFormatting(formattedValue);
           var floatValue = parseFloat(numAsString);
           var lastFloatValue = parseFloat(lastNumStr);
@@ -878,9 +891,10 @@
             fixedDecimalScale = _this$props8.fixedDecimalScale,
             allowEmptyFormatting = _this$props8.allowEmptyFormatting;
         var _this$props9 = this.props,
-            _this$props9$value = _this$props9.value,
-            value = _this$props9$value === void 0 ? defaultValue : _this$props9$value,
-            isNumericString = _this$props9.isNumericString;
+            value = _this$props9.value,
+            isNumericString = _this$props9.isNumericString; // if value is undefined or null, use defaultValue instead
+
+        value = isNil(value) ? defaultValue : value;
         var isNonNumericFalsy = !value && value !== 0;
 
         if (isNonNumericFalsy && allowEmptyFormatting) {
@@ -1324,9 +1338,12 @@
             renderText = _this$props13.renderText,
             getInputRef = _this$props13.getInputRef,
             format = _this$props13.format;
-        var value = this.state.value;
-        var otherProps = omit(this.props, propTypes$1);
-        var inputMode = addInputMode(format) ? 'numeric' : undefined;
+        var _this$state = this.state,
+            value = _this$state.value,
+            mounted = _this$state.mounted;
+        var otherProps = omit(this.props, propTypes$1); // add input mode on element based on format prop and device once the component is mounted 
+
+        var inputMode = mounted && addInputMode(format) ? 'numeric' : undefined;
 
         var inputProps = _extends({
           inputMode: inputMode
