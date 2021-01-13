@@ -1,3 +1,5 @@
+[![Actions Status](https://github.com/s-yadav/react-number-format/workflows/CI/badge.svg)](https://github.com/s-yadav/react-number-format/actions)
+
 # react-number-format
 React component to format number in an input or as a text
 
