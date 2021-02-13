@@ -104,7 +104,7 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
   return `${negation}${intPart}${decimalSeparator}${decimalPart}`;
 }
 
-const SCIENTIFIC_NUMBER_REGEX = /\d+\.?\d*e[\+\-]?\d+/i;
+const SCIENTIFIC_NUMBER_REGEX = /\d+\.?\d*e[+-]?\d+/i;
 
 export function getRidOfScientificNotation(value: string) {
   if (!SCIENTIFIC_NUMBER_REGEX.test(value)) {
@@ -114,13 +114,13 @@ export function getRidOfScientificNotation(value: string) {
   // This looks like a scientific notation. We will use parseFloat this time as this is not gonna be a limitation in this case
   let number = parseFloat(value);
   if (Math.abs(number) < 1.0) {
-    let e = parseInt(number.toString().split("e-")[1]);
+    const e = parseInt(number.toString().split("e-")[1], 10);
     if (e) {
       number *= Math.pow(10, e - 1);
       return "0." + new Array(e).join("0") + number.toString().substring(2);
     }
   } else {
-    let e = parseInt(number.toString().split("+")[1]);
+    let e = parseInt(number.toString().split("+")[1], 10);
     if (e > 20) {
       e -= 20;
       number /= Math.pow(10, e);
