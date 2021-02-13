@@ -15,6 +15,21 @@ describe('NumberFormat as text', () => {
     expect(wrapper.find('span').text()).toEqual('4111 1111 1111 1111');
   });
 
+  it('should format small number in a scientific notation properly', () => {
+    const wrapper = shallow(<NumberFormat displayType="text" value={4.1e-7} thousandSeparator={' '} decimalScale={10} />);
+    expect(wrapper.find("span").text()).toEqual("0.00000041");
+  });
+
+  it('should format really small number properly', () => {
+    const wrapper = shallow(<NumberFormat displayType="text" value={0.00000041} thousandSeparator={' '} decimalScale={10} />);
+    expect(wrapper.find("span").text()).toEqual("0.00000041");
+  });
+
+  it('should format big number in a scientific notation properly', () => {
+    const wrapper = shallow(<NumberFormat displayType="text" value={4.1E10} thousandSeparator={' '} />);
+    expect(wrapper.find("span").text()).toEqual("41 000 000 000");
+  });
+
   it('should format as given format when input is string', () => {
     const wrapper = shallow(<NumberFormat value="4111111111111111" displayType={'text'} format="#### #### #### ####" />);
     expect(wrapper.find('span').text()).toEqual('4111 1111 1111 1111');
