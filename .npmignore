@@ -24,3 +24,8 @@ tmp/
 flow-typed/
 .idea/
 .vscode/
+.github/
+example/
+_config.yml
+*.spec.tsx
+typings/tsconfig.json
