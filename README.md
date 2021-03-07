@@ -107,9 +107,9 @@ Output : $2,456,981
 ```jsx
 var NumberFormat = require('react-number-format');
 
-<NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} renderText={(value, props) => <div {...props}>{value}</div>} />
+<NumberFormat value={2456981} className="someClass" displayType={'text'} thousandSeparator={true} prefix={'$'} renderText={(value, props) => <div {...props}>{value}</div>} />
 ```
-Output : `<div> $2,456,981 </div>`
+Output : `<div class="someClass"> $2,456,981 </div>`
 
 #### Format with pattern : Format credit card as text
 ```jsx
