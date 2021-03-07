@@ -1358,7 +1358,7 @@
         });
 
         if (displayType === 'text') {
-          return renderText ? renderText(value) || null : React.createElement("span", _extends({}, otherProps, {
+          return renderText ? renderText(value, otherProps) || null : React.createElement("span", _extends({}, otherProps, {
             ref: getInputRef
           }), value);
         } else if (customInput) {

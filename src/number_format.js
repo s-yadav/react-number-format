@@ -931,7 +931,7 @@ class NumberFormat extends React.Component {
     })
 
     if( displayType === 'text'){
-      return renderText ? (renderText(value) || null) : <span {...otherProps} ref={getInputRef}>{value}</span>;
+      return renderText ? (renderText(value, otherProps) || null) : <span {...otherProps} ref={getInputRef}>{value}</span>;
     }
 
     else if (customInput) {

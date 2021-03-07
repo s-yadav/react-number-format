@@ -389,6 +389,12 @@ describe('NumberFormat as input', () => {
     }, 0);
   });
 
+  it('should pass custom props to the renderText function', () => {
+    const wrapper = shallow(<NumberFormat displayType="text" value={1234} className="foo" renderText={(formattedValue, props) => <span {...props}>{formattedValue}</span>}/>);
+    const span = wrapper.find('span')
+    expect(span.props()).toEqual({className: 'foo', children: '1234'})
+  })
+
   describe('Test masking', () => {
     it('should allow mask as string', () => {
       const wrapper = shallow(<NumberFormat format="#### #### ####" mask="_"/>);
