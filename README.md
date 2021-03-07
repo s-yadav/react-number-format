@@ -62,7 +62,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | customInput | Component Reference | input | This allow supporting custom inputs with number format. |
 | onValueChange | (values) => {} | none | onValueChange handler accepts [values object](#values-object) |
 | isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not |
-| renderText | (formattedValue) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. |
+| renderText | (formattedValue, customProps) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. It also returns the custom props that are added to the component which can allow passing down props to the rendered element |
 | getInputRef | (elm) => void | null | Method to get reference of input, span (based on displayType prop) or the customInput's reference. See [Getting reference](#getting-reference)
 | allowedDecimalSeparators | array of char | none | Characters which when pressed result in a decimal separator. When missing, decimal separator and '.' are used |
 
@@ -107,9 +107,9 @@ Output : $2,456,981
 ```jsx
 var NumberFormat = require('react-number-format');
 
-<NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} renderText={value => <div>{value}</div>} />
+<NumberFormat value={2456981} className="foo" displayType={'text'} thousandSeparator={true} prefix={'$'} renderText={(value, props) => <div {...props}>{value}</div>} />
 ```
-Output : `<div> $2,456,981 </div>`
+Output : `<div class="foo"> $2,456,981 </div>`
 
 #### Format with pattern : Format credit card as text
 ```jsx
