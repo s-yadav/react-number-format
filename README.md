@@ -204,6 +204,20 @@ function cardExpiry(val) {
 ```
 ![Screencast example](https://media.giphy.com/media/l1J9wJ6ZSONO7cXkI/giphy.gif)
 
+### Limit input value to a maximum limit
+```jsx
+  const MAX_VAL = 1400;
+  const withValueLimit = (inputObj) => {
+    const { value } = inputObj;
+    if (value < MAX_VAL) return inputObj;
+  };
+  <NumberFormat value={12} isAllowed={withValueLimit} />;
+```
+
+Visit this link for Demo: [Field with value limit](https://codesandbox.io/s/react-number-format-isallowed-8gu0v)
+
+![Screencast example](https://media.giphy.com/media/7agdv1sb9JYJEYlN3s/giphy.gif)
+
 ### Show mask on empty input
 ```jsx
 <NumberFormat format="+1 (###) ###-####" allowEmptyFormatting mask="_"/>
