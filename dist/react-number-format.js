@@ -270,7 +270,8 @@
         afterDecimal = _splitDecimal.afterDecimal,
         hasNagation = _splitDecimal.hasNagation;
 
-    var roundedDecimalParts = parseFloat("0.".concat(afterDecimal || '0')).toFixed(scale).split('.');
+    var floatValue = afterDecimal.length <= scale ? parseFloat("0.".concat(afterDecimal || '0')).toString() : parseFloat("0.".concat(afterDecimal || '0')).toFixed(scale);
+    var roundedDecimalParts = floatValue.split('.');
     var intPart = beforeDecimal.split('').reverse().reduce(function (roundedStr, current, idx) {
       if (roundedStr.length > idx) {
         return (Number(roundedStr[0]) + Number(current)).toString() + roundedStr.substring(1, roundedStr.length);
