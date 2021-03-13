@@ -425,5 +425,38 @@ describe('NumberFormat as input', () => {
         shallow(<NumberFormat format="#### #### ####" mask={['D', 'D', 'M', '1', '2', 'Y', 'Y', 'Y']}/>)
       }).toThrow()
     })
+
+    it('should should not round down decimal value when isNumericString is true', () =>{
+      class WrapperComponent extends React.Component {
+        constructor() {
+          super ();
+          this.state = {
+            value: '123.15'
+          };
+        }
+
+        onInputChange = inputObj => {
+            this.setState({value: inputObj.value})
+        }
+
+        render() {
+          return (
+            <NumberFormat
+              name="numberformat"
+              id="formatted-numberformat-input"
+              value={this.state.value}
+              onValueChange={this.onInputChange}
+              decimalScale={18}
+              thousandSeparator
+              prefix={"$"}
+              isNumericString
+            />
+          )
+        }
+      }
+
+      const wrapper = mount(<WrapperComponent />)
+      expect(wrapper.find('input').instance().value).toEqual('$123.15')
+    })
   })
-});
+}); 
