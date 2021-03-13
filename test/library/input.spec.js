@@ -426,7 +426,7 @@ describe('NumberFormat as input', () => {
       }).toThrow()
     })
 
-    it('should should not round down decimal value when isNumericString is true', () =>{
+    it('should should not round down decimal value when isNumericString is true and scale is more than actual decimal length', () =>{
       class WrapperComponent extends React.Component {
         constructor() {
           super ();
@@ -457,6 +457,39 @@ describe('NumberFormat as input', () => {
 
       const wrapper = mount(<WrapperComponent />)
       expect(wrapper.find('input').instance().value).toEqual('$123.15')
+    })
+
+    it('should ignore toFixed operation and show the right decimal value when scale is less than actual decimal length', () =>{
+      class WrapperComponent extends React.Component {
+        constructor() {
+          super ();
+          this.state = {
+            value: '123.15'
+          };
+        }
+
+        onInputChange = inputObj => {
+            this.setState({value: inputObj.value})
+        }
+
+        render() {
+          return (
+            <NumberFormat
+              name="numberformat"
+              id="formatted-numberformat-input"
+              value={this.state.value}
+              onValueChange={this.onInputChange}
+              decimalScale={1}
+              thousandSeparator
+              prefix={"$"}
+              isNumericString
+            />
+          )
+        }
+      }
+
+      const wrapper = mount(<WrapperComponent />)
+      expect(wrapper.find('input').instance().value).toEqual('$123.1')
     })
   })
 }); 
