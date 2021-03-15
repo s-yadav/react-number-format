@@ -89,7 +89,9 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
 
   const shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
   const {beforeDecimal, afterDecimal, hasNagation} = splitDecimal(numStr);
-  const roundedDecimalParts = parseFloat(`0.${afterDecimal || '0'}`).toFixed(scale).split('.');
+  const floatValue = parseFloat(`0.${afterDecimal || '0'}`);
+  const floatValueStr = afterDecimal.length <= scale ? floatValue.toString() : floatValue.toFixed(scale)
+  const roundedDecimalParts = floatValueStr.split('.');
   const intPart = beforeDecimal.split('').reverse().reduce((roundedStr, current, idx) => {
     if (roundedStr.length > idx) {
       return (Number(roundedStr[0]) + Number(current)).toString() + roundedStr.substring(1, roundedStr.length);

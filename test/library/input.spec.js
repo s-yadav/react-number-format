@@ -425,5 +425,41 @@ describe('NumberFormat as input', () => {
         shallow(<NumberFormat format="#### #### ####" mask={['D', 'D', 'M', '1', '2', 'Y', 'Y', 'Y']}/>)
       }).toThrow()
     })
+
+    it('should show the right decimal values based on the decimal scale provided', () =>{
+      class WrapperComponent extends React.Component {
+        constructor() {
+          super ();
+          this.state = {
+            value: '123.123'
+          };
+        }
+
+        onInputChange = inputObj => {
+            this.setState({value: inputObj.value})
+        }
+
+        render() {
+          return (
+            <NumberFormat
+              name="numberformat"
+              id="formatted-numberformat-input"
+              value={this.state.value}
+              onValueChange={this.onInputChange}
+              decimalScale={18}
+              thousandSeparator
+              prefix={"$"}
+              isNumericString
+            />
+          )
+        }
+      }
+
+      const wrapper = mount(<WrapperComponent />)
+      expect(wrapper.find('input').instance().value).toEqual('$123.123')
+      wrapper.setState({value: '123.1234'})
+      console.log(wrapper.find('input').instance().value)
+      expect(wrapper.find('input').instance().value).toEqual('$123.1234')
+    })
   })
-});
+}); 
