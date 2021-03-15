@@ -431,7 +431,7 @@ describe('NumberFormat as input', () => {
         constructor() {
           super ();
           this.state = {
-            value: '123.15'
+            value: '123.123'
           };
         }
 
@@ -446,7 +446,7 @@ describe('NumberFormat as input', () => {
               id="formatted-numberformat-input"
               value={this.state.value}
               onValueChange={this.onInputChange}
-              decimalScale={3}
+              decimalScale={18}
               thousandSeparator
               prefix={"$"}
               isNumericString
@@ -456,9 +456,10 @@ describe('NumberFormat as input', () => {
       }
 
       const wrapper = mount(<WrapperComponent />)
-      expect(wrapper.find('input').instance().value).toEqual('$123.15')
-      wrapper.setState({value: '123.1562'})
-      expect(wrapper.find('input').instance().value).toEqual('$123.156')
+      expect(wrapper.find('input').instance().value).toEqual('$123.123')
+      wrapper.setState({value: '123.1234'})
+      console.log(wrapper.find('input').instance().value)
+      expect(wrapper.find('input').instance().value).toEqual('$123.1234')
     })
   })
 }); 
