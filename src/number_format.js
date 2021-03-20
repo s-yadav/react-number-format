@@ -763,7 +763,7 @@ class NumberFormat extends React.Component {
 
     this.updateValue({ formattedValue, numAsString, inputValue, input: el });
 
-    if(!isChangeAllowed) {
+    if(isChangeAllowed) {
       props.onChange(e);
     }
   }
