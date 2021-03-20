@@ -61,7 +61,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | mask | String (ex : _) | `' '` | If mask defined, component will show non entered placed with masked value. |
 | customInput | Component Reference | input | This allow supporting custom inputs with number format. |
 | onValueChange | (values) => {} | none | onValueChange handler accepts [values object](#values-object) |
-| isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not |
+| isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not. If this function returns false, the onChange method will not get triggered |
 | renderText | (formattedValue, customProps) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. It also returns the custom props that are added to the component which can allow passing down props to the rendered element |
 | getInputRef | (elm) => void | null | Method to get reference of input, span (based on displayType prop) or the customInput's reference. See [Getting reference](#getting-reference)
 | allowedDecimalSeparators | array of char | none | Characters which when pressed result in a decimal separator. When missing, decimal separator and '.' are used |
