@@ -394,6 +394,13 @@ describe('NumberFormat as input', () => {
     const span = wrapper.find('span')
     expect(span.props()).toEqual({className: 'foo', children: '1234'})
   })
+  
+  it('should not fire onChange when change is not allowed via the isAllowed prop', () => {
+      const spy = jasmine.createSpy('onChange')
+      const wrapper = shallow(<NumberFormat value={1234} className="foo" isAllowed={() => false} onChange={spy}/>);
+      simulateKeyInput(wrapper.find('input'), '5678', 2, 3)
+      expect(spy).not.toHaveBeenCalled();
+  })
 
   describe('Test masking', () => {
     it('should allow mask as string', () => {
@@ -458,7 +465,6 @@ describe('NumberFormat as input', () => {
       const wrapper = mount(<WrapperComponent />)
       expect(wrapper.find('input').instance().value).toEqual('$123.123')
       wrapper.setState({value: '123.1234'})
-      console.log(wrapper.find('input').instance().value)
       expect(wrapper.find('input').instance().value).toEqual('$123.1234')
     })
   })
