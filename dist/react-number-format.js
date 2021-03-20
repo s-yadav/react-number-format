@@ -1,5 +1,5 @@
 /**
- * react-number-format - 4.4.4
+ * react-number-format - 4.5.0
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016, 2021 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
@@ -1138,8 +1138,9 @@
         var formattedValue = this.formatInput(inputValue) || '';
         var numAsString = this.removeFormatting(formattedValue);
         var valueObj = this.getValueObject(formattedValue, numAsString);
+        var isChangeAllowed = isAllowed(valueObj);
 
-        if (!isAllowed(valueObj)) {
+        if (!isChangeAllowed) {
           formattedValue = lastValue;
         }
 
@@ -1149,7 +1150,10 @@
           inputValue: inputValue,
           input: el
         });
-        props.onChange(e);
+
+        if (isChangeAllowed) {
+          props.onChange(e);
+        }
       }
     }, {
       key: "onBlur",
