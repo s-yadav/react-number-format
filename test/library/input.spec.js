@@ -8,6 +8,7 @@ import {
   simulateKeyInput,
   simulateFocusEvent,
   simulateBlurEvent,
+  getCustomEvent,
   shallow,
   mount
 } from '../test_util';
@@ -225,6 +226,14 @@ describe('NumberFormat as input', () => {
     wrapper.setProps({value: '+1 (777) 777 7 77 US'});
     simulateKeyInput(wrapper.find('input'), '8', 8, 9);
     expect(wrapper.state().value).toEqual('+1 (777) 777 7 77 US');
+  });
+
+  it('should update value if whole content is replaced by new number', () => {
+    const wrapper = shallow(<NumberFormat format="+1 (###) ### # ## US" allowEmptyFormatting/>);
+
+    wrapper.find('input').simulate('change', getCustomEvent('012345678', 20, 20));
+
+    expect(wrapper.find('input').prop('value')).toEqual('+1 (012) 345 6 78 US');
   });
 
   it('should allow replacing all characters with number when formatting is present', () => {
