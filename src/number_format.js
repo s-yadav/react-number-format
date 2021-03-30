@@ -641,18 +641,23 @@ class NumberFormat extends React.Component {
       return value.substr(0, selectionStart) + separator + value.substr(selectionStart + 1, value.length);
     }
 
-    /* don't do anyhting if something got added,
-     or if value is empty string (when whole input is cleared)
-     or whole input is replace with a number
-    */
+
     const leftBound = !!format ? 0 : prefix.length;
     const rightBound = lastValue.length - (!!format ? 0 : suffix.length);
+
     if (
-      value.length > lastValue.length
-      || !value.length ||
+      // don't do anything if something got added
+      value.length > lastValue.length ||
+      // or if the new value is an empty string 
+      !value.length ||
+      // or if nothing has changed, in which case start will be same as end
       start === end ||
+      // or in case if whole input is selected and new value is typed
       (selectionStart === 0 && selectionEnd === lastValue.length) ||
+      // or in case if the whole content is replaced by browser, example (autocomplete)
       (start === 0 && end === lastValue.length) ||
+      // or if charcters between prefix and suffix is selected. 
+      // For numeric inputs we apply the format so, prefix and suffix can be ignored
       (selectionStart === leftBound && selectionEnd === rightBound)
     ) {
       return value;
