@@ -236,6 +236,13 @@ describe('NumberFormat as input', () => {
     expect(wrapper.find('input').prop('value')).toEqual('+1 (012) 345 6 78 US');
   });
 
+  it('should replace the whole value if a new number is typed after selecting the everything', () => {
+    const wrapper = shallow(<NumberFormat prefix="$" value="10" allowedDecimalSeparators={[",", "."]} />);
+
+    simulateKeyInput(wrapper.find('input'), '0', 0, 3);
+
+    expect(wrapper.find('input').prop('value')).toEqual('$0')
+  })
   it('should allow replacing all characters with number when formatting is present', () => {
     const format = '+1 (###) ### # ## US';
     const wrapper = shallow(<NumberFormat format={format} value="+1 (123) 456 7 89 US" mask="_"/>);
