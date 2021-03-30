@@ -1,5 +1,5 @@
 /**
- * react-number-format - 4.5.0
+ * react-number-format - 4.5.2
  * Author : Sudhanshu Yadav
  * Copyright (c) 2016, 2021 to Sudhanshu Yadav, released under the MIT license.
  * https://github.com/s-yadav/react-number-format
@@ -1030,7 +1030,7 @@ function (_React$Component) {
       var leftBound = !!format ? 0 : prefix.length;
       var rightBound = lastValue.length - (!!format ? 0 : suffix.length);
 
-      if (value.length > lastValue.length || !value.length || start === end || selectionStart === 0 && selectionEnd === lastValue.length || selectionStart === leftBound && selectionEnd === rightBound) {
+      if (value.length > lastValue.length || !value.length || start === end || selectionStart === 0 && selectionEnd === lastValue.length || start === 0 && end === lastValue.length || selectionStart === leftBound && selectionEnd === rightBound) {
         return value;
       } //if format got deleted reset the value to last value
 
