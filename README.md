@@ -246,6 +246,12 @@ As `ref` is a special property in react, its not passed as props. If you add ref
 ```jsx
   <NumberFormat getInputRef = {(el) => this.inputElem = el} customInput={TextField} format="#### #### #### ####"/>
 ```
+Or using React.createRef()
+```jsx
+  const inputRef = React.createRef();
+  <NumberFormat getInputRef = {inputRef} customInput={TextField} format="#### #### #### ####"/>
+```
+
 
 In case you have provided custom input you can pass there props to get the input reference (getInputRef will not work in that case).
 For ex in material-ui component.
@@ -257,6 +263,7 @@ If you can't get in both way you can try ReactDOM.findDOMNode. You may need to t
 ```jsx
   <NumberFormat ref = {(inst) => this.inputElem = ReactDOM.findDOMNode(inst)} format="#### #### #### ####"/>
 ```
+
 
 ### Live Demo
 [http://codepen.io/s-yadav/pen/bpKNMa](http://codepen.io/s-yadav/pen/bpKNMa)
