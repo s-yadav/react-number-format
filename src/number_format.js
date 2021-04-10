@@ -19,6 +19,7 @@ import {
   getCurrentCaretPosition,
   addInputMode,
   isNil,
+  toNumericString,
 } from './utils';
 
 
@@ -542,7 +543,7 @@ class NumberFormat extends React.Component {
     if (isNonNumericFalsy && !allowEmptyFormatting) return '';
 
     if (typeof value === 'number') {
-      value = value.toString();
+      value = toNumericString(value);
       isNumericString = true;
     }
 

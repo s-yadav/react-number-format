@@ -3,9 +3,10 @@
     "browser": true,
     "es6": true
   },
+  "extends": ["prettier"],
   "plugins": [
     "react", //on react based application
-    "import",
+    "import"
   ],
   "ecmaFeatures": {
     "arrowFunctions": true,
