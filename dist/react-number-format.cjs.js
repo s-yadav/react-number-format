@@ -5,7 +5,11 @@
  * https://github.com/s-yadav/react-number-format
  */
 
-import React from 'react';
+'use strict';
+
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var React = _interopDefault(require('react'));
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -1377,4 +1381,4 @@ var NumberFormat = /*@__PURE__*/(function (superclass) {
 NumberFormat.propTypes = propTypes$1;
 NumberFormat.defaultProps = defaultProps;
 
-export default NumberFormat;
+module.exports = NumberFormat;
