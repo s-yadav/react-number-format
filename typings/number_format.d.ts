@@ -28,7 +28,7 @@ declare module "react-number-format" {
   export interface NumberFormatProps
     extends InputAttributes {
     thousandSeparator?: boolean | string;
-    decimalSeparator?: boolean | string;
+    decimalSeparator?: string;
     thousandsGroupStyle?: 'thousand' | 'lakh' | 'wan';
     decimalScale?: number;
     fixedDecimalScale?: boolean;
