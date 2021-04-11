@@ -697,7 +697,7 @@ class NumberFormat extends React.Component {
   ) {
     const {formattedValue, input, setCaretPosition = true} = params;
     let {numAsString, caretPos} = params;
-    const {onValueChange} = this.props;
+    const {onValueChange, name} = this.props;
     const {value: lastValue} = this.state;
 
     if (input) {
@@ -743,7 +743,11 @@ class NumberFormat extends React.Component {
       this.setState({ value : formattedValue, numAsString });
 
       // trigger onValueChange synchronously, so parent is updated along with the number format. Fix for #277, #287
-      onValueChange(this.getValueObject(formattedValue, numAsString));
+      const valueObject = this.getValueObject(formattedValue, numAsString);
+      onValueChange({
+        ...valueObject,
+        name
+      });
     }
   }
 
