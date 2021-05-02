@@ -54,7 +54,7 @@ declare module "react-number-format" {
      * onFocus: Function;
      * onBlur: Function;
      */
-    type?: 'text' | 'tel'  | 'password';
+    type?: 'text' | 'tel'  | 'password' | 'number';
     isAllowed?: (values: NumberFormatValues) => boolean;
     renderText?: (formattedValue: string) => React.ReactNode;
     getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any>;
