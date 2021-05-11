@@ -183,6 +183,12 @@ class App extends React.Component {
           </h3>
           <NumberFormat customInput={TextField} format="#### #### #### ####" />
         </div>
+        <div className="example">
+          <h3>
+            Accept persian digits
+          </h3>
+          <NumberFormat  convertPersianDigits />
+        </div>
 
 
       </div>
