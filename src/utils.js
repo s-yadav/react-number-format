@@ -42,9 +42,7 @@ export function applyThousandSeparator(
   index = index === -1 ? str.length : index;
   return (
     str.substring(0, index) +
-    str
-      .substring(index, str.length)
-      .replace(thousandsGroupRegex, '$1' + thousandSeparator)
+    str.substring(index, str.length).replace(thousandsGroupRegex, '$1' + thousandSeparator)
   );
 }
 
@@ -74,20 +72,14 @@ export function fixLeadingZero(numStr?: string) {
   const beforeDecimal = parts[0].replace(/^0+/, '') || '0';
   const afterDecimal = parts[1] || '';
 
-  return `${isNegative ? '-' : ''}${beforeDecimal}${
-    afterDecimal ? `.${afterDecimal}` : ''
-  }`;
+  return `${isNegative ? '-' : ''}${beforeDecimal}${afterDecimal ? `.${afterDecimal}` : ''}`;
 }
 
 /**
  * limit decimal numbers to given scale
  * Not used .fixedTo because that will break with big numbers
  */
-export function limitToScale(
-  numStr: string,
-  scale: number,
-  fixedDecimalScale: boolean,
-) {
+export function limitToScale(numStr: string, scale: number, fixedDecimalScale: boolean) {
   let str = '';
   const filler = fixedDecimalScale ? '0' : '';
   for (let i = 0; i <= scale - 1; i++) {
@@ -136,9 +128,7 @@ export function toNumericString(num) {
   } else {
     // else add decimal point at proper index
     coefficient =
-      (coefficient.substring(0, decimalIndex) || '0') +
-      '.' +
-      coefficient.substring(decimalIndex);
+      (coefficient.substring(0, decimalIndex) || '0') + '.' + coefficient.substring(decimalIndex);
   }
 
   return sign + coefficient;
@@ -148,21 +138,15 @@ export function toNumericString(num) {
  * This method is required to round prop value to given scale.
  * Not used .round or .fixedTo because that will break with big numbers
  */
-export function roundToPrecision(
-  numStr: string,
-  scale: number,
-  fixedDecimalScale: boolean,
-) {
+export function roundToPrecision(numStr: string, scale: number, fixedDecimalScale: boolean) {
   //if number is empty don't do anything return empty string
   if (['', '-'].indexOf(numStr) !== -1) return numStr;
 
   const shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
-  const {beforeDecimal, afterDecimal, hasNagation} = splitDecimal(numStr);
+  const { beforeDecimal, afterDecimal, hasNagation } = splitDecimal(numStr);
   const floatValue = parseFloat(`0.${afterDecimal || '0'}`);
   const floatValueStr =
-    afterDecimal.length <= scale
-      ? toNumericString(floatValue)
-      : floatValue.toFixed(scale);
+    afterDecimal.length <= scale ? toNumericString(floatValue) : floatValue.toFixed(scale);
   const roundedDecimalParts = floatValueStr.split('.');
   const intPart = beforeDecimal
     .split('')
@@ -243,7 +227,7 @@ export function findChangedIndex(prevValue: string, newValue: string) {
     j++;
   }
 
-  return {start: i, end: prevLength - j};
+  return { start: i, end: prevLength - j };
 }
 
 /*
@@ -259,7 +243,5 @@ export function getCurrentCaretPosition(el: HTMLInputElement) {
 }
 
 export function addInputMode(format: string | FormatInputValueFunction) {
-  return (
-    format || !(navigator.platform && /iPhone|iPod/.test(navigator.platform))
-  );
+  return format || !(navigator.platform && /iPhone|iPod/.test(navigator.platform));
 }

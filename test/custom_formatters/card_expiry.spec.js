@@ -1,4 +1,4 @@
-import {cardExpiry} from '../../custom_formatters/card_expiry';
+import { cardExpiry } from '../../custom_formatters/card_expiry';
 
 describe('Test card expiry formatter', () => {
   it('should format number in format of MM/YY', () => {
