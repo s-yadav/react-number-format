@@ -27,8 +27,6 @@
   },
   "parser": "babel-eslint",
   "rules": {
-    "prettier/prettier": "error",
-    "arrow-body-style": "off",
     /*** best practices ***/
 
     "eqeqeq": [1, "smart"],
