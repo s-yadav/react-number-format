@@ -10,7 +10,7 @@ import {
   mount,
   persist,
 } from '../test_util';
-import { cardExpiry } from '../../custom_formatters/card_expiry';
+import {cardExpiry} from '../../custom_formatters/card_expiry';
 
 describe('Test keypress and caret position changes', () => {
   let caretPos;
@@ -33,14 +33,14 @@ describe('Test keypress and caret position changes', () => {
         };
       }
       render() {
-        const { value, prefix } = this.state;
+        const {value, prefix} = this.state;
         return (
           <NumberFormat
             isNumericString={true}
             prefix={prefix}
             value={value}
-            onValueChange={({ value }) => {
-              this.setState({ value, prefix: value.length > 3 ? '$$' : '$' });
+            onValueChange={({value}) => {
+              this.setState({value, prefix: value.length > 3 ? '$$' : '$'});
             }}
           />
         );
@@ -53,20 +53,28 @@ describe('Test keypress and caret position changes', () => {
     expect(ReactDOM.findDOMNode(wrapper.instance()).value).toEqual('$$1423');
     expect(caretPos).toEqual(4);
 
-    simulateKeyInput(wrapper.find('input'), 'Backspace', 4, 4, setSelectionRange);
+    simulateKeyInput(
+      wrapper.find('input'),
+      'Backspace',
+      4,
+      4,
+      setSelectionRange,
+    );
     expect(ReactDOM.findDOMNode(wrapper.instance()).value).toEqual('$123');
     expect(caretPos).toEqual(2);
   });
 
   describe('Test character insertion', () => {
     it('should add any number properly when input is empty without format prop passed', () => {
-      const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'$'} />);
+      const wrapper = shallow(
+        <NumberFormat thousandSeparator={true} prefix={'$'} />,
+      );
 
       simulateKeyInput(wrapper.find('input'), '1', 0);
 
       expect(wrapper.state().value).toEqual('$1');
 
-      wrapper.setProps({ value: '' });
+      wrapper.setProps({value: ''});
       wrapper.update();
 
       simulateKeyInput(wrapper.find('input'), '2456789', 0);
@@ -76,47 +84,49 @@ describe('Test keypress and caret position changes', () => {
 
     it('should add any number properly when input is empty with format prop passed', () => {
       //case 1: Enter first number
-      const wrapper = shallow(<NumberFormat format="#### #### #### ####" mask="_" />);
+      const wrapper = shallow(
+        <NumberFormat format="#### #### #### ####" mask="_" />,
+      );
       simulateKeyInput(wrapper.find('input'), '1', 0);
       expect(wrapper.state().value).toEqual('1___ ____ ____ ____');
 
       //case 2: if nun numeric character got added
-      wrapper.setProps({ value: '' });
+      wrapper.setProps({value: ''});
       wrapper.update();
       simulateKeyInput(wrapper.find('input'), 'b', 0);
       expect(wrapper.state().value).toEqual('');
 
       //case 3: Enter first multiple number
-      wrapper.setProps({ value: undefined });
-      wrapper.setProps({ value: '' });
+      wrapper.setProps({value: undefined});
+      wrapper.setProps({value: ''});
       wrapper.update();
       simulateKeyInput(wrapper.find('input'), '2456789', 0);
       expect(wrapper.state().value).toEqual('2456 789_ ____ ____');
 
       //case 4: When alpha numeric character got added
-      wrapper.setProps({ value: undefined });
-      wrapper.setProps({ value: '' });
+      wrapper.setProps({value: undefined});
+      wrapper.setProps({value: ''});
       wrapper.update();
       simulateKeyInput(wrapper.find('input'), '245sf6789', 0);
       expect(wrapper.state().value).toEqual('2456 789_ ____ ____');
 
       //case 5: Similiar to case 4 but a formatted value got added
-      wrapper.setProps({ value: undefined });
-      wrapper.setProps({ value: '' });
+      wrapper.setProps({value: undefined});
+      wrapper.setProps({value: ''});
       wrapper.update();
       simulateKeyInput(wrapper.find('input'), '1234 56', 0);
       expect(wrapper.state().value).toEqual('1234 56__ ____ ____');
 
       //case 6: If format has numbers
-      wrapper.setProps({ value: undefined });
-      wrapper.setProps({ value: '', format: '+1 (###) ### # ##' });
+      wrapper.setProps({value: undefined});
+      wrapper.setProps({value: '', format: '+1 (###) ### # ##'});
       wrapper.update();
       simulateKeyInput(wrapper.find('input'), '123456', 0);
       expect(wrapper.state().value).toEqual('+1 (123) 456 _ __');
 
       //case 7: If format has numbers and and formatted value is inserted
-      wrapper.setProps({ value: undefined });
-      wrapper.setProps({ value: '' });
+      wrapper.setProps({value: undefined});
+      wrapper.setProps({value: ''});
       wrapper.update();
       simulateKeyInput(wrapper.find('input'), '+1 (965) 432 1 19', 0);
       expect(wrapper.state().value).toEqual('+1 (965) 432 1 19');
@@ -135,7 +145,7 @@ describe('Test keypress and caret position changes', () => {
       expect(wrapper.state().value).toEqual('$18,672,345');
       expect(caretPos).toEqual(6);
 
-      wrapper.setProps({ format: '### ### ###', value: '123 456 789' });
+      wrapper.setProps({format: '### ### ###', value: '123 456 789'});
       wrapper.update();
       simulateKeyInput(wrapper.find('input'), '8', 3, 3, setSelectionRange);
       expect(wrapper.state().value).toEqual('123 845 678');
@@ -149,35 +159,74 @@ describe('Test keypress and caret position changes', () => {
 
   describe('Test delete/backspace with format pattern', () => {
     const wrapper = shallow(
-      <NumberFormat format="+1 (###) ### # ## US" value="+1 (123) 456 7 89 US" />,
+      <NumberFormat
+        format="+1 (###) ### # ## US"
+        value="+1 (123) 456 7 89 US"
+      />,
     );
 
     it('caret position should not change if its on starting of input area', () => {
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 4, 4, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Backspace',
+        4,
+        4,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('+1 (123) 456 7 89 US');
       expect(caretPos).toEqual(4);
     });
 
     it('caret position should not change if its on end of input area', () => {
-      simulateKeyInput(wrapper.find('input'), 'Delete', 17, 17, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Delete',
+        17,
+        17,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('+1 (123) 456 7 89 US');
       expect(caretPos).toEqual(17);
     });
 
     it('should only remove numbers only from input area in other case it should change the caret position', () => {
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 10, 10, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Backspace',
+        10,
+        10,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('+1 (123) 567 8 9  US');
       expect(caretPos).toEqual(9);
 
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 9, 9, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Backspace',
+        9,
+        9,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('+1 (123) 567 8 9  US');
       expect(caretPos).toEqual(7);
 
-      simulateKeyInput(wrapper.find('input'), 'Delete', 7, 7, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Delete',
+        7,
+        7,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('+1 (123) 567 8 9  US');
       expect(caretPos).toEqual(9);
 
-      simulateKeyInput(wrapper.find('input'), 'Delete', 9, 9, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Delete',
+        9,
+        9,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('+1 (123) 678 9    US');
       expect(caretPos).toEqual(9);
     });
@@ -194,31 +243,67 @@ describe('Test keypress and caret position changes', () => {
     );
 
     it('should not remove prefix', () => {
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 4, 4, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Backspace',
+        4,
+        4,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('Rs. 12,345.50 /sq.feet');
       expect(caretPos).toEqual(4);
     });
 
     it('should not remove suffix', () => {
-      simulateKeyInput(wrapper.find('input'), 'Delete', 13, 13, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Delete',
+        13,
+        13,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('Rs. 12,345.50 /sq.feet');
       expect(caretPos).toEqual(13);
     });
 
     it('should only remove number, in other case it should change caret position', () => {
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 7, 7, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Backspace',
+        7,
+        7,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('Rs. 12,345.50 /sq.feet');
       expect(caretPos).toEqual(6);
 
-      simulateKeyInput(wrapper.find('input'), 'Delete', 6, 6, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Delete',
+        6,
+        6,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('Rs. 12,345.50 /sq.feet');
       expect(caretPos).toEqual(7);
 
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 8, 8, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Backspace',
+        8,
+        8,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('Rs. 1,245.50 /sq.feet');
       expect(caretPos).toEqual(7);
 
-      simulateKeyInput(wrapper.find('input'), 'Delete', 7, 7, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Delete',
+        7,
+        7,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('Rs. 125.50 /sq.feet');
       expect(caretPos).toEqual(6);
     });
@@ -230,7 +315,13 @@ describe('Test keypress and caret position changes', () => {
         value: '$2,342,343',
       });
       wrapper.update();
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 10, 10, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Backspace',
+        10,
+        10,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('$234,234');
       expect(caretPos).toEqual(8);
     });
@@ -244,7 +335,13 @@ describe('Test keypress and caret position changes', () => {
 
       wrapper.update();
 
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 4, 4, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Backspace',
+        4,
+        4,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('100');
       expect(caretPos).toEqual(2);
     });
@@ -259,7 +356,13 @@ describe('Test keypress and caret position changes', () => {
       });
       wrapper.update();
 
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 2, 2, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'Backspace',
+        2,
+        2,
+        setSelectionRange,
+      );
       expect(wrapper.state().value).toEqual('$1,000');
       expect(caretPos).toEqual(1);
       expect(spy).toHaveBeenCalled();
@@ -276,42 +379,101 @@ describe('Test keypress and caret position changes', () => {
           value="Rs. 12,345.50 /sq.feet"
         />,
       );
-      simulateKeyInput(wrapper.find('input'), 'ArrowLeft', 4, 4, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'ArrowLeft',
+        4,
+        4,
+        setSelectionRange,
+      );
       expect(caretPos).toEqual(4);
 
-      simulateKeyInput(wrapper.find('input'), 'ArrowRight', 13, 13, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'ArrowRight',
+        13,
+        13,
+        setSelectionRange,
+      );
       expect(caretPos).toEqual(13);
     });
 
     it('should keep caret position within typable area', () => {
       const wrapper = shallow(
-        <NumberFormat format="+1 (###) ### # ## US" value="+1 (123) 456 7 89 US" />,
+        <NumberFormat
+          format="+1 (###) ### # ## US"
+          value="+1 (123) 456 7 89 US"
+        />,
       );
-      simulateKeyInput(wrapper.find('input'), 'ArrowLeft', 4, 4, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'ArrowLeft',
+        4,
+        4,
+        setSelectionRange,
+      );
       expect(caretPos).toEqual(4);
 
-      simulateKeyInput(wrapper.find('input'), 'ArrowRight', 17, 17, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'ArrowRight',
+        17,
+        17,
+        setSelectionRange,
+      );
       expect(caretPos).toEqual(17);
 
-      simulateKeyInput(wrapper.find('input'), 'ArrowRight', 7, 7, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'ArrowRight',
+        7,
+        7,
+        setSelectionRange,
+      );
       expect(caretPos).toEqual(9);
 
-      simulateKeyInput(wrapper.find('input'), 'ArrowLeft', 9, 9, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'ArrowLeft',
+        9,
+        9,
+        setSelectionRange,
+      );
       expect(caretPos).toEqual(7);
 
       caretPos = undefined;
-      simulateKeyInput(wrapper.find('input'), 'ArrowRight', 12, 12, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'ArrowRight',
+        12,
+        12,
+        setSelectionRange,
+      );
       expect(caretPos).toEqual(13);
 
       caretPos = undefined;
-      simulateKeyInput(wrapper.find('input'), 'ArrowLeft', 13, 13, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'ArrowLeft',
+        13,
+        13,
+        setSelectionRange,
+      );
       expect(caretPos).toEqual(12);
     });
 
     it('should not move caret positon from left most to right most if left key pressed. #154', () => {
-      const wrapper = shallow(<NumberFormat format={cardExpiry} value="11/11" />);
+      const wrapper = shallow(
+        <NumberFormat format={cardExpiry} value="11/11" />,
+      );
       caretPos = undefined;
-      simulateKeyInput(wrapper.find('input'), 'ArrowLeft', 0, 0, setSelectionRange);
+      simulateKeyInput(
+        wrapper.find('input'),
+        'ArrowLeft',
+        0,
+        0,
+        setSelectionRange,
+      );
       expect(caretPos).toEqual(0);
     });
   });
@@ -323,7 +485,10 @@ describe('Test keypress and caret position changes', () => {
 
     it('should always keep caret on typable area when we click on the input', () => {
       const wrapper = shallow(
-        <NumberFormat format="+1 (###) ### # ## US" value="+1 (123) 456 7 89 US" />,
+        <NumberFormat
+          format="+1 (###) ### # ## US"
+          value="+1 (123) 456 7 89 US"
+        />,
       );
 
       simulateMousUpEvent(wrapper.find('input'), 0, setSelectionRange);
@@ -443,10 +608,20 @@ describe('Test keypress and caret position changes', () => {
       jasmine.clock().install();
       const value = 'Rs. 12,345.50 /sq.feet';
       const wrapper = shallow(
-        <NumberFormat thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value={value} />,
+        <NumberFormat
+          thousandSeparator=","
+          prefix="Rs. "
+          suffix=" /sq.feet"
+          value={value}
+        />,
       );
 
-      simulateFocusEvent(wrapper.find('input'), 0, value.length, setSelectionRange);
+      simulateFocusEvent(
+        wrapper.find('input'),
+        0,
+        value.length,
+        setSelectionRange,
+      );
       jasmine.clock().tick(1);
       expect(caretPos).toEqual(0);
     });

@@ -1,4 +1,4 @@
-import { toNumericString } from '../../src/utils';
+import {toNumericString} from '../../src/utils';
 
 describe('Test toNumericString', () => {
   it('should handle positive exponents numbers', () => {

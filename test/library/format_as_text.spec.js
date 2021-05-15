@@ -1,34 +1,51 @@
 import React from 'react';
 
-import { shallow } from '../test_util';
+import {shallow} from '../test_util';
 import NumberFormat from '../../src/number_format';
 
 /*** format_number input as text ****/
 describe('NumberFormat as text', () => {
   it('should format numbers to currency', () => {
     const wrapper = shallow(
-      <NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />,
+      <NumberFormat
+        value={2456981}
+        displayType={'text'}
+        thousandSeparator={true}
+        prefix={'$'}
+      />,
     );
     expect(wrapper.find('span').text()).toEqual('$2,456,981');
   });
 
   it('should format as given format', () => {
     const wrapper = shallow(
-      <NumberFormat value={4111111111111111} displayType={'text'} format="#### #### #### ####" />,
+      <NumberFormat
+        value={4111111111111111}
+        displayType={'text'}
+        format="#### #### #### ####"
+      />,
     );
     expect(wrapper.find('span').text()).toEqual('4111 1111 1111 1111');
   });
 
   it('should format as given format when input is string', () => {
     const wrapper = shallow(
-      <NumberFormat value="4111111111111111" displayType={'text'} format="#### #### #### ####" />,
+      <NumberFormat
+        value="4111111111111111"
+        displayType={'text'}
+        format="#### #### #### ####"
+      />,
     );
     expect(wrapper.find('span').text()).toEqual('4111 1111 1111 1111');
   });
 
   it('should format as given format when input length is less than format length', () => {
     const wrapper = shallow(
-      <NumberFormat value="41111111111111" displayType={'text'} format="#### #### #### ####" />,
+      <NumberFormat
+        value="41111111111111"
+        displayType={'text'}
+        format="#### #### #### ####"
+      />,
     );
     expect(wrapper.find('span').text()).toEqual('4111 1111 1111 11  ');
   });

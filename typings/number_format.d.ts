@@ -2,7 +2,11 @@
 
 declare module 'react-number-format' {
   //exclude types from the InputHTMLAttributes
-  const { defaultValue, value, ...inputAttributes }: React.InputHTMLAttributes<HTMLInputElement>;
+  const {
+    defaultValue,
+    value,
+    ...inputAttributes
+  }: React.InputHTMLAttributes<HTMLInputElement>;
   type InputAttributes = typeof inputAttributes;
 
   export interface NumberFormatState {
@@ -18,7 +22,8 @@ declare module 'react-number-format' {
 
   export type FormatInputValueFunction = (inputValue: string) => string;
 
-  export interface SyntheticInputEvent extends React.SyntheticEvent<HTMLInputElement> {
+  export interface SyntheticInputEvent
+    extends React.SyntheticEvent<HTMLInputElement> {
     readonly target: HTMLInputElement;
     data: any;
   }

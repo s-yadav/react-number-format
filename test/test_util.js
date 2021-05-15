@@ -1,7 +1,7 @@
-import Enzyme, { shallow, mount } from 'enzyme';
+import Enzyme, {shallow, mount} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-Enzyme.configure({ adapter: new Adapter() });
+Enzyme.configure({adapter: new Adapter()});
 
 const noop = function () {};
 
@@ -13,7 +13,7 @@ const target = document.createElement('input');
 export function getCustomEvent(value, selectionStart, selectionEnd) {
   let event = new Event('custom');
   const el = document.createElement('input');
-  event = { ...event, target: el, persist };
+  event = {...event, target: el, persist};
   event.target = el;
   el.value = value;
   el.selectionStart = selectionStart;
@@ -28,18 +28,24 @@ function getEvent(eventProps, targetProps) {
     target[key] = targetProps[key];
   });
 
-  event = { ...event, ...eventProps, target };
+  event = {...event, ...eventProps, target};
 
   return event;
 }
 
 export function setCaretPosition(event, caretPos) {
-  const { target } = event;
+  const {target} = event;
   target.focus();
   target.setSelectionRange(caretPos, caretPos);
 }
 
-export function simulateKeyInput(input, key, selectionStart, selectionEnd, setSelectionRange) {
+export function simulateKeyInput(
+  input,
+  key,
+  selectionStart,
+  selectionEnd,
+  setSelectionRange,
+) {
   if (selectionEnd === undefined) {
     selectionEnd = selectionStart;
   }
@@ -74,7 +80,8 @@ export function simulateKeyInput(input, key, selectionStart, selectionEnd, setSe
     let newCaretPosition, newValue;
 
     if (key === 'Backspace') {
-      newCaretPosition = selectionStart !== selectionEnd ? selectionStart : selectionStart - 1;
+      newCaretPosition =
+        selectionStart !== selectionEnd ? selectionStart : selectionStart - 1;
       newValue =
         selectionStart !== selectionEnd
           ? currentValue.substring(0, selectionStart) +
@@ -137,7 +144,12 @@ export function simulateMousUpEvent(input, selectionStart, setSelectionRange) {
   input.simulate('mouseup', mouseUpEvent);
 }
 
-export function simulateFocusEvent(input, selectionStart = 0, selectionEnd, setSelectionRange) {
+export function simulateFocusEvent(
+  input,
+  selectionStart = 0,
+  selectionEnd,
+  setSelectionRange,
+) {
   if (selectionEnd === undefined) {
     selectionEnd = selectionStart;
   }
@@ -175,4 +187,4 @@ export function simulateBlurEvent(input) {
   input.simulate('blur', blurEvent);
 }
 
-export { Enzyme, shallow, mount };
+export {Enzyme, shallow, mount};
