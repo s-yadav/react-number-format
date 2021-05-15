@@ -89,10 +89,10 @@ export function limitToScale(numStr: string, scale: number, fixedDecimalScale: b
 }
 
 function repeat(str, count) {
-  return Array(count + 1).join(str);
+  return Array(count + 1).join(str)
 }
 
-export function toNumericString(num) {
+export function toNumericString(num) {  
   num += ''; // typecast number to string
 
   // store the sign and remove it from the number.
@@ -120,15 +120,14 @@ export function toNumericString(num) {
 
   if (decimalIndex < 0) {
     // if decimal index is less then 0 add preceding 0s
-    // add 1 as join will have
+    // add 1 as join will have 
     coefficient = '0.' + repeat('0', Math.abs(decimalIndex)) + coefficient;
   } else if (decimalIndex >= coffiecientLn) {
     // if decimal index is less then 0 add leading 0s
     coefficient = coefficient + repeat('0', decimalIndex - coffiecientLn);
   } else {
     // else add decimal point at proper index
-    coefficient =
-      (coefficient.substring(0, decimalIndex) || '0') + '.' + coefficient.substring(decimalIndex);
+    coefficient = (coefficient.substring(0, decimalIndex) || '0') + '.' + coefficient.substring(decimalIndex);
   }
 
   return sign + coefficient;

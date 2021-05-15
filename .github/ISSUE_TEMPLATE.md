@@ -7,7 +7,6 @@
 #### Provide steps to reproduce this issue
 
 #### Please check the browsers where the issue is seen
-
 - [ ] Chrome
 - [ ] Chrome (Android)
 - [ ] Safari (OSX)

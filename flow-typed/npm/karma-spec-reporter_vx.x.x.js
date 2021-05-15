@@ -23,6 +23,7 @@ declare module 'karma-spec-reporter' {
  * needed.
  */
 
+
 // Filename aliases
 declare module 'karma-spec-reporter/index' {
   declare module.exports: $Exports<'karma-spec-reporter'>;

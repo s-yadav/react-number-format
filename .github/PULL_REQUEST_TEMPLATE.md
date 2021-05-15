@@ -13,7 +13,6 @@
 #### Screenshot (If applicable)
 
 #### Please check which browsers were used for testing
-
 - [ ] Chrome
 - [ ] Chrome (Android)
 - [ ] Safari (OSX)

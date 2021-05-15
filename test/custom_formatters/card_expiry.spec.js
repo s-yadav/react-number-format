@@ -1,6 +1,6 @@
-import { cardExpiry } from '../../custom_formatters/card_expiry';
+import {cardExpiry} from '../../custom_formatters/card_expiry';
 
-describe('Test card expiry formatter', () => {
+describe ('Test card expiry formatter', () => {
   it('should format number in format of MM/YY', () => {
     expect(cardExpiry('1123')).toEqual('11/23');
     expect(cardExpiry('11234')).toEqual('11/23');
@@ -16,4 +16,4 @@ describe('Test card expiry formatter', () => {
     expect(cardExpiry('1410')).toEqual('12/10');
     expect(cardExpiry('1235')).toEqual('12/35');
   });
-});
+})

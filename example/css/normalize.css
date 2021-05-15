@@ -39,8 +39,7 @@ main, /* 2 */
 menu,
 nav,
 section,
-summary {
-  /* 1 */
+summary { /* 1 */
   display: block;
 }
 
@@ -275,8 +274,7 @@ optgroup {
 
 button,
 input, /* 1 */
-select {
-  /* 2 */
+select { /* 2 */
   overflow: visible;
 }
 
@@ -288,8 +286,7 @@ select {
 button,
 input,
 select,
-textarea {
-  /* 1 */
+textarea { /* 1 */
   margin: 0;
 }
 
@@ -299,8 +296,7 @@ textarea {
  */
 
 button,
-select {
-  /* 1 */
+select { /* 1 */
   text-transform: none;
 }
 
@@ -309,9 +305,9 @@ select {
  */
 
 button,
-[type='button'],
-[type='reset'],
-[type='submit'] {
+[type="button"],
+[type="reset"],
+[type="submit"] {
   cursor: pointer;
 }
 
@@ -394,8 +390,8 @@ textarea {
  * 2. Remove the padding in IE 10-.
  */
 
-[type='checkbox'],
-[type='radio'] {
+[type="checkbox"],
+[type="radio"] {
   box-sizing: border-box; /* 1 */
   padding: 0; /* 2 */
 }
@@ -404,8 +400,8 @@ textarea {
  * Correct the cursor style of increment and decrement buttons in Chrome.
  */
 
-[type='number']::-webkit-inner-spin-button,
-[type='number']::-webkit-outer-spin-button {
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
   height: auto;
 }
 
@@ -413,7 +409,7 @@ textarea {
  * Correct the odd appearance of search inputs in Chrome and Safari.
  */
 
-[type='search'] {
+[type="search"] {
   -webkit-appearance: textfield;
 }
 
@@ -422,7 +418,7 @@ textarea {
  * Safari on OS X.
  */
 
-[type='search']::-webkit-search-cancel-button,
-[type='search']::-webkit-search-decoration {
+[type="search"]::-webkit-search-cancel-button,
+[type="search"]::-webkit-search-decoration {
   -webkit-appearance: none;
 }
