@@ -330,12 +330,14 @@ class NumberFormat extends React.Component {
     /* in case format is string find the closest # position from the caret position */
 
     //in case the caretPos have input value on it don't do anything
-    if (format[caretPos] === '#' && charIsNumber(value[caretPos]))
+    if (format[caretPos] === '#' && charIsNumber(value[caretPos])) {
       return caretPos;
+    }
 
     //if caretPos is just after input value don't do anything
-    if (format[caretPos - 1] === '#' && charIsNumber(value[caretPos - 1]))
+    if (format[caretPos - 1] === '#' && charIsNumber(value[caretPos - 1])) {
       return caretPos;
+    }
 
     //find the nearest caret position
     const firstHashPosition = format.indexOf('#');
@@ -394,8 +396,9 @@ class NumberFormat extends React.Component {
       if (
         !currentInputChar.match(numRegex) &&
         currentInputChar !== currentFormatChar
-      )
+      ) {
         continue;
+      }
 
       //When we are striping out leading zeros maintain the new cursor position
       //Case inputValue = 00023 and formattedValue = 23;
@@ -404,15 +407,17 @@ class NumberFormat extends React.Component {
         currentFormatChar.match(numRegex) &&
         currentFormatChar !== '0' &&
         inputNumber.length !== formattedNumber.length
-      )
+      ) {
         continue;
+      }
 
       //we are not using currentFormatChar because j can change here
       while (
         currentInputChar !== formattedValue[j] &&
         j < formattedValue.length
-      )
+      ) {
         j++;
+      }
       j++;
     }
 
@@ -550,12 +555,13 @@ class NumberFormat extends React.Component {
     ); // eslint-disable-line prefer-const
 
     //apply decimal precision if its defined
-    if (decimalScale !== undefined)
+    if (decimalScale !== undefined) {
       afterDecimal = limitToScale(
         afterDecimal,
         decimalScale,
         fixedDecimalScale,
       );
+    }
 
     if (thousandSeparator) {
       beforeDecimal = applyThousandSeparator(
@@ -770,7 +776,7 @@ class NumberFormat extends React.Component {
     //clear all numbers in such case while keeping the - sign
     if (!format) {
       const numericString = this.removeFormatting(value);
-      let {beforeDecimal, afterDecimal, addNegation} = splitDecimal(
+      const {beforeDecimal, afterDecimal, addNegation} = splitDecimal(
         numericString,
         allowNegative,
       ); // eslint-disable-line prefer-const
@@ -987,8 +993,9 @@ class NumberFormat extends React.Component {
       while (
         !numRegex.test(value[newCaretPosition]) &&
         newCaretPosition < rightBound
-      )
+      ) {
         newCaretPosition++;
+      }
     } else if (
       key === 'Backspace' &&
       !numRegex.test(value[expectedCaretPosition])
