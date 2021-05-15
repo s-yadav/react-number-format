@@ -26,7 +26,8 @@
   ],
   "scripts": {
     "start": "webpack-dev-server --hot",
-    "bundle": "cross-env yarn compile && yarn bundle-dist && yarn test-build && yarn test-ts",
+    "format": "prettier --write ./src ./typings ./test ./example",
+    "bundle": "cross-env yarn compile && yarn bundle-dist && yarn test-build && yarn test-ts && yarn format",
     "bundle-dist": "cross-env NODE_ENV=production rollup -c rollup.config.js",
     "compile": "cross-env NODE_ENV=production babel src --out-dir lib",
     "test": "cross-env NODE_ENV=test karma start",
@@ -54,7 +55,7 @@
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "eslint": "^6.5.1",
-    "eslint-config-prettier": "^8.1.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-loader": "^3.0.2",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-react": "^7.15.1",
