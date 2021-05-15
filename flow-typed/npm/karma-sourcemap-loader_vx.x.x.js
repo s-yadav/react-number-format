@@ -23,7 +23,6 @@ declare module 'karma-sourcemap-loader' {
  * needed.
  */
 
-
 // Filename aliases
 declare module 'karma-sourcemap-loader/index' {
   declare module.exports: $Exports<'karma-sourcemap-loader'>;

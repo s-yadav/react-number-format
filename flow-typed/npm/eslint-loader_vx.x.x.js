@@ -23,7 +23,6 @@ declare module 'eslint-loader' {
  * needed.
  */
 
-
 // Filename aliases
 declare module 'eslint-loader/index' {
   declare module.exports: $Exports<'eslint-loader'>;

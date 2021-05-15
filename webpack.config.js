@@ -3,13 +3,11 @@ const path = require('path');
 module.exports = {
   mode: 'development',
   entry: {
-    'bundle' : [
-      './example/src/index.js'
-    ]
+    bundle: ['./example/src/index.js'],
   },
-  devtool: "eval",
+  devtool: 'eval',
   output: {
-    filename: '[name].js'
+    filename: '[name].js',
   },
   devServer: {
     contentBase: path.join(__dirname, 'example'),
@@ -22,7 +20,7 @@ module.exports = {
         test: /\.js$/,
         use: ['babel-loader'],
         exclude: /node_modules/,
-      }
-    ]
+      },
+    ],
   },
 };
