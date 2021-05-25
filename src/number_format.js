@@ -89,6 +89,7 @@ class NumberFormat extends React.Component {
   onFocus: Function;
   onBlur: Function;
   focusTimeout: number;
+  caretPositionTimeout: number;
   focusedElm: HTMLElement;
   selectionBeforeInput: {
     selectionStart: number,
@@ -137,6 +138,7 @@ class NumberFormat extends React.Component {
 
   componentWillUnmount() {
     clearTimeout(this.focusTimeout);
+    clearTimeout(this.caretPositionTimeout);
   }
 
   updateValueIfRequired(prevProps: Object) {
@@ -283,7 +285,7 @@ class NumberFormat extends React.Component {
     otherwise browser resets the caret position after we set it
     We are also setting it without timeout so that in normal browser we don't see the flickering */
     setCaretPosition(el, caretPos);
-    setTimeout(() => {
+    this.caretPositionTimeout = setTimeout(() => {
       if (el.value === currentValue) setCaretPosition(el, caretPos);
     }, 0);
   }
@@ -821,6 +823,7 @@ class NumberFormat extends React.Component {
     this.focusedElm = null;
 
     clearTimeout(this.focusTimeout);
+    clearTimeout(this.caretPositionTimeout);
 
     if (!format) {
       // if the numAsString is not a valid number reset it to empty
