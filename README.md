@@ -209,7 +209,8 @@ function cardExpiry(val) {
   const MAX_VAL = 1400;
   const withValueLimit = (inputObj) => {
     const { value } = inputObj;
-    if (value < MAX_VAL) return inputObj;
+    if (value >= MAX_VAL) return false;
+    return true;
   };
   <NumberFormat value={12} isAllowed={withValueLimit} />;
 ```
