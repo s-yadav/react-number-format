@@ -229,7 +229,7 @@ describe('NumberFormat as input', () => {
     expect(wrapper.state().value).toEqual('+1 (888) 888 8 8  US');
   })
 
-  it('should maintain the format even when the format is numeric', () => {
+  it('should maintain the format even when the format is numeric and characters are deleted', () => {
     const wrapper = shallow(<NumberFormat format="0###0 ###0####" value="01230 45607899"/>);
     simulateKeyInput(wrapper.find('input'), 'Backspace', 6, 10);
     expect(wrapper.state().value).toEqual('01230 78909   ');
