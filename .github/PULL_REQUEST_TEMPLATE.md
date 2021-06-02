@@ -1,18 +1,21 @@
-## Describe the issue/change
+#### Describe the issue/change
 
-## Describe specs for failing cases if this is an issue (If applicable)
+#### Add CodeSandbox link to illustrate the issue (If applicable)
 
-## Describe the changes proposed/implemented in this PR
+#### Describe specs for failing cases if this is an issue (If applicable)
 
-## Link Github issue if this PR solved an existing issue
+#### Describe the changes proposed/implemented in this PR
 
-## Example usage (If applicable)
+#### Link Github issue if this PR solved an existing issue
 
-## Screenshot (If applicable)
+#### Example usage (If applicable)
 
-## Please check which browsers were used for testing
+#### Screenshot (If applicable)
 
+#### Please check which browsers were used for testing
 - [ ] Chrome
+- [ ] Chrome (Android)
 - [ ] Safari (OSX)
 - [ ] Safari (iOS)
 - [ ] Firefox
+- [ ] Firefox (Android)

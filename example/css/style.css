@@ -1,10 +1,10 @@
-body{
-    margin: 0;
-    font-family: helvetica, arial, sans-serif;
-    line-height: 1.417;
+body {
+  margin: 0;
+  font-family: helvetica, arial, sans-serif;
+  line-height: 1.417;
 }
-.header h1{
-  line-height:70px;
+.header h1 {
+  line-height: 70px;
   font-size: 32px;
   border-bottom: 2px solid grey;
   text-align: center;
@@ -12,11 +12,11 @@ body{
   font-weight: normal;
 }
 
-#app{
+#app {
   padding: 10px 20px;
 }
 
-.example{
-  padding:20px 0;
+.example {
+  padding: 20px 0;
   border-bottom: 1px solid #eee;
 }

@@ -1,3 +1,5 @@
+[![Actions Status](https://github.com/s-yadav/react-number-format/workflows/CI/badge.svg)](https://github.com/s-yadav/react-number-format/actions)
+
 # react-number-format
 React component to format number in an input or as a text
 
@@ -59,8 +61,8 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | mask | String (ex : _) | `' '` | If mask defined, component will show non entered placed with masked value. |
 | customInput | Component Reference | input | This allow supporting custom inputs with number format. |
 | onValueChange | (values) => {} | none | onValueChange handler accepts [values object](#values-object) |
-| isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not |
-| renderText | (formattedValue) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. |
+| isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not. If this function returns false, the onChange method will not get triggered |
+| renderText | (formattedValue, customProps) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. It also returns the custom props that are added to the component which can allow passing down props to the rendered element |
 | getInputRef | (elm) => void | null | Method to get reference of input, span (based on displayType prop) or the customInput's reference. See [Getting reference](#getting-reference)
 | allowedDecimalSeparators | array of char | none | Characters which when pressed result in a decimal separator. When missing, decimal separator and '.' are used |
 
@@ -105,9 +107,9 @@ Output : $2,456,981
 ```jsx
 var NumberFormat = require('react-number-format');
 
-<NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} renderText={value => <div>{value}</div>} />
+<NumberFormat value={2456981} className="foo" displayType={'text'} thousandSeparator={true} prefix={'$'} renderText={(value, props) => <div {...props}>{value}</div>} />
 ```
-Output : `<div> $2,456,981 </div>`
+Output : `<div class="foo"> $2,456,981 </div>`
 
 #### Format with pattern : Format credit card as text
 ```jsx
@@ -202,6 +204,20 @@ function cardExpiry(val) {
 ```
 ![Screencast example](https://media.giphy.com/media/l1J9wJ6ZSONO7cXkI/giphy.gif)
 
+### Limit input value to a maximum limit
+```jsx
+  const MAX_VAL = 1400;
+  const withValueLimit = (inputObj) => {
+    const { value } = inputObj;
+    if (value < MAX_VAL) return inputObj;
+  };
+  <NumberFormat value={12} isAllowed={withValueLimit} />;
+```
+
+Visit this link for Demo: [Field with value limit](https://codesandbox.io/s/react-number-format-isallowed-8gu0v)
+
+![Screencast example](https://media.giphy.com/media/7agdv1sb9JYJEYlN3s/giphy.gif)
+
 ### Show mask on empty input
 ```jsx
 <NumberFormat format="+1 (###) ###-####" allowEmptyFormatting mask="_"/>
@@ -230,6 +246,12 @@ As `ref` is a special property in react, its not passed as props. If you add ref
 ```jsx
   <NumberFormat getInputRef = {(el) => this.inputElem = el} customInput={TextField} format="#### #### #### ####"/>
 ```
+Or using React.createRef()
+```jsx
+  const inputRef = React.createRef();
+  <NumberFormat getInputRef = {inputRef} customInput={TextField} format="#### #### #### ####"/>
+```
+
 
 In case you have provided custom input you can pass there props to get the input reference (getInputRef will not work in that case).
 For ex in material-ui component.
@@ -241,6 +263,7 @@ If you can't get in both way you can try ReactDOM.findDOMNode. You may need to t
 ```jsx
   <NumberFormat ref = {(inst) => this.inputElem = ReactDOM.findDOMNode(inst)} format="#### #### #### ####"/>
 ```
+
 
 ### Live Demo
 [http://codepen.io/s-yadav/pen/bpKNMa](http://codepen.io/s-yadav/pen/bpKNMa)
