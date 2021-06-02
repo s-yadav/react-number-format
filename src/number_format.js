@@ -1,24 +1,50 @@
 //@flow
 import PropTypes from 'prop-types';
 import React from 'react';
-
 import {
-  noop,
-  returnTrue,
-  charIsNumber,
-  escapeRegExp,
-  fixLeadingZero,
-  limitToScale,
+  addInputMode, applyThousandSeparator, charIsNumber,
+
+
+
+
+
+
+
+
+  clamp, escapeRegExp,
+
+
+
+
+
+
+  findChangedIndex, fixLeadingZero,
+
+
+
+
+
+
+
+
+  getCurrentCaretPosition, limitToScale, noop,
+
+
+
+
+
+
+  omit, returnTrue,
+
+
+
+
   roundToPrecision,
-  omit,
+
   setCaretPosition,
-  splitDecimal,
-  findChangedIndex,
-  clamp,
-  applyThousandSeparator,
-  getCurrentCaretPosition,
-  addInputMode,
+  splitDecimal
 } from './utils';
+
 
 
 const propTypes = {
@@ -639,10 +665,10 @@ class NumberFormat extends React.Component {
 
     // check whether the deleted portion has a character that is part of a format
     const deletedValues = lastValue.substr(start, end - start);
-    const hasNonNumeric = !![...deletedValues].find((deletedVal, idx) => this.isCharacterAFormat(idx + start, lastValue));
+    const formatGotDeleted = !![...deletedValues].find((deletedVal, idx) => this.isCharacterAFormat(idx + start, lastValue));
 
     // if it has, only remove characters that are not part of the format
-    if(hasNonNumeric) {
+    if(formatGotDeleted) {
       const deletedValuePortion = lastValue.substr(start)
       const recordIndexOfFormatCharacters = {};
       const resolvedPortion = [];
