@@ -646,13 +646,6 @@ class NumberFormat extends React.Component {
     return false;
   }
 
-  checkIfFormatGotDeleted(start: number, end: number, value: string) {
-    for (let i = start; i < end; i++) {
-      if (this.isCharacterAFormat(i, value)) return true;
-    }
-    return false;
-  }
-
   /**
    * This will check if any formatting got removed by the delete or backspace and reset the value
    * It will also work as fallback if android chome keyDown handler does not work
@@ -697,10 +690,36 @@ class NumberFormat extends React.Component {
       return value;
     }
 
-    //if format got deleted reset the value to last value
-    if (this.checkIfFormatGotDeleted(start, end, lastValue)) {
-      value = lastValue;
+    // check whether the deleted portion has a character that is part of a format
+    const deletedValues = lastValue.substr(start, end - start);
+    const formatGotDeleted = !![...deletedValues].find((deletedVal, idx) => this.isCharacterAFormat(idx + start, lastValue));
+
+    // if it has, only remove characters that are not part of the format
+    if(formatGotDeleted) {
+      const deletedValuePortion = lastValue.substr(start)
+      const recordIndexOfFormatCharacters = {};
+      const resolvedPortion = [];
+      [...deletedValuePortion].forEach((currentPortion, idx) => {
+        if(this.isCharacterAFormat(idx + start, lastValue)){
+          recordIndexOfFormatCharacters[idx] = currentPortion;
+        } else if (idx > deletedValues.length - 1) {
+          resolvedPortion.push(currentPortion);
+        }
+      })
+
+      Object.keys(recordIndexOfFormatCharacters).forEach(idx => {
+        if(resolvedPortion.length > idx){
+          resolvedPortion.splice(idx, 0, recordIndexOfFormatCharacters[idx]);
+        } else {
+          resolvedPortion.push(recordIndexOfFormatCharacters[idx])
+        }
+      })
+
+      value = lastValue.substr(0, start) + resolvedPortion.join('');
     }
+
+
+
 
     //for numbers check if beforeDecimal got deleted and there is nothing after decimal,
     //clear all numbers in such case while keeping the - sign
