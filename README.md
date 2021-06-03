@@ -207,11 +207,7 @@ function cardExpiry(val) {
 ### Limit input value to a maximum limit
 ```jsx
   const MAX_VAL = 1400;
-  const withValueLimit = (inputObj) => {
-    const { value } = inputObj;
-    if (value >= MAX_VAL) return false;
-    return true;
-  };
+  const withValueLimit = ({ floatValue }) => floatValue <= 1400;
   <NumberFormat value={12} isAllowed={withValueLimit} />;
 ```
 
