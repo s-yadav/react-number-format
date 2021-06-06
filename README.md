@@ -207,12 +207,11 @@ function cardExpiry(val) {
 ### Limit input value to a maximum limit
 ```jsx
   const MAX_VAL = 1400;
-  const withValueLimit = (inputObj) => {
-    const { value } = inputObj;
-    if (value < MAX_VAL) return inputObj;
-  };
+  const withValueLimit = ({ floatValue }) => floatValue <= MAX_VAL;
   <NumberFormat value={12} isAllowed={withValueLimit} />;
 ```
+
+It is sensible to use `floatValue` in the `withValueLimit` check because it provides the exact value (see [values object](#values-object)). `value` is rounded to your configured `decimalScale`; hence it may omit a part of the precision of the actual value. Given an entered value of 1400.4 and the default `decimalScale`, `value` would be transferred as 1400 in the values object and pass the above `withValueLimit` check. In this case, it is a false positive that can be prevented using `floatValue`. However, you might want to use `value` to automatically get the rounded number according to your `decimalScale`.
 
 Visit this link for Demo: [Field with value limit](https://codesandbox.io/s/react-number-format-isallowed-8gu0v)
 
