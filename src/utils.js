@@ -134,15 +134,6 @@ export function toNumericString(num) {
   return sign + coefficient;
 }
 
-export function containsAllZeros(numStr: string) {
-  for (let i = 0; i <= numStr.length - 1; i++) {
-    if (numStr[i] !== '0') {
-      return false;
-    }
-  }
-  return true;
-}
-
 /**
  * This method is required to round prop value to given scale.
  * Not used .round or .fixedTo because that will break with big numbers
@@ -155,7 +146,7 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
   const { beforeDecimal, afterDecimal, hasNagation } = splitDecimal(numStr);
   const floatValue = parseFloat(`0.${afterDecimal || '0'}`);
   const floatValueStr =
-    afterDecimal.length <= scale ? toNumericString(floatValue) : floatValue.toFixed(scale);
+    afterDecimal.length <= scale ? `0.${afterDecimal}` : floatValue.toFixed(scale);
   const roundedDecimalParts = floatValueStr.split('.');
   const intPart = beforeDecimal
     .split('')
@@ -170,9 +161,8 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
       return current + roundedStr;
     }, roundedDecimalParts[0]);
 
-  const inputDecimal = containsAllZeros(afterDecimal) ? afterDecimal : roundedDecimalParts[1] || '';
   const decimalPart = limitToScale(
-    inputDecimal,
+    roundedDecimalParts[1] || '',
     Math.min(scale, afterDecimal.length),
     fixedDecimalScale,
   );

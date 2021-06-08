@@ -554,8 +554,10 @@ describe('NumberFormat as input', () => {
       expect(wrapper.find('input').instance().value).toEqual('$100.0');
       wrapper.setState({ value: '123.00' });
       expect(wrapper.find('input').instance().value).toEqual('$123.00');
-      wrapper.setState({ value: '100.000' });
-      expect(wrapper.find('input').instance().value).toEqual('$100.00');
+      wrapper.setState({ value: '132.000' });
+      expect(wrapper.find('input').instance().value).toEqual('$132.00');
+      wrapper.setState({ value: '100.10' });
+      expect(wrapper.find('input').instance().value).toEqual('$100.10');
     });
   });
 });
