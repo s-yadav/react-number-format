@@ -219,7 +219,9 @@ describe('NumberFormat as input', () => {
   });
 
   it('should update value if group of characters got deleted with format', () => {
-    const wrapper = shallow(<NumberFormat format="+1 (###) ### # ## US" value="+1 (999) 999 9 99 US"/>);
+    const wrapper = shallow(
+      <NumberFormat format="+1 (###) ### # ## US" value="+1 (999) 999 9 99 US" />,
+    );
     simulateKeyInput(wrapper.find('input'), 'Backspace', 6, 10);
     expect(wrapper.state().value).toEqual('+1 (999) 999 9    US');
 
@@ -227,13 +229,13 @@ describe('NumberFormat as input', () => {
     wrapper.setProps({ value: '+1 (888) 888 8 88 US' });
     simulateKeyInput(wrapper.find('input'), '8', 6, 10);
     expect(wrapper.state().value).toEqual('+1 (888) 888 8 8  US');
-  })
+  });
 
   it('should maintain the format even when the format is numeric and characters are deleted', () => {
-    const wrapper = shallow(<NumberFormat format="0###0 ###0####" value="01230 45607899"/>);
+    const wrapper = shallow(<NumberFormat format="0###0 ###0####" value="01230 45607899" />);
     simulateKeyInput(wrapper.find('input'), 'Backspace', 6, 10);
     expect(wrapper.state().value).toEqual('01230 78909   ');
-  })
+  });
 
   it('should update value if whole content is replaced by new number', () => {
     const wrapper = shallow(<NumberFormat format="+1 (###) ### # ## US" allowEmptyFormatting />);
@@ -523,6 +525,37 @@ describe('NumberFormat as input', () => {
       expect(wrapper.find('input').instance().value).toEqual('$123.123');
       wrapper.setState({ value: '123.1234' });
       expect(wrapper.find('input').instance().value).toEqual('$123.1234');
+    });
+
+    it('should show the right number of zeros in all cases', () => {
+      class WrapperComponent extends React.Component {
+        constructor() {
+          super();
+          this.state = {
+            value: '100.0',
+          };
+        }
+
+        render() {
+          return (
+            <NumberFormat
+              name="numberformat"
+              value={this.state.value}
+              thousandSeparator
+              prefix="$"
+              decimalScale={2}
+              isNumericString
+            />
+          );
+        }
+      }
+
+      const wrapper = mount(<WrapperComponent />);
+      expect(wrapper.find('input').instance().value).toEqual('$100.0');
+      wrapper.setState({ value: '123.00' });
+      expect(wrapper.find('input').instance().value).toEqual('$123.00');
+      wrapper.setState({ value: '100.000' });
+      expect(wrapper.find('input').instance().value).toEqual('$100.00');
     });
   });
 });
