@@ -492,6 +492,7 @@ describe('NumberFormat as input', () => {
       }).toThrow();
     });
 
+    // Test case for Issue #533
     it('should show the right decimal values based on the decimal scale provided', () => {
       class WrapperComponent extends React.Component {
         constructor() {
