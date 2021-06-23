@@ -671,6 +671,16 @@ class NumberFormat extends React.Component {
       );
     }
 
+    /** Check for "paste event" with, replace any allowed decimal separator with desired decimal separator */
+    if (!format && decimalScale !== 0 && allowedDecimalSeparators.some(separator => value.indexOf(separator) !== -1)) {
+      const separator = decimalScale === 0 ? '' : decimalSeparator
+      let result = value;
+      allowedDecimalSeparators.forEach(v => {
+        result = result.replace(v, separator);
+      })
+      value = result;
+    }
+
     const leftBound = !!format ? 0 : prefix.length;
     const rightBound = lastValue.length - (!!format ? 0 : suffix.length);
 

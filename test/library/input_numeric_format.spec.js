@@ -603,6 +603,22 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.state().value).toEqual('23,4456 Sq. ft');
   });
 
+
+  it('should allow pasting 123,45 with decimal separator set to . and allowedDecimalSeparators=["," , "."]', () => {
+    const wrapper = shallow(
+      <NumberFormat
+        displayType="input"
+        thousandSeparator={' '}
+        prefix=""
+        allowedDecimalSeparators={['.', ',']}
+        decimalSeparator='.'
+        decimalScale={2}
+      />,
+    );
+    simulateKeyInput(wrapper.find('input'), '123,45');
+    expect(wrapper.state().value).toEqual('123.45');
+  });
+
   it('should not break if suffix/prefix has negation sign. Issue #245', () => {
     const wrapper = shallow(<NumberFormat suffix="-" />);
 
