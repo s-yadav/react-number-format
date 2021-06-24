@@ -116,7 +116,7 @@ class App extends React.Component {
         <div className="example">
           <h3>Custom allowed decimal separators with decimal precision</h3>
           <NumberFormat
-            thousandSeparator={' '}
+            value={11.11}
             allowedDecimalSeparators={['.', ',']}
             decimalSeparator='.'
             decimalScale={2}

@@ -604,7 +604,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
 
-  it('should work with the configured decimal separators based on the allowedDecimalSeparators prop', () => {
+  it('should work with the configured decimal separators based on the allowedDecimalSeparators prop. Issue #349', () => {
     const wrapper = shallow(
       <NumberFormat
         displayType="input"
