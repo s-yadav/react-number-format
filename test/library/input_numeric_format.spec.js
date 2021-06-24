@@ -604,7 +604,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
 
-  it('should allow pasting 123,45 with decimal separator set to . and allowedDecimalSeparators=["," , "."]', () => {
+  it('should work with the configured decimal separators based on the allowedDecimalSeparators prop', () => {
     const wrapper = shallow(
       <NumberFormat
         displayType="input"
