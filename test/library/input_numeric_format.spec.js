@@ -97,7 +97,11 @@ describe('Test NumberFormat as input with numeric format options', () => {
     wrapper.update();
     expect(wrapper.state().value).toEqual("$2'456'981.89");
 
-    wrapper.setProps({ thousandSeparator: ' ', decimalSeparator: "'", value: '' });
+    wrapper.setProps({
+      thousandSeparator: ' ',
+      decimalSeparator: "'",
+      value: '',
+    });
     wrapper.update();
 
     simulateKeyInput(wrapper.find('input'), "2456981'89", 0);
@@ -124,7 +128,11 @@ describe('Test NumberFormat as input with numeric format options', () => {
     wrapper.setProps({ thousandSeparator: '.', decimalSeparator: ',' });
     expect(wrapper.state().value).toEqual('12.345,67');
 
-    wrapper.setProps({ thousandSeparator: '.', decimalSeparator: ',', decimalScale: 0 });
+    wrapper.setProps({
+      thousandSeparator: '.',
+      decimalSeparator: ',',
+      decimalScale: 0,
+    });
     expect(wrapper.state().value).toEqual('12.346');
   });
 
@@ -138,7 +146,11 @@ describe('Test NumberFormat as input with numeric format options', () => {
     wrapper.setProps({ thousandSeparator: '.', decimalSeparator: ',' });
     expect(wrapper.state().value).toEqual('12.345,67');
 
-    wrapper.setProps({ thousandSeparator: '.', decimalSeparator: ',', decimalScale: 0 });
+    wrapper.setProps({
+      thousandSeparator: '.',
+      decimalSeparator: ',',
+      decimalScale: 0,
+    });
     expect(wrapper.state().value).toEqual('12.346');
   });
 

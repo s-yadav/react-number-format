@@ -44,7 +44,9 @@ describe('NumberFormat as input', () => {
     const wrapper = shallow(<NumberFormat />, { disableLifecycleMethods: true });
     expect(wrapper.find('input').prop('inputMode')).toEqual(undefined);
 
-    const wrapper2 = shallow(<NumberFormat />, { disableLifecycleMethods: false });
+    const wrapper2 = shallow(<NumberFormat />, {
+      disableLifecycleMethods: false,
+    });
     expect(wrapper2.find('input').prop('inputMode')).toEqual('numeric');
   });
 
@@ -224,29 +226,23 @@ describe('NumberFormat as input', () => {
     expect(input.instance().value).toEqual('4111 11__ ____ ____');
   });
 
-  it('should not update value if formatting got deleted', () => {
+  it('should update value if group of characters got deleted with format', () => {
     const wrapper = shallow(
-      <NumberFormat format="+1 (###) ### # ## US" value="+1 (123) 456 7 89 US" />,
+      <NumberFormat format="+1 (###) ### # ## US" value="+1 (999) 999 9 99 US" />,
     );
-
-    //when only format character is deleted
-    simulateKeyInput(wrapper.find('input'), 'Backspace', 0, 4);
-    expect(wrapper.state().value).toEqual('+1 (123) 456 7 89 US');
-
-    //when format and number character are delted
-    wrapper.setProps({ value: '+1 (999) 999 9 99 US' });
     simulateKeyInput(wrapper.find('input'), 'Backspace', 6, 10);
-    expect(wrapper.state().value).toEqual('+1 (999) 999 9 99 US');
+    expect(wrapper.state().value).toEqual('+1 (999) 999 9    US');
 
     //when group of characters (including format character) is replaced with number
     wrapper.setProps({ value: '+1 (888) 888 8 88 US' });
     simulateKeyInput(wrapper.find('input'), '8', 6, 10);
-    expect(wrapper.state().value).toEqual('+1 (888) 888 8 88 US');
+    expect(wrapper.state().value).toEqual('+1 (888) 888 8 8  US');
+  });
 
-    //when a format character is replaced with number
-    wrapper.setProps({ value: '+1 (777) 777 7 77 US' });
-    simulateKeyInput(wrapper.find('input'), '8', 8, 9);
-    expect(wrapper.state().value).toEqual('+1 (777) 777 7 77 US');
+  it('should maintain the format even when the format is numeric and characters are deleted', () => {
+    const wrapper = shallow(<NumberFormat format="0###0 ###0####" value="01230 45607899" />);
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 6, 10);
+    expect(wrapper.state().value).toEqual('01230 78909   ');
   });
 
   it('should update value if whole content is replaced by new number', () => {
@@ -365,7 +361,11 @@ describe('NumberFormat as input', () => {
 
     simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
     simulateKeyInput(wrapper.find('input'), '0', 0);
-    expect(spy.calls.argsFor(1)[0]).toEqual({ formattedValue: '0', value: '0', floatValue: 0 });
+    expect(spy.calls.argsFor(1)[0]).toEqual({
+      formattedValue: '0',
+      value: '0',
+      floatValue: 0,
+    });
 
     simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
     simulateKeyInput(wrapper.find('input'), '123.', 0);
@@ -500,6 +500,7 @@ describe('NumberFormat as input', () => {
       }).toThrow();
     });
 
+    // Test case for Issue #533
     it('should show the right decimal values based on the decimal scale provided', () => {
       class WrapperComponent extends React.Component {
         constructor() {
@@ -533,6 +534,39 @@ describe('NumberFormat as input', () => {
       expect(wrapper.find('input').instance().value).toEqual('$123.123');
       wrapper.setState({ value: '123.1234' });
       expect(wrapper.find('input').instance().value).toEqual('$123.1234');
+    });
+
+    it('should show the right number of zeros in all cases', () => {
+      class WrapperComponent extends React.Component {
+        constructor() {
+          super();
+          this.state = {
+            value: '100.0',
+          };
+        }
+
+        render() {
+          return (
+            <NumberFormat
+              name="numberformat"
+              value={this.state.value}
+              thousandSeparator
+              prefix="$"
+              decimalScale={2}
+              isNumericString
+            />
+          );
+        }
+      }
+
+      const wrapper = mount(<WrapperComponent />);
+      expect(wrapper.find('input').instance().value).toEqual('$100.0');
+      wrapper.setState({ value: '123.00' });
+      expect(wrapper.find('input').instance().value).toEqual('$123.00');
+      wrapper.setState({ value: '132.000' });
+      expect(wrapper.find('input').instance().value).toEqual('$132.00');
+      wrapper.setState({ value: '100.10' });
+      expect(wrapper.find('input').instance().value).toEqual('$100.10');
     });
   });
 });

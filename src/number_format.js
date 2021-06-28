@@ -90,6 +90,7 @@ class NumberFormat extends React.Component {
   onFocus: Function;
   onBlur: Function;
   focusTimeout: number;
+  caretPositionTimeout: number;
   focusedElm: HTMLElement;
   selectionBeforeInput: {
     selectionStart: number,
@@ -138,6 +139,7 @@ class NumberFormat extends React.Component {
 
   componentWillUnmount() {
     clearTimeout(this.focusTimeout);
+    clearTimeout(this.caretPositionTimeout);
   }
 
   updateValueIfRequired(prevProps: Object) {
@@ -286,7 +288,7 @@ class NumberFormat extends React.Component {
     otherwise browser resets the caret position after we set it
     We are also setting it without timeout so that in normal browser we don't see the flickering */
     setCaretPosition(el, caretPos);
-    setTimeout(() => {
+    this.caretPositionTimeout = setTimeout(() => {
       if (el.value === currentValue) setCaretPosition(el, caretPos);
     }, 0);
   }
@@ -313,10 +315,14 @@ class NumberFormat extends React.Component {
     /* in case format is string find the closest # position from the caret position */
 
     //in case the caretPos have input value on it don't do anything
-    if (format[caretPos] === '#' && charIsNumber(value[caretPos])) return caretPos;
+    if (format[caretPos] === '#' && charIsNumber(value[caretPos])) {
+      return caretPos;
+    }
 
     //if caretPos is just after input value don't do anything
-    if (format[caretPos - 1] === '#' && charIsNumber(value[caretPos - 1])) return caretPos;
+    if (format[caretPos - 1] === '#' && charIsNumber(value[caretPos - 1])) {
+      return caretPos;
+    }
 
     //find the nearest caret position
     const firstHashPosition = format.indexOf('#');
@@ -366,7 +372,9 @@ class NumberFormat extends React.Component {
       const currentFormatChar = formattedValue[j] || '';
       //no need to increase new cursor position if formatted value does not have those characters
       //case inputValue = 1a23 and formattedValue =  123
-      if (!currentInputChar.match(numRegex) && currentInputChar !== currentFormatChar) continue;
+      if (!currentInputChar.match(numRegex) && currentInputChar !== currentFormatChar) {
+        continue;
+      }
 
       //When we are striping out leading zeros maintain the new cursor position
       //Case inputValue = 00023 and formattedValue = 23;
@@ -375,11 +383,14 @@ class NumberFormat extends React.Component {
         currentFormatChar.match(numRegex) &&
         currentFormatChar !== '0' &&
         inputNumber.length !== formattedNumber.length
-      )
+      ) {
         continue;
+      }
 
       //we are not using currentFormatChar because j can change here
-      while (currentInputChar !== formattedValue[j] && j < formattedValue.length) j++;
+      while (currentInputChar !== formattedValue[j] && j < formattedValue.length) {
+        j++;
+      }
       j++;
     }
 
@@ -507,8 +518,9 @@ class NumberFormat extends React.Component {
     let { beforeDecimal, afterDecimal, addNegation } = splitDecimal(numStr, allowNegative); // eslint-disable-line prefer-const
 
     //apply decimal precision if its defined
-    if (decimalScale !== undefined)
+    if (decimalScale !== undefined) {
       afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
+    }
 
     if (thousandSeparator) {
       beforeDecimal = applyThousandSeparator(beforeDecimal, thousandSeparator, thousandsGroupStyle);
@@ -639,13 +651,6 @@ class NumberFormat extends React.Component {
     return false;
   }
 
-  checkIfFormatGotDeleted(start: number, end: number, value: string) {
-    for (let i = start; i < end; i++) {
-      if (this.isCharacterAFormat(i, value)) return true;
-    }
-    return false;
-  }
-
   /**
    * This will check if any formatting got removed by the delete or backspace and reset the value
    * It will also work as fallback if android chome keyDown handler does not work
@@ -690,16 +695,45 @@ class NumberFormat extends React.Component {
       return value;
     }
 
-    //if format got deleted reset the value to last value
-    if (this.checkIfFormatGotDeleted(start, end, lastValue)) {
-      value = lastValue;
+    // check whether the deleted portion has a character that is part of a format
+    const deletedValues = lastValue.substr(start, end - start);
+    const formatGotDeleted = !![...deletedValues].find((deletedVal, idx) => this.isCharacterAFormat(idx + start, lastValue));
+
+    // if it has, only remove characters that are not part of the format
+    if(formatGotDeleted) {
+      const deletedValuePortion = lastValue.substr(start)
+      const recordIndexOfFormatCharacters = {};
+      const resolvedPortion = [];
+      [...deletedValuePortion].forEach((currentPortion, idx) => {
+        if(this.isCharacterAFormat(idx + start, lastValue)){
+          recordIndexOfFormatCharacters[idx] = currentPortion;
+        } else if (idx > deletedValues.length - 1) {
+          resolvedPortion.push(currentPortion);
+        }
+      })
+
+      Object.keys(recordIndexOfFormatCharacters).forEach(idx => {
+        if(resolvedPortion.length > idx){
+          resolvedPortion.splice(idx, 0, recordIndexOfFormatCharacters[idx]);
+        } else {
+          resolvedPortion.push(recordIndexOfFormatCharacters[idx])
+        }
+      })
+
+      value = lastValue.substr(0, start) + resolvedPortion.join('');
     }
+
+
+
 
     //for numbers check if beforeDecimal got deleted and there is nothing after decimal,
     //clear all numbers in such case while keeping the - sign
     if (!format) {
       const numericString = this.removeFormatting(value);
-      let { beforeDecimal, afterDecimal, addNegation } = splitDecimal(numericString, allowNegative); // eslint-disable-line prefer-const
+      const { beforeDecimal, afterDecimal, addNegation } = splitDecimal(
+        numericString,
+        allowNegative,
+      ); // eslint-disable-line prefer-const
 
       //clear only if something got deleted
       const isBeforeDecimalPoint = caretPos < value.indexOf(decimalSeparator) + 1;
@@ -811,6 +845,7 @@ class NumberFormat extends React.Component {
     this.focusedElm = null;
 
     clearTimeout(this.focusTimeout);
+    clearTimeout(this.caretPositionTimeout);
 
     if (!format) {
       // if the numAsString is not a valid number reset it to empty
@@ -827,7 +862,12 @@ class NumberFormat extends React.Component {
       //change the state
       if (formattedValue !== lastValue) {
         // the event needs to be persisted because its properties can be accessed in an asynchronous way
-        this.updateValue({ formattedValue, numAsString, input: e.target, setCaretPosition: false });
+        this.updateValue({
+          formattedValue,
+          numAsString,
+          input: e.target,
+          setCaretPosition: false,
+        });
         onBlur(e);
         return;
       }
@@ -879,8 +919,9 @@ class NumberFormat extends React.Component {
       !numRegex.test(value[expectedCaretPosition]) &&
       !negativeRegex.test(value[expectedCaretPosition])
     ) {
-      while (!numRegex.test(value[newCaretPosition]) && newCaretPosition < rightBound)
+      while (!numRegex.test(value[newCaretPosition]) && newCaretPosition < rightBound) {
         newCaretPosition++;
+      }
     } else if (key === 'Backspace' && !numRegex.test(value[expectedCaretPosition])) {
       /* NOTE: This is special case when backspace is pressed on a
       negative value while the cursor position is after prefix. We can't handle it on onChange because
@@ -888,7 +929,11 @@ class NumberFormat extends React.Component {
       */
       if (selectionStart <= leftBound + 1 && value[0] === '-' && typeof format === 'undefined') {
         const newValue = value.substring(1);
-        this.updateValue({ formattedValue: newValue, caretPos: newCaretPosition, input: el });
+        this.updateValue({
+          formattedValue: newValue,
+          caretPos: newCaretPosition,
+          input: el,
+        });
       } else if (!negativeRegex.test(value[expectedCaretPosition])) {
         while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound) {
           newCaretPosition--;

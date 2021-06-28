@@ -146,7 +146,7 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
   const { beforeDecimal, afterDecimal, hasNagation } = splitDecimal(numStr);
   const floatValue = parseFloat(`0.${afterDecimal || '0'}`);
   const floatValueStr =
-    afterDecimal.length <= scale ? toNumericString(floatValue) : floatValue.toFixed(scale);
+    afterDecimal.length <= scale ? `0.${afterDecimal}` : floatValue.toFixed(scale);
   const roundedDecimalParts = floatValueStr.split('.');
   const intPart = beforeDecimal
     .split('')
