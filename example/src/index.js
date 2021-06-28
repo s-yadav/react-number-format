@@ -147,6 +147,11 @@ class App extends React.Component {
           <h3>Custom input : Format credit card number</h3>
           <NumberFormat customInput={TextField} format="#### #### #### ####" />
         </div>
+
+        <div className="example">
+          <h3>Custom Numeral: add support for custom languages </h3>
+          <NumberFormat customNumerals={['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']} />
+        </div>
       </div>
     );
   }

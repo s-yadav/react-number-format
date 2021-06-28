@@ -55,6 +55,7 @@ const propTypes = {
     PropTypes.func, // for legacy refs
     PropTypes.shape({ current: PropTypes.any }),
   ]),
+  customNumerals: PropTypes.arrayOf(PropTypes.string),
 };
 
 const defaultProps = {
@@ -98,7 +99,6 @@ class NumberFormat extends React.Component {
   static defaultProps: Object;
   constructor(props: Object) {
     super(props);
-
     const { defaultValue } = props;
 
     //validate props
@@ -205,10 +205,12 @@ class NumberFormat extends React.Component {
 
   //returned regex assumes decimalSeparator is as per prop
   getNumberRegex(g: boolean, ignoreDecimalSeparator?: boolean) {
-    const { format, decimalScale } = this.props;
+    const { format, decimalScale, customNumerals } = this.props;
     const { decimalSeparator } = this.getSeparators();
     return new RegExp(
-      '\\d' +
+      '[0-9' +
+        (customNumerals ? customNumerals.join('') : '') +
+        ']' +
         (decimalSeparator && decimalScale !== 0 && !ignoreDecimalSeparator && !format
           ? '|' + escapeRegExp(decimalSeparator)
           : ''),
@@ -536,8 +538,15 @@ class NumberFormat extends React.Component {
   }
 
   formatNumString(numStr: string = '') {
-    const { format, allowEmptyFormatting } = this.props;
+    const { format, allowEmptyFormatting, customNumerals } = this.props;
     let formattedValue = numStr;
+
+    if (customNumerals && customNumerals.length === 10) {
+      const customNumeralRegex = new RegExp('[' + customNumerals.join('') + ']', 'g');
+      formattedValue = numStr.replace(customNumeralRegex, (digit) =>
+        customNumerals.indexOf(digit).toString(),
+      );
+    }
 
     if (numStr === '' && !allowEmptyFormatting) {
       formattedValue = '';

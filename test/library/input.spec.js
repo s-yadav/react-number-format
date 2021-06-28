@@ -21,6 +21,15 @@ describe('NumberFormat as input', () => {
     });
   });
 
+  it('should accept and format custom numerals', () => {
+    const wrapper = mount(
+      <NumberFormat customNumerals={['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']} />,
+    );
+    simulateKeyInput(wrapper.find('input'), '۱۲۳۴۵۶۷۸۹۰', 0);
+
+    expect(wrapper.state().value).toEqual('1234567890');
+  });
+
   it('should render input as type text by default', () => {
     const wrapper = mount(<NumberFormat />);
     expect(wrapper.find('input').instance().getAttribute('type')).toEqual('text');
