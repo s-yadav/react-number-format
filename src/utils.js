@@ -243,5 +243,9 @@ export function getCurrentCaretPosition(el: HTMLInputElement) {
 }
 
 export function addInputMode(format: string | FormatInputValueFunction) {
-  return format || !(navigator.platform && /iPhone|iPod/.test(navigator.platform));
+  return (
+    format ||
+    (typeof navigator !== 'undefined' &&
+      !(navigator.platform && /iPhone|iPod/.test(navigator.platform)))
+  );
 }
