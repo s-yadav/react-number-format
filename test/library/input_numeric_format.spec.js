@@ -618,6 +618,23 @@ describe('Test NumberFormat as input with numeric format options', () => {
     simulateKeyInput(wrapper.find('input'), '123,45');
     expect(wrapper.state().value).toEqual('123.45');
   });
+  
+  it('should work with the configured decimal separators based on the allowedDecimalSeparators prop and should not replace prefix and suffix. Issue #349', () => {
+    const wrapper = shallow(
+        <NumberFormat
+            displayType="input"
+            thousandSeparator={' '}
+            prefix="prefix,"
+            suffix="suffix,"
+            allowedDecimalSeparators={['.', ',']}
+            decimalSeparator='.'
+            decimalScale={2}
+            value={987}
+        />,
+    );
+    simulateKeyInput(wrapper.find('input'), '123,45');
+    expect(wrapper.state().value).toEqual('prefix,987 123.45suffix,');
+  });
 
   it('should not break if suffix/prefix has negation sign. Issue #245', () => {
     const wrapper = shallow(<NumberFormat suffix="-" />);
