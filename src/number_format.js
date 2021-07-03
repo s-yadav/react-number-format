@@ -55,7 +55,23 @@ const propTypes = {
     PropTypes.func, // for legacy refs
     PropTypes.shape({ current: PropTypes.any }),
   ]),
-  customNumerals: PropTypes.arrayOf(PropTypes.string),
+  customNumerals: (props, propName, componentName) => {
+    if (!props[propName]) {
+      return;
+    }
+    const arrayPropLength = props[propName].length;
+    const itemsAreString = props[propName].every((item) => typeof item === 'string');
+    if (arrayPropLength !== 10) {
+      return new Error(
+        `Invalid array length ${arrayPropLength} (expected ${10}) for prop ${propName} supplied to ${componentName}. Validation failed.`,
+      );
+    }
+    if (!itemsAreString) {
+      return new Error(
+        `Invalid element type for prop ${propName} supplied to ${componentName}. all provided elements in the array must be string. Validation failed.`,
+      );
+    }
+  },
 };
 
 const defaultProps = {
