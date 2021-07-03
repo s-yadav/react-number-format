@@ -65,6 +65,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | renderText | (formattedValue, customProps) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. It also returns the custom props that are added to the component which can allow passing down props to the rendered element |
 | getInputRef | (elm) => void | null | Method to get reference of input, span (based on displayType prop) or the customInput's reference. See [Getting reference](#getting-reference)
 | allowedDecimalSeparators | array of char | none | Characters which when pressed result in a decimal separator. When missing, decimal separator and '.' are used |
+| customNumerals | array of string | none | an array of 10 strings with represent numerals in different locales. ranging from 0 - 9. the result will be converted to english numeral and treated as number |
 
 **Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
 
@@ -211,6 +212,12 @@ function cardExpiry(val) {
   <NumberFormat value={12} isAllowed={withValueLimit} />;
 ```
 
+### Custom Numeral
+```jsx
+  const persianNumeral = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']
+  <NumberFormat customNumerals={persianNumeral} />;
+```
+
 It is sensible to use `floatValue` in the `withValueLimit` check because it provides the exact value (see [values object](#values-object)). `value` is rounded to your configured `decimalScale`; hence it may omit a part of the precision of the actual value. Given an entered value of 1400.4 and the default `decimalScale`, `value` would be transferred as 1400 in the values object and pass the above `withValueLimit` check. In this case, it is a false positive that can be prevented using `floatValue`. However, you might want to use `value` to automatically get the rounded number according to your `decimalScale`.
 
 Visit this link for Demo: [Field with value limit](https://codesandbox.io/s/react-number-format-isallowed-8gu0v)
@@ -239,6 +246,7 @@ All custom input props and number input props are passed together.
 ```jsx
   <NumberFormat hintText="Some placeholder" value={this.state.card} customInput={TextField} format="#### #### #### ####"/>
 ```
+
 
 ### Getting reference
 As `ref` is a special property in react, its not passed as props. If you add ref property it will give you the reference of NumberFormat instance. In case you need input reference. You can use getInputRef prop instead.
