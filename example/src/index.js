@@ -114,6 +114,16 @@ class App extends React.Component {
         </div>
 
         <div className="example">
+          <h3>Custom allowed decimal separators with decimal precision</h3>
+          <NumberFormat
+            value={11.11}
+            allowedDecimalSeparators={['.', ',']}
+            decimalSeparator='.'
+            decimalScale={2}
+          />
+        </div>
+
+        <div className="example">
           <h3>Format with pattern : Format credit card in an input</h3>
           <NumberFormat format="#### #### #### ####" mask="_" />
         </div>
