@@ -56,6 +56,18 @@ declare module 'react-number-format' {
     renderText?: (formattedValue: string) => React.ReactNode;
     getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any>;
     allowedDecimalSeparators?: Array<string>;
+    customNumerals: [
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+    ];
   }
 
   // The index signature allows any prop to be passed in, such as if wanting to send props
