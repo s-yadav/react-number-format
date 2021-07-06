@@ -60,7 +60,7 @@ const propTypes = {
       return;
     }
     const arrayPropLength = props[propName].length;
-    const itemsAreString = props[propName].every((item) => typeof item === 'string');
+    const hasSingleCharString = props[propName].every((item) => typeof item === 'string' && item.length === 1);
     if (arrayPropLength !== 10) {
       return new Error(
         `Invalid array length ${arrayPropLength} (expected ${10}) for prop ${propName} supplied to ${componentName}. Validation failed.`,
