@@ -1,5 +1,4 @@
 //@flow
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import {
@@ -10,7 +9,6 @@ import {
   fixLeadingZero,
   limitToScale,
   roundToPrecision,
-  omit,
   setCaretPosition,
   splitDecimal,
   findChangedIndex,
@@ -21,58 +19,6 @@ import {
   isNil,
   toNumericString,
 } from './utils';
-
-const propTypes = {
-  thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([true])]),
-  decimalSeparator: PropTypes.string,
-  allowedDecimalSeparators: PropTypes.arrayOf(PropTypes.string),
-  thousandsGroupStyle: PropTypes.oneOf(['thousand', 'lakh', 'wan']),
-  decimalScale: PropTypes.number,
-  fixedDecimalScale: PropTypes.bool,
-  displayType: PropTypes.oneOf(['input', 'text']),
-  prefix: PropTypes.string,
-  suffix: PropTypes.string,
-  format: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-  removeFormatting: PropTypes.func,
-  mask: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  defaultValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  isNumericString: PropTypes.bool,
-  customInput: PropTypes.elementType,
-  allowNegative: PropTypes.bool,
-  allowEmptyFormatting: PropTypes.bool,
-  allowLeadingZeros: PropTypes.bool,
-  onValueChange: PropTypes.func,
-  onKeyDown: PropTypes.func,
-  onMouseUp: PropTypes.func,
-  onChange: PropTypes.func,
-  onFocus: PropTypes.func,
-  onBlur: PropTypes.func,
-  type: PropTypes.oneOf(['text', 'tel', 'password']),
-  isAllowed: PropTypes.func,
-  renderText: PropTypes.func,
-  getInputRef: PropTypes.oneOfType([
-    PropTypes.func, // for legacy refs
-    PropTypes.shape({ current: PropTypes.any }),
-  ]),
-  customNumerals: (props, propName, componentName) => {
-    if (!props[propName]) {
-      return;
-    }
-    const arrayPropLength = props[propName].length;
-    const hasSingleCharString = props[propName].every((item) => typeof item === 'string' && item.length === 1);
-    if (arrayPropLength !== 10) {
-      return new Error(
-        `Invalid array length ${arrayPropLength} (expected ${10}) for prop ${propName} supplied to ${componentName}. Validation failed.`,
-      );
-    }
-    if (!itemsAreString) {
-      return new Error(
-        `Invalid element type for prop ${propName} supplied to ${componentName}. all provided elements in the array must be string. Validation failed.`,
-      );
-    }
-  },
-};
 
 const defaultProps = {
   displayType: 'input',
@@ -1026,10 +972,42 @@ class NumberFormat extends React.Component {
   }
 
   render() {
-    const { type, displayType, customInput, renderText, getInputRef, format } = this.props;
+    const {
+      type,
+      displayType,
+      customInput,
+      renderText,
+      getInputRef,
+      format,
+      /* eslint-disable no-unused-vars*/
+      thousandSeparator,
+      decimalSeparator,
+      allowedDecimalSeparators,
+      thousandsGroupStyle,
+      decimalScale,
+      fixedDecimalScale,
+      prefix,
+      suffix,
+      removeFormatting,
+      mask,
+      defaultValue,
+      isNumericString,
+      allowNegative,
+      allowEmptyFormatting,
+      allowLeadingZeros,
+      onValueChange,
+      isAllowed,
+      customNumerals,
+      onChange,
+      onKeyDown,
+      onMouseUp,
+      onFocus,
+      onBlur,
+      value: propValue,
+      /* eslint-enable no-unused-vars*/
+      ...otherProps
+    } = this.props;
     const { value, mounted } = this.state;
-
-    const otherProps = omit(this.props, propTypes);
 
     // add input mode on element based on format prop and device once the component is mounted
     const inputMode = mounted && addInputMode(format) ? 'numeric' : undefined;
@@ -1061,7 +1039,63 @@ class NumberFormat extends React.Component {
   }
 }
 
-NumberFormat.propTypes = propTypes;
 NumberFormat.defaultProps = defaultProps;
+
+if (process.env.NODE_ENV !== 'production') {
+  const PropTypes = require('prop-types');
+  NumberFormat.propTypes = {
+    thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([true])]),
+    decimalSeparator: PropTypes.string,
+    allowedDecimalSeparators: PropTypes.arrayOf(PropTypes.string),
+    thousandsGroupStyle: PropTypes.oneOf(['thousand', 'lakh', 'wan']),
+    decimalScale: PropTypes.number,
+    fixedDecimalScale: PropTypes.bool,
+    displayType: PropTypes.oneOf(['input', 'text']),
+    prefix: PropTypes.string,
+    suffix: PropTypes.string,
+    format: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+    removeFormatting: PropTypes.func,
+    mask: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    defaultValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    isNumericString: PropTypes.bool,
+    customInput: PropTypes.elementType,
+    allowNegative: PropTypes.bool,
+    allowEmptyFormatting: PropTypes.bool,
+    allowLeadingZeros: PropTypes.bool,
+    onValueChange: PropTypes.func,
+    onKeyDown: PropTypes.func,
+    onMouseUp: PropTypes.func,
+    onChange: PropTypes.func,
+    onFocus: PropTypes.func,
+    onBlur: PropTypes.func,
+    type: PropTypes.oneOf(['text', 'tel', 'password']),
+    isAllowed: PropTypes.func,
+    renderText: PropTypes.func,
+    getInputRef: PropTypes.oneOfType([
+      PropTypes.func, // for legacy refs
+      PropTypes.shape({ current: PropTypes.any }),
+    ]),
+    customNumerals: (props, propName, componentName) => {
+      if (!props[propName]) {
+        return;
+      }
+      const arrayPropLength = props[propName].length;
+      const hasSingleCharString = props[propName].every(
+        (item) => typeof item === 'string' && item.length === 1,
+      );
+      if (arrayPropLength !== 10) {
+        return new Error(
+          `Invalid array length ${arrayPropLength} (expected ${10}) for prop ${propName} supplied to ${componentName}. Validation failed.`,
+        );
+      }
+      if (!hasSingleCharString) {
+        return new Error(
+          `Invalid element type for prop ${propName} supplied to ${componentName}. all provided elements in the array must be string. Validation failed.`,
+        );
+      }
+    },
+  };
+}
 
 export default NumberFormat;

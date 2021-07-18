@@ -171,14 +171,6 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
   return `${negation}${intPart}${decimalSeparator}${decimalPart}`;
 }
 
-export function omit(obj: Object, keyMaps: Object) {
-  const filteredObj = {};
-  Object.keys(obj).forEach((key) => {
-    if (!keyMaps[key]) filteredObj[key] = obj[key];
-  });
-  return filteredObj;
-}
-
 /** set the caret positon in an input field **/
 export function setCaretPosition(el: HTMLInputElement, caretPos: number) {
   el.value = el.value;
