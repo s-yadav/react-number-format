@@ -115,7 +115,7 @@ var NumberFormat = require('react-number-format');
 ```
 Output : `<div class="foo"> $2,456,981 </div>`
 
-#### Format with pattern : Format credit card as text.
+#### Format with pattern : Format credit card as text. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&value=4111111111111111&format=%23%23%23%23 %23%23%23%23 %23%23%23%23 %23%23%23%23)
 ```jsx
 <NumberFormat value={4111111111111111} displayType={'text'} format="#### #### #### ####" />
 ```
