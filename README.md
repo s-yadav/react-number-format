@@ -67,7 +67,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | isAllowed | ([values](#values-object)) => true or false | none | A checker function to check if input value is valid or not. If this function returns false, the onChange method will not get triggered. Here is a [demo](https://jinno.io/app/23/isAllowed?source=react-number-format) |
 | renderText | (formattedValue, customProps) => React Element | null | A renderText method useful if you want to render formattedValue in different element other than span. It also returns the custom props that are added to the component which can allow passing down props to the rendered element. Here is a [demo](https://jinno.io/app/23/renderText?source=react-number-format) |
 | getInputRef | (elm) => void | null | Method to get reference of input, span (based on displayType prop) or the customInput's reference. See [Getting reference](#getting-reference). Here is a [demo](https://jinno.io/app/23/getInputRef?source=react-number-format)
-| allowedDecimalSeparators | array of char | none | Characters which when pressed result in a decimal separator. When missing, decimal separator and '.' are used. Here is a [demo](https://jinno.io/app/23/allowedDecimalSeparators?source=react-number-format) |
+| allowedDecimalSeparators | array of char | none | Characters which when pressed result in a decimal separator. When missing, decimal separator and '.' are used. |
 | customNumerals | array of string | none | an array of 10 single-character strings with represent numerals in different locales. ranging from 0 - 9. the result will be converted to english numeral and treated as number |
 
 **Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
