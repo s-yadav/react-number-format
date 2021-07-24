@@ -10,6 +10,9 @@ React component to format number in an input or as a text
 4. Custom formatting handler.
 5. Format number in an input or format as a simple text.
 
+### Live demo example
+[![Jinno live demo](http://localhost:8888/23?source=react-number-format)
+
 ### Install
 [![npm](https://img.shields.io/npm/dm/react-number-format.svg)](https://www.npmjs.com/package/react-number-format)
 
@@ -41,7 +44,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 ### Props
 | Props        | Options           | Default  | Description |
 | ------------- |-------------| -----| -------- |
-| thousandSeparator | mixed: single character string or boolean true (true is default to ,) |none| Add thousand separators on number |
+| thousandSeparator | mixed: single character string or boolean true (true is default to ,) |none| Add thousand separators on number. Here is a [demo](http://localhost:8888/23/thousandSeparator?source=react-number-format) |
 | decimalSeparator | single character string| . | Support decimal point on a number |
 | thousandsGroupStyle | One of ['thousand', 'lakh', 'wan'] |thousand| Define the thousand grouping style, It support three types. thousand style (thousand) : `123,456,789`, indian style (lakh) : `12,34,56,789`, chinese style (wan) : `1,2345,6789`|
 | decimalScale | number| none| If defined it limits to given decimal scale |
