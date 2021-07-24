@@ -45,19 +45,19 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | Props        | Options           | Default  | Description |
 | ------------- |-------------| -----| -------- |
 | thousandSeparator | mixed: single character string or boolean true (true is default to ,) |none| Add thousand separators on number. Here is a [demo](http://localhost:8888/23/thousandSeparator?source=react-number-format) |
-| decimalSeparator | single character string| . | Support decimal point on a number |
-| thousandsGroupStyle | One of ['thousand', 'lakh', 'wan'] |thousand| Define the thousand grouping style, It support three types. thousand style (thousand) : `123,456,789`, indian style (lakh) : `12,34,56,789`, chinese style (wan) : `1,2345,6789`|
-| decimalScale | number| none| If defined it limits to given decimal scale |
-| fixedDecimalScale | boolean| false| If true it add 0s to match given decimalScale|
-| allowNegative      | boolean     |   true | allow negative numbers (Only when format option is not provided) |
-| allowEmptyFormatting | boolean | false | Apply formatting to empty inputs |
-| allowLeadingZeros | boolean | false | Allow leading zeros at beginning of number |
-| prefix      | String (ex : $)     |   none | Add a prefix before the number |
-| suffix | String (ex : /-)      |    none | Add a suffix after the number |
-| value | Number or String | null | Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true. |
-| defaultValue | Number or String | null | Value to be used as default value if value is not provided. The format of defaultValue should be similar as defined for the value. |
-| isNumericString | boolean | false | If value is passed as string representation of numbers (unformatted) then this should be passed as true |
-| displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value |
+| decimalSeparator | single character string| . | Support decimal point on a number. Here is a [demo](http://localhost:8888/23/decimalSeparator?source=react-number-format) |
+| thousandsGroupStyle | One of ['thousand', 'lakh', 'wan'] |thousand| Define the thousand grouping style, It support three types. thousand style (thousand) : `123,456,789`, indian style (lakh) : `12,34,56,789`, chinese style (wan) : `1,2345,6789`. Here is a [demo](http://localhost:8888/23/decimalSeparator?source=react-number-format)|
+| decimalScale | number| none| If defined it limits to given decimal scale. Here is a [demo](http://localhost:8888/23/decimalSeparator?source=react-number-format) |
+| fixedDecimalScale | boolean| false| If true it add 0s to match given decimalScale. Here is a [demo](http://localhost:8888/23/decimalSeparator?source=react-number-format)|
+| allowNegative      | boolean     |   true | allow negative numbers (Only when format option is not provided). Here is a [demo](http://localhost:8888/23/decimalSeparator?source=react-number-format) |
+| allowEmptyFormatting | boolean | false | Apply formatting to empty inputs. Here is a [demo](http://localhost:8888/23/decimalSeparator?source=react-number-format) |
+| allowLeadingZeros | boolean | false | Allow leading zeros at beginning of number. Here is a [demo](http://localhost:8888/23/decimalSeparator?source=react-number-format) |
+| prefix      | String (ex : $)     |   none | Add a prefix before the number. Here is a [demo](http://localhost:8888/23/decimalSeparator?source=react-number-format) |
+| suffix | String (ex : /-)      |    none | Add a suffix after the number. Here is a [demo](http://localhost:8888/23/decimalSeparator?source=react-number-format) |
+| value | Number or String | null | Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true. Here is a [demo](http://localhost:8888/23/decimalSeparator?source=react-number-format). |
+| defaultValue | Number or String | null | Value to be used as default value if value is not provided. The format of defaultValue should be similar as defined for the value. Here is a [demo](http://localhost:8888/23/decimalSeparator?source=react-number-format). |
+| isNumericString | boolean | false | If value is passed as string representation of numbers (unformatted) then this should be passed as true. Here is a [demo](http://localhost:8888/23/decimalSeparator?source=react-number-format) |
+| displayType | String: text / input | input | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value. Here is a [demo](http://localhost:8888/23/decimalSeparator?source=react-number-format) |
 | type | One of ['text', 'tel', 'password'] | text | Input type attribute |
 | format | String : Hash based ex (#### #### #### ####) <br/> Or Function| none | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number. |
 | removeFormatting | (formattedValue) => numericString | none | If you are providing custom format method and it add numbers as format you will need to add custom removeFormatting logic |
