@@ -99,7 +99,7 @@ Its recommended to use formattedValue / value / floatValue based on the initial 
 7. onValueChange is not same as onChange. It gets called on whenever there is change in value which can be caused by any event like change or blur event or by a prop change. It no longer receives event object as second parameter.
 
 ### Examples
-#### Prefix and thousand separator : Format currency as text
+#### Prefix and thousand separator : Format currency as text. Here is a [demo](https://jinno.io/app/23/isNumericString?source=react-number-format&value=2456981&displayType=text&thousandSeparator=true)
 ```jsx
 var NumberFormat = require('react-number-format');
 
