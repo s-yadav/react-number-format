@@ -127,14 +127,14 @@ Output : 4111 1111 1111 1111
 ```
 ![Screencast example](https://i.imgur.com/d0P2Db1.gif)
 
-#### Indian(lakh) style and chinese(wan) style number grouping. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&thousandSeparator=true&prefix=₹&thousandsGroupStyle=lakh)
+#### Indian(lakh) style and chinese(wan) style number grouping. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&thousandSeparator=true&prefix=₹&thousandsGroupStyle=lakh&value=123456789)
 Indian (lakh) style grouping
 ```jsx
 <NumberFormat thousandSeparator={true} thousandsGroupStyle="lakh" prefix={'₹'} value={123456789}/>
 ```
 Output: ₹12,34,56,789
 
-Chinese (wan) style grouping. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&prefix=¥&thousandsGroupStyle=wan)
+Chinese (wan) style grouping. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&prefix=¥&thousandsGroupStyle=wan&value=123456789)
 ```jsx
 <NumberFormat thousandSeparator={true} thousandsGroupStyle="wan" prefix={'¥'} value={123456789}/>
 ```
