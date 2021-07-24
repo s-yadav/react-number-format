@@ -11,7 +11,7 @@ React component to format number in an input or as a text
 5. Format number in an input or format as a simple text.
 
 ### Live demo example
-[![Jinno live demo](http://localhost:8888/23?source=react-number-format)
+[Jinno live demo](http://localhost:8888/23?source=react-number-format)
 
 ### Install
 [![npm](https://img.shields.io/npm/dm/react-number-format.svg)](https://www.npmjs.com/package/react-number-format)
