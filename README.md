@@ -151,7 +151,7 @@ Output: ¥1,2345,6789
   }}/>
 ```
 
-#### Format with pattern : Format credit card in an input
+#### Format with pattern : Format credit card in an input. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&value=4111111111111111&displayType=input&format=%23%23%23%23%20%23%23%23%23%20%23%23%23%23%20%23%23%23%23)
 ```jsx
 <NumberFormat format="#### #### #### ####" />
 ```
