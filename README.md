@@ -121,7 +121,7 @@ Output : `<div class="foo"> $2,456,981 </div>`
 ```
 Output : 4111 1111 1111 1111
 
-#### Prefix and thousand separator : Format currency in input. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&thousandSeparator=true&prefix=$)
+#### Prefix and thousand separator : Format currency in input. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&thousandSeparator=true&prefix=$&displayType=input)
 ```jsx
 <NumberFormat thousandSeparator={true} prefix={'$'} />
 ```
