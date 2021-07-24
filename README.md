@@ -99,7 +99,7 @@ Its recommended to use formattedValue / value / floatValue based on the initial 
 7. onValueChange is not same as onChange. It gets called on whenever there is change in value which can be caused by any event like change or blur event or by a prop change. It no longer receives event object as second parameter.
 
 ### Examples
-#### Prefix and thousand separator : Format currency as text. Here is a [demo](https://jinno.io/app/23/isNumericString?source=react-number-format&value=2456981&displayType=text&thousandSeparator=true)
+#### Prefix and thousand separator : Format currency as text. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&value=2456981&displayType=text&thousandSeparator=true)
 ```jsx
 var NumberFormat = require('react-number-format');
 
@@ -107,7 +107,7 @@ var NumberFormat = require('react-number-format');
 ```
 Output : $2,456,981
 
-#### Custom renderText method
+#### Custom renderText method.
 ```jsx
 var NumberFormat = require('react-number-format');
 
@@ -115,26 +115,26 @@ var NumberFormat = require('react-number-format');
 ```
 Output : `<div class="foo"> $2,456,981 </div>`
 
-#### Format with pattern : Format credit card as text
+#### Format with pattern : Format credit card as text.
 ```jsx
 <NumberFormat value={4111111111111111} displayType={'text'} format="#### #### #### ####" />
 ```
 Output : 4111 1111 1111 1111
 
-#### Prefix and thousand separator : Format currency in input
+#### Prefix and thousand separator : Format currency in input. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&thousandSeparator=true&prefix=$)
 ```jsx
 <NumberFormat thousandSeparator={true} prefix={'$'} />
 ```
 ![Screencast example](https://i.imgur.com/d0P2Db1.gif)
 
-#### Indian(lakh) style and chinese(wan) style number grouping
+#### Indian(lakh) style and chinese(wan) style number grouping. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&thousandSeparator=true&prefix=₹&thousandsGroupStyle=lakh)
 Indian (lakh) style grouping
 ```jsx
 <NumberFormat thousandSeparator={true} thousandsGroupStyle="lakh" prefix={'₹'} value={123456789}/>
 ```
 Output: ₹12,34,56,789
 
-Chinese (wan) style grouping
+Chinese (wan) style grouping. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&prefix=¥&thousandsGroupStyle=wan)
 ```jsx
 <NumberFormat thousandSeparator={true} thousandsGroupStyle="wan" prefix={'¥'} value={123456789}/>
 ```
