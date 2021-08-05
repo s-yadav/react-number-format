@@ -44,7 +44,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 ### Props
 | Props        | Options           | Default  | Description |
 | ------------- |-------------| -----| -------- |
-| thousandSeparator | mixed: single character string or boolean true (true is default to ,) |none| Add thousand separators on number. [Demo](https://jinno.io/app/23/thousandSeparator?source=react-number-format&displayType=input){:target="_blank"} |
+| thousandSeparator | mixed: single character string or boolean true (true is default to ,) |none| Add thousand separators on number. [Demo](https://jinno.io/app/23/thousandSeparator?source=react-number-format&displayType=input) |
 | decimalSeparator | single character string| . | Support decimal point on a number. [Demo](https://jinno.io/app/23/decimalSeparator?source=react-number-format&displayType=input) |
 | thousandsGroupStyle | One of ['thousand', 'lakh', 'wan'] |thousand| Define the thousand grouping style, It support three types. thousand style (thousand) : `123,456,789`, indian style (lakh) : `12,34,56,789`, chinese style (wan) : `1,2345,6789`. [Demo](https://jinno.io/app/23/thousandsGroupStyle?source=react-number-format&displayType=input)|
 | decimalScale | number| none| If defined it limits to given decimal scale. [Demo](https://jinno.io/app/23/decimalScale?source=react-number-format&displayType=input) |
