@@ -44,13 +44,13 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 ### Props
 | Props        | Options           | Default  | Description |
 | ------------- |-------------| -----| -------- |
-| thousandSeparator | mixed: single character string or boolean true (true is default to ,) |none| Add thousand separators on number. Here is a [demo](https://jinno.io/app/23/thousandSeparator?source=react-number-format&displayType=input) |
+| thousandSeparator | mixed: single character string or boolean true (true is default to ,) |none| Add thousand separators on number. [Demo](https://jinno.io/app/23/thousandSeparator?source=react-number-format&displayType=input) |
 | decimalSeparator | single character string| . | Support decimal point on a number. [Demo](https://jinno.io/app/23/decimalSeparator?source=react-number-format&displayType=input) |
 | thousandsGroupStyle | One of ['thousand', 'lakh', 'wan'] |thousand| Define the thousand grouping style, It support three types. thousand style (thousand) : `123,456,789`, indian style (lakh) : `12,34,56,789`, chinese style (wan) : `1,2345,6789`. [Demo](https://jinno.io/app/23/thousandsGroupStyle?source=react-number-format&displayType=input)|
 | decimalScale | number| none| If defined it limits to given decimal scale. [Demo](https://jinno.io/app/23/decimalScale?source=react-number-format&displayType=input) |
 | fixedDecimalScale | boolean| false| If true it add 0s to match given decimalScale. [Demo](https://jinno.io/app/23/fixedDecimalScale?source=react-number-format&displayType=input)|
 | allowNegative      | boolean     |   true | allow negative numbers (Only when format option is not provided). [Demo](https://jinno.io/app/23/allowNegative?source=react-number-format&displayType=input) |
-| allowEmptyFormatting | boolean | false | Apply formatting to empty inputs. Here is a [Demo](https://jinno.io/app/23/allowEmptyFormatting?source=react-number-format&displayType=input) |
+| allowEmptyFormatting | boolean | false | Apply formatting to empty inputs. [Demo](https://jinno.io/app/23/allowEmptyFormatting?source=react-number-format&displayType=input) |
 | allowLeadingZeros | boolean | false | Allow leading zeros at beginning of number. [Demo](https://jinno.io/app/23/allowLeadingZeros?source=react-number-format&displayType=input) |
 | prefix      | String (ex : $)     |   none | Add a prefix before the number. [Demo](https://jinno.io/app/23/prefix?source=react-number-format) |
 | suffix | String (ex : /-)      |    none | Add a suffix after the number. [Demo](https://jinno.io/app/23/suffix?source=react-number-format&displayType=input) |
@@ -99,7 +99,7 @@ Its recommended to use formattedValue / value / floatValue based on the initial 
 7. onValueChange is not same as onChange. It gets called on whenever there is change in value which can be caused by any event like change or blur event or by a prop change. It no longer receives event object as second parameter.
 
 ### Examples
-#### Prefix and thousand separator : Format currency as text. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&value=2456981&displayType=text&thousandSeparator=true)
+#### Prefix and thousand separator : Format currency as text. [Demo](https://jinno.io/app/23/?source=react-number-format&value=2456981&displayType=text&thousandSeparator=true)
 ```jsx
 var NumberFormat = require('react-number-format');
 
@@ -115,26 +115,26 @@ var NumberFormat = require('react-number-format');
 ```
 Output : `<div class="foo"> $2,456,981 </div>`
 
-#### Format with pattern : Format credit card as text. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&value=4111111111111111&format=%23%23%23%23%20%23%23%23%23%20%23%23%23%23%20%23%23%23%23)
+#### Format with pattern : Format credit card as text. [Demo](https://jinno.io/app/23/?source=react-number-format&value=4111111111111111&format=%23%23%23%23%20%23%23%23%23%20%23%23%23%23%20%23%23%23%23)
 ```jsx
 <NumberFormat value={4111111111111111} displayType={'text'} format="#### #### #### ####" />
 ```
 Output : 4111 1111 1111 1111
 
-#### Prefix and thousand separator : Format currency in input. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&thousandSeparator=true&prefix=$&displayType=input)
+#### Prefix and thousand separator : Format currency in input. [Demo](https://jinno.io/app/23/?source=react-number-format&thousandSeparator=true&prefix=$&displayType=input)
 ```jsx
 <NumberFormat thousandSeparator={true} prefix={'$'} />
 ```
 ![Screencast example](https://i.imgur.com/d0P2Db1.gif)
 
-#### Indian(lakh) style and chinese(wan) style number grouping. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&thousandSeparator=true&prefix=₹&thousandsGroupStyle=lakh&value=123456789)
+#### Indian(lakh) style and chinese(wan) style number grouping. [Demo](https://jinno.io/app/23/?source=react-number-format&thousandSeparator=true&prefix=₹&thousandsGroupStyle=lakh&value=123456789)
 Indian (lakh) style grouping
 ```jsx
 <NumberFormat thousandSeparator={true} thousandsGroupStyle="lakh" prefix={'₹'} value={123456789}/>
 ```
 Output: ₹12,34,56,789
 
-Chinese (wan) style grouping. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&prefix=¥&thousandsGroupStyle=wan&value=123456789)
+Chinese (wan) style grouping. [Demo](https://jinno.io/app/23/?source=react-number-format&prefix=¥&thousandsGroupStyle=wan&value=123456789)
 ```jsx
 <NumberFormat thousandSeparator={true} thousandsGroupStyle="wan" prefix={'¥'} value={123456789}/>
 ```
@@ -151,7 +151,7 @@ Output: ¥1,2345,6789
   }}/>
 ```
 
-#### Format with pattern : Format credit card in an input. Here is a [demo](https://jinno.io/app/23/?source=react-number-format&value=4111111111111111&displayType=input&format=%23%23%23%23%20%23%23%23%23%20%23%23%23%23%20%23%23%23%23)
+#### Format with pattern : Format credit card in an input. [Demo](https://jinno.io/app/23/?source=react-number-format&value=4111111111111111&displayType=input&format=%23%23%23%23%20%23%23%23%23%20%23%23%23%23%20%23%23%23%23)
 ```jsx
 <NumberFormat format="#### #### #### ####" />
 ```
