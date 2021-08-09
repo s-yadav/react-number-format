@@ -257,19 +257,19 @@ function cardExpiry(val) {
 
 ![Screencast example](https://media.giphy.com/media/l1J9wJ6ZSONO7cXkI/giphy.gif)
 
+### Custom Numeral
+
+```jsx
+  const persianNumeral = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']
+  <NumberFormat customNumerals={persianNumeral} />;
+```
+
 ### Limit input value to a maximum limit
 
 ```jsx
 const MAX_VAL = 1400;
 const withValueLimit = ({ floatValue }) => floatValue <= MAX_VAL;
 <NumberFormat value={12} isAllowed={withValueLimit} />;
-```
-
-### Custom Numeral
-
-```jsx
-  const persianNumeral = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']
-  <NumberFormat customNumerals={persianNumeral} />;
 ```
 
 It is sensible to use `floatValue` in the `withValueLimit` check because it provides the exact value (see [values object](#values-object)). `value` is rounded to your configured `decimalScale`; hence it may omit a part of the precision of the actual value. Given an entered value of 1400.4 and the default `decimalScale`, `value` would be transferred as 1400 in the values object and pass the above `withValueLimit` check. In this case, it is a false positive that can be prevented using `floatValue`. However, you might want to use `value` to automatically get the rounded number according to your `decimalScale`.
