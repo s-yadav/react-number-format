@@ -23,7 +23,7 @@ declare module 'react-number-format' {
     data: any;
   }
 
-  export interface NumberFormatPropsBase extends InputAttributes {
+  export type NumberFormatPropsBase<T> = {
     thousandSeparator?: boolean | string;
     decimalSeparator?: string;
     thousandsGroupStyle?: 'thousand' | 'lakh' | 'wan';
@@ -38,7 +38,7 @@ declare module 'react-number-format' {
     value?: number | string | null;
     defaultValue?: number | string;
     isNumericString?: boolean;
-    customInput?: React.ComponentType<any>;
+    customInput?: React.ComponentType<T>;
     allowNegative?: boolean;
     allowEmptyFormatting?: boolean;
     allowLeadingZeros?: boolean;
@@ -70,13 +70,8 @@ declare module 'react-number-format' {
     ];
   }
 
-  // The index signature allows any prop to be passed in, such as if wanting to send props
-  // to a customInput. We export this as a separate interface to allow client authors to
-  // choose the stricter typing of NumberFormatPropsBase if desired.
-  export interface NumberFormatProps extends NumberFormatPropsBase {
-    [key: string]: any;
-  }
+  export type NumberFormatProps<T> = NumberFormatPropsBase<T> & Omit<T, keyof NumberFormatPropsBase<unknown> | 'ref'>
 
-  class NumberFormat extends React.Component<NumberFormatProps, any> {}
+  class NumberFormat<T = InputAttributes> extends React.Component<NumberFormatProps<T>, any> {}
   export default NumberFormat;
 }
