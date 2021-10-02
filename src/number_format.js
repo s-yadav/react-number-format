@@ -18,6 +18,7 @@ import {
   addInputMode,
   isNil,
   toNumericString,
+  convertCustomNumeralToEnglish,
 } from './utils';
 
 const defaultProps = {
@@ -325,7 +326,6 @@ class NumberFormat extends React.Component {
     const inputNumber = (inputValue.match(numRegex) || []).join('');
     const formattedNumber = (formattedValue.match(numRegex) || []).join('');
     let j, i;
-
     j = 0;
 
     for (i = 0; i < caretPos; i++) {
@@ -504,10 +504,7 @@ class NumberFormat extends React.Component {
     let formattedValue = numStr;
 
     if (customNumerals && customNumerals.length === 10) {
-      const customNumeralRegex = new RegExp('[' + customNumerals.join('') + ']', 'g');
-      formattedValue = numStr.replace(customNumeralRegex, (digit) =>
-        customNumerals.indexOf(digit).toString(),
-      );
+      formattedValue = convertCustomNumeralToEnglish(numStr, customNumerals);
     }
 
     if (numStr === '' && !allowEmptyFormatting) {
@@ -624,7 +621,7 @@ class NumberFormat extends React.Component {
    * It will also work as fallback if android chome keyDown handler does not work
    **/
   correctInputValue(caretPos: number, lastValue: string, value: string) {
-    const { format, allowNegative, prefix, suffix, decimalScale } = this.props;
+    const { format, allowNegative, prefix, suffix, decimalScale, customNumerals } = this.props;
     const { allowedDecimalSeparators, decimalSeparator } = this.getSeparators();
     const lastNumStr = this.state.numAsString || '';
     const { selectionStart, selectionEnd } = this.selectionBeforeInput;
@@ -660,6 +657,9 @@ class NumberFormat extends React.Component {
       // For numeric inputs we apply the format so, prefix and suffix can be ignored
       (selectionStart === leftBound && selectionEnd === rightBound)
     ) {
+      if (customNumerals && customNumerals.length === 10) {
+        return convertCustomNumeralToEnglish(value, customNumerals);
+      }
       return value;
     }
 

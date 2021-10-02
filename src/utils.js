@@ -241,3 +241,8 @@ export function addInputMode(format: string | FormatInputValueFunction) {
       !(navigator.platform && /iPhone|iPod/.test(navigator.platform)))
   );
 }
+
+export function convertCustomNumeralToEnglish(input: string, customNumerals: string[]) {
+  const customNumeralRegex = new RegExp('[' + customNumerals.join('') + ']', 'g');
+  return input.replace(customNumeralRegex, (digit) => customNumerals.indexOf(digit).toString());
+}
