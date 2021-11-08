@@ -658,7 +658,6 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.find('input').prop('value')).toEqual('0.0000001');
   });
 
-
   describe('Test thousand group style', () => {
     it('should format on english style thousand grouping', () => {
       const wrapper = shallow(<NumberFormat thousandSeparator={true} value={12345678} />);
