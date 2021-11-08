@@ -16,6 +16,11 @@ declare module 'react-number-format' {
     value: string;
   }
 
+  export interface SourceInfo {
+    event: SyntheticInputEvent;
+    source: 'prop' | 'event';
+  }
+
   export type FormatInputValueFunction = (inputValue: string) => string;
 
   export interface SyntheticInputEvent extends React.SyntheticEvent<HTMLInputElement> {
@@ -42,7 +47,7 @@ declare module 'react-number-format' {
     allowNegative?: boolean;
     allowEmptyFormatting?: boolean;
     allowLeadingZeros?: boolean;
-    onValueChange?: (values: NumberFormatValues) => void;
+    onValueChange?: (values: NumberFormatValues, sourceInfo: SourceInfo) => void;
     /**
      * these are already included in React.HTMLAttributes<HTMLInputElement>
      * onKeyDown: Function;
