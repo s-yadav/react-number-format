@@ -72,7 +72,7 @@ In typescript you also have to enable `"esModuleInterop": true` in your tsconfig
 | removeFormatting         | (formattedValue) => numericString                                     | none     | If you are providing custom format method and it add numbers as format you will need to add custom removeFormatting logic. [Demo](https://jinno.io/app/23/removeFormatting?source=react-number-format&displayType=input)                                                                                                   |
 | mask                     | String (ex : \_)                                                      | `' '`    | If mask defined, component will show non entered placed with masked value. [Demo](https://jinno.io/app/23/mask?source=react-number-format&displayType=input&format=###-####&mask=_)                                                                                                                                        |
 | customInput              | Component Reference                                                   | input    | This allow supporting custom inputs with number format.                                                                                                                                                                                                                                                                    |
-| onValueChange            | (values) => {}                                                        | none     | onValueChange handler accepts [values object](#values-object). [Demo](https://jinno.io/app/23/onValueChange?source=react-number-format&displayType=input)                                                                                                                                                                  |
+| onValueChange            | (values, sourceInfo) => {}                                            | none     | onValueChange handler accepts [values object](#values-object). [Demo](https://jinno.io/app/23/onValueChange?source=react-number-format&displayType=input)                                                                                                                                                                  |
 | isAllowed                | ([values](#values-object)) => true or false                           | none     | A checker function to check if input value is valid or not. If this function returns false, the onChange method will not get triggered. [Demo](https://jinno.io/app/23/isAllowed?source=react-number-format&displayType=input)                                                                                             |
 | renderText               | (formattedValue, customProps) => React Element                        | null     | A renderText method useful if you want to render formattedValue in different element other than span. It also returns the custom props that are added to the component which can allow passing down props to the rendered element. [Demo](https://jinno.io/app/23/renderText?source=react-number-format&displayType=input) |
 | getInputRef              | (elm) => void                                                         | null     | Method to get reference of input, span (based on displayType prop) or the customInput's reference. See [Getting reference](#getting-reference). [Demo](https://jinno.io/app/23/getInputRef?source=react-number-format&displayType=input)                                                                                   |
@@ -109,7 +109,7 @@ Its recommended to use formattedValue / value / floatValue based on the initial 
 
 6. Its recommended to use formattedValue / value / floatValue based on the initial state (it should be same as the initial state format) which you are passing as value prop. If you are saving the `value` key on state make sure to pass isNumericString prop to true.
 
-7. onValueChange is not same as onChange. It gets called on whenever there is change in value which can be caused by any event like change or blur event or by a prop change. It no longer receives event object as second parameter.
+7. onValueChange is not same as onChange. It gets called on whenever there is change in value which can be caused by any event like change or blur event or by a prop change. It also provides a second argument which contains the event object and the reason for this function trigger.
 
 ### Examples
 
@@ -186,6 +186,21 @@ Output: ¥1,2345,6789
     // formattedValue = $2,223
     // value ie, 2223
     this.setState({ profit: formattedValue });
+  }}
+/>
+```
+
+#### Accessing event and the source for onValueChangeTrigger
+
+```jsx
+<NumberFormat
+  value={this.state.profit}
+  thousandSeparator={true}
+  prefix={'$'}
+  onValueChange={(values, sourceInfo) => {
+    const { formattedValue, value } = values;
+    // Event is a Synthetic Event wrapper which holds target and other information. Source tells whether the reason for this function being triggered was an 'event' or due to a 'prop' change
+    const { event, source } = sourceInfo;
   }}
 />
 ```

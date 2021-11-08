@@ -128,7 +128,13 @@ class NumberFormat extends React.Component {
         //set state always when not in focus and formatted value is changed
         (focusedElm === null && formattedValue !== stateValue)
       ) {
-        this.updateValue({ formattedValue, numAsString, input: focusedElm });
+        this.updateValue({
+          formattedValue,
+          numAsString,
+          input: focusedElm,
+          source: 'prop',
+          event: null,
+        });
       }
     }
   }
@@ -723,10 +729,12 @@ class NumberFormat extends React.Component {
     numAsString: string,
     inputValue: string,
     input: HTMLInputElement,
+    event: SyntheticInputEvent,
+    source: string,
     caretPos: number,
     setCaretPosition: Boolean,
   }) {
-    const { formattedValue, input, setCaretPosition = true } = params;
+    const { formattedValue, input, setCaretPosition = true, source, event } = params;
     let { numAsString, caretPos } = params;
     const { onValueChange } = this.props;
     const { value: lastValue } = this.state;
@@ -772,7 +780,7 @@ class NumberFormat extends React.Component {
       this.setState({ value: formattedValue, numAsString });
 
       // trigger onValueChange synchronously, so parent is updated along with the number format. Fix for #277, #287
-      onValueChange(this.getValueObject(formattedValue, numAsString));
+      onValueChange(this.getValueObject(formattedValue, numAsString), { event, source });
     }
   }
 
@@ -797,7 +805,14 @@ class NumberFormat extends React.Component {
       formattedValue = lastValue;
     }
 
-    this.updateValue({ formattedValue, numAsString, inputValue, input: el });
+    this.updateValue({
+      formattedValue,
+      numAsString,
+      inputValue,
+      input: el,
+      event: e,
+      source: 'event',
+    });
 
     if (isChangeAllowed) {
       props.onChange(e);
@@ -834,6 +849,8 @@ class NumberFormat extends React.Component {
           numAsString,
           input: e.target,
           setCaretPosition: false,
+          event: e,
+          source: 'event',
         });
         onBlur(e);
         return;
@@ -900,6 +917,8 @@ class NumberFormat extends React.Component {
           formattedValue: newValue,
           caretPos: newCaretPosition,
           input: el,
+          event: e,
+          source: 'event',
         });
       } else if (!negativeRegex.test(value[expectedCaretPosition])) {
         while (!numRegex.test(value[newCaretPosition - 1]) && newCaretPosition > leftBound) {

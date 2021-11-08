@@ -412,6 +412,25 @@ describe('NumberFormat as input', () => {
     });
   });
 
+  it('should call onValueChange with the right source information', () => {
+    const spy = jasmine.createSpy();
+    const wrapper = shallow(<NumberFormat value="1234" onValueChange={spy} />);
+
+    // Test prop change onValueChange
+    wrapper.setProps({ thousandSeparator: true });
+    expect(spy.calls.argsFor(0)[1]).toEqual({
+      event: null,
+      source: 'prop',
+    });
+
+    // Test with input change by simulateKeyInput
+    simulateKeyInput(wrapper.find('input'), '5', 0);
+    const { event, source } = spy.calls.argsFor(1)[1];
+    const { key } = event;
+    expect(key).toEqual('5');
+    expect(source).toEqual('event');
+  });
+
   it('should treat Infinity value as empty string', () => {
     const wrapper = shallow(<NumberFormat value={Infinity} />);
     expect(wrapper.state().value).toEqual('');
