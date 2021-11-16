@@ -471,14 +471,8 @@ class NumberFormat extends React.Component {
    * @return {string} formatted Value
    */
   formatAsNumber(numStr: string) {
-    const {
-      decimalScale,
-      fixedDecimalScale,
-      prefix,
-      suffix,
-      allowNegative,
-      thousandsGroupStyle,
-    } = this.props;
+    const { decimalScale, fixedDecimalScale, prefix, suffix, allowNegative, thousandsGroupStyle } =
+      this.props;
     const { thousandSeparator, decimalSeparator } = this.getSeparators();
 
     const hasDecimalSeparator = numStr.indexOf('.') !== -1 || (decimalScale && fixedDecimalScale);
