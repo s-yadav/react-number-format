@@ -30,6 +30,18 @@ describe('NumberFormat as input', () => {
     expect(wrapper.state().value).toEqual('1234567890');
   });
 
+  it('should accept and format custom numerals together with format input field', () => {
+    const wrapper = mount(
+      <NumberFormat
+        customNumerals={['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']}
+        format="##########"
+      />,
+    );
+    simulateKeyInput(wrapper.find('input'), '۱۲۳۴۵۶۷۸۹۰', 0);
+
+    expect(wrapper.state().value).toEqual('1234567890');
+  });
+
   it('should render input as type text by default', () => {
     const wrapper = mount(<NumberFormat />);
     expect(wrapper.find('input').instance().getAttribute('type')).toEqual('text');

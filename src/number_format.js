@@ -426,7 +426,7 @@ class NumberFormat extends React.Component {
       }
     }
 
-    return (numStr.match(/\d/g) || []).join('');
+    return (numStr.match(this.getNumberRegex(true)) || []).join('');
   }
 
   removeFormatting(val: string) {
@@ -442,7 +442,7 @@ class NumberFormat extends React.Component {
       //condition need to be handled if format method is provide,
       val = removeFormatting(val);
     } else {
-      val = (val.match(/\d/g) || []).join('');
+      val = (val.match(this.getNumberRegex(true)) || []).join('');
     }
     return val;
   }
