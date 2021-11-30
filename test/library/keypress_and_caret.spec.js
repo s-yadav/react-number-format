@@ -1,6 +1,8 @@
 import React from 'react';
 import NumberFormat from '../../src/number_format';
 import ReactDOM from 'react-dom';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import {
   simulateKeyInput,
@@ -249,19 +251,28 @@ describe('Test keypress and caret position changes', () => {
       expect(caretPos).toEqual(2);
     });
 
-    it('should allow removing negation(-), even if its before suffix', () => {
+    it('should allow removing negation(-), even if its before suffix', async () => {
       const spy = jasmine.createSpy();
-      wrapper.setProps({
-        suffix: '',
-        prefix: '$',
-        value: '-$1,000',
-        onValueChange: spy,
-      });
-      wrapper.update();
 
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 2, 2, setSelectionRange);
-      expect(wrapper.state().value).toEqual('$1,000');
-      expect(caretPos).toEqual(1);
+      const view = render(
+        <NumberFormat
+          thousandSeparator=","
+          suffix=""
+          prefix="$"
+          value="-$1,000"
+          onValueChange={spy}
+          data-testid="currency-input"
+        />,
+      );
+
+      const input = await view.findByTestId('currency-input');
+
+      input.setSelectionRange(2, 2);
+
+      userEvent.type(input, '{backspace}');
+
+      expect(input.value).toEqual('$1,000');
+      expect(input.selectionStart).toEqual(1);
       expect(spy).toHaveBeenCalled();
     });
   });
