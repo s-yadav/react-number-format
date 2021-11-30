@@ -45,6 +45,8 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.6.2",
     "@rollup/plugin-buble": "^0.21.3",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.5.0",
     "@types/react": "^16.9.4",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
