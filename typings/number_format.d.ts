@@ -73,9 +73,10 @@ declare module 'react-number-format' {
       string,
       string,
     ];
-  }
+  };
 
-  export type NumberFormatProps<T> = NumberFormatPropsBase<T> & Omit<T, keyof NumberFormatPropsBase<unknown> | 'ref'>
+  export type NumberFormatProps<T> = NumberFormatPropsBase<T> &
+    Omit<T, keyof NumberFormatPropsBase<unknown> | 'ref'>;
 
   class NumberFormat<T = InputAttributes> extends React.Component<NumberFormatProps<T>, any> {}
   export default NumberFormat;
