@@ -1,9 +1,11 @@
 /// <reference types="react" />
 
 declare module 'react-number-format' {
+  type Modify<T, R> = Pick<T, Exclude<keyof T, keyof R>> & R;
+
   //exclude types from the InputHTMLAttributes
   const { defaultValue, value, ...inputAttributes }: React.InputHTMLAttributes<HTMLInputElement>;
-  type InputAttributes = typeof inputAttributes;
+  export type InputAttributes = typeof inputAttributes;
 
   export interface NumberFormatState {
     value?: string;
@@ -75,9 +77,10 @@ declare module 'react-number-format' {
     ];
   };
 
-  export type NumberFormatProps<T> = NumberFormatPropsBase<T> &
+  export type NumberFormatProps<T = InputAttributes> = NumberFormatPropsBase<T> &
+    Omit<InputAttributes, keyof T> &
     Omit<T, keyof NumberFormatPropsBase<unknown> | 'ref'>;
 
-  class NumberFormat<T = InputAttributes> extends React.Component<NumberFormatProps<T>, any> {}
+  class NumberFormat<T> extends React.Component<NumberFormatProps<T>, any> {}
   export default NumberFormat;
 }
