@@ -4,7 +4,6 @@ import { NumberFormatProps, NumberFormatState } from './types';
 import {
   noop,
   returnTrue,
-  charIsNumber,
   escapeRegExp,
   fixLeadingZero,
   limitToScale,
@@ -18,6 +17,11 @@ import {
   addInputMode,
   isNil,
   toNumericString,
+  getCaretPosition,
+  caretNumericBoundary,
+  caretPatternBoundary,
+  caretUnknownFormatBoundary,
+  getMaskAtIndex,
 } from './utils';
 
 const defaultProps = {
@@ -196,15 +200,6 @@ class NumberFormat extends React.Component<NumberFormatProps, NumberFormatState>
     };
   }
 
-  getMaskAtIndex(index: number) {
-    const { mask = ' ' } = this.props;
-    if (typeof mask === 'string') {
-      return mask;
-    }
-
-    return mask[index] || ' ';
-  }
-
   getValueObject(formattedValue: string, numAsString: string) {
     const floatValue = parseFloat(numAsString);
 
@@ -254,114 +249,48 @@ class NumberFormat extends React.Component<NumberFormatProps, NumberFormatState>
 
   /* This keeps the caret within typing area so people can't type in between prefix or suffix */
   correctCaretPosition(value: string, caretPos: number, direction?: string) {
-    const { prefix, suffix, format } = this.props;
+    const { props } = this;
+    const { format } = props;
 
-    //if value is empty return 0
-    if (value === '') return 0;
+    const valLn = value.length;
 
-    //caret position should be between 0 and value length
-    caretPos = clamp(caretPos, 0, value.length);
+    // clamp caret position to [0, value.length]
+    caretPos = clamp(caretPos, 0, valLn);
 
-    //in case of format as number limit between prefix and suffix
+    let boundary;
     if (!format) {
-      const hasNegation = value[0] === '-';
-      return clamp(caretPos, prefix.length + (hasNegation ? 1 : 0), value.length - suffix.length);
+      boundary = caretNumericBoundary(value, props);
+    } else if (typeof format === 'string') {
+      boundary = caretPatternBoundary(value, props);
+    } else {
+      boundary = caretUnknownFormatBoundary(value, props);
     }
 
-    //in case if custom format method don't do anything
-    if (typeof format === 'function') return caretPos;
+    if (direction === 'left') {
+      while (caretPos >= 0 && !boundary[caretPos]) caretPos--;
 
-    /* in case format is string find the closest # position from the caret position */
+      // if we don't find any suitable caret position on left, set it on first allowed position
+      if (caretPos === -1) caretPos = boundary.indexOf(true);
+    } else {
+      while (caretPos <= valLn && !boundary[caretPos]) caretPos++;
 
-    //in case the caretPos have input value on it don't do anything
-    if (format[caretPos] === '#' && charIsNumber(value[caretPos])) {
-      return caretPos;
+      // if we don't find any suitable caret position on right, set it on last allowed position
+      if (caretPos > valLn) caretPos = boundary.lastIndexOf(true);
     }
 
-    //if caretPos is just after input value don't do anything
-    if (format[caretPos - 1] === '#' && charIsNumber(value[caretPos - 1])) {
-      return caretPos;
-    }
+    // if we still don't find caret position, set it at the end of value
+    if (caretPos === -1) caretPos = valLn;
 
-    //find the nearest caret position
-    const firstHashPosition = format.indexOf('#');
-    const lastHashPosition = format.lastIndexOf('#');
-
-    //limit the cursor between the first # position and the last # position
-    caretPos = clamp(caretPos, firstHashPosition, lastHashPosition + 1);
-
-    const nextPos = format.substring(caretPos, format.length).indexOf('#');
-    let caretLeftBound = caretPos;
-    const caretRightBound = caretPos + (nextPos === -1 ? 0 : nextPos);
-
-    //get the position where the last number is present
-    while (
-      caretLeftBound > firstHashPosition &&
-      (format[caretLeftBound] !== '#' || !charIsNumber(value[caretLeftBound]))
-    ) {
-      caretLeftBound -= 1;
-    }
-
-    const goToLeft =
-      !charIsNumber(value[caretRightBound]) ||
-      (direction === 'left' && caretPos !== firstHashPosition) ||
-      caretPos - caretLeftBound < caretRightBound - caretPos;
-
-    if (goToLeft) {
-      //check if number should be taken after the bound or after it
-      //if number preceding a valid number keep it after
-      return charIsNumber(value[caretLeftBound]) ? caretLeftBound + 1 : caretLeftBound;
-    }
-
-    return caretRightBound;
+    return caretPos;
   }
 
   getCaretPosition(inputValue: string, formattedValue: string, caretPos: number) {
-    const { format } = this.props;
-    const stateValue = this.state.value;
-    const numRegex = this.getNumberRegex(true);
-    const inputNumber = (inputValue.match(numRegex) || []).join('');
-    const formattedNumber = (formattedValue.match(numRegex) || []).join('');
-    let j, i;
-
-    j = 0;
-
-    for (i = 0; i < caretPos; i++) {
-      const currentInputChar = inputValue[i] || '';
-      const currentFormatChar = formattedValue[j] || '';
-      //no need to increase new cursor position if formatted value does not have those characters
-      //case inputValue = 1a23 and formattedValue =  123
-      if (!currentInputChar.match(numRegex) && currentInputChar !== currentFormatChar) {
-        continue;
-      }
-
-      //When we are striping out leading zeros maintain the new cursor position
-      //Case inputValue = 00023 and formattedValue = 23;
-      if (
-        currentInputChar === '0' &&
-        currentFormatChar.match(numRegex) &&
-        currentFormatChar !== '0' &&
-        inputNumber.length !== formattedNumber.length
-      ) {
-        continue;
-      }
-
-      //we are not using currentFormatChar because j can change here
-      while (currentInputChar !== formattedValue[j] && j < formattedValue.length) {
-        j++;
-      }
-      j++;
-    }
-
-    if (typeof format === 'string' && !stateValue) {
-      //set it to the maximum value so it goes after the last number
-      j = formattedValue.length;
-    }
+    let updatedCaretPos = getCaretPosition(formattedValue, inputValue, caretPos);
 
     //correct caret position if its outside of editable area
-    j = this.correctCaretPosition(formattedValue, j);
+    updatedCaretPos = this.correctCaretPosition(formattedValue, updatedCaretPos);
 
-    return j;
+    return updatedCaretPos;
   }
   /** caret specific methods ends **/
 
@@ -448,11 +377,13 @@ class NumberFormat extends React.Component<NumberFormatProps, NumberFormatState>
    */
   formatWithPattern(numStr: string) {
     const format = this.props.format as string;
+    const { mask } = this.props;
+
     let hashCount = 0;
     const formattedNumberAry = format.split('');
     for (let i = 0, ln = format.length; i < ln; i++) {
       if (format[i] === '#') {
-        formattedNumberAry[i] = numStr[hashCount] || this.getMaskAtIndex(hashCount);
+        formattedNumberAry[i] = numStr[hashCount] || getMaskAtIndex(mask, hashCount);
         hashCount += 1;
       }
     }
