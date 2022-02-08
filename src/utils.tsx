@@ -241,3 +241,121 @@ export function addInputMode(format: string | FormatInputValueFunction) {
       !(navigator.platform && /iPhone|iPod/.test(navigator.platform)))
   );
 }
+
+export function getMaskAtIndex(mask: string | string[] = ' ', index: number) {
+  if (typeof mask === 'string') {
+    return mask;
+  }
+
+  return mask[index] || ' ';
+}
+
+export function getCaretPosition(formattedValue: string, curValue: stirng, curCaretPos: number) {
+  const curValLn = curValue.length;
+  const formattedValueLn = formattedValue.length;
+
+  // create index map
+  const addedIndexMap = {};
+  const indexMap = new Array(curValLn);
+
+  for (let i = 0; i < curValLn; i++) {
+    indexMap[i] = -1;
+    for (let j = 0, jLn = formattedValueLn; j < jLn; j++) {
+      if (curValue[i] === formattedValue[j] && addedIndexMap[j] !== true) {
+        indexMap[i] = j;
+        addedIndexMap[j] = true;
+        break;
+      }
+    }
+  }
+
+  /**
+   * For current caret position find closest characters (left and right side)
+   * which are properly mapped to formatted value.
+   * The idea is that the new caret position will exist always in the boundary of
+   * that mapped index
+   */
+  let pos = curCaretPos;
+  while (pos < curValLn && (indexMap[pos] === -1 || !charIsNumber(curValue[pos]))) {
+    pos++;
+  }
+
+  // if the caret position is on last keep the endIndex as last for formatted value
+  const endIndex = pos === curValLn || indexMap[pos] === -1 ? formattedValueLn : indexMap[pos];
+
+  pos = curCaretPos - 1;
+  while (pos > 0 && (indexMap[pos] === -1 || !charIsNumber(curValue[pos]))) pos--;
+  const startIndex = pos === -1 || indexMap[pos] === -1 ? 0 : indexMap[pos] + 1;
+
+  /**
+   * case where a char is added on suffix and removed from middle, example 2sq345 becoming $2,345 sq
+   * there is still a mapping but the order of start index and end index is changed
+   */
+  if (startIndex > endIndex) return endIndex;
+
+  /**
+   * given the current caret position if it closer to startIndex
+   * keep the new caret position on start index or keep it closer to endIndex
+   */
+  return curCaretPos - startIndex < endIndex - curCaretPos ? startIndex : endIndex;
+}
+
+export function caretNumericBoundary(formattedValue: string, props) {
+  const { prefix, suffix } = props;
+  const boundaryAry = Array.from({ length: formattedValue.length + 1 }).map(() => true);
+
+  const hasNegation = formattedValue[0] === '-';
+
+  // fill for prefix and negation
+  boundaryAry.fill(false, 0, prefix.length + (hasNegation ? 1 : 0));
+
+  // fill for suffix
+  const valLn = formattedValue.length;
+  boundaryAry.fill(false, valLn - suffix.length + 1, valLn + 1);
+
+  return boundaryAry;
+}
+
+export function caretPatternBoundary(formattedValue: string, props) {
+  const { format, mask, patternChar = '#' } = props;
+  const boundaryAry = Array.from({ length: formattedValue.length + 1 }).map(() => true);
+
+  let hashCount = 0;
+  const maskAndFormatMap = format.split('').map((char) => {
+    if (char === patternChar) {
+      hashCount++;
+      return getMaskAtIndex(mask, hashCount - 1);
+    }
+
+    return undefined;
+  });
+
+  const isPosAllowed = (pos: number) => {
+    // the position is allowed if the position is not masked and valid number area
+    return format[pos] === patternChar && formattedValue[pos] !== maskAndFormatMap[pos];
+  };
+
+  for (let i = 0, ln = boundaryAry.length; i < ln; i++) {
+    // consider caret to be in boundary if it is before or after numeric value
+    // Note: on pattern based format its denoted by patternCharacter
+    boundaryAry[i] = isPosAllowed(i) || isPosAllowed(i - 1);
+  }
+
+  // the first patternChar position is always allowed
+  boundaryAry[format.indexOf(patternChar)] = true;
+
+  return boundaryAry;
+}
+
+export function caretUnknownFormatBoundary(formattedValue: string) {
+  const boundaryAry = Array.from({ length: formattedValue.length + 1 }).map(() => true);
+
+  for (let i = 0, ln = boundaryAry.length; i < ln; i++) {
+    // consider caret to be in boundary if it is before or after numeric value
+    boundaryAry[i] = Boolean(
+      charIsNumber(formattedValue[i]) || charIsNumber(formattedValue[i - 1]),
+    );
+  }
+
+  return boundaryAry;
+}
