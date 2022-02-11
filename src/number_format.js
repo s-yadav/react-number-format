@@ -8,6 +8,7 @@ import {
   escapeRegExp,
   fixLeadingZero,
   limitToScale,
+  limitTrailingZeros,
   roundToPrecision,
   setCaretPosition,
   splitDecimal,
@@ -25,6 +26,7 @@ const defaultProps = {
   decimalSeparator: '.',
   thousandsGroupStyle: 'thousand',
   fixedDecimalScale: false,
+  cutTrailingZeros: 0,
   prefix: '',
   suffix: '',
   allowNegative: true,
@@ -478,6 +480,7 @@ class NumberFormat extends React.Component {
       suffix,
       allowNegative,
       thousandsGroupStyle,
+      cutTrailingZeros,
     } = this.props;
     const { thousandSeparator, decimalSeparator } = this.getSeparators();
 
@@ -499,6 +502,11 @@ class NumberFormat extends React.Component {
 
     //restore negation sign
     if (addNegation) beforeDecimal = '-' + beforeDecimal;
+
+    //cut trailing zeros
+    if(cutTrailingZeros){
+      afterDecimal = limitTrailingZeros(afterDecimal, cutTrailingZeros, fixedDecimalScale)
+    }
 
     numStr = beforeDecimal + ((hasDecimalSeparator && decimalSeparator) || '') + afterDecimal;
 
@@ -1069,6 +1077,7 @@ if (process.env.NODE_ENV !== 'production') {
     thousandsGroupStyle: PropTypes.oneOf(['thousand', 'lakh', 'wan']),
     decimalScale: PropTypes.number,
     fixedDecimalScale: PropTypes.bool,
+    cutTrailingZeros: PropTypes.number,
     displayType: PropTypes.oneOf(['input', 'text']),
     prefix: PropTypes.string,
     suffix: PropTypes.string,

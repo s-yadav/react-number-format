@@ -114,6 +114,17 @@ class App extends React.Component {
         </div>
 
         <div className="example">
+          <h3>Remove Trailing Zeros in Decimals</h3>
+          <NumberFormat
+            isNumericString
+            thousandSeparator
+            decimalScale={5}
+            fixedDecimalScale
+            cutTrailingZeros={2}
+          />
+        </div>
+
+        <div className="example">
           <h3>Format with pattern : Format credit card in an input</h3>
           <NumberFormat format="#### #### #### ####" mask="_" />
         </div>
@@ -152,6 +163,10 @@ class App extends React.Component {
           <h3>Custom Numeral: add support for custom languages </h3>
           <NumberFormat customNumerals={['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']} />
         </div>
+
+   
+
+
       </div>
     );
   }
