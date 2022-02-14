@@ -114,13 +114,14 @@ class App extends React.Component {
         </div>
 
         <div className="example">
-          <h3>Remove Trailing Zeros in Decimals</h3>
+          <h3>Remove Trailing Zeros in Decimals (on blur)</h3>
           <NumberFormat
             isNumericString
             thousandSeparator
             decimalScale={5}
             fixedDecimalScale
             cutTrailingZeros={2}
+            cutTrailingZerosOnBlur
           />
         </div>
 

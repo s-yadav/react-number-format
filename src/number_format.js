@@ -27,6 +27,7 @@ const defaultProps = {
   thousandsGroupStyle: 'thousand',
   fixedDecimalScale: false,
   cutTrailingZeros: 0,
+  cutTrailingZerosOnBlur: false,
   prefix: '',
   suffix: '',
   allowNegative: true,
@@ -481,6 +482,7 @@ class NumberFormat extends React.Component {
       allowNegative,
       thousandsGroupStyle,
       cutTrailingZeros,
+      cutTrailingZerosOnBlur,
     } = this.props;
     const { thousandSeparator, decimalSeparator } = this.getSeparators();
 
@@ -505,7 +507,9 @@ class NumberFormat extends React.Component {
 
     //cut trailing zeros
     if(cutTrailingZeros){
-      afterDecimal = limitTrailingZeros(afterDecimal, cutTrailingZeros, fixedDecimalScale)
+      if((cutTrailingZerosOnBlur && this.focusedElm == null) || !cutTrailingZerosOnBlur){
+        afterDecimal = limitTrailingZeros(afterDecimal, cutTrailingZeros, fixedDecimalScale)
+      }
     }
 
     numStr = beforeDecimal + ((hasDecimalSeparator && decimalSeparator) || '') + afterDecimal;
@@ -1078,6 +1082,7 @@ if (process.env.NODE_ENV !== 'production') {
     decimalScale: PropTypes.number,
     fixedDecimalScale: PropTypes.bool,
     cutTrailingZeros: PropTypes.number,
+    cutTrailingZerosOnBlur: PropTypes.bool,
     displayType: PropTypes.oneOf(['input', 'text']),
     prefix: PropTypes.string,
     suffix: PropTypes.string,
