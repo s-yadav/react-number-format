@@ -41,50 +41,50 @@ const defaultProps = {
   isAllowed: returnTrue,
 };
 
-
-class NumberFormat extends React.Component< NumberFormatProps, NumberFormatState> {
+class NumberFormat extends React.Component<NumberFormatProps, NumberFormatState> {
   focusTimeout: NodeJS.Timeout;
   caretPositionTimeout: NodeJS.Timeout;
   focusedElm: HTMLInputElement;
   selectionBeforeInput: {
-    selectionStart: number,
-    selectionEnd: number,
+    selectionStart: number;
+    selectionEnd: number;
   };
   static defaultProps: Object;
-  
+
+  // TODO: remove this on v5. This is only for backward compatibility
   static propTypes: {
-    thousandSeparator: any; 
-    decimalSeparator: any; 
-    allowedDecimalSeparators: any; 
-    thousandsGroupStyle: any; 
-    decimalScale: any; 
-    fixedDecimalScale: any; 
-    displayType: any; 
-    prefix: any; 
-    suffix: any; 
-    format: any; 
-    removeFormatting: any; 
-    mask: any; 
-    value: any; 
-    defaultValue: any; 
-    isNumericString: any; 
-    customInput: any; 
-    allowNegative: any; 
-    allowEmptyFormatting: any; 
-    allowLeadingZeros: any; 
-    onValueChange: any; 
-    onKeyDown: any; 
-    onMouseUp: any; 
-    onChange: any; 
-    onFocus: any; 
-    onBlur: any; 
-    type: any; 
-    isAllowed: any; 
-    renderText: any; 
-    getInputRef: any; 
+    thousandSeparator: any;
+    decimalSeparator: any;
+    allowedDecimalSeparators: any;
+    thousandsGroupStyle: any;
+    decimalScale: any;
+    fixedDecimalScale: any;
+    displayType: any;
+    prefix: any;
+    suffix: any;
+    format: any;
+    removeFormatting: any;
+    mask: any;
+    value: any;
+    defaultValue: any;
+    isNumericString: any;
+    customInput: any;
+    allowNegative: any;
+    allowEmptyFormatting: any;
+    allowLeadingZeros: any;
+    onValueChange: any;
+    onKeyDown: any;
+    onMouseUp: any;
+    onChange: any;
+    onFocus: any;
+    onBlur: any;
+    type: any;
+    isAllowed: any;
+    renderText: any;
+    getInputRef: any;
     customNumerals: (props: any, propName: any, componentName: any) => Error;
   };
-  
+
   constructor(props: NumberFormatProps) {
     super(props);
     const { defaultValue } = props;
@@ -714,7 +714,7 @@ class NumberFormat extends React.Component< NumberFormatProps, NumberFormatState
         }
       });
 
-      Object.keys(recordIndexOfFormatCharacters).forEach((value:string, idx: number) => {
+      Object.keys(recordIndexOfFormatCharacters).forEach((value: string, idx: number) => {
         if (resolvedPortion.length > idx) {
           resolvedPortion.splice(idx, 0, recordIndexOfFormatCharacters[idx]);
         } else {
@@ -751,14 +751,17 @@ class NumberFormat extends React.Component< NumberFormatProps, NumberFormatState
 
   /** Update value and caret position */
   updateValue(params: {
-    formattedValue?: string,
-    numAsString?: string,
-    inputValue?: string,
-    input: HTMLInputElement,
-    event: React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>,
-    source?: string,
-    caretPos?: number,
-    setCaretPosition?: Boolean,
+    formattedValue?: string;
+    numAsString?: string;
+    inputValue?: string;
+    input: HTMLInputElement;
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.FocusEvent<HTMLInputElement>
+      | React.KeyboardEvent<HTMLInputElement>;
+    source?: string;
+    caretPos?: number;
+    setCaretPosition?: Boolean;
   }) {
     const { formattedValue, input, setCaretPosition = true, source, event } = params;
     let { numAsString, caretPos } = params;
@@ -981,7 +984,7 @@ class NumberFormat extends React.Component< NumberFormatProps, NumberFormatState
      * NOTE: we have to give default value for value as in case when custom input is provided
      * value can come as undefined when nothing is provided on value prop.
      */
-    const { selectionStart, selectionEnd, value = '' } = el ;
+    const { selectionStart, selectionEnd, value = '' } = el;
 
     if (selectionStart === selectionEnd) {
       const caretPosition = this.correctCaretPosition(value, selectionStart);
