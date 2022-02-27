@@ -1,5 +1,5 @@
-//@flow
 import React from 'react';
+import { NumberFormatProps, NumberFormatState } from './types';
 
 import {
   noop,
@@ -40,26 +40,52 @@ const defaultProps = {
   onBlur: noop,
   isAllowed: returnTrue,
 };
-class NumberFormat extends React.Component {
-  state: {
-    value?: string,
-    numAsString?: string,
-    mounted: boolean,
-  };
-  onChange: Function;
-  onKeyDown: Function;
-  onMouseUp: Function;
-  onFocus: Function;
-  onBlur: Function;
-  focusTimeout: number;
-  caretPositionTimeout: number;
-  focusedElm: HTMLElement;
+
+
+class NumberFormat extends React.Component< NumberFormatProps, NumberFormatState> {
+  focusTimeout: NodeJS.Timeout;
+  caretPositionTimeout: NodeJS.Timeout;
+  focusedElm: HTMLInputElement;
   selectionBeforeInput: {
     selectionStart: number,
     selectionEnd: number,
   };
   static defaultProps: Object;
-  constructor(props: Object) {
+  
+  static propTypes: {
+    thousandSeparator: any; 
+    decimalSeparator: any; 
+    allowedDecimalSeparators: any; 
+    thousandsGroupStyle: any; 
+    decimalScale: any; 
+    fixedDecimalScale: any; 
+    displayType: any; 
+    prefix: any; 
+    suffix: any; 
+    format: any; 
+    removeFormatting: any; 
+    mask: any; 
+    value: any; 
+    defaultValue: any; 
+    isNumericString: any; 
+    customInput: any; 
+    allowNegative: any; 
+    allowEmptyFormatting: any; 
+    allowLeadingZeros: any; 
+    onValueChange: any; 
+    onKeyDown: any; 
+    onMouseUp: any; 
+    onChange: any; 
+    onFocus: any; 
+    onBlur: any; 
+    type: any; 
+    isAllowed: any; 
+    renderText: any; 
+    getInputRef: any; 
+    customNumerals: (props: any, propName: any, componentName: any) => Error;
+  };
+  
+  constructor(props: NumberFormatProps) {
     super(props);
     const { defaultValue } = props;
 
@@ -402,7 +428,7 @@ class NumberFormat extends React.Component {
   }
 
   removePatternFormatting(val: string) {
-    const { format } = this.props;
+    const format = this.props.format as string;
     const formatArray = format.split('#').filter((str) => str !== '');
     let start = 0;
     let numStr = '';
@@ -455,7 +481,7 @@ class NumberFormat extends React.Component {
    * @return {string}        formatted Value
    */
   formatWithPattern(numStr: string) {
-    const { format } = this.props;
+    const format = this.props.format as string;
     let hashCount = 0;
     const formattedNumberAry = format.split('');
     for (let i = 0, ln = format.length; i < ln; i++) {
@@ -531,7 +557,7 @@ class NumberFormat extends React.Component {
     return formattedValue;
   }
 
-  formatValueProp(defaultValue: string | number) {
+  formatValueProp(defaultValue?: string | number) {
     const { format, decimalScale, fixedDecimalScale, allowEmptyFormatting } = this.props;
     let { value, isNumericString } = this.props;
 
@@ -688,7 +714,7 @@ class NumberFormat extends React.Component {
         }
       });
 
-      Object.keys(recordIndexOfFormatCharacters).forEach((idx) => {
+      Object.keys(recordIndexOfFormatCharacters).forEach((value:string, idx: number) => {
         if (resolvedPortion.length > idx) {
           resolvedPortion.splice(idx, 0, recordIndexOfFormatCharacters[idx]);
         } else {
@@ -725,14 +751,14 @@ class NumberFormat extends React.Component {
 
   /** Update value and caret position */
   updateValue(params: {
-    formattedValue: string,
-    numAsString: string,
-    inputValue: string,
+    formattedValue?: string,
+    numAsString?: string,
+    inputValue?: string,
     input: HTMLInputElement,
-    event: SyntheticInputEvent,
-    source: string,
-    caretPos: number,
-    setCaretPosition: Boolean,
+    event: React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>,
+    source?: string,
+    caretPos?: number,
+    setCaretPosition?: Boolean,
   }) {
     const { formattedValue, input, setCaretPosition = true, source, event } = params;
     let { numAsString, caretPos } = params;
@@ -784,7 +810,7 @@ class NumberFormat extends React.Component {
     }
   }
 
-  onChange(e: SyntheticInputEvent) {
+  onChange(e: React.ChangeEvent<HTMLInputElement>) {
     const el = e.target;
     let inputValue = el.value;
     const { state, props } = this;
@@ -819,7 +845,7 @@ class NumberFormat extends React.Component {
     }
   }
 
-  onBlur(e: SyntheticInputEvent) {
+  onBlur(e: React.FocusEvent<HTMLInputElement>) {
     const { props, state } = this;
     const { format, onBlur, allowLeadingZeros } = props;
     let { numAsString } = state;
@@ -859,8 +885,8 @@ class NumberFormat extends React.Component {
     onBlur(e);
   }
 
-  onKeyDown(e: SyntheticKeyboardInputEvent) {
-    const el = e.target;
+  onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    const el = e.target as HTMLInputElement;
     const { key } = e;
     const { selectionStart, selectionEnd, value = '' } = el;
     let expectedCaretPosition;
@@ -939,6 +965,7 @@ class NumberFormat extends React.Component {
 
     /* NOTE: this is just required for unit test as we need to get the newCaretPosition,
             Remove this when you find different solution */
+    /* @ts-ignore */
     if (e.isUnitTestRun) {
       this.setPatchedCaretPosition(el, newCaretPosition, value);
     }
@@ -947,14 +974,14 @@ class NumberFormat extends React.Component {
   }
 
   /** required to handle the caret position when click anywhere within the input **/
-  onMouseUp(e: SyntheticMouseInputEvent) {
-    const el = e.target;
+  onMouseUp(e: React.MouseEvent<HTMLInputElement>) {
+    const el = e.target as HTMLInputElement;
 
     /**
      * NOTE: we have to give default value for value as in case when custom input is provided
      * value can come as undefined when nothing is provided on value prop.
      */
-    const { selectionStart, selectionEnd, value = '' } = el;
+    const { selectionStart, selectionEnd, value = '' } = el ;
 
     if (selectionStart === selectionEnd) {
       const caretPosition = this.correctCaretPosition(value, selectionStart);
@@ -966,7 +993,7 @@ class NumberFormat extends React.Component {
     this.props.onMouseUp(e);
   }
 
-  onFocus(e: SyntheticInputEvent) {
+  onFocus(e: React.FocusEvent<HTMLInputElement>) {
     // Workaround Chrome and Safari bug https://bugs.chromium.org/p/chromium/issues/detail?id=779328
     // (onFocus event target selectionStart is always 0 before setTimeout)
     e.persist();
@@ -998,7 +1025,6 @@ class NumberFormat extends React.Component {
       renderText,
       getInputRef,
       format,
-      /* eslint-disable no-unused-vars*/
       thousandSeparator,
       decimalSeparator,
       allowedDecimalSeparators,
@@ -1023,7 +1049,6 @@ class NumberFormat extends React.Component {
       onFocus,
       onBlur,
       value: propValue,
-      /* eslint-enable no-unused-vars*/
       ...otherProps
     } = this.props;
     const { value, mounted } = this.state;
@@ -1051,6 +1076,7 @@ class NumberFormat extends React.Component {
       );
     } else if (customInput) {
       const CustomInput = customInput;
+      /* @ts-ignore */
       return <CustomInput {...inputProps} ref={getInputRef} />;
     }
 

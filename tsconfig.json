@@ -1,0 +1,12 @@
+{
+  
+    "compilerOptions": {
+      "jsx": "react",
+      "esModuleInterop": true,
+      "downlevelIteration": true,
+      "outDir": "./typings",
+    },
+    "include": [
+      "src"
+    ]
+}
