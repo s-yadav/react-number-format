@@ -1,5 +1,3 @@
-//@flow
-
 type FormatInputValueFunction = (inputValue: string) => string;
 
 // basic noop function
@@ -178,7 +176,9 @@ export function setCaretPosition(el: HTMLInputElement, caretPos: number) {
   // to make sure we don't have it everything -selected-
   // (it causes an issue in chrome, and having it doesn't hurt any other browser)
   if (el !== null) {
+    /* @ts-ignore */
     if (el.createTextRange) {
+      /* @ts-ignore */
       const range = el.createTextRange();
       range.move('character', caretPos);
       range.select();
