@@ -714,7 +714,8 @@ class NumberFormat extends React.Component<NumberFormatProps, NumberFormatState>
         }
       });
 
-      Object.keys(recordIndexOfFormatCharacters).forEach((value: string, idx: number) => {
+      Object.keys(recordIndexOfFormatCharacters).forEach((charIndx: string) => {
+        const idx = parseInt(charIndx, 10);
         if (resolvedPortion.length > idx) {
           resolvedPortion.splice(idx, 0, recordIndexOfFormatCharacters[idx]);
         } else {

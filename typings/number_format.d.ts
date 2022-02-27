@@ -2,11 +2,6 @@
 import React from 'react';
 import { NumberFormatProps, NumberFormatState } from './types';
 declare class NumberFormat extends React.Component<NumberFormatProps, NumberFormatState> {
-    state: {
-        value?: string;
-        numAsString?: string;
-        mounted: boolean;
-    };
     focusTimeout: NodeJS.Timeout;
     caretPositionTimeout: NodeJS.Timeout;
     focusedElm: HTMLInputElement;
