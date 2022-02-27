@@ -29,10 +29,11 @@
     "format": "prettier --write ./src ./typings ./test ./example",
     "bundle": "cross-env yarn compile && yarn bundle-dist && yarn test-build && yarn test-ts && yarn format",
     "bundle-dist": "cross-env NODE_ENV=production rollup -c rollup.config.js",
+    "build-types": "tsc --declaration --emitDeclarationOnly",
     "compile": "cross-env NODE_ENV=production babel src --out-dir lib",
     "test": "cross-env NODE_ENV=test karma start && yarn test-ts",
     "test-build": "cross-env NODE_ENV=production TEST_BROWSER=ChromeHeadless karma start",
-    "test-ts": "yarn tsc -p typings",
+    "test-ts": "yarn tsc -p test/types",
     "lint": "cross-env eslint src/**"
   },
   "devDependencies": {
