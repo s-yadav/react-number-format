@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "baseUrl": "../../src",
+    "typeRoots": ["./"],
+    "module": "commonjs",
+    "lib": ["es6", "dom"],
+    "jsx": "react",
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "files": ["number_format.spec.tsx"]
+}
