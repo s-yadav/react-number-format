@@ -11,6 +11,9 @@ module.exports = {
   output: {
     filename: '[name].js'
   },
+  resolve: {
+    extensions: [".js", ".jsx", ".ts", ".tsx"]
+  },
   devServer: {
     contentBase: path.join(__dirname, 'example'),
     compress: true,

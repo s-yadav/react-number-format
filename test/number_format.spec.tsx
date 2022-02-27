@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { default as NumberFormat, NumberFormatProps, InputAttributes } from 'react-number-format';
+import { default as NumberFormat, NumberFormatProps, InputAttributes } from '../src/types';
 
 const CustomNumberFormat = (props: NumberFormatProps) => <NumberFormat {...props} />;
 const CustomNumberFormat2 = (props: NumberFormatProps<InputAttributes>) => (

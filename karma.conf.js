@@ -21,6 +21,9 @@ module.exports = function(config) {
         ]
       },
       externals: {},
+      resolve: {
+        extensions: [".js", ".jsx", ".ts", ".tsx"]
+      },
       watch: true
     },
     webpackServer: {

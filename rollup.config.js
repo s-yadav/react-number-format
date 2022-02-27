@@ -4,8 +4,8 @@ import license from 'rollup-plugin-license';
 import replace from "rollup-plugin-replace";
 import commonjs from "rollup-plugin-commonjs";
 import buble from '@rollup/plugin-buble';
-import flow from 'rollup-plugin-flow'; 
 import resolve from "rollup-plugin-node-resolve";
+import typescript from '@rollup/plugin-typescript';
 
 import PACKAGE from './package.json';
 const fullYear = new Date().getFullYear();
@@ -20,7 +20,7 @@ const globals = {
 };
 
 const defaultConfig = {
-  input: 'src/number_format.js',
+  input: 'src/number_format.tsx',
   output: [{
     file: 'dist/react-number-format.es.js',
     format: 'esm',
@@ -40,7 +40,9 @@ const defaultConfig = {
   }],
   external: ['react'],
   plugins: [
-    flow(),
+    typescript({
+      target: 'es2016'
+    }),
     buble({
       objectAssign: true,
     }),

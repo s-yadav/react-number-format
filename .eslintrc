@@ -8,6 +8,13 @@
     "react", //on react based application
     "import"
   ],
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
   "ecmaFeatures": {
     "arrowFunctions": true,
     "blockBindings": true,
