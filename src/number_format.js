@@ -28,6 +28,7 @@ const defaultProps = {
   fixedDecimalScale: false,
   cutTrailingZeros: 0,
   cutTrailingZerosOnBlur: false,
+  roundDecimalScale: true,
   prefix: '',
   suffix: '',
   allowNegative: true,
@@ -571,7 +572,8 @@ class NumberFormat extends React.Component {
 
     //round the number based on decimalScale
     //format only if non formatted value is provided
-    if (isNumericString && !format && typeof decimalScale === 'number') {
+    //and if roundDecimalScale is set 
+    if (roundDecimalScale && isNumericString && !format && typeof decimalScale === 'number') {
       value = roundToPrecision(value, decimalScale, fixedDecimalScale);
     }
 
@@ -1017,6 +1019,7 @@ class NumberFormat extends React.Component {
       thousandsGroupStyle,
       decimalScale,
       fixedDecimalScale,
+      roundDecimalScale,
       prefix,
       suffix,
       removeFormatting,
@@ -1081,6 +1084,7 @@ if (process.env.NODE_ENV !== 'production') {
     thousandsGroupStyle: PropTypes.oneOf(['thousand', 'lakh', 'wan']),
     decimalScale: PropTypes.number,
     fixedDecimalScale: PropTypes.bool,
+    roundDecimalScale: PropTypes.bool,
     cutTrailingZeros: PropTypes.number,
     cutTrailingZerosOnBlur: PropTypes.bool,
     displayType: PropTypes.oneOf(['input', 'text']),
