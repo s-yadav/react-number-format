@@ -545,7 +545,7 @@ class NumberFormat extends React.Component {
   }
 
   formatValueProp(defaultValue: string | number) {
-    const { format, decimalScale, fixedDecimalScale, allowEmptyFormatting } = this.props;
+    const { format, decimalScale, fixedDecimalScale, allowEmptyFormatting, roundDecimalScale } = this.props;
     let { value, isNumericString } = this.props;
 
     // if value is undefined or null, use defaultValue instead
