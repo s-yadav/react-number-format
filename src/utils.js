@@ -88,6 +88,31 @@ export function limitToScale(numStr: string, scale: number, fixedDecimalScale: b
   return str;
 }
 
+/**
+ * limits decimal part such that it removes trailing zeros (if any)
+ * leaving only first *decimalsToLeaveIntact* intact 
+ */
+export function limitTrailingZeros(afterDecimal: string,  decimalsToLeaveIntact: number, fixedDecimalScale:boolean ){
+  if(afterDecimal && afterDecimal.length > 0){
+    let str = "0."+ afterDecimal;
+    let afterDecimalWithoutAnyTrailingZeros = str.replace(/^([\d,]+)$|^([\d,]+)\.0*$|^([\d,]+\.[0-9]*?)0*$/, "$1$2$3");
+    let newAfterDecimal = afterDecimalWithoutAnyTrailingZeros.includes('.')? afterDecimalWithoutAnyTrailingZeros.split('.')[1]: '0';
+    let result = ''
+
+    if(newAfterDecimal.length < decimalsToLeaveIntact){
+      const filler = fixedDecimalScale ? '0' : '';
+      for (let i = 0; i <= decimalsToLeaveIntact - 1; i++) {
+        result += newAfterDecimal[i] || filler;
+      }
+    }
+    else{
+      result = newAfterDecimal
+    }
+    return result
+  }
+  return afterDecimal;
+}
+
 function repeat(str, count) {
   return Array(count + 1).join(str);
 }

@@ -8,6 +8,7 @@ import {
   escapeRegExp,
   fixLeadingZero,
   limitToScale,
+  limitTrailingZeros,
   roundToPrecision,
   setCaretPosition,
   splitDecimal,
@@ -25,6 +26,9 @@ const defaultProps = {
   decimalSeparator: '.',
   thousandsGroupStyle: 'thousand',
   fixedDecimalScale: false,
+  cutTrailingZeros: 0,
+  cutTrailingZerosOnBlur: false,
+  roundDecimalScale: true,
   prefix: '',
   suffix: '',
   allowNegative: true,
@@ -478,6 +482,8 @@ class NumberFormat extends React.Component {
       suffix,
       allowNegative,
       thousandsGroupStyle,
+      cutTrailingZeros,
+      cutTrailingZerosOnBlur,
     } = this.props;
     const { thousandSeparator, decimalSeparator } = this.getSeparators();
 
@@ -499,6 +505,13 @@ class NumberFormat extends React.Component {
 
     //restore negation sign
     if (addNegation) beforeDecimal = '-' + beforeDecimal;
+
+    //cut trailing zeros
+    if(cutTrailingZeros){
+      if((cutTrailingZerosOnBlur && this.focusedElm == null) || !cutTrailingZerosOnBlur){
+        afterDecimal = limitTrailingZeros(afterDecimal, cutTrailingZeros, fixedDecimalScale)
+      }
+    }
 
     numStr = beforeDecimal + ((hasDecimalSeparator && decimalSeparator) || '') + afterDecimal;
 
@@ -532,7 +545,7 @@ class NumberFormat extends React.Component {
   }
 
   formatValueProp(defaultValue: string | number) {
-    const { format, decimalScale, fixedDecimalScale, allowEmptyFormatting } = this.props;
+    const { format, decimalScale, fixedDecimalScale, allowEmptyFormatting, roundDecimalScale } = this.props;
     let { value, isNumericString } = this.props;
 
     // if value is undefined or null, use defaultValue instead
@@ -559,7 +572,8 @@ class NumberFormat extends React.Component {
 
     //round the number based on decimalScale
     //format only if non formatted value is provided
-    if (isNumericString && !format && typeof decimalScale === 'number') {
+    //and if roundDecimalScale is set 
+    if (roundDecimalScale && isNumericString && !format && typeof decimalScale === 'number') {
       value = roundToPrecision(value, decimalScale, fixedDecimalScale);
     }
 
@@ -1005,6 +1019,7 @@ class NumberFormat extends React.Component {
       thousandsGroupStyle,
       decimalScale,
       fixedDecimalScale,
+      roundDecimalScale,
       prefix,
       suffix,
       removeFormatting,
@@ -1069,6 +1084,9 @@ if (process.env.NODE_ENV !== 'production') {
     thousandsGroupStyle: PropTypes.oneOf(['thousand', 'lakh', 'wan']),
     decimalScale: PropTypes.number,
     fixedDecimalScale: PropTypes.bool,
+    roundDecimalScale: PropTypes.bool,
+    cutTrailingZeros: PropTypes.number,
+    cutTrailingZerosOnBlur: PropTypes.bool,
     displayType: PropTypes.oneOf(['input', 'text']),
     prefix: PropTypes.string,
     suffix: PropTypes.string,
