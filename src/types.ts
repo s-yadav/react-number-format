@@ -1,11 +1,10 @@
-import React from "react";
-import { SyntheticEvent } from "react";
+import React from 'react';
+import { SyntheticEvent } from 'react';
 
-  
 export interface NumberFormatState {
   value?: string;
   numAsString?: string;
-  mounted: boolean  
+  mounted: boolean;
 }
 
 export interface NumberFormatValues {
@@ -59,20 +58,12 @@ export type NumberFormatPropsBase<T> = {
   renderText?: (formattedValue: string, otherProps: Partial<NumberFormatProps>) => React.ReactNode;
   getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any>;
   allowedDecimalSeparators?: Array<string>;
-  customNumerals?: [
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-  ];
+  customNumerals?: [string, string, string, string, string, string, string, string, string, string];
 };
-export type InputAttributes = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'defaultValue' | 'value'>
+export type InputAttributes = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'defaultValue' | 'value'
+>;
 export type NumberFormatProps<T = InputAttributes> = NumberFormatPropsBase<T> &
   Omit<React.InputHTMLAttributes<HTMLInputElement>, keyof T> &
   Omit<T, keyof NumberFormatPropsBase<unknown> | 'ref'>;
