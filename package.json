@@ -6,7 +6,7 @@
   "module": "dist/react-number-format.es.js",
   "author": "Sudhanshu Yadav",
   "license": "MIT",
-  "types": "typings/number_format.d.ts",
+  "types": "typings/types.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/s-yadav/react-number-format"
