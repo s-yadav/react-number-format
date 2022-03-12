@@ -1,14 +1,9 @@
-import { escapeRegex, splitDecimal, limitToScale, applyThousandSeparator } from './utils';
+import { escapeRegExp, splitDecimal, limitToScale, applyThousandSeparator } from './utils';
+import { NumberFormatProps } from './types';
 
-function format(number, props) {
-  const {
-    decimalScale,
-    fixedDecimalScale,
-    prefix,
-    suffix,
-    allowNegative,
-    thousandsGroupStyle,
-  } = props;
+function format(numStr: string, props: NumberFormatProps) {
+  const { decimalScale, fixedDecimalScale, prefix, suffix, allowNegative, thousandsGroupStyle } =
+    props;
 
   const { thousandSeparator, decimalSeparator } = getSeparators(
     props.thousandSeparator,
@@ -57,14 +52,14 @@ function getSeparators(thousandSeparator, decimalSeparator, allowedDecimalSepara
 
 type ChangeMeta = {
   changeIndex: {
-    start: number,
-    end: number,
-  },
+    start: number;
+    end: number;
+  };
   selection: {
-    start: number,
-    end: number,
-  },
-  lastValue: string,
+    start: number;
+    end: number;
+  };
+  lastValue: string;
 };
 
 function handleNegation(value: string = '', allowNegative: boolean) {
@@ -87,15 +82,15 @@ function handleNegation(value: string = '', allowNegative: boolean) {
   return value;
 }
 
-function getNumberRegex(decimalSeparator, decimalScale, global: boolean) {
+function getNumberRegex(decimalSeparator: string, decimalScale: number, global: boolean) {
   return new RegExp(
-    `[0-9]${decimalSeparator && decimalScale !== 0 ? `|${escapeRegex(decimalSeparator)}` : ''}`,
+    `[0-9]${decimalSeparator && decimalScale !== 0 ? `|${escapeRegExp(decimalSeparator)}` : ''}`,
     global ? 'g' : undefined,
   );
 }
 
-function removeFormatting(value, props, changeMeta: ChangeMeta) {
-  const { allowNegative, prefix, suffix, decimalScale, customNumerals } = props;
+function removeFormatting(value: string, props: NumberFormatProps, changeMeta: ChangeMeta) {
+  const { allowNegative, prefix, suffix, decimalScale } = props;
   const { changeIndex, selection } = changeMeta;
   let { start, end } = changeIndex;
   const selectionStart = selection.start;
@@ -106,10 +101,12 @@ function removeFormatting(value, props, changeMeta: ChangeMeta) {
   );
 
   /** Check for any allowed decimal separator is added in the numeric format and replace it with decimal separator */
-  if (!format && start === end && allowedDecimalSeparators.indexOf(value[selectionStart]) !== -1) {
+  if (start === end && allowedDecimalSeparators.indexOf(value[selectionStart]) !== -1) {
     const separator = decimalScale === 0 ? '' : decimalSeparator;
     return (
-      value.substr(0, selectionStart) + separator + value.substr(selectionStart + 1, value.length)
+      value.substring(0, selectionStart) +
+      separator +
+      value.substring(selectionStart + 1, value.length)
     );
   }
 
@@ -117,7 +114,7 @@ function removeFormatting(value, props, changeMeta: ChangeMeta) {
 
   // remove negation from start to simplify prefix logic as negation comes before prefix
   if (hasNegation) {
-    value = value.substr(1);
+    value = value.substring(1);
 
     // account for the removal of the negation for start and end index
     start -= 1;
@@ -126,20 +123,18 @@ function removeFormatting(value, props, changeMeta: ChangeMeta) {
 
   // remove prefix
   const deletedChar = start < prefix.length ? start : prefix.length;
-  value = value.substr(deletedChar);
+  value = value.substring(deletedChar);
 
   // account for deleted prefix for end index
   end -= deletedChar;
 
   // remove suffix
   const suffixStartIndex = value.length - suffix.length;
-  value = value.substr(0, end > suffixStartIndex ? end : suffixStartIndex);
+  value = value.substring(0, end > suffixStartIndex ? end : suffixStartIndex);
 
   // add the negation back and handle for double negation
   value = handleNegation(hasNegation ? `-${value}` : value, allowNegative);
 
   // remove non numeric characters
-  value = (
-    value.match(getNumberRegex(decimalSeparator, decimalScale, customNumerals, true)) || []
-  ).join('');
+  value = (value.match(getNumberRegex(decimalSeparator, decimalScale, true)) || []).join('');
 }
