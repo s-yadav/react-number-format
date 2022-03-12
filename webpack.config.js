@@ -3,29 +3,24 @@ const path = require('path');
 module.exports = {
   mode: 'development',
   entry: {
-    'bundle' : [
-      './example/src/index.js'
-    ]
+    bundle: ['./example/src/index.js'],
   },
-  devtool: "eval",
+  devtool: 'eval',
   output: {
-    filename: '[name].js'
+    filename: '[name].js',
   },
   resolve: {
-    extensions: [".js", ".jsx", ".ts", ".tsx"]
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
   devServer: {
-    contentBase: path.join(__dirname, 'example'),
-    compress: true,
-    port: 8084,
+    static: {
+      directory: path.join(__dirname, 'example'),
+    },
   },
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        use: ['babel-loader'],
-        exclude: /node_modules/,
-      }
-    ]
+      { test: /\.js$/, exclude: /node_modules/, use: ['babel-loader'] },
+      { test: /\.ts|.tsx$/, exclude: /node_modules/, use: ['ts-loader'] },
+    ],
   },
 };
