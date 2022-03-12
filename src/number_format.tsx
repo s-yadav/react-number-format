@@ -51,40 +51,6 @@ class NumberFormat extends React.Component<NumberFormatProps, NumberFormatState>
   };
   static defaultProps: Object;
 
-  // TODO: remove this on v5. This is only for backward compatibility
-  static propTypes: {
-    thousandSeparator: any;
-    decimalSeparator: any;
-    allowedDecimalSeparators: any;
-    thousandsGroupStyle: any;
-    decimalScale: any;
-    fixedDecimalScale: any;
-    displayType: any;
-    prefix: any;
-    suffix: any;
-    format: any;
-    removeFormatting: any;
-    mask: any;
-    value: any;
-    defaultValue: any;
-    isNumericString: any;
-    customInput: any;
-    allowNegative: any;
-    allowEmptyFormatting: any;
-    allowLeadingZeros: any;
-    onValueChange: any;
-    onKeyDown: any;
-    onMouseUp: any;
-    onChange: any;
-    onFocus: any;
-    onBlur: any;
-    type: any;
-    isAllowed: any;
-    renderText: any;
-    getInputRef: any;
-    customNumerals: (props: any, propName: any, componentName: any) => Error;
-  };
-
   constructor(props: NumberFormatProps) {
     super(props);
     const { defaultValue } = props;
@@ -497,14 +463,8 @@ class NumberFormat extends React.Component<NumberFormatProps, NumberFormatState>
    * @return {string} formatted Value
    */
   formatAsNumber(numStr: string) {
-    const {
-      decimalScale,
-      fixedDecimalScale,
-      prefix,
-      suffix,
-      allowNegative,
-      thousandsGroupStyle,
-    } = this.props;
+    const { decimalScale, fixedDecimalScale, prefix, suffix, allowNegative, thousandsGroupStyle } =
+      this.props;
     const { thousandSeparator, decimalSeparator } = this.getSeparators();
 
     const hasDecimalSeparator = numStr.indexOf('.') !== -1 || (decimalScale && fixedDecimalScale);
@@ -1089,62 +1049,5 @@ class NumberFormat extends React.Component<NumberFormatProps, NumberFormatState>
 }
 
 NumberFormat.defaultProps = defaultProps;
-
-if (process.env.NODE_ENV !== 'production') {
-  const PropTypes = require('prop-types');
-  NumberFormat.propTypes = {
-    thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([true])]),
-    decimalSeparator: PropTypes.string,
-    allowedDecimalSeparators: PropTypes.arrayOf(PropTypes.string),
-    thousandsGroupStyle: PropTypes.oneOf(['thousand', 'lakh', 'wan']),
-    decimalScale: PropTypes.number,
-    fixedDecimalScale: PropTypes.bool,
-    displayType: PropTypes.oneOf(['input', 'text']),
-    prefix: PropTypes.string,
-    suffix: PropTypes.string,
-    format: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-    removeFormatting: PropTypes.func,
-    mask: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    defaultValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    isNumericString: PropTypes.bool,
-    customInput: PropTypes.elementType,
-    allowNegative: PropTypes.bool,
-    allowEmptyFormatting: PropTypes.bool,
-    allowLeadingZeros: PropTypes.bool,
-    onValueChange: PropTypes.func,
-    onKeyDown: PropTypes.func,
-    onMouseUp: PropTypes.func,
-    onChange: PropTypes.func,
-    onFocus: PropTypes.func,
-    onBlur: PropTypes.func,
-    type: PropTypes.oneOf(['text', 'tel', 'password']),
-    isAllowed: PropTypes.func,
-    renderText: PropTypes.func,
-    getInputRef: PropTypes.oneOfType([
-      PropTypes.func, // for legacy refs
-      PropTypes.shape({ current: PropTypes.any }),
-    ]),
-    customNumerals: (props, propName, componentName) => {
-      if (!props[propName]) {
-        return;
-      }
-      const arrayPropLength = props[propName].length;
-      const hasSingleCharString = props[propName].every(
-        (item) => typeof item === 'string' && item.length === 1,
-      );
-      if (arrayPropLength !== 10) {
-        return new Error(
-          `Invalid array length ${arrayPropLength} (expected ${10}) for prop ${propName} supplied to ${componentName}. Validation failed.`,
-        );
-      }
-      if (!hasSingleCharString) {
-        return new Error(
-          `Invalid element type for prop ${propName} supplied to ${componentName}. all provided elements in the array must be string. Validation failed.`,
-        );
-      }
-    },
-  };
-}
 
 export default NumberFormat;
