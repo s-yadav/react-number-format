@@ -250,7 +250,7 @@ export function getMaskAtIndex(mask: string | string[] = ' ', index: number) {
   return mask[index] || ' ';
 }
 
-export function getCaretPosition(formattedValue: string, curValue: stirng, curCaretPos: number) {
+export function getCaretPosition(formattedValue: string, curValue: string, curCaretPos: number) {
   const curValLn = curValue.length;
   const formattedValueLn = formattedValue.length;
 

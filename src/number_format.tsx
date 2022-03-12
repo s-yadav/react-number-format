@@ -263,7 +263,7 @@ class NumberFormat extends React.Component<NumberFormatProps, NumberFormatState>
     } else if (typeof format === 'string') {
       boundary = caretPatternBoundary(value, props);
     } else {
-      boundary = caretUnknownFormatBoundary(value, props);
+      boundary = caretUnknownFormatBoundary(value);
     }
 
     if (direction === 'left') {
