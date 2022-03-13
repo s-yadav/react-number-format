@@ -13,7 +13,7 @@ import {
   findChangedIndex,
   clamp,
   applyThousandSeparator,
-  getCurrentCaretPosition,
+  geInputCaretPosition,
   addInputMode,
   isNil,
   toNumericString,
@@ -665,7 +665,7 @@ class NumberFormat extends React.Component<NumberFormatProps, NumberFormatState>
       if (caretPos === undefined && setCaretPosition) {
         const inputValue = params.inputValue || input.value;
 
-        const currentCaretPosition = getCurrentCaretPosition(input);
+        const currentCaretPosition = geInputCaretPosition(input);
 
         /**
          * set the value imperatively, this is required for IE fix
@@ -712,7 +712,7 @@ class NumberFormat extends React.Component<NumberFormatProps, NumberFormatState>
     const { isAllowed } = props;
     const lastValue = state.value || '';
 
-    const currentCaretPosition = getCurrentCaretPosition(el);
+    const currentCaretPosition = geInputCaretPosition(el);
 
     inputValue = this.correctInputValue(currentCaretPosition, lastValue, inputValue);
 
