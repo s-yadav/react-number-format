@@ -1,5 +1,7 @@
+import React from 'react';
 import { NumberFormatProps, ChangeMeta } from './types';
 import { getDefaultChangeMeta, getMaskAtIndex } from './utils';
+import NumberFormatBase from './number_format_base';
 
 export function format(numStr: string, props: NumberFormatProps) {
   const format = props.format as string;
@@ -18,8 +20,8 @@ export function format(numStr: string, props: NumberFormatProps) {
 
 export function removeFormatting(
   value: string,
-  props: NumberFormatProps,
   changeMeta: ChangeMeta = getDefaultChangeMeta(value),
+  props: NumberFormatProps,
 ) {
   const format = props.format as string;
   const { mask, patternChar = '#' } = props;
@@ -84,4 +86,56 @@ export function removeFormatting(
     lastSection,
     from.end,
   )}`;
+}
+
+export function getCaretBoundary(formattedValue: string, props: NumberFormatProps) {
+  const format = props.format as string;
+  const { mask, patternChar = '#' } = props;
+  const boundaryAry = Array.from({ length: formattedValue.length + 1 }).map(() => true);
+
+  let hashCount = 0;
+  const maskAndFormatMap = format.split('').map((char) => {
+    if (char === patternChar) {
+      hashCount++;
+      return getMaskAtIndex(mask, hashCount - 1);
+    }
+
+    return undefined;
+  });
+
+  const isPosAllowed = (pos: number) => {
+    // the position is allowed if the position is not masked and valid number area
+    return format[pos] === patternChar && formattedValue[pos] !== maskAndFormatMap[pos];
+  };
+
+  for (let i = 0, ln = boundaryAry.length; i < ln; i++) {
+    // consider caret to be in boundary if it is before or after numeric value
+    // Note: on pattern based format its denoted by patternCharacter
+    boundaryAry[i] = isPosAllowed(i) || isPosAllowed(i - 1);
+  }
+
+  // the first patternChar position is always allowed
+  boundaryAry[format.indexOf(patternChar)] = true;
+
+  return boundaryAry;
+}
+
+export default function PatternFormat(props: NumberFormatProps) {
+  const {
+    /* eslint-disable no-unused-vars */
+    mask,
+    allowEmptyFormatting,
+    format: formatProp,
+    /* eslint-enable no-unused-vars */
+    ...restProps
+  } = props;
+
+  return (
+    <NumberFormatBase
+      {...props}
+      format={(numStr) => format(numStr, props)}
+      removeFormatting={(inputValue, changeMeta) => removeFormatting(inputValue, changeMeta, props)}
+      getCaretBoundary={(formattedValue) => getCaretBoundary(formattedValue, props)}
+    />
+  );
 }

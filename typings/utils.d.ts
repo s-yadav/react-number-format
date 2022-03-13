@@ -55,7 +55,7 @@ export declare function findChangedIndex(
   end: number;
 };
 export declare function clamp(num: number, min: number, max: number): number;
-export declare function getCurrentCaretPosition(el: HTMLInputElement): number;
+export declare function geInputCaretPosition(el: HTMLInputElement): number;
 export declare function addInputMode(
   format: string | FormatInputValueFunction,
 ): string | boolean | FormatInputValueFunction;

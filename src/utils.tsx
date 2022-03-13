@@ -222,6 +222,28 @@ export function findChangedIndex(prevValue: string, newValue: string) {
   return { start: i, end: prevLength - j };
 }
 
+export function findChangeRange(prevValue: string, newValue: string) {
+  let i = 0,
+    j = 0;
+  const prevLength = prevValue.length;
+  const newLength = newValue.length;
+  while (prevValue[i] === newValue[i] && i < prevLength) i++;
+
+  //check what has been changed from last
+  while (
+    prevValue[prevLength - 1 - j] === newValue[newLength - 1 - j] &&
+    newLength - j > i &&
+    prevLength - j > i
+  ) {
+    j++;
+  }
+
+  return {
+    from: { start: i, end: prevLength - j },
+    to: { start: i, end: newLength - j },
+  };
+}
+
 /*
   Returns a number whose value is limited to the given range
 */
@@ -229,7 +251,7 @@ export function clamp(num: number, min: number, max: number) {
   return Math.min(Math.max(num, min), max);
 }
 
-export function getCurrentCaretPosition(el: HTMLInputElement) {
+export function geInputCaretPosition(el: HTMLInputElement) {
   /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
   return Math.max(el.selectionStart, el.selectionEnd);
 }
@@ -312,53 +334,6 @@ export function getCaretPosition(formattedValue: string, curValue: string, curCa
    * keep the new caret position on start index or keep it closer to endIndex
    */
   return curCaretPos - startIndex < endIndex - curCaretPos ? startIndex : endIndex;
-}
-
-export function caretNumericBoundary(formattedValue: string, props) {
-  const { prefix, suffix } = props;
-  const boundaryAry = Array.from({ length: formattedValue.length + 1 }).map(() => true);
-
-  const hasNegation = formattedValue[0] === '-';
-
-  // fill for prefix and negation
-  boundaryAry.fill(false, 0, prefix.length + (hasNegation ? 1 : 0));
-
-  // fill for suffix
-  const valLn = formattedValue.length;
-  boundaryAry.fill(false, valLn - suffix.length + 1, valLn + 1);
-
-  return boundaryAry;
-}
-
-export function caretPatternBoundary(formattedValue: string, props) {
-  const { format, mask, patternChar = '#' } = props;
-  const boundaryAry = Array.from({ length: formattedValue.length + 1 }).map(() => true);
-
-  let hashCount = 0;
-  const maskAndFormatMap = format.split('').map((char) => {
-    if (char === patternChar) {
-      hashCount++;
-      return getMaskAtIndex(mask, hashCount - 1);
-    }
-
-    return undefined;
-  });
-
-  const isPosAllowed = (pos: number) => {
-    // the position is allowed if the position is not masked and valid number area
-    return format[pos] === patternChar && formattedValue[pos] !== maskAndFormatMap[pos];
-  };
-
-  for (let i = 0, ln = boundaryAry.length; i < ln; i++) {
-    // consider caret to be in boundary if it is before or after numeric value
-    // Note: on pattern based format its denoted by patternCharacter
-    boundaryAry[i] = isPosAllowed(i) || isPosAllowed(i - 1);
-  }
-
-  // the first patternChar position is always allowed
-  boundaryAry[format.indexOf(patternChar)] = true;
-
-  return boundaryAry;
 }
 
 export function caretUnknownFormatBoundary(formattedValue: string) {

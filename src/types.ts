@@ -13,9 +13,14 @@ export interface NumberFormatValues {
   value: string;
 }
 
+export enum SourceType {
+  Event = 'event';
+  Props= 'props';
+}
+
 export interface SourceInfo {
   event: SyntheticEvent;
-  source: string;
+  source: SourceType;
 }
 
 export type FormatInputValueFunction = (inputValue: string) => string;
@@ -47,7 +52,7 @@ export type NumberFormatPropsBase<T> = {
   prefix?: string;
   suffix?: string;
   format?: string | FormatInputValueFunction;
-  removeFormatting?: (formattedValue: string) => string;
+  removeFormatting?: (inputValue: string, changeMeta: ChangeMeta) => string;
   mask?: string | string[];
   value?: number | string | null;
   defaultValue?: number | string;
@@ -72,6 +77,7 @@ export type NumberFormatPropsBase<T> = {
   getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any>;
   allowedDecimalSeparators?: Array<string>;
   customNumerals?: [string, string, string, string, string, string, string, string, string, string];
+  getCaretBoundary: (formattedValue: string) => boolean[];
 };
 export type InputAttributes = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
