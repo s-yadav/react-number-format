@@ -242,6 +242,20 @@ export function addInputMode(format: string | FormatInputValueFunction) {
   );
 }
 
+export function getDefaultChangeMeta(value: string) {
+  return {
+    from: {
+      start: 0,
+      end: 0,
+    },
+    to: {
+      start: 0,
+      end: value.length,
+    },
+    lastValue: '',
+  };
+}
+
 export function getMaskAtIndex(mask: string | string[] = ' ', index: number) {
   if (typeof mask === 'string') {
     return mask;

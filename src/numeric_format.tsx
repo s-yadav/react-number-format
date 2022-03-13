@@ -1,7 +1,13 @@
-import { escapeRegExp, splitDecimal, limitToScale, applyThousandSeparator } from './utils';
-import { NumberFormatProps } from './types';
+import {
+  escapeRegExp,
+  splitDecimal,
+  limitToScale,
+  applyThousandSeparator,
+  getDefaultChangeMeta,
+} from './utils';
+import { NumberFormatProps, ChangeMeta } from './types';
 
-function format(numStr: string, props: NumberFormatProps) {
+export function format(numStr: string, props: NumberFormatProps) {
   const { decimalScale, fixedDecimalScale, prefix, suffix, allowNegative, thousandsGroupStyle } =
     props;
 
@@ -50,18 +56,6 @@ function getSeparators(thousandSeparator, decimalSeparator, allowedDecimalSepara
   };
 }
 
-type ChangeMeta = {
-  changeIndex: {
-    start: number;
-    end: number;
-  };
-  selection: {
-    start: number;
-    end: number;
-  };
-  lastValue: string;
-};
-
 function handleNegation(value: string = '', allowNegative: boolean) {
   const negationRegex = new RegExp('(-)');
   const doubleNegationRegex = new RegExp('(-)(.)*(-)');
@@ -89,11 +83,14 @@ function getNumberRegex(decimalSeparator: string, decimalScale: number, global: 
   );
 }
 
-function removeFormatting(value: string, props: NumberFormatProps, changeMeta: ChangeMeta) {
+export function removeFormatting(
+  value: string,
+  props: NumberFormatProps,
+  changeMeta: ChangeMeta = getDefaultChangeMeta(value),
+) {
   const { allowNegative, prefix, suffix, decimalScale } = props;
-  const { changeIndex, selection } = changeMeta;
-  let { start, end } = changeIndex;
-  const selectionStart = selection.start;
+  const { to } = changeMeta;
+  let { start, end } = to;
   const { allowedDecimalSeparators, decimalSeparator } = getSeparators(
     props.thousandSeparator,
     props.decimalSeparator,
@@ -101,13 +98,9 @@ function removeFormatting(value: string, props: NumberFormatProps, changeMeta: C
   );
 
   /** Check for any allowed decimal separator is added in the numeric format and replace it with decimal separator */
-  if (start === end && allowedDecimalSeparators.indexOf(value[selectionStart]) !== -1) {
+  if (end - start === 1 && allowedDecimalSeparators.indexOf(value[start]) !== -1) {
     const separator = decimalScale === 0 ? '' : decimalSeparator;
-    return (
-      value.substring(0, selectionStart) +
-      separator +
-      value.substring(selectionStart + 1, value.length)
-    );
+    return value.substring(0, start) + separator + value.substring(start + 1, value.length);
   }
 
   const hasNegation = value[0] === '-';
@@ -121,16 +114,33 @@ function removeFormatting(value: string, props: NumberFormatProps, changeMeta: C
     end -= 1;
   }
 
-  // remove prefix
-  const deletedChar = start < prefix.length ? start : prefix.length;
-  value = value.substring(deletedChar);
+  /**
+   * remove prefix
+   * Remove whole prefix part if its present on the value
+   * If the prefix is partially deleted (in which case change start index will be less the prefix length)
+   * Remove only partial part of prefix.
+   */
+  let startIndex = 0;
+  if (value.startsWith(prefix)) startIndex += prefix.length;
+  else if (start < prefix.length) startIndex = start;
+  value = value.substring(startIndex);
 
   // account for deleted prefix for end index
-  end -= deletedChar;
+  end -= startIndex;
 
-  // remove suffix
+  /**
+   * Remove suffix
+   * Remove whole suffix part if its present on the value
+   * If the suffix is partially deleted (in which case change end index will be greater than the suffixStartIndex)
+   * remove the partial part of suffix
+   */
+  let endIndex = value.length;
   const suffixStartIndex = value.length - suffix.length;
-  value = value.substring(0, end > suffixStartIndex ? end : suffixStartIndex);
+
+  if (value.endsWith(suffix)) endIndex = suffixStartIndex;
+  if (end > value.length - suffix.length) endIndex = end;
+
+  value = value.substring(0, endIndex);
 
   // add the negation back and handle for double negation
   value = handleNegation(hasNegation ? `-${value}` : value, allowNegative);
