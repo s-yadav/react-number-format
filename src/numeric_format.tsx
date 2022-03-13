@@ -1,11 +1,14 @@
+import React from 'react';
 import {
   escapeRegExp,
   splitDecimal,
   limitToScale,
   applyThousandSeparator,
   getDefaultChangeMeta,
+  fixLeadingZero,
 } from './utils';
 import { NumberFormatProps, ChangeMeta } from './types';
+import NumberFormatBase from './number_format_base';
 
 export function format(numStr: string, props: NumberFormatProps) {
   const { decimalScale, fixedDecimalScale, prefix, suffix, allowNegative, thousandsGroupStyle } =
@@ -85,8 +88,8 @@ function getNumberRegex(decimalSeparator: string, decimalScale: number, global: 
 
 export function removeFormatting(
   value: string,
-  props: NumberFormatProps,
   changeMeta: ChangeMeta = getDefaultChangeMeta(value),
+  props: NumberFormatProps,
 ) {
   const { allowNegative, prefix, suffix, decimalScale } = props;
   const { to } = changeMeta;
@@ -147,4 +150,101 @@ export function removeFormatting(
 
   // remove non numeric characters
   value = (value.match(getNumberRegex(decimalSeparator, decimalScale, true)) || []).join('');
+}
+
+export function getCaretBoundary(formattedValue: string, props: NumberFormatProps) {
+  const { prefix, suffix } = props;
+  const boundaryAry = Array.from({ length: formattedValue.length + 1 }).map(() => true);
+
+  const hasNegation = formattedValue[0] === '-';
+
+  // fill for prefix and negation
+  boundaryAry.fill(false, 0, prefix.length + (hasNegation ? 1 : 0));
+
+  // fill for suffix
+  const valLn = formattedValue.length;
+  boundaryAry.fill(false, valLn - suffix.length + 1, valLn + 1);
+
+  return boundaryAry;
+}
+
+export default function NumericFormat(props: NumberFormatProps) {
+  const {
+    /* eslint-disable no-unused-vars */
+    thousandSeparator,
+    decimalSeparator,
+    allowedDecimalSeparators,
+    thousandsGroupStyle,
+    decimalScale,
+    fixedDecimalScale,
+    prefix = '',
+    suffix,
+    allowNegative,
+    allowLeadingZeros,
+    onKeyDown,
+    /* eslint-enable no-unused-vars */
+    ...restProps
+  } = props;
+
+  const _onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const el = e.target as HTMLInputElement;
+    const { key } = e;
+    const { selectionStart, selectionEnd, value = '' } = el;
+
+    // if multiple characters are selected and user hits backspace, no need to handle anything manually
+    if (selectionStart !== selectionEnd) {
+      onKeyDown(e);
+      return;
+    }
+
+    // if user hits backspace, while the cursor is before prefix, and the input has negation, remove the negation
+    if (key === 'Backspace' && value[0] === '-' && selectionStart === prefix.length + 1) {
+      // bring the negation after prefix so that it can be removed automatically be browser
+      el.value = `${prefix}-${value.substring(prefix.length + 1)}`;
+    }
+
+    onKeyDown(e);
+  };
+
+  const _onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    let { numAsString } = state;
+    const lastValue = state.value;
+
+    // if the numAsString is not a valid number reset it to empty
+    if (isNaN(parseFloat(numAsString))) {
+      numAsString = '';
+    }
+
+    if (!allowLeadingZeros) {
+      numAsString = fixLeadingZero(numAsString);
+    }
+
+    const formattedValue = this.formatNumString(numAsString);
+
+    //change the state
+    if (formattedValue !== lastValue) {
+      // the event needs to be persisted because its properties can be accessed in an asynchronous way
+      this.updateValue({
+        formattedValue,
+        numAsString,
+        input: e.target,
+        setCaretPosition: false,
+        event: e,
+        source: 'event',
+      });
+      onBlur(e);
+      return;
+    }
+    onBlur(e);
+  };
+
+  return (
+    <NumberFormatBase
+      {...restProps}
+      format={(numStr) => format(numStr, props)}
+      removeFormatting={(inputValue, changeMeta) => removeFormatting(inputValue, changeMeta, props)}
+      getCaretBoundary={(formattedValue) => getCaretBoundary(formattedValue, props)}
+      onKeyDown={_onKeyDown}
+    />
+  );
 }
