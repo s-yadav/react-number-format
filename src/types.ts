@@ -25,6 +25,18 @@ export interface SyntheticInputEvent extends React.SyntheticEvent<HTMLInputEleme
   data: any;
 }
 
+export type ChangeMeta = {
+  from: {
+    start: number;
+    end: number;
+  };
+  to: {
+    start: number;
+    end: number;
+  };
+  lastValue: string;
+};
+
 export type NumberFormatPropsBase<T> = {
   thousandSeparator?: boolean | string;
   decimalSeparator?: string;
@@ -44,6 +56,7 @@ export type NumberFormatPropsBase<T> = {
   allowNegative?: boolean;
   allowEmptyFormatting?: boolean;
   allowLeadingZeros?: boolean;
+  patternChar?: string;
   onValueChange?: (values: NumberFormatValues, sourceInfo: SourceInfo) => void;
   /**
    * these are already included in React.HTMLAttributes<HTMLInputElement>
