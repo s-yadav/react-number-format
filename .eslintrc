@@ -32,7 +32,7 @@
     "superInFunctions": true,
     "templateStrings": true
   },
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
   "rules": {
     /*** best practices ***/
 

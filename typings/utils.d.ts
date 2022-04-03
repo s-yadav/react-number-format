@@ -16,7 +16,7 @@ export declare function splitDecimal(
 ): {
   beforeDecimal: string;
   afterDecimal: string;
-  hasNagation: boolean;
+  hasNegation: boolean;
   addNegation: boolean;
 };
 export declare function fixLeadingZero(numStr?: string): string;
