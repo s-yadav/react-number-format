@@ -11,10 +11,10 @@ module.exports = function (config) {
     files: ['./test/**/*.spec.js'],
     reporters: [runOnNode ? 'spec' : 'kjhtml'],
     preprocessors: {
-      './test/**/*.js': ['webpack', 'sourcemap'], //preprocess with webpack
+      './test/**/*.js': ['webpack'], //preprocess with webpack
     },
     webpack: {
-      mode: 'none',
+      mode: runOnNode ? 'production' : 'development',
       module: {
         rules: [
           { test: /\.js$/, exclude: /node_modules/, use: ['babel-loader'] },

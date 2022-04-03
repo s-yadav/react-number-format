@@ -1,5 +1,7 @@
 import Enzyme, { shallow, mount } from 'enzyme';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+import Adapter from 'enzyme-adapter-react-16';
+import userEvent from '@testing-library/user-event';
+import { render as testRender } from '@testing-library/react';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -118,6 +120,17 @@ export function simulateKeyInput(input, key, selectionStart, selectionEnd, setSe
   }
 }
 
+export async function render(elm) {
+  const view = testRender(elm);
+  const input = await view.getByRole('textbox');
+  return { ...view, view: view, input };
+}
+
+export function simulateNativeKeyInput(input, key, selectionStart = 0, selectionEnd = 0) {
+  input.setSelectionRange(selectionStart, selectionEnd);
+  userEvent.type(input, key);
+}
+
 export function simulateMousUpEvent(input, selectionStart, setSelectionRange) {
   const selectionEnd = selectionStart;
 
@@ -176,3 +189,15 @@ export function simulateBlurEvent(input) {
 }
 
 export { Enzyme, shallow, mount };
+
+export function getInputValue(wrapper) {
+  return wrapper.find('input').instance().value;
+}
+
+export async function wait(delay) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, delay);
+  });
+}

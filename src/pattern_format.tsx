@@ -1,11 +1,13 @@
 import React from 'react';
 import { NumberFormatProps, ChangeMeta } from './types';
-import { getDefaultChangeMeta, getMaskAtIndex } from './utils';
+import { getDefaultChangeMeta, getMaskAtIndex, noop, setCaretPosition } from './utils';
 import NumberFormatBase from './number_format_base';
 
 export function format(numStr: string, props: NumberFormatProps) {
   const format = props.format as string;
-  const { mask } = props;
+  const { allowEmptyFormatting, mask } = props;
+
+  if (numStr === '' && !allowEmptyFormatting) return '';
 
   let hashCount = 0;
   const formattedNumberAry = format.split('');
@@ -24,7 +26,7 @@ export function removeFormatting(
   props: NumberFormatProps,
 ) {
   const format = props.format as string;
-  const { mask, patternChar = '#' } = props;
+  const { patternChar = '#' } = props;
   const { from, to, lastValue = '' } = changeMeta;
 
   const isNumericSlot = (caretPos: number) => format[caretPos] === patternChar;
@@ -32,7 +34,7 @@ export function removeFormatting(
   const removeFormatChar = (string, startIndex) => {
     let str = '';
     for (let i = 0; i < string.length; i++) {
-      if (!isNumericSlot(startIndex + i)) {
+      if (isNumericSlot(startIndex + i)) {
         str += string[i];
       }
     }
@@ -61,6 +63,8 @@ export function removeFormatting(
         return extractNumbers(value);
       }
     }
+
+    return str;
   }
 
   /**
@@ -120,22 +124,78 @@ export function getCaretBoundary(formattedValue: string, props: NumberFormatProp
   return boundaryAry;
 }
 
+function validateProps(props: NumberFormatProps) {
+  const { mask } = props;
+
+  if (mask) {
+    const maskAsStr = mask === 'string' ? mask : mask.toString();
+    if (maskAsStr.match(/\d/g)) {
+      throw new Error(`Mask ${mask} should not contain numeric character;`);
+    }
+  }
+}
+
 export default function PatternFormat(props: NumberFormatProps) {
   const {
     /* eslint-disable no-unused-vars */
     mask,
     allowEmptyFormatting,
     format: formatProp,
+    inputMode = 'numeric',
     /* eslint-enable no-unused-vars */
+    onKeyDown = noop,
+    patternChar = '#',
     ...restProps
   } = props;
 
+  // validate props
+  validateProps(props);
+
+  const _onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const { key } = e;
+    const el = e.target as HTMLInputElement;
+    const { selectionStart, selectionEnd } = el;
+
+    // if multiple characters are selected and user hits backspace, no need to handle anything manually
+    if (selectionStart !== selectionEnd) {
+      onKeyDown(e);
+      return;
+    }
+
+    // if backspace is pressed after the format characters, bring it to numeric section
+    // if delete is pressed before the format characters, bring it to numeric section
+    if (key === 'Backspace' || key === 'Delete') {
+      // bring the cursor to closest numeric section
+      let index = selectionStart;
+
+      if (key === 'Backspace') {
+        while (index > 0 && formatProp[index - 1] !== patternChar) {
+          index--;
+        }
+      } else {
+        const formatLn = formatProp.length;
+        while (index < formatLn && formatProp[index] !== patternChar) {
+          index++;
+        }
+      }
+
+      if (index !== selectionStart) {
+        setCaretPosition(el, index);
+      }
+    }
+
+    onKeyDown(e);
+  };
+
   return (
     <NumberFormatBase
-      {...props}
+      {...restProps}
+      patternChar={patternChar}
+      inputMode={inputMode}
       format={(numStr) => format(numStr, props)}
       removeFormatting={(inputValue, changeMeta) => removeFormatting(inputValue, changeMeta, props)}
       getCaretBoundary={(formattedValue) => getCaretBoundary(formattedValue, props)}
+      onKeyDown={_onKeyDown}
     />
   );
 }
