@@ -14,12 +14,12 @@ export interface NumberFormatValues {
 }
 
 export enum SourceType {
-  Event = 'event';
-  Props= 'props';
+  event = 'event',
+  props = 'prop',
 }
 
 export interface SourceInfo {
-  event: SyntheticEvent;
+  event?: SyntheticEvent;
   source: SourceType;
 }
 
@@ -79,6 +79,7 @@ export type NumberFormatPropsBase<T> = {
   customNumerals?: [string, string, string, string, string, string, string, string, string, string];
   getCaretBoundary: (formattedValue: string) => boolean[];
 };
+
 export type InputAttributes = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
   'defaultValue' | 'value'

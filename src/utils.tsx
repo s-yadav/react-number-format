@@ -1,3 +1,6 @@
+import { useMemo, useRef, useState } from 'react';
+import { NumberFormatProps } from './types';
+
 type FormatInputValueFunction = (inputValue: string) => string;
 
 // basic noop function
@@ -12,6 +15,10 @@ export function charIsNumber(char?: string) {
 
 export function isNil(val: any) {
   return val === null || val === undefined;
+}
+
+export function isNanValue(val: string | number) {
+  return typeof val === 'number' && isNaN(val);
 }
 
 export function escapeRegExp(str: string) {
@@ -44,10 +51,26 @@ export function applyThousandSeparator(
   );
 }
 
+export function usePersistentCallback<T extends (...args: any[]) => any>(cb: T) {
+  const callbackRef = useRef<T>(cb);
+  // keep the callback ref upto date
+  callbackRef.current = cb;
+  type Params = Parameters<T>;
+  /**
+   * initialize a persistent callback which never changes
+   * through out the component lifecycle
+   */
+  const persistentCbRef = useRef(function (...args: Params) {
+    return callbackRef.current(...args);
+  } as T);
+
+  return persistentCbRef.current;
+}
+
 //spilt a float number into different parts beforeDecimal, afterDecimal, and negation
 export function splitDecimal(numStr: string, allowNegative: boolean = true) {
-  const hasNagation = numStr[0] === '-';
-  const addNegation = hasNagation && allowNegative;
+  const hasNegation = numStr[0] === '-';
+  const addNegation = hasNegation && allowNegative;
   numStr = numStr.replace('-', '');
 
   const parts = numStr.split('.');
@@ -57,7 +80,7 @@ export function splitDecimal(numStr: string, allowNegative: boolean = true) {
   return {
     beforeDecimal,
     afterDecimal,
-    hasNagation,
+    hasNegation,
     addNegation,
   };
 }
@@ -141,7 +164,7 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
   if (['', '-'].indexOf(numStr) !== -1) return numStr;
 
   const shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
-  const { beforeDecimal, afterDecimal, hasNagation } = splitDecimal(numStr);
+  const { beforeDecimal, afterDecimal, hasNegation } = splitDecimal(numStr);
   const floatValue = parseFloat(`0.${afterDecimal || '0'}`);
   const floatValueStr =
     afterDecimal.length <= scale ? `0.${afterDecimal}` : floatValue.toFixed(scale);
@@ -159,12 +182,8 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
       return current + roundedStr;
     }, roundedDecimalParts[0]);
 
-  const decimalPart = limitToScale(
-    roundedDecimalParts[1] || '',
-    Math.min(scale, afterDecimal.length),
-    fixedDecimalScale,
-  );
-  const negation = hasNagation ? '-' : '';
+  const decimalPart = limitToScale(roundedDecimalParts[1] || '', scale, fixedDecimalScale);
+  const negation = hasNegation ? '-' : '';
   const decimalSeparator = shoudHaveDecimalSeparator ? '.' : '';
   return `${negation}${intPart}${decimalSeparator}${decimalPart}`;
 }
@@ -256,11 +275,10 @@ export function geInputCaretPosition(el: HTMLInputElement) {
   return Math.max(el.selectionStart, el.selectionEnd);
 }
 
-export function addInputMode(format: string | FormatInputValueFunction) {
+export function addInputMode() {
   return (
-    format ||
-    (typeof navigator !== 'undefined' &&
-      !(navigator.platform && /iPhone|iPod/.test(navigator.platform)))
+    typeof navigator !== 'undefined' &&
+    !(navigator.platform && /iPhone|iPod/.test(navigator.platform))
   );
 }
 
@@ -347,4 +365,58 @@ export function caretUnknownFormatBoundary(formattedValue: string) {
   }
 
   return boundaryAry;
+}
+
+export function useInternalValues(
+  value: string | number,
+  defaultValue: string | number,
+  isNumericString: boolean,
+  format: FormatInputValueFunction,
+  removeFormatting: NumberFormatProps['removeFormatting'],
+  onValueChange: NumberFormatProps['onValueChange'] = noop,
+): [{ formattedValue: string; numAsString: string }, NumberFormatProps['onValueChange']] {
+  type Values = { formattedValue: string; numAsString: string };
+
+  const propValues = useRef<Values>();
+
+  const getValues = usePersistentCallback((value: string | number) => {
+    let formattedValue, numAsString;
+    if (isNil(value) || isNanValue(value)) {
+      numAsString = '';
+      formattedValue = '';
+    } else if (typeof value === 'number' || isNumericString) {
+      numAsString = typeof value === 'number' ? toNumericString(value) : value;
+      formattedValue = format(numAsString);
+    } else {
+      numAsString = removeFormatting(value, undefined);
+      formattedValue = value;
+    }
+
+    return { formattedValue, numAsString };
+  });
+
+  const [values, setValues] = useState<Values>(() => {
+    return getValues(defaultValue);
+  });
+
+  const _onValueChange: typeof onValueChange = (values, sourceInfo) => {
+    setValues({
+      formattedValue: values.formattedValue,
+      numAsString: values.value,
+    });
+
+    onValueChange(values, sourceInfo);
+  };
+
+  useMemo(() => {
+    //if element is moved to uncontrolled mode, don't reset the value
+    if (!isNil(value)) {
+      propValues.current = getValues(value);
+      setValues(propValues.current);
+    } else {
+      propValues.current = undefined;
+    }
+  }, [value, getValues]);
+
+  return [values, _onValueChange];
 }

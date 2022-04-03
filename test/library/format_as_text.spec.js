@@ -1,42 +1,54 @@
 import React from 'react';
 
-import { shallow } from '../test_util';
-import NumberFormat from '../../src/number_format';
+import { mount } from '../test_util';
+import NumericFormat from '../../src/numeric_format';
+import PatternFormat from '../../src/pattern_format';
 
 /*** format_number input as text ****/
 describe('NumberFormat as text', () => {
   it('should format numbers to currency', () => {
-    const wrapper = shallow(
-      <NumberFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />,
+    const wrapper = mount(
+      <NumericFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />,
     );
     expect(wrapper.find('span').text()).toEqual('$2,456,981');
   });
 
   it('should format as given format', () => {
-    const wrapper = shallow(
-      <NumberFormat value={4111111111111111} displayType={'text'} format="#### #### #### ####" />,
+    const wrapper = mount(
+      <PatternFormat value={4111111111111111} displayType={'text'} format="#### #### #### ####" />,
     );
     expect(wrapper.find('span').text()).toEqual('4111 1111 1111 1111');
   });
 
   it('should format as given format when input is string', () => {
-    const wrapper = shallow(
-      <NumberFormat value="4111111111111111" displayType={'text'} format="#### #### #### ####" />,
+    const wrapper = mount(
+      <PatternFormat
+        value="4111111111111111"
+        isNumericString
+        displayType={'text'}
+        format="#### #### #### ####"
+      />,
     );
     expect(wrapper.find('span').text()).toEqual('4111 1111 1111 1111');
   });
 
   it('should format as given format when input length is less than format length', () => {
-    const wrapper = shallow(
-      <NumberFormat value="41111111111111" displayType={'text'} format="#### #### #### ####" />,
+    const wrapper = mount(
+      <PatternFormat
+        value="41111111111111"
+        isNumericString
+        displayType={'text'}
+        format="#### #### #### ####"
+      />,
     );
     expect(wrapper.find('span').text()).toEqual('4111 1111 1111 11  ');
   });
 
   it('should format as given format with mask', () => {
-    const wrapper = shallow(
-      <NumberFormat
+    const wrapper = mount(
+      <PatternFormat
         value="41111111111111"
+        isNumericString
         displayType={'text'}
         format="#### #### #### ####"
         mask="_"
@@ -46,9 +58,7 @@ describe('NumberFormat as text', () => {
   });
 
   it('should limit decimal scale to given value', () => {
-    const wrapper = shallow(
-      <NumberFormat value={4111.344} displayType={'text'} decimalScale={2} />,
-    );
+    const wrapper = mount(<NumericFormat value={4111.344} displayType={'text'} decimalScale={2} />);
     expect(wrapper.find('span').text()).toEqual('4111.34');
 
     wrapper.setProps({
@@ -60,9 +70,10 @@ describe('NumberFormat as text', () => {
   });
 
   it('should add zeros if fixedDecimalScale is provided', () => {
-    const wrapper = shallow(
-      <NumberFormat
+    const wrapper = mount(
+      <NumericFormat
         value="4111.11"
+        isNumericString
         displayType={'text'}
         decimalScale={4}
         fixedDecimalScale={true}
@@ -79,9 +90,10 @@ describe('NumberFormat as text', () => {
   });
 
   it('should accept custom renderText method', () => {
-    const wrapper = shallow(
-      <NumberFormat
+    const wrapper = mount(
+      <NumericFormat
         value="4111.11"
+        isNumericString
         thousandSeparator=","
         renderText={(value) => <div>{value}</div>}
         displayType={'text'}

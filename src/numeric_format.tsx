@@ -6,21 +6,42 @@ import {
   applyThousandSeparator,
   getDefaultChangeMeta,
   fixLeadingZero,
+  noop,
+  useInternalValues,
+  isNil,
+  roundToPrecision,
+  isNanValue,
+  setCaretPosition,
+  toNumericString,
 } from './utils';
-import { NumberFormatProps, ChangeMeta } from './types';
+import { NumberFormatProps, ChangeMeta, SourceType } from './types';
 import NumberFormatBase from './number_format_base';
 
 export function format(numStr: string, props: NumberFormatProps) {
-  const { decimalScale, fixedDecimalScale, prefix, suffix, allowNegative, thousandsGroupStyle } =
-    props;
+  const {
+    decimalScale,
+    fixedDecimalScale,
+    prefix = '',
+    suffix = '',
+    allowNegative = true,
+    thousandsGroupStyle = 'thousand',
+  } = props;
 
-  const { thousandSeparator, decimalSeparator } = getSeparators(
-    props.thousandSeparator,
-    props.decimalSeparator,
-    props.allowedDecimalSeparators,
-  );
+  // don't apply formatting on empty string or '-'
+  if (numStr === '' || numStr === '-') {
+    return numStr;
+  }
 
-  const hasDecimalSeparator = numStr.indexOf('.') !== -1 || (decimalScale && fixedDecimalScale);
+  const { thousandSeparator, decimalSeparator } = getSeparators(props);
+
+  /**
+   * Keep the decimal separator
+   * when decimalScale is not defined or non zero and the numStr has decimal in it
+   * Or if decimalScale is > 0 and fixeDecimalScale is true (even if numStr has no decimal)
+   */
+  const hasDecimalSeparator =
+    (decimalScale !== 0 && numStr.indexOf('.') !== -1) || (decimalScale && fixedDecimalScale);
+
   let { beforeDecimal, afterDecimal, addNegation } = splitDecimal(numStr, allowNegative); // eslint-disable-line prefer-const
 
   //apply decimal precision if its defined
@@ -32,7 +53,7 @@ export function format(numStr: string, props: NumberFormatProps) {
     beforeDecimal = applyThousandSeparator(beforeDecimal, thousandSeparator, thousandsGroupStyle);
   }
 
-  //add prefix and suffix
+  //add prefix and suffix when there is a number present
   if (prefix) beforeDecimal = prefix + beforeDecimal;
   if (suffix) afterDecimal = afterDecimal + suffix;
 
@@ -44,7 +65,9 @@ export function format(numStr: string, props: NumberFormatProps) {
   return numStr;
 }
 
-function getSeparators(thousandSeparator, decimalSeparator, allowedDecimalSeparators) {
+function getSeparators(props: NumberFormatProps) {
+  const { decimalSeparator = '.' } = props;
+  let { thousandSeparator, allowedDecimalSeparators } = props;
   if (thousandSeparator === true) {
     thousandSeparator = ',';
   }
@@ -80,10 +103,7 @@ function handleNegation(value: string = '', allowNegative: boolean) {
 }
 
 function getNumberRegex(decimalSeparator: string, decimalScale: number, global: boolean) {
-  return new RegExp(
-    `[0-9]${decimalSeparator && decimalScale !== 0 ? `|${escapeRegExp(decimalSeparator)}` : ''}`,
-    global ? 'g' : undefined,
-  );
+  return new RegExp(`(^-)|[0-9]|${escapeRegExp(decimalSeparator)}`, global ? 'g' : undefined);
 }
 
 export function removeFormatting(
@@ -91,22 +111,29 @@ export function removeFormatting(
   changeMeta: ChangeMeta = getDefaultChangeMeta(value),
   props: NumberFormatProps,
 ) {
-  const { allowNegative, prefix, suffix, decimalScale } = props;
-  const { to } = changeMeta;
+  const { allowNegative = true, prefix = '', suffix = '', decimalScale } = props;
+  const { from, to } = changeMeta;
   let { start, end } = to;
-  const { allowedDecimalSeparators, decimalSeparator } = getSeparators(
-    props.thousandSeparator,
-    props.decimalSeparator,
-    props.allowedDecimalSeparators,
-  );
+  const { allowedDecimalSeparators, decimalSeparator } = getSeparators(props);
+
+  const isBeforeDecimalSeparator = value[end] === decimalSeparator;
 
   /** Check for any allowed decimal separator is added in the numeric format and replace it with decimal separator */
   if (end - start === 1 && allowedDecimalSeparators.indexOf(value[start]) !== -1) {
     const separator = decimalScale === 0 ? '' : decimalSeparator;
-    return value.substring(0, start) + separator + value.substring(start + 1, value.length);
+    value = value.substring(0, start) + separator + value.substring(start + 1, value.length);
   }
 
-  const hasNegation = value[0] === '-';
+  let hasNegation = false;
+
+  /**
+   * if prefix starts with - the number hast to have two - at the start
+   * if suffix starts with - and the value length is same as suffix length, then the - sign is from the suffix
+   * In other cases, if the value starts with - then it is a negation
+   */
+  if (prefix.startsWith('-')) hasNegation = value.startsWith('--');
+  else if (suffix.startsWith('-') && value.length === suffix.length) hasNegation = false;
+  else if (value[0] === '-') hasNegation = true;
 
   // remove negation from start to simplify prefix logic as negation comes before prefix
   if (hasNegation) {
@@ -141,7 +168,7 @@ export function removeFormatting(
   const suffixStartIndex = value.length - suffix.length;
 
   if (value.endsWith(suffix)) endIndex = suffixStartIndex;
-  if (end > value.length - suffix.length) endIndex = end;
+  else if (end > value.length - suffix.length) endIndex = end;
 
   value = value.substring(0, endIndex);
 
@@ -150,10 +177,32 @@ export function removeFormatting(
 
   // remove non numeric characters
   value = (value.match(getNumberRegex(decimalSeparator, decimalScale, true)) || []).join('');
+
+  // replace the decimalSeparator with ., and only keep the first separator, ignore following ones
+  const firstIndex = value.indexOf(decimalSeparator);
+  value = value.replace(new RegExp(escapeRegExp(decimalSeparator), 'g'), (match, index) => {
+    return index === firstIndex ? '.' : '';
+  });
+
+  //check if beforeDecimal got deleted and there is nothing after decimal,
+  //clear all numbers in such case while keeping the - sign
+  const { beforeDecimal, afterDecimal, addNegation } = splitDecimal(value, allowNegative); // eslint-disable-line prefer-const
+
+  //clear only if something got deleted before decimal (cursor is before decimal)
+  if (
+    to.end - to.start < from.end - from.start &&
+    beforeDecimal === '' &&
+    isBeforeDecimalSeparator &&
+    !parseFloat(afterDecimal)
+  ) {
+    value = addNegation ? '-' : '';
+  }
+
+  return value;
 }
 
 export function getCaretBoundary(formattedValue: string, props: NumberFormatProps) {
-  const { prefix, suffix } = props;
+  const { prefix = '', suffix = '' } = props;
   const boundaryAry = Array.from({ length: formattedValue.length + 1 }).map(() => true);
 
   const hasNegation = formattedValue[0] === '-';
@@ -168,6 +217,18 @@ export function getCaretBoundary(formattedValue: string, props: NumberFormatProp
   return boundaryAry;
 }
 
+function validateProps(props: NumberFormatProps) {
+  const { thousandSeparator, decimalSeparator } = getSeparators(props);
+
+  if (thousandSeparator === decimalSeparator) {
+    throw new Error(`
+        Decimal separator can't be same as thousand separator.
+        thousandSeparator: ${thousandSeparator} (thousandSeparator = {true} is same as thousandSeparator = ",")
+        decimalSeparator: ${decimalSeparator} (default value for decimalSeparator is .)
+     `);
+  }
+}
+
 export default function NumericFormat(props: NumberFormatProps) {
   const {
     /* eslint-disable no-unused-vars */
@@ -177,14 +238,62 @@ export default function NumericFormat(props: NumberFormatProps) {
     thousandsGroupStyle,
     decimalScale,
     fixedDecimalScale,
-    prefix = '',
     suffix,
     allowNegative,
     allowLeadingZeros,
-    onKeyDown,
+    onKeyDown = noop,
+    onBlur = noop,
     /* eslint-enable no-unused-vars */
+    prefix = '',
+    defaultValue,
+    value,
+    isNumericString,
+    onValueChange,
     ...restProps
   } = props;
+
+  // validate props
+  validateProps(props);
+
+  const _format = (numStr) => format(numStr, props);
+
+  const _removeFormatting = (inputValue, changeMeta) =>
+    removeFormatting(inputValue, changeMeta, props);
+
+  let _isNumericString = isNumericString;
+
+  if (!isNil(value)) {
+    _isNumericString = isNumericString ?? typeof value === 'number';
+  } else if (!isNil(defaultValue)) {
+    _isNumericString = isNumericString ?? typeof defaultValue === 'number';
+  }
+
+  const roundIncomingValueToPrecision = (value: string | number) => {
+    if (isNil(value) || isNanValue(value)) return value;
+
+    if (typeof value === 'number') {
+      value = toNumericString(value);
+    }
+
+    /**
+     * only round numeric or float string values coming through props,
+     * we don't need to do it for onChange events, as we want to prevent typing there
+     */
+    if (_isNumericString && typeof decimalScale === 'number') {
+      return roundToPrecision(value, decimalScale, fixedDecimalScale);
+    }
+
+    return value;
+  };
+
+  const [{ numAsString, formattedValue }, _onValueChange] = useInternalValues(
+    roundIncomingValueToPrecision(value),
+    roundIncomingValueToPrecision(defaultValue),
+    _isNumericString,
+    _format,
+    _removeFormatting,
+    onValueChange,
+  );
 
   const _onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const el = e.target as HTMLInputElement;
@@ -199,52 +308,81 @@ export default function NumericFormat(props: NumberFormatProps) {
 
     // if user hits backspace, while the cursor is before prefix, and the input has negation, remove the negation
     if (key === 'Backspace' && value[0] === '-' && selectionStart === prefix.length + 1) {
-      // bring the negation after prefix so that it can be removed automatically be browser
-      el.value = `${prefix}-${value.substring(prefix.length + 1)}`;
+      // bring the cursor to after negation
+      setCaretPosition(el, 1);
+    }
+
+    // don't allow user to delete decimal separator when decimalScale and fixedDecimalScale is set
+    const { decimalSeparator } = getSeparators(props);
+    if (
+      key === 'Backspace' &&
+      value[selectionStart - 1] === decimalSeparator &&
+      decimalScale &&
+      fixedDecimalScale
+    ) {
+      setCaretPosition(el, selectionStart - 1);
+      e.preventDefault();
+    }
+
+    // move cursor when delete or backspace is pressed before/after thousand separator
+    if (key === 'Backspace' && value[selectionStart - 1] === thousandSeparator) {
+      setCaretPosition(el, selectionStart - 1);
+    }
+
+    if (key === 'Delete' && value[selectionStart] === thousandSeparator) {
+      setCaretPosition(el, selectionStart + 1);
     }
 
     onKeyDown(e);
   };
 
   const _onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    let { numAsString } = state;
-    const lastValue = state.value;
+    let _value = numAsString;
 
-    // if the numAsString is not a valid number reset it to empty
-    if (isNaN(parseFloat(numAsString))) {
-      numAsString = '';
+    // if there no no numeric value, clear the input
+    if (!_value.match(/\d/g)) {
+      _value = '';
     }
 
+    // clear leading 0s
     if (!allowLeadingZeros) {
-      numAsString = fixLeadingZero(numAsString);
+      _value = fixLeadingZero(_value);
     }
 
-    const formattedValue = this.formatNumString(numAsString);
-
-    //change the state
-    if (formattedValue !== lastValue) {
-      // the event needs to be persisted because its properties can be accessed in an asynchronous way
-      this.updateValue({
-        formattedValue,
-        numAsString,
-        input: e.target,
-        setCaretPosition: false,
-        event: e,
-        source: 'event',
-      });
-      onBlur(e);
-      return;
+    // apply fixedDecimalScale on blur event
+    if (fixedDecimalScale && decimalScale) {
+      _value = roundToPrecision(_value, decimalScale, fixedDecimalScale);
     }
+
+    if (_value !== numAsString) {
+      const formattedValue = format(_value, props);
+      _onValueChange(
+        {
+          formattedValue,
+          value: _value,
+          floatValue: parseFloat(_value),
+        },
+        {
+          event: e,
+          source: SourceType.event,
+        },
+      );
+    }
+
     onBlur(e);
   };
 
   return (
     <NumberFormatBase
       {...restProps}
-      format={(numStr) => format(numStr, props)}
-      removeFormatting={(inputValue, changeMeta) => removeFormatting(inputValue, changeMeta, props)}
+      value={formattedValue}
+      isNumericString={false}
+      onValueChange={_onValueChange}
+      format={_format}
+      removeFormatting={_removeFormatting}
       getCaretBoundary={(formattedValue) => getCaretBoundary(formattedValue, props)}
       onKeyDown={_onKeyDown}
+      onBlur={_onBlur}
     />
   );
 }
