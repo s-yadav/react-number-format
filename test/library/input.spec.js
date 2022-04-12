@@ -475,6 +475,13 @@ describe('NumberFormat as input', () => {
     }, 0);
   });
 
+  it('should display positive sign even showSign is true', () => {
+    const wrapper = shallow(<NumberFormat showSign displayType="text" value={2456981} />);
+
+    const span = wrapper.find('span');
+    expect(span.text()).toEqual('+2456981');
+  });
+
   it('should pass custom props to the renderText function', () => {
     const wrapper = shallow(
       <NumberFormat

@@ -63,6 +63,7 @@ declare module 'react-number-format' {
     renderText?: (formattedValue: string) => React.ReactNode;
     getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any>;
     allowedDecimalSeparators?: Array<string>;
+    showSign?: boolean;
     customNumerals?: [
       string,
       string,

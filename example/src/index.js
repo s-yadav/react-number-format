@@ -29,6 +29,11 @@ class App extends React.Component {
         </div>
 
         <div className="example">
+          <h3>Display sign of the number always</h3>
+          <NumberFormat showSign displayType="text" value={2456981} />
+        </div>
+
+        <div className="example">
           <h3>Custom renderText method</h3>
           <NumberFormat
             value={4111111111111111}
