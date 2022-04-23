@@ -1,7 +1,7 @@
 {
   "name": "react-number-format",
   "description": "React component to format number in an input or as a text.",
-  "version": "4.9.1",
+  "version": "4.9.2",
   "main": "dist/react-number-format.cjs.js",
   "module": "dist/react-number-format.es.js",
   "author": "Sudhanshu Yadav",
@@ -48,6 +48,7 @@
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "@types/react": "^16.9.4",
+    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.7",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
     "babel-plugin-add-module-exports": "^1.0.2",
@@ -75,8 +76,8 @@
     "karma-webpack": "^4.0.2",
     "material-ui": "^0.20.2",
     "prettier": "^2.2.1",
-    "react": "^15.4.0 || ^16.0.0",
-    "react-dom": "^15.4.0 || ^16.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-router": "5",
     "react-transform-hmr": "^1.0.4",
     "rollup": "^1.22.0",
@@ -94,8 +95,8 @@
     "webpack-dev-server": "^3.8.2"
   },
   "peerDependencies": {
-    "react": "^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0",
-    "react-dom": "^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0"
+    "react": "^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0"
   },
   "dependencies": {
     "prop-types": "^15.7.2"
