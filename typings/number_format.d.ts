@@ -4,8 +4,10 @@ declare module 'react-number-format' {
   type Modify<T, R> = Pick<T, Exclude<keyof T, keyof R>> & R;
 
   //exclude types from the InputHTMLAttributes
-  const { defaultValue, value, ...inputAttributes }: React.InputHTMLAttributes<HTMLInputElement>;
-  export type InputAttributes = typeof inputAttributes;
+  export type InputAttributes = Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    'defaultValue' | 'value' | 'children'
+  >;
 
   export interface NumberFormatState {
     value?: string;
