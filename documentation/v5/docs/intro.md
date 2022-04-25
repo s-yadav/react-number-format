@@ -2,46 +2,51 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Getting started
 
-Let's discover **Docusaurus in less than 5 minutes**.
+React component to format number in an input or as a text
 
-## Getting Started
+### Features
 
-Get started by **creating a new site**.
+1. Prefix, suffix and thousand separator.
+2. Custom format pattern.
+3. Masking.
+4. Custom formatting handler.
+5. Format number in an input or format as a simple text.
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+### Live demo example
 
-### What you'll need
+[Jinno live demo](https://jinno.io/app/24?source=react-number-format)
 
-- [Node.js](https://nodejs.org/en/download/) version 14 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+### Install
 
-## Generate a new site
+[![npm](https://img.shields.io/npm/dm/react-number-format.svg)](https://www.npmjs.com/package/react-number-format)
 
-Generate a new Docusaurus site using the **classic template**.
+Through npm
+`npm install react-number-format --save`
 
-The classic template will automatically be added to your project after you run the command:
+Or get compiled development and production version from ./dist
 
-```bash
-npm init docusaurus@latest my-website classic
+### Usage
+
+#### ES6
+
+```js
+import NumberFormat from 'react-number-format';
 ```
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+#### ES5
 
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
+```js
+const NumberFormat = require('react-number-format');
 ```
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+Typescript
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+```js
+import NumberFormat from 'react-number-format';
+//or
+import { default as NumberFormat } from 'react-number-format';
+```
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+In typescript you also have to enable `"esModuleInterop": true` in your tsconfig.json (https://www.typescriptlang.org/docs/handbook/compiler-options.html).
