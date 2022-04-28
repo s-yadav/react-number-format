@@ -31,6 +31,7 @@ const defaultProps = {
   allowEmptyFormatting: false,
   allowLeadingZeros: false,
   isNumericString: false,
+  showSign: false,
   type: 'text',
   onValueChange: noop,
   onChange: noop,
@@ -998,6 +999,7 @@ class NumberFormat extends React.Component {
       renderText,
       getInputRef,
       format,
+      showSign,
       /* eslint-disable no-unused-vars*/
       thousandSeparator,
       decimalSeparator,
@@ -1046,6 +1048,7 @@ class NumberFormat extends React.Component {
         renderText(value, otherProps) || null
       ) : (
         <span {...otherProps} ref={getInputRef}>
+          {showSign && value >= 0 ? '+' : ''}
           {value}
         </span>
       );
@@ -1080,6 +1083,7 @@ if (process.env.NODE_ENV !== 'production') {
     isNumericString: PropTypes.bool,
     customInput: PropTypes.elementType,
     allowNegative: PropTypes.bool,
+    showSign: PropTypes.bool,
     allowEmptyFormatting: PropTypes.bool,
     allowLeadingZeros: PropTypes.bool,
     onValueChange: PropTypes.func,
