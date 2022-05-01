@@ -1,7 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { NumberFormatProps } from './types';
-
-type FormatInputValueFunction = (inputValue: string) => string;
+import { NumberFormatBaseProps, FormatInputValueFunction } from './types';
 
 // basic noop function
 export function noop() {}
@@ -109,19 +107,19 @@ export function limitToScale(numStr: string, scale: number, fixedDecimalScale: b
   return str;
 }
 
-function repeat(str, count) {
+function repeat(str: string, count: number) {
   return Array(count + 1).join(str);
 }
 
-export function toNumericString(num) {
-  num += ''; // typecast number to string
+export function toNumericString(num: string | number) {
+  let _num = num + ''; // typecast number to string
 
   // store the sign and remove it from the number.
-  const sign = num[0] === '-' ? '-' : '';
-  if (sign) num = num.substring(1);
+  const sign = _num[0] === '-' ? '-' : '';
+  if (sign) _num = _num.substring(1);
 
   // split the number into cofficient and exponent
-  let [coefficient, exponent] = num.split(/[eE]/g);
+  let [coefficient, exponent] = _num.split(/[eE]/g) as [string, string | number | undefined];
 
   // covert exponent to number;
   exponent = Number(exponent);
@@ -309,7 +307,7 @@ export function getCaretPosition(formattedValue: string, curValue: string, curCa
   const formattedValueLn = formattedValue.length;
 
   // create index map
-  const addedIndexMap = {};
+  const addedIndexMap: { [key: number]: boolean } = {};
   const indexMap = new Array(curValLn);
 
   for (let i = 0; i < curValLn; i++) {
@@ -372,9 +370,9 @@ export function useInternalValues(
   defaultValue: string | number,
   isNumericString: boolean,
   format: FormatInputValueFunction,
-  removeFormatting: NumberFormatProps['removeFormatting'],
-  onValueChange: NumberFormatProps['onValueChange'] = noop,
-): [{ formattedValue: string; numAsString: string }, NumberFormatProps['onValueChange']] {
+  removeFormatting: NumberFormatBaseProps['removeFormatting'],
+  onValueChange: NumberFormatBaseProps['onValueChange'] = noop,
+): [{ formattedValue: string; numAsString: string }, NumberFormatBaseProps['onValueChange']] {
   type Values = { formattedValue: string; numAsString: string };
 
   const propValues = useRef<Values>();

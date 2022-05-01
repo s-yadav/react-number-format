@@ -1,5 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { FormatInputValueFunction, NumberFormatProps, SourceType } from './types';
+import {
+  FormatInputValueFunction,
+  NumberFormatBaseProps,
+  InputAttributes,
+  SourceType,
+} from './types';
 import {
   addInputMode,
   findChangeRange,
@@ -17,11 +22,13 @@ function defaultRemoveFormatting(value: string) {
   return value.replace(/[^0-9]/g, '');
 }
 
-function defaultFormat(value) {
+function defaultFormat(value: string) {
   return value;
 }
 
-export default function NumberFormatBase(props: NumberFormatProps): React.ReactElement {
+export default function NumberFormatBase<BaseType = InputAttributes>(
+  props: NumberFormatBaseProps<BaseType>,
+): React.ReactElement {
   const {
     type = 'text',
     displayType = 'input',
@@ -57,7 +64,7 @@ export default function NumberFormatBase(props: NumberFormatProps): React.ReactE
 
   const lastUpdatedValue = useRef<string>();
 
-  const _onValueChange: NumberFormatProps['onValueChange'] = (values, source) => {
+  const _onValueChange: NumberFormatBaseProps['onValueChange'] = (values, source) => {
     lastUpdatedValue.current = values.formattedValue;
     onFormattedValueChange(values, source);
   };
@@ -362,7 +369,7 @@ export default function NumberFormatBase(props: NumberFormatProps): React.ReactE
   };
 
   // add input mode on element based on format prop and device once the component is mounted
-  const inputMode = mounted && addInputMode() ? 'numeric' : undefined;
+  const inputMode: InputAttributes['inputMode'] = mounted && addInputMode() ? 'numeric' : undefined;
 
   const inputProps = Object.assign({ inputMode }, otherProps, {
     type,

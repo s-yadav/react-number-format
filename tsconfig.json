@@ -1,12 +1,10 @@
 {
-  
-    "compilerOptions": {
-      "jsx": "react",
-      "esModuleInterop": true,
-      "downlevelIteration": true,
-      "outDir": "./typings",
-    },
-    "include": [
-      "src"
-    ]
+  "compilerOptions": {
+    "jsx": "react",
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    "noImplicitAny": true,
+    "outDir": "./typings"
+  },
+  "include": ["src", "test/types"]
 }

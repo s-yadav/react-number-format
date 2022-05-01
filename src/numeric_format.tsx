@@ -14,10 +14,18 @@ import {
   setCaretPosition,
   toNumericString,
 } from './utils';
-import { NumberFormatProps, ChangeMeta, SourceType } from './types';
+import {
+  NumericFormatProps,
+  ChangeMeta,
+  SourceType,
+  InputAttributes,
+  FormatInputValueFunction,
+  RemoveFormattingFunction,
+  InternalNumberFormatBase,
+} from './types';
 import NumberFormatBase from './number_format_base';
 
-export function format(numStr: string, props: NumberFormatProps) {
+export function format(numStr: string, props: NumericFormatProps) {
   const {
     decimalScale,
     fixedDecimalScale,
@@ -65,7 +73,7 @@ export function format(numStr: string, props: NumberFormatProps) {
   return numStr;
 }
 
-function getSeparators(props: NumberFormatProps) {
+function getSeparators(props: NumericFormatProps) {
   const { decimalSeparator = '.' } = props;
   let { thousandSeparator, allowedDecimalSeparators } = props;
   if (thousandSeparator === true) {
@@ -109,7 +117,7 @@ function getNumberRegex(decimalSeparator: string, decimalScale: number, global: 
 export function removeFormatting(
   value: string,
   changeMeta: ChangeMeta = getDefaultChangeMeta(value),
-  props: NumberFormatProps,
+  props: NumericFormatProps,
 ) {
   const { allowNegative = true, prefix = '', suffix = '', decimalScale } = props;
   const { from, to } = changeMeta;
@@ -201,7 +209,7 @@ export function removeFormatting(
   return value;
 }
 
-export function getCaretBoundary(formattedValue: string, props: NumberFormatProps) {
+export function getCaretBoundary(formattedValue: string, props: NumericFormatProps) {
   const { prefix = '', suffix = '' } = props;
   const boundaryAry = Array.from({ length: formattedValue.length + 1 }).map(() => true);
 
@@ -217,7 +225,7 @@ export function getCaretBoundary(formattedValue: string, props: NumberFormatProp
   return boundaryAry;
 }
 
-function validateProps(props: NumberFormatProps) {
+function validateProps(props: NumericFormatProps) {
   const { thousandSeparator, decimalSeparator } = getSeparators(props);
 
   if (thousandSeparator === decimalSeparator) {
@@ -229,35 +237,27 @@ function validateProps(props: NumberFormatProps) {
   }
 }
 
-export default function NumericFormat(props: NumberFormatProps) {
+export function useNumericFormat<BaseType = InputAttributes>(props: NumericFormatProps<BaseType>) {
   const {
-    /* eslint-disable no-unused-vars */
-    thousandSeparator,
-    decimalSeparator,
-    allowedDecimalSeparators,
-    thousandsGroupStyle,
-    decimalScale,
-    fixedDecimalScale,
-    suffix,
-    allowNegative,
     allowLeadingZeros,
     onKeyDown = noop,
     onBlur = noop,
-    /* eslint-enable no-unused-vars */
+    thousandSeparator,
+    decimalScale,
+    fixedDecimalScale,
     prefix = '',
     defaultValue,
     value,
     isNumericString,
     onValueChange,
-    ...restProps
   } = props;
 
   // validate props
   validateProps(props);
 
-  const _format = (numStr) => format(numStr, props);
+  const _format: FormatInputValueFunction = (numStr) => format(numStr, props);
 
-  const _removeFormatting = (inputValue, changeMeta) =>
+  const _removeFormatting: RemoveFormattingFunction = (inputValue, changeMeta) =>
     removeFormatting(inputValue, changeMeta, props);
 
   let _isNumericString = isNumericString;
@@ -295,7 +295,7 @@ export default function NumericFormat(props: NumberFormatProps) {
     onValueChange,
   );
 
-  const _onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const _onKeyDown: InputAttributes['onKeyDown'] = (e) => {
     const el = e.target as HTMLInputElement;
     const { key } = e;
     const { selectionStart, selectionEnd, value = '' } = el;
@@ -336,7 +336,7 @@ export default function NumericFormat(props: NumberFormatProps) {
     onKeyDown(e);
   };
 
-  const _onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  const _onBlur: InputAttributes['onBlur'] = (e) => {
     let _value = numAsString;
 
     // if there no no numeric value, clear the input
@@ -372,17 +372,44 @@ export default function NumericFormat(props: NumberFormatProps) {
     onBlur(e);
   };
 
-  return (
-    <NumberFormatBase
-      {...restProps}
-      value={formattedValue}
-      isNumericString={false}
-      onValueChange={_onValueChange}
-      format={_format}
-      removeFormatting={_removeFormatting}
-      getCaretBoundary={(formattedValue) => getCaretBoundary(formattedValue, props)}
-      onKeyDown={_onKeyDown}
-      onBlur={_onBlur}
-    />
-  );
+  return {
+    value: formattedValue,
+    isNumericString: false,
+    onValueChange: _onValueChange,
+    format: _format,
+    removeFormatting: _removeFormatting,
+    getCaretBoundary: (formattedValue: string) => getCaretBoundary(formattedValue, props),
+    onKeyDown: _onKeyDown,
+    onBlur: _onBlur,
+  };
+}
+
+export default function NumericFormat<BaseType = InputAttributes>(
+  props: NumericFormatProps<BaseType>,
+) {
+  const {
+    /* eslint-disable no-unused-vars */
+    decimalSeparator,
+    allowedDecimalSeparators,
+    thousandsGroupStyle,
+    suffix,
+    allowNegative,
+    allowLeadingZeros,
+    onKeyDown,
+    onBlur,
+    thousandSeparator,
+    decimalScale,
+    fixedDecimalScale,
+    prefix = '',
+    defaultValue,
+    value,
+    isNumericString,
+    onValueChange,
+    /* eslint-enable no-unused-vars */
+    ...restProps
+  } = props;
+
+  const numericFormatProps = useNumericFormat(props);
+
+  return <NumberFormatBase {...(restProps as InternalNumberFormatBase)} {...numericFormatProps} />;
 }
