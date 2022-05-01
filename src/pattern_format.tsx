@@ -1,9 +1,9 @@
 import React from 'react';
-import { NumberFormatProps, ChangeMeta } from './types';
+import { PatternFormatProps, InputAttributes, ChangeMeta, InternalNumberFormatBase } from './types';
 import { getDefaultChangeMeta, getMaskAtIndex, noop, setCaretPosition } from './utils';
 import NumberFormatBase from './number_format_base';
 
-export function format(numStr: string, props: NumberFormatProps) {
+export function format(numStr: string, props: PatternFormatProps) {
   const format = props.format as string;
   const { allowEmptyFormatting, mask } = props;
 
@@ -23,7 +23,7 @@ export function format(numStr: string, props: NumberFormatProps) {
 export function removeFormatting(
   value: string,
   changeMeta: ChangeMeta = getDefaultChangeMeta(value),
-  props: NumberFormatProps,
+  props: PatternFormatProps,
 ) {
   const format = props.format as string;
   const { patternChar = '#' } = props;
@@ -31,7 +31,7 @@ export function removeFormatting(
 
   const isNumericSlot = (caretPos: number) => format[caretPos] === patternChar;
 
-  const removeFormatChar = (string, startIndex) => {
+  const removeFormatChar = (string: string, startIndex: number) => {
     let str = '';
     for (let i = 0; i < string.length; i++) {
       if (isNumericSlot(startIndex + i)) {
@@ -92,7 +92,7 @@ export function removeFormatting(
   )}`;
 }
 
-export function getCaretBoundary(formattedValue: string, props: NumberFormatProps) {
+export function getCaretBoundary(formattedValue: string, props: PatternFormatProps) {
   const format = props.format as string;
   const { mask, patternChar = '#' } = props;
   const boundaryAry = Array.from({ length: formattedValue.length + 1 }).map(() => true);
@@ -124,7 +124,7 @@ export function getCaretBoundary(formattedValue: string, props: NumberFormatProp
   return boundaryAry;
 }
 
-function validateProps(props: NumberFormatProps) {
+function validateProps(props: PatternFormatProps) {
   const { mask } = props;
 
   if (mask) {
@@ -135,18 +135,8 @@ function validateProps(props: NumberFormatProps) {
   }
 }
 
-export default function PatternFormat(props: NumberFormatProps) {
-  const {
-    /* eslint-disable no-unused-vars */
-    mask,
-    allowEmptyFormatting,
-    format: formatProp,
-    inputMode = 'numeric',
-    /* eslint-enable no-unused-vars */
-    onKeyDown = noop,
-    patternChar = '#',
-    ...restProps
-  } = props;
+export function usePatternFormat<BaseType = InputAttributes>(props: PatternFormatProps<BaseType>) {
+  const { format: formatProp, inputMode = 'numeric', onKeyDown = noop, patternChar = '#' } = props;
 
   // validate props
   validateProps(props);
@@ -187,15 +177,32 @@ export default function PatternFormat(props: NumberFormatProps) {
     onKeyDown(e);
   };
 
-  return (
-    <NumberFormatBase
-      {...restProps}
-      patternChar={patternChar}
-      inputMode={inputMode}
-      format={(numStr) => format(numStr, props)}
-      removeFormatting={(inputValue, changeMeta) => removeFormatting(inputValue, changeMeta, props)}
-      getCaretBoundary={(formattedValue) => getCaretBoundary(formattedValue, props)}
-      onKeyDown={_onKeyDown}
-    />
-  );
+  return {
+    inputMode,
+    format: (numStr: string) => format(numStr, props),
+    removeFormatting: (inputValue: string, changeMeta: ChangeMeta) =>
+      removeFormatting(inputValue, changeMeta, props),
+    getCaretBoundary: (formattedValue: string) => getCaretBoundary(formattedValue, props),
+    onKeyDown: _onKeyDown,
+  };
+}
+
+export default function PatternFormat<BaseType = InputAttributes>(
+  props: PatternFormatProps<BaseType>,
+) {
+  const {
+    /* eslint-disable no-unused-vars */
+    mask,
+    allowEmptyFormatting,
+    format: formatProp,
+    inputMode,
+    onKeyDown,
+    patternChar,
+    /* eslint-enable no-unused-vars */
+    ...restProps
+  } = props;
+
+  const patternFormatProps = usePatternFormat(props);
+
+  return <NumberFormatBase {...(restProps as InternalNumberFormatBase)} {...patternFormatProps} />;
 }
