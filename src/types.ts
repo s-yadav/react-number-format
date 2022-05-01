@@ -24,6 +24,7 @@ export interface SourceInfo {
 }
 
 export type FormatInputValueFunction = (inputValue: string) => string;
+export type RemoveFormattingFunction = (inputValue: string, changeMeta: ChangeMeta) => string;
 
 export interface SyntheticInputEvent extends React.SyntheticEvent<HTMLInputElement> {
   readonly target: HTMLInputElement;
@@ -42,51 +43,70 @@ export type ChangeMeta = {
   lastValue: string;
 };
 
-export type NumberFormatPropsBase<T> = {
-  thousandSeparator?: boolean | string;
-  decimalSeparator?: string;
-  thousandsGroupStyle?: 'thousand' | 'lakh' | 'wan';
-  decimalScale?: number;
-  fixedDecimalScale?: boolean;
-  displayType?: 'input' | 'text';
-  prefix?: string;
-  suffix?: string;
-  format?: string | FormatInputValueFunction;
-  removeFormatting?: (inputValue: string, changeMeta: ChangeMeta) => string;
-  mask?: string | string[];
-  value?: number | string | null;
-  defaultValue?: number | string;
-  isNumericString?: boolean;
-  customInput?: React.ComponentType<T>;
-  allowNegative?: boolean;
-  allowEmptyFormatting?: boolean;
-  allowLeadingZeros?: boolean;
-  patternChar?: string;
-  onValueChange?: (values: NumberFormatValues, sourceInfo: SourceInfo) => void;
-  /**
-   * these are already included in React.HTMLAttributes<HTMLInputElement>
-   * onKeyDown: Function;
-   * onMouseUp: Function;
-   * onChange: Function;
-   * onFocus: Function;
-   * onBlur: Function;
-   */
-  type?: 'text' | 'tel' | 'password';
-  isAllowed?: (values: NumberFormatValues) => boolean;
-  renderText?: (formattedValue: string, otherProps: Partial<NumberFormatProps>) => React.ReactNode;
-  getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any>;
-  allowedDecimalSeparators?: Array<string>;
-  customNumerals?: [string, string, string, string, string, string, string, string, string, string];
-  getCaretBoundary: (formattedValue: string) => boolean[];
-};
-
 export type InputAttributes = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
   'defaultValue' | 'value'
 >;
-export type NumberFormatProps<T = InputAttributes> = NumberFormatPropsBase<T> &
-  Omit<React.InputHTMLAttributes<HTMLInputElement>, keyof T> &
-  Omit<T, keyof NumberFormatPropsBase<unknown> | 'ref'>;
 
-class NumberFormat<T> extends React.Component<NumberFormatProps<T>, any> {}
-export default NumberFormat;
+type NumberFormatProps<Props, BaseType = InputAttributes> = Props &
+  Omit<InputAttributes, keyof BaseType> &
+  Omit<BaseType, keyof Props | 'ref'> & {
+    customInput?: React.ComponentType<BaseType>;
+  };
+
+type NumberFormatBase = {
+  type?: 'text' | 'tel' | 'password';
+  displayType?: 'input' | 'text';
+  inputMode?: InputAttributes['inputMode'];
+  renderText?: (formattedValue: string, otherProps: Partial<NumberFormatBase>) => React.ReactNode;
+  format: FormatInputValueFunction;
+  removeFormatting: RemoveFormattingFunction;
+  getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any>;
+  value?: number | string | null;
+  defaultValue?: number | string | null;
+  isNumericString?: boolean;
+  onValueChange?: (values: NumberFormatValues, sourceInfo: SourceInfo) => void;
+  isAllowed?: (values: NumberFormatValues) => boolean;
+  onKeyDown?: InputAttributes['onKeyDown'];
+  onMouseUp?: InputAttributes['onMouseUp'];
+  onChange?: InputAttributes['onChange'];
+  onFocus?: InputAttributes['onFocus'];
+  onBlur?: InputAttributes['onBlur'];
+  getCaretBoundary: (formattedValue: string) => boolean[];
+};
+
+export type NumberFormatBaseProps<BaseType = InputAttributes> = NumberFormatProps<
+  NumberFormatBase,
+  BaseType
+>;
+
+export type InternalNumberFormatBase = Omit<
+  NumberFormatBase,
+  'format' | 'removeFormatting' | 'getCaretBoundary'
+>;
+
+export type NumericFormatProps<BaseType = InputAttributes> = NumberFormatProps<
+  InternalNumberFormatBase & {
+    thousandSeparator?: boolean | string;
+    decimalSeparator?: string;
+    allowedDecimalSeparators?: Array<string>;
+    thousandsGroupStyle?: 'lakh' | 'wan' | 'none';
+    decimalScale?: number;
+    fixedDecimalScale?: boolean;
+    allowNegative?: boolean;
+    allowLeadingZeros?: boolean;
+    suffix?: string;
+    prefix?: string;
+  },
+  BaseType
+>;
+
+export type PatternFormatProps<BaseType = InputAttributes> = NumberFormatProps<
+  InternalNumberFormatBase & {
+    format: string;
+    mask?: string | string[];
+    allowEmptyFormatting?: boolean;
+    patternChar?: string;
+  },
+  BaseType
+>;

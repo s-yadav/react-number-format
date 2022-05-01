@@ -167,4 +167,5 @@ const ThemedApp = () => {
   );
 };
 
-ReactDOM.render(<ThemedApp />, document.getElementById('app'));
+const root = ReactDOM.createRoot(document.getElementById('app'));
+root.render(<ThemedApp />);
