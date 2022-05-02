@@ -22,26 +22,26 @@ const globals = {
 };
 
 const defaultConfig = {
-  input: 'src/index.tsx',
+  input: 'src/index.ts',
   output: [
     {
       file: 'dist/react-number-format.es.js',
       format: 'esm',
       globals,
-      exports: 'default',
+      exports: 'auto',
     },
     {
       file: 'dist/react-number-format.cjs.js',
       format: 'cjs',
       globals,
-      exports: 'default',
+      exports: 'auto',
     },
     {
       file: 'dist/react-number-format.js',
       format: 'umd',
       name: 'NumberFormat',
       globals,
-      exports: 'default',
+      exports: 'auto',
     },
   ],
   external: ['react'],
@@ -73,7 +73,7 @@ const minConfig = {
     format: 'umd',
     name: 'NumberFormat',
     globals,
-    exports: 'default',
+    exports: 'auto',
   },
   plugins: [...defaultConfig.plugins, uglify()],
 };

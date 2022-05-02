@@ -424,7 +424,7 @@ Feature Addition
 - `yarn` to install dependencies
 - `yarn start` to run example server (<http://localhost:8084/>)
 - `yarn test` to test changes
-- `yarn bundle` to bundle files
+- `yarn build` to bundle files
 
 #### Testing
 

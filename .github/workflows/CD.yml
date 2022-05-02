@@ -3,7 +3,7 @@ name: CD
 on:
   push:
     tags:
-      - "*"
+      - '*'
 
 jobs:
   publish:
@@ -28,7 +28,7 @@ jobs:
       - name: yarn lint
         run: yarn run lint
       - name: build
-        run: yarn run bundle
+        run: yarn run build
       - name: release
         run: yarn publish
         env:

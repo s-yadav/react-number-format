@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    "noImplicitAny": true,
+    "outDir": "./lib/cjs",
+    "target": "ES2015",
+    "module": "CommonJS",
+    "declaration": true
+  },
+  "include": ["src"]
+}
