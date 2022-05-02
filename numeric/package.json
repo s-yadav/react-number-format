@@ -1,0 +1,4 @@
+{
+  "main": "../lib/cjs/numeric_format",
+  "module": "../lib/esm/numeric_format"
+}
