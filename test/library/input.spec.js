@@ -161,6 +161,40 @@ describe('NumberFormat as input', () => {
     expect(domInput.value).toEqual('$2,456,981');
   });
 
+  it('should reset number inputs value if new controlled value input is falsy', () => {
+    class WrapperComponent extends React.Component {
+      constructor() {
+        super();
+        this.state = {
+          value: 1000,
+        };
+      }
+      render() {
+        return (
+          <div>
+            <NumberFormat thousandSeparator={true} prefix={'$'} value={this.state.value} />;
+            <button id='reset' onClick={() => this.setState({ value: null })}>Reset</button>
+            <button id="set" onClick={() => this.setState({ value: 2000 })}>Set</button>
+          </div>
+        )
+      }
+    }
+
+    const wrapper = mount(<WrapperComponent />);
+    const resetButton = wrapper.find('#reset');
+    const setButton = wrapper.find('#set');
+    const input = wrapper.find('input');
+    const domInput = input.instance();
+
+    expect(domInput.value).toEqual('$1,000');
+
+    setButton.simulate('click')
+    expect(domInput.value).toEqual('$2,000');
+
+    resetButton.simulate('click')
+    expect(domInput.value).toEqual('');
+  });
+
   it('removes negation when format props is provided', () => {
     const wrapper = shallow(
       <NumberFormat format="#### #### #### ####" value="2342 2345 2342 2345" />,
