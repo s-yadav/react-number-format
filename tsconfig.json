@@ -3,7 +3,8 @@
     "jsx": "react",
     "esModuleInterop": true,
     "downlevelIteration": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "skipLibCheck": true
   },
   "include": ["src", "test/types"]
 }

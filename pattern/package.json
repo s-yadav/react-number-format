@@ -1,4 +1,0 @@
-{
-  "main": "../lib/cjs/pattern_format",
-  "module": "../lib/esm/pattern_format"
-}

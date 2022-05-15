@@ -6,4 +6,4 @@ node_modules/**/*
 tmp
 
 dist
-lib
+/types/**/*
