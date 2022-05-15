@@ -4,10 +4,10 @@
     "esModuleInterop": true,
     "downlevelIteration": true,
     "noImplicitAny": true,
-    "outDir": "./lib/cjs",
-    "target": "ES2015",
-    "module": "CommonJS",
-    "declaration": true
+    "outDir": "./types",
+    "declaration": true,
+    "skipLibCheck": true,
+    "emitDeclarationOnly": true
   },
   "include": ["src"]
 }
