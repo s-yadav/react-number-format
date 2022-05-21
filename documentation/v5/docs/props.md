@@ -21,13 +21,13 @@ import { PatternFormat } from 'react-number-format';
   <summary>
   Demo
   </summary>
-  
-  <iframe src="https://codesandbox.io/embed/sharp-chatelet-114qkc?fontsize=14&module=%2Fsrc%2FApp.js&theme=dark"
+  <iframe src="https://codesandbox.io/embed/allow-empty-formatting-demo-kjs0lz?fontsize=16&hidenavigation=1&theme=dark&view=preview"
       className="csb"
-     title="allow-emoty-formatting-demo"
+     title="allow-empty-formatting-demo"
      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
+  
 </details>
 
 ### allowLeadingZeros
