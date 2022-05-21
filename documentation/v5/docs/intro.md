@@ -4,49 +4,40 @@ sidebar_position: 1
 
 # Getting started
 
-React component to format number in an input or as a text
+React Number format is a input formatter library with a sohpisticated and light weight caret engine.
 
 ### Features
 
 1. Prefix, suffix and thousand separator.
-2. Custom format pattern.
+2. Custom pattern formatting.
 3. Masking.
 4. Custom formatting handler.
 5. Format number in an input or format as a simple text.
-
-### Live demo example
-
-[Jinno live demo](https://jinno.io/app/24?source=react-number-format)
 
 ### Install
 
 [![npm](https://img.shields.io/npm/dm/react-number-format.svg)](https://www.npmjs.com/package/react-number-format)
 
-Through npm
-`npm install react-number-format --save`
+Using `npm`
 
-Or get compiled development and production version from ./dist
+```
+npm install react-number-format
+```
 
-### Usage
+Using `yarn`
+
+```
+yarn add react-number-format
+```
 
 #### ES6
 
 ```js
-import NumberFormat from 'react-number-format';
+import NumericFormat from 'react-number-format';
 ```
 
 #### ES5
 
 ```js
-const NumberFormat = require('react-number-format');
+const NumericFormat = require('react-number-format');
 ```
-
-Typescript
-
-```js
-import NumberFormat from 'react-number-format';
-//or
-import { default as NumberFormat } from 'react-number-format';
-```
-
-In typescript you also have to enable `"esModuleInterop": true` in your tsconfig.json (https://www.typescriptlang.org/docs/handbook/compiler-options.html).

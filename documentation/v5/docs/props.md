@@ -1,36 +1,173 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
+title: Props
 ---
 
 # Props
 
-| Props                    | Options                                                               | Default  | Description                                                                                                                                                                                                                                                                                                                |
-| ------------------------ | --------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| thousandSeparator        | mixed: single character string or boolean true (true is default to ,) | none     | Add thousand separators on number. [Demo](https://jinno.io/app/23/thousandSeparator?source=react-number-format&displayType=input)                                                                                                                                                                                          |
-| decimalSeparator         | single character string                                               | .        | Support decimal point on a number. [Demo](https://jinno.io/app/23/decimalSeparator?source=react-number-format&displayType=input)                                                                                                                                                                                           |
-| thousandsGroupStyle      | One of ['thousand', 'lakh', 'wan']                                    | thousand | Define the thousand grouping style, It support three types. thousand style (thousand) : `123,456,789`, indian style (lakh) : `12,34,56,789`, chinese style (wan) : `1,2345,6789`. [Demo](https://jinno.io/app/23/thousandsGroupStyle?source=react-number-format&displayType=input&thousandsGroupStyle=wan)                 |
-| decimalScale             | number                                                                | none     | If defined it limits to given decimal scale. [Demo](https://jinno.io/app/23/decimalScale?source=react-number-format&displayType=input&decimalScale=2)                                                                                                                                                                      |
-| fixedDecimalScale        | boolean                                                               | false    | If true it add 0s to match given decimalScale. [Demo](https://jinno.io/app/23/fixedDecimalScale?source=react-number-format&displayType=input&fixedDecimalScale=true&decimalScale=2)                                                                                                                                        |
-| allowNegative            | boolean                                                               | true     | allow negative numbers (Only when format option is not provided). [Demo](https://jinno.io/app/23/allowNegative?source=react-number-format&displayType=input&value=-12345678)                                                                                                                                               |
-| allowEmptyFormatting     | boolean                                                               | false    | Apply formatting to empty inputs. [Demo](<https://jinno.io/app/23/allowEmptyFormatting?source=react-number-format&displayType=input&format=(###)-##-#####&allowEmptyFormatting=true>)                                                                                                                                      |
-| allowLeadingZeros        | boolean                                                               | false    | Allow leading zeros at beginning of number. [Demo](https://jinno.io/app/23/allowLeadingZeros?source=react-number-format&displayType=input&allowLeadingZeros=true)                                                                                                                                                          |
-| prefix                   | String (ex : $)                                                       | none     | Add a prefix before the number. [Demo](https://jinno.io/app/23/prefix?source=react-number-format&displayType=input&prefix=Rs.)                                                                                                                                                                                             |
-| suffix                   | String (ex : /-)                                                      | none     | Add a suffix after the number. [Demo](https://jinno.io/app/23/suffix?source=react-number-format&displayType=input&suffix=/-)                                                                                                                                                                                               |
-| value                    | Number or String                                                      | null     | Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true. [Demo](https://jinno.io/app/23/value?source=react-number-format&displayType=input).                                                  |
-| defaultValue             | Number or String                                                      | null     | Value to be used as default value if value is not provided. The format of defaultValue should be similar as defined for the value. [Demo](https://jinno.io/app/23/defaultValue?source=react-number-format&displayType=input).                                                                                              |
-| isNumericString          | boolean                                                               | false    | If value is passed as string representation of numbers (unformatted) then this should be passed as true. [Demo](https://jinno.io/app/23/isNumericString?source=react-number-format&displayType=input&value=123456789&isNumericString=true)                                                                                 |
-| displayType              | String: text / input                                                  | input    | If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value. [Demo](https://jinno.io/app/23/displayType?source=react-number-format&displayType=input)                                                                |
-| type                     | One of ['text', 'tel', 'password']                                    | text     | Input type attribute. [Demo](https://jinno.io/app/23/type?source=react-number-format&displayType=input)                                                                                                                                                                                                                    |
-| format                   | String : Hash based ex (#### #### #### ####) <br/> Or Function        | none     | If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number. [Demo](https://jinno.io/app/23/format?source=react-number-format&displayType=input&format=###-####)                                     |
-| removeFormatting         | (formattedValue) => numericString                                     | none     | If you are providing custom format method and it add numbers as format you will need to add custom removeFormatting logic. [Demo](https://jinno.io/app/23/removeFormatting?source=react-number-format&displayType=input)                                                                                                   |
-| mask                     | String (ex : \_)                                                      | `' '`    | If mask defined, component will show non entered placed with masked value. [Demo](https://jinno.io/app/23/mask?source=react-number-format&displayType=input&format=###-####&mask=_)                                                                                                                                        |
-| customInput              | Component Reference                                                   | input    | This allow supporting custom inputs with number format.                                                                                                                                                                                                                                                                    |
-| onValueChange            | (values, sourceInfo) => {}                                            | none     | onValueChange handler accepts [values object](#values-object). [Demo](https://jinno.io/app/23/onValueChange?source=react-number-format&displayType=input)                                                                                                                                                                  |
-| isAllowed                | ([values](#values-object)) => true or false                           | none     | A checker function to check if input value is valid or not. If this function returns false, the onChange method will not get triggered. [Demo](https://jinno.io/app/23/isAllowed?source=react-number-format&displayType=input)                                                                                             |
-| renderText               | (formattedValue, customProps) => React Element                        | null     | A renderText method useful if you want to render formattedValue in different element other than span. It also returns the custom props that are added to the component which can allow passing down props to the rendered element. [Demo](https://jinno.io/app/23/renderText?source=react-number-format&displayType=input) |
-| getInputRef              | (elm) => void                                                         | null     | Method to get reference of input, span (based on displayType prop) or the customInput's reference. See [Getting reference](#getting-reference). [Demo](https://jinno.io/app/23/getInputRef?source=react-number-format&displayType=input)                                                                                   |
-| allowedDecimalSeparators | array of char                                                         | none     | Characters which when pressed result in a decimal separator. When missing, decimal separator and '.' are used.                                                                                                                                                                                                             |
-| customNumerals           | array of string                                                       | none     | an array of 10 single-character strings with represent numerals in different locales. ranging from 0 - 9. the result will be converted to english numeral and treated as number                                                                                                                                            |
+### allowEmptyFormatting
+
+> `Boolean` `optional`
+
+Apply formatting to empty inputs
+
+```js
+import { PatternFormat } from 'react-number-format';
+
+<PatternFormat format="+1 (###) #### ###" allowEmptyFormatting mask="_" />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+  
+  <iframe src="https://codesandbox.io/embed/sharp-chatelet-114qkc?fontsize=14&module=%2Fsrc%2FApp.js&theme=dark"
+      className="csb"
+     title="allow-emoty-formatting-demo"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+
+### allowLeadingZeros
+
+> `Boolean` `optional`
+
+Allow leading zeros at beginning of number
+
+### allowNegative
+
+> `Boolean` `optional` `default`
+
+Allow negative numbers (Only when format option is not provided)
+
+### allowedDecimalSeparators
+
+> `Array<string>`, `optional`
+
+Characters which when pressed result in a decimal separator. When missing, decimal separator and '.' are used.
+
+### customInput
+
+> `Ref/Component ref`, `optional`
+
+This allow supporting custom inputs with number format.
+
+---
+
+### customNumerals
+
+> `Array<string>`, `optional`
+
+:::info Deprecated
+This is deprecated in v5.
+:::
+
+An array of 10 single-character strings with represent numerals in different locales. ranging from 0 - 9. the result will be converted to english numeral and treated as number
+
+---
+
+### decimalScale
+
+> `number`, `optional`
+
+If defined it limits to given decimal scale
+
+### decimalSeparator
+
+> `string`, `optional`
+
+Support decimal point on a number
+
+### defaultValue
+
+> `number | string`, `optional`
+
+Value to be used as default value if value is not provided. The format of defaultValue should be similar as defined for the value
+
+### displayType
+
+> `input[type=text] / input`, `optional`
+
+If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value
+
+### format
+
+> `string`, `optional`
+
+If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number
+
+### getInputRef
+
+> `(elm) => void`, `optional`
+
+Method to get reference of input, span (based on displayType prop) or the customInput's reference.
+
+### isAllowed
+
+> `(values) => boolean`, `optional`
+
+A checker function to check if input value is valid or not. If this function returns false, the onChange method will not get triggered
+
+### isNumericString
+
+> `boolean`, `optional`
+
+If value is passed as string representation of numbers (unformatted) then this should be passed as true
+
+### mask
+
+> `string`, `optional`
+
+If mask defined, component will show non entered placed with masked value.
+
+### onValueChange
+
+> `(values, sourceInfo) => {}`, `optional`
+
+onValueChange handler accepts
+
+### prefix
+
+> `string`, `optional`
+
+Add a prefix before the number
+
+### removeFormatting
+
+> `(formattedValue) => numericString` , `optional`
+> If you are providing custom format method and it add numbers as format you will need to add custom removeFormatting logic
+
+### renderText
+
+> `(formattedValue, customProps) => React Element`
+
+A renderText method useful if you want to render formattedValue in different element other than span. It also returns the custom props that are added to the component which can allow passing down props to the rendered element.
+
+### suffix
+
+> `string`, `optional`
+
+Add a suffix after the number
+
+### thousandsGroupStyle
+
+> `string`, `optional`
+
+Define the thousand grouping style, It support three types. thousand style (thousand) : 123,456,789, indian style (lakh) : 12,34,56,789, chinese style (wan) : 1,2345,6789.
+
+### type
+
+> `string`, `optional`
+
+Input type attribute
+
+### value
+
+> `number | string`, `optional`
+
+Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true
 
 **Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
 
