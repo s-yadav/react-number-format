@@ -1,5 +1,4 @@
-import React from 'react';
-import { SyntheticEvent } from 'react';
+import React, { SyntheticEvent } from 'react';
 
 export interface NumberFormatState {
   value?: string;
