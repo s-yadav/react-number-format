@@ -5,11 +5,11 @@ title: Props
 
 # Props
 
-### allowEmptyFormatting
+### allowEmptyFormatting `boolean`
 
-> `Boolean` `optional`
+**default**: `false`
 
-Apply formatting to empty inputs
+By default PatternFormat component does not apply formatting when value is empty (_null, undefined or ‘’_). If you want to apply formatting on empty values set `allowEmptyFormatting` to `true`.
 
 ```js
 import { PatternFormat } from 'react-number-format';
@@ -30,109 +30,406 @@ import { PatternFormat } from 'react-number-format';
   
 </details>
 
-### allowLeadingZeros
+### allowLeadingZeros `boolean`
 
-> `Boolean` `optional`
+**default**: `false`
 
-Allow leading zeros at beginning of number
+By default, on blur of an input, leading zeros are removed. To disable the behaviour, set `allowLeadingZeros` to `true`.
 
-### allowNegative
+```js
+import { NumericFormat } from 'react-number-format';
 
-> `Boolean` `optional` `default`
+<NumericFormat value="020020220" allowLeadingZeros thousandSeparator="," />;
+```
 
-Allow negative numbers (Only when format option is not provided)
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/allowleadingzeros-demo-ji97mv?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+        className='csb'
+        title="allowLeadingZeros-demo"
+        allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+        sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+        ></iframe>
 
-### allowedDecimalSeparators
+</details>
 
-> `Array<string>`, `optional`
+### allowNegative `boolean`
+
+**default**: `true`
+
+Is set to `false`, negative numbers will not be allowed
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat value="-12" allowNegative />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+    <iframe src="https://codesandbox.io/embed/allownegative-demo-dx8gdf?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     className='csb'
+     title="allowNegative-demo"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+
+### allowedDecimalSeparators `Array<string>`
+
+**default**: `undefined`
 
 Characters which when pressed result in a decimal separator. When missing, decimal separator and '.' are used.
 
-### customInput
+```js
+import { NumericFormat } from 'react-number-format';
 
-> `Ref/Component ref`, `optional`
+<NumericFormat value="12" allowedDecimalSeparators={['%']} />;
+```
 
-This allow supporting custom inputs with number format.
+<details>
+  <summary>
+  Demo
+  </summary>
 
----
+  <iframe src="https://codesandbox.io/embed/allownegative-demo-forked-3ufso6?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     className='csb'
+     title="allowNegative-demo (forked)"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
 
-### customNumerals
+</details>
 
-> `Array<string>`, `optional`
+### customInput `React.Component<any>`
 
-:::info Deprecated
-This is deprecated in v5.
+**default**: `null`
+
+This allow supporting custom input components with number format.
+
+```js
+import { NumericFormat } from 'react-number-format';
+import { TextField } from '@mui/material';
+
+<NumericFormat value={12323} customInput={TextField} />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/custominput-demo-u3wg9m?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     className="csb"
+     title="customInput-demo"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+
+### decimalScale `number`
+
+**default**: `undefined`
+
+If defined, it limits the number of digits after the decimal point.
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat value={12323} decimalScale={3} />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+
+<iframe src="https://codesandbox.io/embed/decimalscale-demo-uc92li?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     className='csb'
+     title="decimalScale-demo"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+
+### decimalSeparator `string`
+
+**default**: '.'
+
+Defines the decimal character.
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat value={12323.3333} decimalSeparator="." />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+
+   <iframe src="https://codesandbox.io/embed/decimalseparator-demo-tv9ptw?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     className='csb'
+     title="decimalSeparator-demo"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+
+### defaultValue `number | string`
+
+**default** : `undefined`
+
+Value to be used as default value if value is not provided.
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat defaultValue="12312" />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/defaultvalue-demo-1qc7fk?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     className='csb'
+     title="defaultValue-demo"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+
+### displayType `text | input`
+
+**default**: `input`
+
+If value is `input`, it renders an input element where formatting happens as you type characters. If value is `text`, it renders formatted text in a span tag.
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat displayType="input" />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+   <iframe src="https://codesandbox.io/embed/displaytype-demo-hgcvs9?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     className='csb'
+     title="displayType-demo"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+
+### format `string`
+
+**default**: `undefined`
+
+It defines the format pattern using the `#` (or a [`patternChar`](#patternChar) ) character. `#` is the placeholder character for numbers.
+
+```js
+import { PatternFormat } from 'react-number-format';
+
+<PatternFormat value={123123} format="### ###" />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/format-demo-m3km9n?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     className='csb'
+     title="format-demo"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+
+### getInputRef `elm => void`
+
+:::caution Deprecated
+This is deprecated in favour of passing ref directly instead of using getInputRef.
 :::
 
-An array of 10 single-character strings with represent numerals in different locales. ranging from 0 - 9. the result will be converted to english numeral and treated as number
-
----
-
-### decimalScale
-
-> `number`, `optional`
-
-If defined it limits to given decimal scale
-
-### decimalSeparator
-
-> `string`, `optional`
-
-Support decimal point on a number
-
-### defaultValue
-
-> `number | string`, `optional`
-
-Value to be used as default value if value is not provided. The format of defaultValue should be similar as defined for the value
-
-### displayType
-
-> `input[type=text] / input`, `optional`
-
-If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value
-
-### format
-
-> `string`, `optional`
-
-If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number
-
-### getInputRef
-
-> `(elm) => void`, `optional`
+**default**: `null`
 
 Method to get reference of input, span (based on displayType prop) or the customInput's reference.
 
-### isAllowed
+```js
+import { NumericFormat } from 'react-number-format';
+import { useRef } from 'react';
 
-> `(values) => boolean`, `optional`
+export default function App() {
+  let ref = useRef();
+  return (
+    <NumericFormat
+      getInputRef={(inputRef) => {
+        ref = inputRef;
+        console.log(ref);
+      }}
+    />
+  );
+}
+```
 
-A checker function to check if input value is valid or not. If this function returns false, the onChange method will not get triggered
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/getinputref-demo-zvdqsr?fontsize=14&hidenavigation=1&theme=dark&view=editor"
+     className='csb'
+     title="getInputRef-demo"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
 
-### isNumericString
+### isAllowed `(values) => boolean`
 
-> `boolean`, `optional`
+**default**: `undefined`
 
-If value is passed as string representation of numbers (unformatted) then this should be passed as true
+A checker function to validate the input value. If this function returns false, the onChange method will not get triggered and the input value will not change.
 
-### mask
+```js
+import { NumericFormat } from 'react-number-format';
 
-> `string`, `optional`
+<NumericFormat
+  value={11}
+  isAllowed={(values, sourceInfo) => {
+    const { value } = values;
+    return value > 10;
+  }}
+/>;
+```
 
-If mask defined, component will show non entered placed with masked value.
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/isallowed-demo-3hrw7z?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     className='csb'
+     title="isAllowed-demo"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
 
-### onValueChange
+</details>
 
-> `(values, sourceInfo) => {}`, `optional`
+### isNumericString `boolean`
 
-onValueChange handler accepts
+**default**: false
 
-### prefix
+If value is passed as string representation of numbers (unformatted) then this should be passed as `true`.
 
-> `string`, `optional`
+```js
+import { NumericFormat } from 'react-number-format';
 
-Add a prefix before the number
+<NumericFormat
+  value={val}
+  type="text"
+  value="123456789"
+  decimalSeparator="."
+  displayType="input"
+  type="text"
+/>;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/isnumericstring-demo-gjdqgr?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     className='csb'
+     title="isNumericString-demo"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+
+</details>
+
+### mask `string | Array<string>`
+
+**default**: `undefined`
+
+Used as mask character for numeric places, until any numeric character is provided for that position. You can provide different mask characters for every numeric positions by passing array of mask characters. **Note**: The length of mask characters should match the numbers of `#` [patternChar](#patternChar).
+
+```js
+import { PatternFormat } from 'react-number-format';
+
+<PatternFormat value="411111" isNumericString format="#### #### #### ####" mask="_" />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/mask-demo-o06dsx?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+      className='csb'
+      title="mask-demo"
+      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+    ></iframe>
+</details>
+
+### onValueChange `(values, sourceInfo) => {}`
+
+**default**: undefined
+
+A handler which recieves any changes on the value, triggered from user input or prop change. It recieves [valueObject](#valueObject) as first param, and [sourceInfo](#sourceInfo) as second param.
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat
+  value={123441234123}
+  onValueChange={(values, sourceInfo) => {
+    console.log(values, sourceInfo);
+  }}
+/>;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+   <iframe src="https://codesandbox.io/embed/onvaluechange-demo-c5nl2f?fontsize=14&hidenavigation=1&theme=dark&view=editor"
+      className='csb'
+      title="onvaluechange-demo"
+      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+
+### prefix `string`
+
+**default**:`undefined`
+
+Adds the prefix character before the input value.
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat value={123441234123} prefix={'$'} />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/prefix-demo-6ibo72?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+      className='csb'
+      title="prefix-demo"
+      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
 
 ### removeFormatting
 
@@ -145,11 +442,52 @@ Add a prefix before the number
 
 A renderText method useful if you want to render formattedValue in different element other than span. It also returns the custom props that are added to the component which can allow passing down props to the rendered element.
 
-### suffix
+```js
+import { NumericFormat } from 'react-number-format';
 
-> `string`, `optional`
+<NumericFormat
+  value={1231231}
+  thousandsGroupStyle="lakh"
+  thousandSeparator=","
+  displayType="text"
+  renderText={(value) => <b>{value}</b>}
+/>;
+```
 
-Add a suffix after the number
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/rendertext-demo-lg3dml?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+      className='csb'
+      title="renderText-demo"
+      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe></details>
+
+### suffix `string`
+
+**default**: `undefined`
+
+Adds the suffix after the input value
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat value={123441234123} suffix={'/ -'} />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/suffice-demo-7tlerm?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+      className='csb'
+      title="suffice-demo"
+      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+  </details>
 
 ### thousandsGroupStyle
 
@@ -157,11 +495,47 @@ Add a suffix after the number
 
 Define the thousand grouping style, It support three types. thousand style (thousand) : 123,456,789, indian style (lakh) : 12,34,56,789, chinese style (wan) : 1,2345,6789.
 
+```js
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat type="text" value={1231231} thousandsGroupStyle="lakh" thousandSeparator="," />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/thousandsgroupstyle-demo-u3ip59?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+      className='csb'
+      title="thousandsGroupStyle-demo"
+      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+  
 ### type
 
 > `string`, `optional`
 
 Input type attribute
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat value={123441234123} type='text />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/type-demo-4qwwjk?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+      className='csb'
+      title="type-demo"
+      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>  
+</details>
 
 ### value
 
@@ -169,34 +543,22 @@ Input type attribute
 
 Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true
 
-**Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
-
-#### values object
-
-values object is on following format
-
 ```js
-{
-  formattedValue: '$23,234,235.56', //value after applying formatting
-  value: '23234235.56', //non formatted value as numeric string 23234235.56, if you are setting this value to state make sure to pass isNumericString prop to true
-  floatValue: 23234235.56 //floating point representation. For big numbers it can have exponential syntax
-}
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat value={123441234123} />;
 ```
 
-Its recommended to use formattedValue / value / floatValue based on the initial state (it should be same as the initial state format) which you are passing as value prop. If you are saving the `value` key on state make sure to pass isNumericString prop to true.
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/value-demo-ziuzcp?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+      className='csb'
+      title="value-demo"
+      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>   
+  </details>
 
-### Notes and quirks
-
-1. Value can be passed as string or number, but if it is passed as string it should be either formatted value or if it is a numeric string, you have to set isNumericString props to true.
-
-2. Value as prop will be rounded to given decimal scale if format option is not provided.
-
-3. If you want to block floating number set decimalScale to 0.
-
-4. Use type as tel when you are providing format prop. This will change the mobile keyboard layout to have only numbers. In other case use type as text, so user can type decimal separator.
-
-5. onChange no longer gets values object. You need to use onValueChange instead. onChange/onFocus/onBlur and other input events will be directly passed to the input.
-
-6. Its recommended to use formattedValue / value / floatValue based on the initial state (it should be same as the initial state format) which you are passing as value prop. If you are saving the `value` key on state make sure to pass isNumericString prop to true.
-
-7. onValueChange is not same as onChange. It gets called on whenever there is change in value which can be caused by any event like change or blur event or by a prop change. It also provides a second argument which contains the event object and the reason for this function trigger.
+**Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
