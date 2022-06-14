@@ -785,37 +785,39 @@ class NumberFormat extends React.Component {
   }
 
   onChange(e: SyntheticInputEvent) {
-    const el = e.target;
-    let inputValue = el.value;
-    const { state, props } = this;
-    const { isAllowed } = props;
-    const lastValue = state.value || '';
+    if ( e.nativeEvent.inputType !== 'insertCompositionText' ){
+      const el = e.target;
+      let inputValue = el.value;
+      const { state, props } = this;
+      const { isAllowed } = props;
+      const lastValue = state.value || '';
 
-    const currentCaretPosition = getCurrentCaretPosition(el);
+      const currentCaretPosition = getCurrentCaretPosition(el);
 
-    inputValue = this.correctInputValue(currentCaretPosition, lastValue, inputValue);
+      inputValue = this.correctInputValue(currentCaretPosition, lastValue, inputValue);
 
-    let formattedValue = this.formatInput(inputValue) || '';
-    const numAsString = this.removeFormatting(formattedValue);
+      let formattedValue = this.formatInput(inputValue) || '';
+      const numAsString = this.removeFormatting(formattedValue);
 
-    const valueObj = this.getValueObject(formattedValue, numAsString);
-    const isChangeAllowed = isAllowed(valueObj);
+      const valueObj = this.getValueObject(formattedValue, numAsString);
+      const isChangeAllowed = isAllowed(valueObj);
 
-    if (!isChangeAllowed) {
-      formattedValue = lastValue;
-    }
+      if (!isChangeAllowed) {
+        formattedValue = lastValue;
+      }
 
-    this.updateValue({
-      formattedValue,
-      numAsString,
-      inputValue,
-      input: el,
-      event: e,
-      source: 'event',
-    });
+      this.updateValue({
+        formattedValue,
+        numAsString,
+        inputValue,
+        input: el,
+        event: e,
+        source: 'event',
+      });
 
-    if (isChangeAllowed) {
-      props.onChange(e);
+      if (isChangeAllowed) {
+        props.onChange(e);
+      }
     }
   }
 
