@@ -495,7 +495,10 @@ import { NumericFormat } from 'react-number-format';
 **default**: `,`
 
 Defines the thousand grouping style.
+
+:::info
 Supported types. thousand style (thousand) : 123,456,789, indian style (lakh) : 12,34,56,789, chinese style (wan) : 1,2345,6789.
+:::
 
 ```js
 import { NumericFormat } from 'react-number-format';
@@ -514,7 +517,7 @@ import { NumericFormat } from 'react-number-format';
       sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
 </details>
-  
+
 ### type `string`
 
 **default**: `text`
@@ -545,11 +548,9 @@ import { NumericFormat } from 'react-number-format';
 
 This is the value for the input field. It can be a float number or a formatted string.
 
-::: note
+:::info
 If the value passed is a string representation of the number, the [`isNumericString`](#isNumericString) props should be passed as `true`
 :::
-
-Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true
 
 ```js
 import { NumericFormat } from 'react-number-format';
