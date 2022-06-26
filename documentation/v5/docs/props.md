@@ -431,14 +431,15 @@ import { NumericFormat } from 'react-number-format';
    ></iframe>
 </details>
 
-### removeFormatting
+### removeFormatting `(formattedValue) => numericString` , `optional`
 
-> `(formattedValue) => numericString` , `optional`
-> If you are providing custom format method and it add numbers as format you will need to add custom removeFormatting logic
+**default**: `function`
 
-### renderText
+If you are providing custom format method and it add numbers as format you will need to add custom removeFormatting logic
 
-> `(formattedValue, customProps) => React Element`
+### renderText `(formattedValue, customProps) => React Element`
+
+**default**: `undefined`
 
 A renderText method useful if you want to render formattedValue in different element other than span. It also returns the custom props that are added to the component which can allow passing down props to the rendered element.
 
@@ -489,11 +490,12 @@ import { NumericFormat } from 'react-number-format';
    ></iframe>
   </details>
 
-### thousandsGroupStyle
+### thousandsGroupStyle `string`
 
-> `string`, `optional`
+**default**: `,`
 
-Define the thousand grouping style, It support three types. thousand style (thousand) : 123,456,789, indian style (lakh) : 12,34,56,789, chinese style (wan) : 1,2345,6789.
+Defines the thousand grouping style.
+Supported types. thousand style (thousand) : 123,456,789, indian style (lakh) : 12,34,56,789, chinese style (wan) : 1,2345,6789.
 
 ```js
 import { NumericFormat } from 'react-number-format';
@@ -513,16 +515,16 @@ import { NumericFormat } from 'react-number-format';
    ></iframe>
 </details>
   
-### type
+### type `string`
 
-> `string`, `optional`
+**default**: `text`
 
-Input type attribute
+This allows passing the input type attribute value
 
 ```js
 import { NumericFormat } from 'react-number-format';
 
-<NumericFormat value={123441234123} type='text />;
+<NumericFormat value={123441234123} type="text" />;
 ```
 
 <details>
@@ -537,9 +539,15 @@ import { NumericFormat } from 'react-number-format';
    ></iframe>  
 </details>
 
-### value
+### value `number | string`
 
-> `number | string`, `optional`
+**default**: `undefined`
+
+This is the value for the input field. It can be a float number or a formatted string.
+
+::: note
+If the value passed is a string representation of the number, the [`isNumericString`](#isNumericString) props should be passed as `true`
+:::
 
 Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true
 
