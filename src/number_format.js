@@ -786,11 +786,17 @@ class NumberFormat extends React.Component {
 
   onChange(e: SyntheticInputEvent) {
     const el = e.target;
-    let inputValue = el.value;
     const { state, props } = this;
     const { isAllowed } = props;
     const lastValue = state.value || '';
 
+    if (lastValue === '' && el.value && props.prefix) {
+      const prefixedValue = props.prefix + el.value;
+      el.value = prefixedValue;
+      this.setPatchedCaretPosition(el, prefixedValue.length, prefixedValue)
+    }
+
+    let inputValue = el.value;
     const currentCaretPosition = getCurrentCaretPosition(el);
 
     inputValue = this.correctInputValue(currentCaretPosition, lastValue, inputValue);

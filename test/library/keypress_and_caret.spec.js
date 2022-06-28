@@ -147,6 +147,17 @@ describe('Test keypress and caret position changes', () => {
       expect(wrapper.state().value).toEqual('123 999 845');
       expect(caretPos).toEqual(7);
     });
+
+    it('should handle entering number as first character that is also in the prefix', () => {
+      const wrapper = shallow(<NumberFormat thousandSeparator={true} prefix={'10^'} />);
+
+      simulateKeyInput(wrapper.find('input'), '1', 0, 0, setSelectionRange);
+
+      expect(wrapper.state().value).toEqual('10^1');
+      wrapper.update();
+
+      expect(caretPos).toEqual(4);
+    });
   });
 
   describe('Test delete/backspace with format pattern', () => {
