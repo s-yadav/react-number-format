@@ -233,7 +233,7 @@ import { NumericFormat } from 'react-number-format';
 
 **default**: `undefined`
 
-It defines the format pattern using the `#` (or a [`patternChar`](#patternChar) ) character. `#` is the placeholder character for numbers.
+It defines the format pattern using the `#` (or a [`patternChar`](#patternchar-string) ) character. `#` is the placeholder character for numbers.
 
 ```js
 import { PatternFormat } from 'react-number-format';
@@ -361,7 +361,7 @@ import { NumericFormat } from 'react-number-format';
 
 **default**: `undefined`
 
-Used as mask character for numeric places, until any numeric character is provided for that position. You can provide different mask characters for every numeric positions by passing array of mask characters. **Note**: The length of mask characters should match the numbers of `#` [patternChar](#patternChar).
+Used as mask character for numeric places, until any numeric character is provided for that position. You can provide different mask characters for every numeric positions by passing array of mask characters. **Note**: The length of mask characters should match the numbers of `#` [patternChar](#patternchar-string).
 
 ```js
 import { PatternFormat } from 'react-number-format';
@@ -407,6 +407,30 @@ import { NumericFormat } from 'react-number-format';
       title="onvaluechange-demo"
       allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
       sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+
+### patternChar `string`
+
+**default**: `#`
+
+This helps define the [`format`](#format-string) pattern character.
+
+```js
+import { PatternFormat } from 'react-number-format';
+
+<PatternFormat format="%% (%%%)" patternChar="%" />;
+```
+
+<details>
+<summary>
+Demo
+</summary>
+<iframe src="https://codesandbox.io/embed/patternchar-demo-syfu42?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     className='csb'
+     title="patternchar-demo"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
 </details>
 
