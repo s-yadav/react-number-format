@@ -213,7 +213,8 @@ If value is `input`, it renders an input element where formatting happens as you
 ```js
 import { NumericFormat } from 'react-number-format';
 
-<NumericFormat displayType="input" />;
+<NumericFormat displayType="input" value={110} />;
+<NumericFormat displayType="text" value="110" />;
 ```
 
 <details>
@@ -300,11 +301,13 @@ A checker function to validate the input value. If this function returns false, 
 ```js
 import { NumericFormat } from 'react-number-format';
 
+const MAX_LIMIT = 1000;
+
 <NumericFormat
   value={11}
   isAllowed={(values, sourceInfo) => {
     const { value } = values;
-    return value > 10;
+    return value < MAX_LIMIT;
   }}
 />;
 ```
@@ -335,7 +338,7 @@ import { NumericFormat } from 'react-number-format';
   value={val}
   type="text"
   value="123456789"
-  decimalSeparator="."
+  decimalSeparator=","
   displayType="input"
   type="text"
 />;
@@ -522,7 +525,7 @@ import { NumericFormat } from 'react-number-format';
 
 **default**: `text`
 
-This allows passing the input type attribute value
+This allows passing the input type attribute value, Supported types include `text` | `tel` | `password`
 
 ```js
 import { NumericFormat } from 'react-number-format';
