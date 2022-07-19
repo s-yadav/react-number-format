@@ -29,6 +29,8 @@ import { PatternFormat } from 'react-number-format';
   
 </details>
 
+### format `string`
+
 **default**: `undefined`
 
 It defines the format pattern using the `#` (or a [`patternChar`](#patternChar) ) character. `#` is the placeholder character for numbers.
