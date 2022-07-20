@@ -99,3 +99,9 @@ Demo
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
 </details>
+
+### Common Props
+
+- [See Common Props](/docs/props)
+
+**Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**
