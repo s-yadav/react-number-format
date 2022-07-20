@@ -22,3 +22,6 @@ src/
 test/
 tmp/
 flow-typed/
+
+#ignore documentation files
+documentation/
