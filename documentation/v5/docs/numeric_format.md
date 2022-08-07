@@ -1,5 +1,6 @@
 ---
-sidebar_position: 1
+title: Numeric Format
+sidebar_position: 2
 ---
 
 # Props
