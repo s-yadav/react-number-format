@@ -1,5 +1,6 @@
 ---
-sidebar_position: 1
+title: Pattern Format
+sidebar_position: 3
 ---
 
 # Props
