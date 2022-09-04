@@ -13,6 +13,7 @@ React Number format is a input formatter library with a sohpisticated and light 
 3. Masking.
 4. Custom formatting handler.
 5. Format number in an input or format as a simple text.
+6. Fully customizable
 
 ### Install
 
@@ -32,12 +33,14 @@ yarn add react-number-format
 
 #### ES6
 
+Numeric Format
+
 ```js
-import NumericFormat from 'react-number-format';
+import { NumericFormat } from 'react-number-format';
 ```
 
-#### ES5
+Pattern Format
 
 ```js
-const NumericFormat = require('react-number-format');
+import { PatternFormat } from 'react-number-format';
 ```

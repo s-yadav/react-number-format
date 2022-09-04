@@ -253,7 +253,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
 
   it('should round the initial value to given decimalScale', () => {
     const wrapper = mount(
-      <NumericFormat value={123213.7536} isNumericString={true} decimalScale={1} />,
+      <NumericFormat value={123213.7536} valueIsNumericString={true} decimalScale={1} />,
     );
     expect(getInputValue(wrapper)).toEqual('123213.8');
 
@@ -532,8 +532,8 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(getInputValue(wrapper)).toEqual('$.');
   });
 
-  //Issue #137 isNumericString=true breaks decimal places
-  it('should not break decimal palces when isNumericString is set to true and decimal scale is provided. Issue #137', () => {
+  //Issue #137 valueIsNumericString=true breaks decimal places
+  it('should not break decimal palces when valueIsNumericString is set to true and decimal scale is provided. Issue #137', () => {
     class IssueExample extends React.Component {
       constructor() {
         super();
@@ -545,7 +545,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         const { value } = this.state;
         return (
           <NumericFormat
-            isNumericString={true}
+            valueIsNumericString={true}
             decimalScale={2}
             prefix={'$'}
             value={value}
@@ -594,9 +594,9 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(getInputValue(wrapper)).toEqual('1');
   });
 
-  it(`should not add 0 after minus immediately after minus is entered in case isNumericString and
+  it(`should not add 0 after minus immediately after minus is entered in case valueIsNumericString and
     decimalScale props are passed #198`, () => {
-    const wrapper = mount(<NumericFormat isNumericString decimalScale={2} />);
+    const wrapper = mount(<NumericFormat valueIsNumericString decimalScale={2} />);
     simulateKeyInput(wrapper.find('input'), '-', 0, 0);
     expect(getInputValue(wrapper)).toEqual('-');
   });
@@ -662,7 +662,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
           onValueChange={(values) => {
             setValue(values.value);
           }}
-          isNumericString
+          valueIsNumericString
           decimalScale={8}
         />
       );

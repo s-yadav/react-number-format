@@ -368,7 +368,7 @@ export function caretUnknownFormatBoundary(formattedValue: string) {
 export function useInternalValues(
   value: string | number,
   defaultValue: string | number,
-  isNumericString: boolean,
+  valueIsNumericString: boolean,
   format: FormatInputValueFunction,
   removeFormatting: NumberFormatBaseProps['removeFormatting'],
   onValueChange: NumberFormatBaseProps['onValueChange'] = noop,
@@ -382,7 +382,7 @@ export function useInternalValues(
     if (isNil(value) || isNanValue(value)) {
       numAsString = '';
       formattedValue = '';
-    } else if (typeof value === 'number' || isNumericString) {
+    } else if (typeof value === 'number' || valueIsNumericString) {
       numAsString = typeof value === 'number' ? toNumericString(value) : value;
       formattedValue = format(numAsString);
     } else {

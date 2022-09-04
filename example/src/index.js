@@ -46,7 +46,7 @@ class App extends React.Component {
             thousandSeparator={this.state.thousandSeparator}
             decimalSeparator=","
             value={this.state.test}
-            isNumericString
+            valueIsNumericString
             prefix="$"
             onValueChange={(values) => this.setState({ test: values.value })}
             onChange={(e) => console.log(e.target.value)}
