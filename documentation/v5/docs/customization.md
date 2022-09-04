@@ -38,6 +38,8 @@ Apart from this prop some key handling are required depending on use case which 
 
 To give an example a basic implementation of number formatting if we have simple use case to format number without decimals and negative number support.
 
+#### Intl.NumberFormat based formatting
+
 ```js
 import { NumberFormatBase } from 'react-number-format';
 
@@ -68,6 +70,8 @@ function MyCustomNumberFormat(props) {
 </details>
 
 Another example of card expiry field.
+
+#### card expiry field
 
 ```js
 import { NumberFormatBase } from 'react-number-format';
@@ -113,6 +117,8 @@ A couple of time we want to get all the features of NumericFormat or PatterForma
 
 Let's take the same example of Card Expiry field.
 
+#### card expiry field with usePatternFormat
+
 ```js
 function CardExpiry(props) {
   /**
@@ -156,6 +162,8 @@ function CardExpiry(props) {
 </details>
 
 Another example for NumericFormat could be support for custom numerals.
+
+#### custom numeral example
 
 ```js
 const persianNumeral = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
