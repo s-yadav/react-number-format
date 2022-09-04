@@ -54,7 +54,7 @@ export function format(numStr: string, props: NumericFormatProps) {
 
   //apply decimal precision if its defined
   if (decimalScale !== undefined) {
-    afterDecimal = limitToScale(afterDecimal, decimalScale, fixedDecimalScale);
+    afterDecimal = limitToScale(afterDecimal, decimalScale, !!fixedDecimalScale);
   }
 
   if (thousandSeparator) {
@@ -110,7 +110,7 @@ function handleNegation(value: string = '', allowNegative: boolean) {
   return value;
 }
 
-function getNumberRegex(decimalSeparator: string, decimalScale: number, global: boolean) {
+function getNumberRegex(decimalSeparator: string, global: boolean) {
   return new RegExp(`(^-)|[0-9]|${escapeRegExp(decimalSeparator)}`, global ? 'g' : undefined);
 }
 
@@ -184,7 +184,7 @@ export function removeFormatting(
   value = handleNegation(hasNegation ? `-${value}` : value, allowNegative);
 
   // remove non numeric characters
-  value = (value.match(getNumberRegex(decimalSeparator, decimalScale, true)) || []).join('');
+  value = (value.match(getNumberRegex(decimalSeparator, true)) || []).join('');
 
   // replace the decimalSeparator with ., and only keep the first separator, ignore following ones
   const firstIndex = value.indexOf(decimalSeparator);

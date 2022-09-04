@@ -14,7 +14,7 @@ By default, on blur of an input, leading zeros are removed. To disable the behav
 ```js
 import { NumericFormat } from 'react-number-format';
 
-<NumericFormat value="020020220" allowLeadingZeros thousandSeparator="," />;
+<NumericFormat value="20020220" allowLeadingZeros thousandSeparator="," />;
 ```
 
 <details>
@@ -34,7 +34,7 @@ import { NumericFormat } from 'react-number-format';
 
 **default**: `true`
 
-Is set to `false`, negative numbers will not be allowed
+If set to `false`, negative numbers will not be allowed
 
 ```js
 import { NumericFormat } from 'react-number-format';
@@ -114,7 +114,7 @@ If defined, it limits the number of digits after the decimal point.
 ```js
 import { NumericFormat } from 'react-number-format';
 
-<NumericFormat value={12323} decimalScale={3} />;
+<NumericFormat value={12323.3334} decimalScale={3} />;
 ```
 
 <details>
@@ -189,7 +189,7 @@ If value is `input`, it renders an input element where formatting happens as you
 import { NumericFormat } from 'react-number-format';
 
 <NumericFormat displayType="input" value={110} />;
-<NumericFormat displayType="text" value="110" />;
+<NumericFormat displayType="text" value={110} />;
 ```
 
 <details>
@@ -277,6 +277,7 @@ import { NumericFormat } from 'react-number-format';
   value={val}
   type="text"
   value="123456789"
+  valueIsNumericString={true}
   decimalSeparator=","
   displayType="input"
   type="text"
@@ -306,7 +307,7 @@ A handler which recieves any changes on the value, triggered from user input or 
 import { NumericFormat } from 'react-number-format';
 
 <NumericFormat
-  value={123441234123}
+  value={1234}
   prefix="$"
   onValueChange={(values, sourceInfo) => {
     console.log(values, sourceInfo);
@@ -335,7 +336,7 @@ Adds the prefix character before the input value.
 ```js
 import { NumericFormat } from 'react-number-format';
 
-<NumericFormat value={123441234123} prefix={'$'} />;
+<NumericFormat value={1234} prefix={'$'} />;
 ```
 
 <details>
@@ -388,7 +389,7 @@ Adds the suffix after the input value
 ```js
 import { NumericFormat } from 'react-number-format';
 
-<NumericFormat value={123441234123} suffix={'/ -'} />;
+<NumericFormat value={123} suffix={'/ -'} />;
 ```
 
 <details>
@@ -440,7 +441,7 @@ This allows passing the input type attribute value, Supported types include `tex
 ```js
 import { NumericFormat } from 'react-number-format';
 
-<NumericFormat value={123441234123} type="text" />;
+<NumericFormat value={123} type="text" />;
 ```
 
 <details>
@@ -468,7 +469,7 @@ If the value passed is a string representation of the number, the [`valueIsNumer
 ```js
 import { NumericFormat } from 'react-number-format';
 
-<NumericFormat value={123441234123} />;
+<NumericFormat value={123} />;
 ```
 
 <details>
