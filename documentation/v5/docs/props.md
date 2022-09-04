@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 2
 title: Props
 ---
 
@@ -29,6 +29,34 @@ import { TextField } from '@mui/material';
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
 </details>
+
+### value `number | string`
+
+**default**: `undefined`
+
+This is the value for the input field. It can be a float number or a formatted string.
+
+:::info
+If the value passed is a string representation of the number, the [`valueIsNumericString`](#valueIsNumericString) props should be passed as `true`
+:::
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat value={123} />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/value-demo-ziuzcp?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+      className='csb'
+      title="value-demo"
+      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>   
+  </details>
 
 ### defaultValue `number | string`
 
@@ -64,7 +92,7 @@ If value is `input`, it renders an input element where formatting happens as you
 import { NumericFormat } from 'react-number-format';
 
 <NumericFormat displayType="input" value={110} />;
-<NumericFormat displayType="text" value="110" />;
+<NumericFormat displayType="text" value={110} />;
 ```
 
 <details>
@@ -152,6 +180,7 @@ import { NumericFormat } from 'react-number-format';
   value={val}
   type="text"
   value="123456789"
+  valueIsNumericString={true}
   decimalSeparator=","
   displayType="input"
   type="text"
@@ -181,7 +210,7 @@ A handler which recieves any changes on the value, triggered from user input or 
 import { NumericFormat } from 'react-number-format';
 
 <NumericFormat
-  value={123441234123}
+  value={1234}
   prefix="$"
   onValueChange={(values, sourceInfo) => {
     console.log(values, sourceInfo);
@@ -196,30 +225,6 @@ import { NumericFormat } from 'react-number-format';
    <iframe src="https://codesandbox.io/embed/onvaluechange-demo-c5nl2f?fontsize=14&hidenavigation=1&theme=dark&view=editor"
       className='csb'
       title="onvaluechange-demo"
-      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
-</details>
-
-### prefix `string`
-
-**default**:`undefined`
-
-Adds the prefix character before the input value.
-
-```js
-import { NumericFormat } from 'react-number-format';
-
-<NumericFormat value={123441234123} prefix={'$'} />;
-```
-
-<details>
-  <summary>
-  Demo
-  </summary>
-  <iframe src="https://codesandbox.io/embed/prefix-demo-6ibo72?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-      className='csb'
-      title="prefix-demo"
       allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
       sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
@@ -263,7 +268,7 @@ This allows passing the input type attribute value, Supported types include `tex
 ```js
 import { NumericFormat } from 'react-number-format';
 
-<NumericFormat value={123441234123} type="text" />;
+<NumericFormat value={123} type="text" />;
 ```
 
 <details>
@@ -277,34 +282,6 @@ import { NumericFormat } from 'react-number-format';
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>  
 </details>
-
-### value `number | string`
-
-**default**: `undefined`
-
-This is the value for the input field. It can be a float number or a formatted string.
-
-:::info
-If the value passed is a string representation of the number, the [`valueIsNumericString`](#valueIsNumericString) props should be passed as `true`
-:::
-
-```js
-import { NumericFormat } from 'react-number-format';
-
-<NumericFormat value={123441234123} />;
-```
-
-<details>
-  <summary>
-  Demo
-  </summary>
-  <iframe src="https://codesandbox.io/embed/value-demo-ziuzcp?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-      className='csb'
-      title="value-demo"
-      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>   
-  </details>
 
 ### Other Props
 
