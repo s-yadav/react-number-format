@@ -8,14 +8,6 @@ const FeatureList = [
     description: <></>,
   },
   {
-    title: 'Focus on What Matters',
-    description: <></>,
-  },
-  {
-    title: 'Powered by React',
-    description: <></>,
-  },
-  {
     title: 'Custom format pattern.',
     description: <></>,
   },
@@ -31,6 +23,10 @@ const FeatureList = [
   },
   {
     title: 'Format number in an input or format as a simple text.',
+    description: <></>,
+  },
+  {
+    title: 'Fully customizable.',
     description: <></>,
   },
 ];

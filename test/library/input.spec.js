@@ -336,8 +336,10 @@ describe('NumberFormat as input', () => {
     });
   });
 
-  it('should not convert empty string to 0 if isNumericString is true', () => {
-    const wrapper = mount(<NumericFormat isNumericString={true} value={''} decimalScale={2} />);
+  it('should not convert empty string to 0 if valueIsNumericString is true', () => {
+    const wrapper = mount(
+      <NumericFormat valueIsNumericString={true} value={''} decimalScale={2} />,
+    );
     expect(getInputValue(wrapper)).toEqual('');
   });
 
@@ -450,7 +452,7 @@ describe('NumberFormat as input', () => {
   });
 
   it('should always call setState when input is not on focus and value formatting is changed from outside', () => {
-    const wrapper = mount(<NumericFormat value="1.1" isNumericString />);
+    const wrapper = mount(<NumericFormat value="1.1" valueIsNumericString />);
     simulateFocusEvent(wrapper.find('input'));
     simulateKeyInput(wrapper.find('input'), '0', 3);
 
@@ -479,7 +481,7 @@ describe('NumberFormat as input', () => {
   it('should call onValueChange with the right source information', () => {
     const spy = jasmine.createSpy();
     const wrapper = mount(
-      <NumericFormat value="1234" isNumericString={true} onValueChange={spy} />,
+      <NumericFormat value="1234" valueIsNumericString={true} onValueChange={spy} />,
     );
 
     // Test prop change onValueChange
@@ -610,7 +612,7 @@ describe('NumberFormat as input', () => {
               decimalScale={18}
               thousandSeparator
               prefix={'$'}
-              isNumericString
+              valueIsNumericString
             />
           );
         }
@@ -639,7 +641,7 @@ describe('NumberFormat as input', () => {
               thousandSeparator
               prefix="$"
               decimalScale={2}
-              isNumericString
+              valueIsNumericString
             />
           );
         }

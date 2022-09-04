@@ -139,7 +139,7 @@ const MAX_LIMIT = 1000;
 
 </details>
 
-### isNumericString `boolean`
+### valueIsNumericString `boolean`
 
 **default**: false
 
@@ -162,9 +162,9 @@ import { NumericFormat } from 'react-number-format';
   <summary>
   Demo
   </summary>
-  <iframe src="https://codesandbox.io/embed/isnumericstring-demo-gjdqgr?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+  <iframe src="https://codesandbox.io/embed/valueIsNumericString-demo-gjdqgr?fontsize=14&hidenavigation=1&theme=dark&view=preview"
      className='csb'
-     title="isNumericString-demo"
+     title="valueIsNumericString-demo"
      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
@@ -285,7 +285,7 @@ import { NumericFormat } from 'react-number-format';
 This is the value for the input field. It can be a float number or a formatted string.
 
 :::info
-If the value passed is a string representation of the number, the [`isNumericString`](#isNumericString) props should be passed as `true`
+If the value passed is a string representation of the number, the [`valueIsNumericString`](#valueIsNumericString) props should be passed as `true`
 :::
 
 ```js
@@ -308,7 +308,7 @@ import { NumericFormat } from 'react-number-format';
 
 ### Other Props
 
-- [Numeric Format Props](/docs/pattern/props)
-- [Pattern Format Props](/docs/numeric/props)
+- [Numeric Format Props](/docs/numeric_format)
+- [Pattern Format Props](/docs/pattern_format)
 
 **Other than this it accepts all the props which can be given to a input or span based on displayType you selected.**

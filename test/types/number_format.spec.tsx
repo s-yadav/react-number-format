@@ -16,7 +16,7 @@ function NumberFormatBaseTest() {
       />
       <NumberFormatBase
         value={state}
-        isNumericString
+        valueIsNumericString
         onValueChange={(values) => {
           setState(values.value);
         }}
@@ -26,7 +26,7 @@ function NumberFormatBaseTest() {
       />
       <NumberFormatBase
         value={state}
-        isNumericString
+        valueIsNumericString
         onValueChange={(values) => {
           setState(values.value);
         }}

@@ -248,7 +248,7 @@ export function useNumericFormat<BaseType = InputAttributes>(props: NumericForma
     prefix = '',
     defaultValue,
     value,
-    isNumericString,
+    valueIsNumericString,
     onValueChange,
   } = props;
 
@@ -260,12 +260,12 @@ export function useNumericFormat<BaseType = InputAttributes>(props: NumericForma
   const _removeFormatting: RemoveFormattingFunction = (inputValue, changeMeta) =>
     removeFormatting(inputValue, changeMeta, props);
 
-  let _isNumericString = isNumericString;
+  let _valueIsNumericString = valueIsNumericString;
 
   if (!isNil(value)) {
-    _isNumericString = isNumericString ?? typeof value === 'number';
+    _valueIsNumericString = valueIsNumericString ?? typeof value === 'number';
   } else if (!isNil(defaultValue)) {
-    _isNumericString = isNumericString ?? typeof defaultValue === 'number';
+    _valueIsNumericString = valueIsNumericString ?? typeof defaultValue === 'number';
   }
 
   const roundIncomingValueToPrecision = (value: string | number) => {
@@ -279,7 +279,7 @@ export function useNumericFormat<BaseType = InputAttributes>(props: NumericForma
      * only round numeric or float string values coming through props,
      * we don't need to do it for onChange events, as we want to prevent typing there
      */
-    if (_isNumericString && typeof decimalScale === 'number') {
+    if (_valueIsNumericString && typeof decimalScale === 'number') {
       return roundToPrecision(value, decimalScale, fixedDecimalScale);
     }
 
@@ -289,7 +289,7 @@ export function useNumericFormat<BaseType = InputAttributes>(props: NumericForma
   const [{ numAsString, formattedValue }, _onValueChange] = useInternalValues(
     roundIncomingValueToPrecision(value),
     roundIncomingValueToPrecision(defaultValue),
-    _isNumericString,
+    _valueIsNumericString,
     _format,
     _removeFormatting,
     onValueChange,
@@ -374,7 +374,7 @@ export function useNumericFormat<BaseType = InputAttributes>(props: NumericForma
 
   return {
     value: formattedValue,
-    isNumericString: false,
+    valueIsNumericString: false,
     onValueChange: _onValueChange,
     format: _format,
     removeFormatting: _removeFormatting,
@@ -403,7 +403,7 @@ export default function NumericFormat<BaseType = InputAttributes>(
     prefix = '',
     defaultValue,
     value,
-    isNumericString,
+    valueIsNumericString,
     onValueChange,
     /* eslint-enable no-unused-vars */
     ...restProps

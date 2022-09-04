@@ -5,6 +5,21 @@ title: Migration guide
 
 # Migration guide
 
+### NumericFormat and PatternFormat
+
+The whole NumberFormat module is broken into smaller modules called
+
+1. [**NumericFormat**](/docs/numeric_format) for Number based formatting like currency inputs.
+2. [**PatternFormat**](/docs/pattern_format) for Pattern based formatting like card numbers, phone number inputs.
+
+It also provide lower level units allowing better customization. [See Customization Docs](/docs/customization)
+
+### isNumericString -> valueIsNumericString
+
+Number format modules need to know if the passed value is a formatting string or string representation of number to be able to properly separate format characters and numbers.
+
+isNumericString prop was confusing and wasn't explaining what is numeric string. The prop is now renamed to more verbose name `valueIsNumericString`.
+
 ### customNumerals `Array<string>`
 
 :::caution Removed
@@ -41,5 +56,3 @@ export default function App() {
   );
 }
 ```
-
-w
