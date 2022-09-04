@@ -45,7 +45,11 @@ import { PatternFormat } from 'react-number-format';
 
 Read the full documentation here
 
-[https://s-yadav.github.io/react-number-format/](https://s-yadav.github.io/react-number-format/)
+[https://s-yadav.github.io/react-number-format/docs/intro](https://s-yadav.github.io/react-number-format/docs/intro)
+
+### Migrate from v4 to v5
+
+[https://s-yadav.github.io/react-number-format/docs/migration](https://s-yadav.github.io/react-number-format/docs/migration)
 
 ### Development
 

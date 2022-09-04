@@ -5,9 +5,25 @@ title: Migration guide
 
 # Migration guide
 
-### NumericFormat and PatternFormat
+### NumberFormat -> NumericFormat and PatternFormat
 
-The whole NumberFormat module is broken into smaller modules called
+The whole NumberFormat module is broken into smaller modules called.
+
+This changes from
+
+```js
+import NumberFormat from 'react-number-format';
+```
+
+to
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+\\ or
+
+import { PatternFormat } from 'react-number-format';
+```
 
 1. [**NumericFormat**](/docs/numeric_format) for Number based formatting like currency inputs.
 2. [**PatternFormat**](/docs/pattern_format) for Pattern based formatting like card numbers, phone number inputs.
@@ -26,7 +42,8 @@ isNumericString prop was confusing and wasn't explaining what is numeric string.
 This is removed in v5.
 :::
 
-An array of 10 single-character strings with represent numerals in different locales. ranging from 0 - 9. the result will be converted to english numeral and treated as number
+See custom numeral implementation with v5
+[https://s-yadav.github.io/react-number-format/docs/customization#custom-numeral-example](https://s-yadav.github.io/react-number-format/docs/customization#custom-numeral-example)
 
 ---
 
