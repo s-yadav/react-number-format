@@ -47,7 +47,7 @@ describe('Test keypress and caret position changes', () => {
         const { value, prefix } = this.state;
         return (
           <NumericFormat
-            isNumericString={true}
+            valueIsNumericString={true}
             prefix={prefix}
             value={value}
             onValueChange={({ value }) => {

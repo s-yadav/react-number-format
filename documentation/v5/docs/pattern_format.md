@@ -62,7 +62,7 @@ Used as mask character for numeric places, until any numeric character is provid
 ```js
 import { PatternFormat } from 'react-number-format';
 
-<PatternFormat value="411111" isNumericString format="#### #### #### ####" mask="_" />;
+<PatternFormat value="411111" valueIsNumericString format="#### #### #### ####" mask="_" />;
 ```
 
 <details>

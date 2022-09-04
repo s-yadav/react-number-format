@@ -24,7 +24,7 @@ describe('NumberFormat as text', () => {
     const wrapper = mount(
       <PatternFormat
         value="4111111111111111"
-        isNumericString
+        valueIsNumericString
         displayType={'text'}
         format="#### #### #### ####"
       />,
@@ -36,7 +36,7 @@ describe('NumberFormat as text', () => {
     const wrapper = mount(
       <PatternFormat
         value="41111111111111"
-        isNumericString
+        valueIsNumericString
         displayType={'text'}
         format="#### #### #### ####"
       />,
@@ -48,7 +48,7 @@ describe('NumberFormat as text', () => {
     const wrapper = mount(
       <PatternFormat
         value="41111111111111"
-        isNumericString
+        valueIsNumericString
         displayType={'text'}
         format="#### #### #### ####"
         mask="_"
@@ -73,7 +73,7 @@ describe('NumberFormat as text', () => {
     const wrapper = mount(
       <NumericFormat
         value="4111.11"
-        isNumericString
+        valueIsNumericString
         displayType={'text'}
         decimalScale={4}
         fixedDecimalScale={true}
@@ -93,7 +93,7 @@ describe('NumberFormat as text', () => {
     const wrapper = mount(
       <NumericFormat
         value="4111.11"
-        isNumericString
+        valueIsNumericString
         thousandSeparator=","
         renderText={(value) => <div>{value}</div>}
         displayType={'text'}

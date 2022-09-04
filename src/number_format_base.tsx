@@ -39,7 +39,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     /* eslint-disable no-unused-vars */
     removeFormatting = defaultRemoveFormatting,
     defaultValue,
-    isNumericString,
+    valueIsNumericString,
     onValueChange,
     isAllowed,
     onChange = noop,
@@ -56,7 +56,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
   const [{ formattedValue, numAsString }, onFormattedValueChange] = useInternalValues(
     propValue,
     defaultValue,
-    isNumericString,
+    valueIsNumericString,
     format as FormatInputValueFunction,
     removeFormatting,
     onValueChange,

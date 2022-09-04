@@ -63,7 +63,7 @@ type NumberFormatBase = {
   getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any>;
   value?: number | string | null;
   defaultValue?: number | string | null;
-  isNumericString?: boolean;
+  valueIsNumericString?: boolean;
   onValueChange?: (values: NumberFormatValues, sourceInfo: SourceInfo) => void;
   isAllowed?: (values: NumberFormatValues) => boolean;
   onKeyDown?: InputAttributes['onKeyDown'];
