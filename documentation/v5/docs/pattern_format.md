@@ -86,7 +86,7 @@ This helps define the [`format`](#format-string) pattern character.
 ```js
 import { PatternFormat } from 'react-number-format';
 
-<PatternFormat format="%% (%%%)" patternChar="%" />;
+<PatternFormat format="%% (%%%)" patternChar="%" value={23456} />;
 ```
 
 <details>
