@@ -3,16 +3,19 @@ import { PatternFormatProps, InputAttributes, ChangeMeta, InternalNumberFormatBa
 import { getDefaultChangeMeta, getMaskAtIndex, noop, setCaretPosition } from './utils';
 import NumberFormatBase from './number_format_base';
 
-export function format(numStr: string, props: PatternFormatProps) {
+export function format<BaseType = InputAttributes>(
+  numStr: string,
+  props: PatternFormatProps<BaseType>,
+) {
   const format = props.format as string;
-  const { allowEmptyFormatting, mask } = props;
+  const { allowEmptyFormatting, mask, patternChar = '#' } = props;
 
   if (numStr === '' && !allowEmptyFormatting) return '';
 
   let hashCount = 0;
   const formattedNumberAry = format.split('');
   for (let i = 0, ln = format.length; i < ln; i++) {
-    if (format[i] === '#') {
+    if (format[i] === patternChar) {
       formattedNumberAry[i] = numStr[hashCount] || getMaskAtIndex(mask, hashCount);
       hashCount += 1;
     }
@@ -20,10 +23,10 @@ export function format(numStr: string, props: PatternFormatProps) {
   return formattedNumberAry.join('');
 }
 
-export function removeFormatting(
+export function removeFormatting<BaseType = InputAttributes>(
   value: string,
   changeMeta: ChangeMeta = getDefaultChangeMeta(value),
-  props: PatternFormatProps,
+  props: PatternFormatProps<BaseType>,
 ) {
   const format = props.format as string;
   const { patternChar = '#' } = props;
@@ -92,7 +95,10 @@ export function removeFormatting(
   )}`;
 }
 
-export function getCaretBoundary(formattedValue: string, props: PatternFormatProps) {
+export function getCaretBoundary<BaseType = InputAttributes>(
+  formattedValue: string,
+  props: PatternFormatProps<BaseType>,
+) {
   const format = props.format as string;
   const { mask, patternChar = '#' } = props;
   const boundaryAry = Array.from({ length: formattedValue.length + 1 }).map(() => true);
@@ -124,7 +130,7 @@ export function getCaretBoundary(formattedValue: string, props: PatternFormatPro
   return boundaryAry;
 }
 
-function validateProps(props: PatternFormatProps) {
+function validateProps<BaseType = InputAttributes>(props: PatternFormatProps<BaseType>) {
   const { mask } = props;
 
   if (mask) {
@@ -147,7 +153,7 @@ export function usePatternFormat<BaseType = InputAttributes>(props: PatternForma
     const { selectionStart, selectionEnd } = el;
 
     // if multiple characters are selected and user hits backspace, no need to handle anything manually
-    if (selectionStart !== selectionEnd) {
+    if (selectionStart !== selectionEnd || !selectionStart) {
       onKeyDown(e);
       return;
     }
