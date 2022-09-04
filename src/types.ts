@@ -1,5 +1,7 @@
 import React, { SyntheticEvent } from 'react';
 
+export type Timeout = ReturnType<typeof setTimeout>;
+
 export interface NumberFormatState {
   value?: string;
   numAsString?: string;
@@ -23,7 +25,7 @@ export interface SourceInfo {
 }
 
 export type FormatInputValueFunction = (inputValue: string) => string;
-export type RemoveFormattingFunction = (inputValue: string, changeMeta: ChangeMeta) => string;
+export type RemoveFormattingFunction = (inputValue: string, changeMeta?: ChangeMeta) => string;
 
 export interface SyntheticInputEvent extends React.SyntheticEvent<HTMLInputElement> {
   readonly target: HTMLInputElement;
@@ -53,6 +55,8 @@ type NumberFormatProps<Props, BaseType = InputAttributes> = Props &
     customInput?: React.ComponentType<BaseType>;
   };
 
+export type OnValueChange = (values: NumberFormatValues, sourceInfo: SourceInfo) => void;
+
 type NumberFormatBase = {
   type?: 'text' | 'tel' | 'password';
   displayType?: 'input' | 'text';
@@ -64,7 +68,7 @@ type NumberFormatBase = {
   value?: number | string | null;
   defaultValue?: number | string | null;
   valueIsNumericString?: boolean;
-  onValueChange?: (values: NumberFormatValues, sourceInfo: SourceInfo) => void;
+  onValueChange?: OnValueChange;
   isAllowed?: (values: NumberFormatValues) => boolean;
   onKeyDown?: InputAttributes['onKeyDown'];
   onMouseUp?: InputAttributes['onMouseUp'];

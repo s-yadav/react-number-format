@@ -25,7 +25,10 @@ import {
 } from './types';
 import NumberFormatBase from './number_format_base';
 
-export function format(numStr: string, props: NumericFormatProps) {
+export function format<BaseType = InputAttributes>(
+  numStr: string,
+  props: NumericFormatProps<BaseType>,
+) {
   const {
     decimalScale,
     fixedDecimalScale,
@@ -73,7 +76,7 @@ export function format(numStr: string, props: NumericFormatProps) {
   return numStr;
 }
 
-function getSeparators(props: NumericFormatProps) {
+function getSeparators<BaseType = InputAttributes>(props: NumericFormatProps<BaseType>) {
   const { decimalSeparator = '.' } = props;
   let { thousandSeparator, allowedDecimalSeparators } = props;
   if (thousandSeparator === true) {
@@ -114,10 +117,10 @@ function getNumberRegex(decimalSeparator: string, global: boolean) {
   return new RegExp(`(^-)|[0-9]|${escapeRegExp(decimalSeparator)}`, global ? 'g' : undefined);
 }
 
-export function removeFormatting(
+export function removeFormatting<BaseType = InputAttributes>(
   value: string,
   changeMeta: ChangeMeta = getDefaultChangeMeta(value),
-  props: NumericFormatProps,
+  props: NumericFormatProps<BaseType>,
 ) {
   const { allowNegative = true, prefix = '', suffix = '', decimalScale } = props;
   const { from, to } = changeMeta;
@@ -209,7 +212,10 @@ export function removeFormatting(
   return value;
 }
 
-export function getCaretBoundary(formattedValue: string, props: NumericFormatProps) {
+export function getCaretBoundary<BaseType = InputAttributes>(
+  formattedValue: string,
+  props: NumericFormatProps<BaseType>,
+) {
   const { prefix = '', suffix = '' } = props;
   const boundaryAry = Array.from({ length: formattedValue.length + 1 }).map(() => true);
 
@@ -225,7 +231,7 @@ export function getCaretBoundary(formattedValue: string, props: NumericFormatPro
   return boundaryAry;
 }
 
-function validateProps(props: NumericFormatProps) {
+function validateProps<BaseType = InputAttributes>(props: NumericFormatProps<BaseType>) {
   const { thousandSeparator, decimalSeparator } = getSeparators(props);
 
   if (thousandSeparator === decimalSeparator) {
@@ -268,7 +274,7 @@ export function useNumericFormat<BaseType = InputAttributes>(props: NumericForma
     _valueIsNumericString = valueIsNumericString ?? typeof defaultValue === 'number';
   }
 
-  const roundIncomingValueToPrecision = (value: string | number) => {
+  const roundIncomingValueToPrecision = (value: string | number | null | undefined) => {
     if (isNil(value) || isNanValue(value)) return value;
 
     if (typeof value === 'number') {
@@ -280,7 +286,7 @@ export function useNumericFormat<BaseType = InputAttributes>(props: NumericForma
      * we don't need to do it for onChange events, as we want to prevent typing there
      */
     if (_valueIsNumericString && typeof decimalScale === 'number') {
-      return roundToPrecision(value, decimalScale, fixedDecimalScale);
+      return roundToPrecision(value, decimalScale, Boolean(fixedDecimalScale));
     }
 
     return value;
@@ -289,7 +295,7 @@ export function useNumericFormat<BaseType = InputAttributes>(props: NumericForma
   const [{ numAsString, formattedValue }, _onValueChange] = useInternalValues(
     roundIncomingValueToPrecision(value),
     roundIncomingValueToPrecision(defaultValue),
-    _valueIsNumericString,
+    Boolean(_valueIsNumericString),
     _format,
     _removeFormatting,
     onValueChange,
@@ -316,21 +322,21 @@ export function useNumericFormat<BaseType = InputAttributes>(props: NumericForma
     const { decimalSeparator } = getSeparators(props);
     if (
       key === 'Backspace' &&
-      value[selectionStart - 1] === decimalSeparator &&
+      value[(selectionStart as number) - 1] === decimalSeparator &&
       decimalScale &&
       fixedDecimalScale
     ) {
-      setCaretPosition(el, selectionStart - 1);
+      setCaretPosition(el, (selectionStart as number) - 1);
       e.preventDefault();
     }
 
     // move cursor when delete or backspace is pressed before/after thousand separator
-    if (key === 'Backspace' && value[selectionStart - 1] === thousandSeparator) {
-      setCaretPosition(el, selectionStart - 1);
+    if (key === 'Backspace' && value[(selectionStart as number) - 1] === thousandSeparator) {
+      setCaretPosition(el, (selectionStart as number) - 1);
     }
 
-    if (key === 'Delete' && value[selectionStart] === thousandSeparator) {
-      setCaretPosition(el, selectionStart + 1);
+    if (key === 'Delete' && value[selectionStart as number] === thousandSeparator) {
+      setCaretPosition(el, (selectionStart as number) + 1);
     }
 
     onKeyDown(e);
@@ -346,7 +352,7 @@ export function useNumericFormat<BaseType = InputAttributes>(props: NumericForma
 
     // clear leading 0s
     if (!allowLeadingZeros) {
-      _value = fixLeadingZero(_value);
+      _value = fixLeadingZero(_value) as string;
     }
 
     // apply fixedDecimalScale on blur event
