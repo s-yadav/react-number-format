@@ -44,7 +44,7 @@ export type ChangeMeta = {
 
 export type InputAttributes = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
-  'defaultValue' | 'value'
+  'defaultValue' | 'value' | 'children'
 >;
 
 type NumberFormatProps<Props, BaseType = InputAttributes> = Props &
