@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { NumberFormatBaseProps, FormatInputValueFunction } from './types';
+import { NumberFormatBaseProps, FormatInputValueFunction, OnValueChange } from './types';
 
 // basic noop function
 export function noop() {}
@@ -11,7 +11,7 @@ export function charIsNumber(char?: string) {
   return !!(char || '').match(/\d/);
 }
 
-export function isNil(val: any) {
+export function isNil(val: any): val is null | undefined {
   return val === null || val === undefined;
 }
 
@@ -270,7 +270,7 @@ export function clamp(num: number, min: number, max: number) {
 
 export function geInputCaretPosition(el: HTMLInputElement) {
   /*Max of selectionStart and selectionEnd is taken for the patch of pixel and other mobile device caret bug*/
-  return Math.max(el.selectionStart, el.selectionEnd);
+  return Math.max(el.selectionStart as number, el.selectionEnd as number);
 }
 
 export function addInputMode() {
@@ -366,18 +366,18 @@ export function caretUnknownFormatBoundary(formattedValue: string) {
 }
 
 export function useInternalValues(
-  value: string | number,
-  defaultValue: string | number,
+  value: string | number | null | undefined,
+  defaultValue: string | number | null | undefined,
   valueIsNumericString: boolean,
   format: FormatInputValueFunction,
   removeFormatting: NumberFormatBaseProps['removeFormatting'],
   onValueChange: NumberFormatBaseProps['onValueChange'] = noop,
-): [{ formattedValue: string; numAsString: string }, NumberFormatBaseProps['onValueChange']] {
+): [{ formattedValue: string; numAsString: string }, OnValueChange] {
   type Values = { formattedValue: string; numAsString: string };
 
   const propValues = useRef<Values>();
 
-  const getValues = usePersistentCallback((value: string | number) => {
+  const getValues = usePersistentCallback((value: string | number | null | undefined) => {
     let formattedValue, numAsString;
     if (isNil(value) || isNanValue(value)) {
       numAsString = '';

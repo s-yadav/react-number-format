@@ -4,6 +4,7 @@ import {
   NumberFormatBaseProps,
   InputAttributes,
   SourceType,
+  Timeout,
 } from './types';
 import {
   addInputMode,
@@ -56,7 +57,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
   const [{ formattedValue, numAsString }, onFormattedValueChange] = useInternalValues(
     propValue,
     defaultValue,
-    valueIsNumericString,
+    Boolean(valueIsNumericString),
     format as FormatInputValueFunction,
     removeFormatting,
     onValueChange,
@@ -82,15 +83,18 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
         input,
         setCaretPosition: true,
         source: SourceType.props,
-        event: null,
+        event: undefined,
       });
     }
   });
 
   const [mounted, setMounted] = useState(false);
-  const focusedElm = useRef<HTMLInputElement>(null);
+  const focusedElm = useRef<HTMLInputElement | null>(null);
 
-  const timeout = useRef({
+  const timeout = useRef<{
+    setCaretTimeout: Timeout | null;
+    focusTimeout: Timeout | null;
+  }>({
     setCaretTimeout: null,
     focusTimeout: null,
   });
@@ -99,8 +103,8 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     setMounted(true);
 
     return () => {
-      clearTimeout(timeout.current.setCaretTimeout);
-      clearTimeout(timeout.current.focusTimeout);
+      clearTimeout(timeout.current.setCaretTimeout as unknown as Timeout);
+      clearTimeout(timeout.current.focusTimeout as unknown as Timeout);
     };
   }, []);
 
@@ -170,17 +174,17 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     formattedValue?: string;
     numAsString: string;
     inputValue?: string;
-    input: HTMLInputElement;
+    input?: HTMLInputElement | null;
     event?:
       | React.ChangeEvent<HTMLInputElement>
       | React.FocusEvent<HTMLInputElement>
       | React.KeyboardEvent<HTMLInputElement>;
-    source?: SourceType;
+    source: SourceType;
     caretPos?: number;
     setCaretPosition?: Boolean;
   }) => {
     const {
-      formattedValue: newFormattedValue,
+      formattedValue: newFormattedValue = '',
       input,
       setCaretPosition = true,
       source,
@@ -214,7 +218,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       input.value = newFormattedValue;
 
       //set caret position, and value imperatively when element is provided
-      if (setCaretPosition) {
+      if (setCaretPosition && caretPos !== undefined) {
         //set caret position
         setPatchedCaretPosition(input, caretPos, newFormattedValue);
       }
@@ -275,9 +279,9 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
 
     //Handle backspace and delete against non numerical/decimal characters or arrow keys
     if (key === 'ArrowLeft' || key === 'Backspace') {
-      expectedCaretPosition = Math.max(selectionStart - 1, 0);
+      expectedCaretPosition = Math.max((selectionStart as number) - 1, 0);
     } else if (key === 'ArrowRight') {
-      expectedCaretPosition = Math.min(selectionStart + 1, value.length);
+      expectedCaretPosition = Math.min((selectionStart as number) + 1, value.length);
     } else if (key === 'Delete') {
       expectedCaretPosition = selectionStart;
     }
@@ -327,7 +331,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     const { selectionStart, selectionEnd, value = '' } = el;
 
     if (selectionStart === selectionEnd) {
-      const caretPosition = correctCaretPosition(value, selectionStart);
+      const caretPosition = correctCaretPosition(value, selectionStart as number);
       if (caretPosition !== selectionStart) {
         setPatchedCaretPosition(el, caretPosition, value);
       }
@@ -347,7 +351,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     timeout.current.focusTimeout = setTimeout(() => {
       const { selectionStart, selectionEnd, value = '' } = el;
 
-      const caretPosition = correctCaretPosition(value, selectionStart);
+      const caretPosition = correctCaretPosition(value, selectionStart as number);
 
       //setPatchedCaretPosition only when everything is not selected on focus (while tabbing into the field)
       if (
@@ -363,8 +367,8 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
 
   const _onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     focusedElm.current = null;
-    clearTimeout(timeout.current.focusTimeout);
-    clearTimeout(timeout.current.setCaretTimeout);
+    clearTimeout(timeout.current.focusTimeout as unknown as Timeout);
+    clearTimeout(timeout.current.setCaretTimeout as unknown as Timeout);
     onBlur(e);
   };
 
