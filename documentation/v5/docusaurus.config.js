@@ -9,7 +9,7 @@ const config = {
   title: 'React Number format',
   tagline: 'React component to format numbers in an input or as a text.',
   url: 'https://github.com/s-yadav/react-number-format',
-  baseUrl: '/',
+  baseUrl: '/react-number-format/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',

@@ -43,6 +43,10 @@ Pattern Format
 import { PatternFormat } from 'react-number-format';
 ```
 
+Read the full documentation here
+
+[https://s-yadav.github.io/react-number-format/](https://s-yadav.github.io/react-number-format/)
+
 ### Development
 
 - Clone the repository or download the zip
