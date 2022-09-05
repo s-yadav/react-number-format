@@ -487,7 +487,7 @@ describe('NumberFormat as input', () => {
     // Test prop change onValueChange
     wrapper.setProps({ thousandSeparator: true });
     expect(spy.calls.argsFor(0)[1]).toEqual({
-      event: null,
+      event: undefined,
       source: 'prop',
     });
 
