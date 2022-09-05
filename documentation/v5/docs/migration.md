@@ -7,7 +7,7 @@ title: Migration guide
 
 ### NumberFormat -> NumericFormat and PatternFormat
 
-The whole NumberFormat module is broken into smaller modules called.
+The whole NumberFormat module is divided into smaller modules.
 
 This changes from
 
@@ -49,9 +49,9 @@ See custom numeral implementation with v5
 
 ### getInputRef `elm => void`
 
-```warning Deprecated
+:::caution Deprecated
 This is deprecated in favour of passing ref directly instead of using getInputRef.
-```
+:::
 
 **default**: `null`
 
