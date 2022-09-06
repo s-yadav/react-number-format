@@ -51,6 +51,10 @@ Read the full documentation here
 
 [https://s-yadav.github.io/react-number-format/docs/migration](https://s-yadav.github.io/react-number-format/docs/migration)
 
+### v4 doc
+
+[v4 Docs](https://github.com/s-yadav/react-number-format/blob/master/documentation/v4.md)
+
 ### Development
 
 - Clone the repository or download the zip
