@@ -1,7 +1,7 @@
 {
   "name": "react-number-format",
   "description": "React component to format number in an input or as a text.",
-  "version": "5.0.0-beta.2",
+  "version": "5.0.0-beta.3",
   "main": "dist/react-number-format.cjs.js",
   "module": "dist/react-number-format.es.js",
   "types": "types/index.d.ts",
@@ -30,7 +30,7 @@
     "build-doc": "docusaurus build documentation/v5",
     "publish-doc": "node publish_doc.js",
     "format": "prettier --write ./src ./test ./example",
-    "build": "cross-env yarn build-dist && yarn test-build && yarn test-ts && yarn format && yarn build-doc && yarn publish-doc",
+    "build": "cross-env yarn build-dist && yarn build-types && yarn test-build && yarn test-ts && yarn format && yarn build-doc && yarn publish-doc",
     "build-dist": "cross-env NODE_ENV=production rollup -c rollup.config.js",
     "build-types": "tsc -p tsconfig.build.json",
     "test": "cross-env NODE_ENV=test karma start && yarn test-ts",
