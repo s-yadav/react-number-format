@@ -161,7 +161,7 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
   //if number is empty don't do anything return empty string
   if (['', '-'].indexOf(numStr) !== -1) return numStr;
 
-  const shoudHaveDecimalSeparator = numStr.indexOf('.') !== -1 && scale;
+  const shouldHaveDecimalSeparator = numStr.indexOf('.') !== -1 || !!scale;
   const { beforeDecimal, afterDecimal, hasNegation } = splitDecimal(numStr);
   const floatValue = parseFloat(`0.${afterDecimal || '0'}`);
   const floatValueStr =
@@ -182,7 +182,7 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
 
   const decimalPart = limitToScale(roundedDecimalParts[1] || '', scale, fixedDecimalScale);
   const negation = hasNegation ? '-' : '';
-  const decimalSeparator = shoudHaveDecimalSeparator ? '.' : '';
+  const decimalSeparator = shouldHaveDecimalSeparator && !!decimalPart ? '.' : '';
   return `${negation}${intPart}${decimalSeparator}${decimalPart}`;
 }
 
