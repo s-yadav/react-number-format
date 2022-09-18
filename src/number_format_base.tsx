@@ -259,6 +259,8 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       setCaretPosition: true,
       input: event.target as HTMLInputElement,
     });
+
+    return true;
   };
 
   const _onChange = (e: React.ChangeEvent<HTMLInputElement>) => {

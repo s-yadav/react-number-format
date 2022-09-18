@@ -224,6 +224,13 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(getInputValue(wrapper)).toEqual('24.4568');
   });
 
+  it('should handle fixedDecimalScale correctly #670', () => {
+    const wrapper = mount(
+      <NumericFormat thousandSeparator value={12} decimalScale={2} fixedDecimalScale />,
+    );
+    expect(getInputValue(wrapper)).toEqual('12.00');
+  });
+
   it('should not round the initial if decimalScale is not provided', () => {
     const wrapper = mount(<NumericFormat value={123213.7535} />);
     expect(getInputValue(wrapper)).toEqual('123213.7535');

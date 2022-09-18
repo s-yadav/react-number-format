@@ -25,27 +25,6 @@ describe('NumberFormat as input', () => {
     });
   });
 
-  // it('should accept and format custom numerals', () => {
-  //   const wrapper = mount(
-  //     <NumberFormat customNumerals={['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']} />,
-  //   );
-  //   simulateKeyInput(wrapper.find('input'), '۱۲۳۴۵۶۷۸۹۰', 0);
-
-  //   expect(getInputValue(wrapper)).toEqual('1234567890');
-  // });
-
-  // it('should accept and format custom numerals together with format input field', () => {
-  //   const wrapper = mount(
-  //     <NumberFormat
-  //       customNumerals={['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']}
-  //       format="##########"
-  //     />,
-  //   );
-  //   simulateKeyInput(wrapper.find('input'), '۱۲۳۴۵۶۷۸۹۰', 0);
-
-  //   expect(getInputValue(wrapper)).toEqual('1234567890');
-  // });
-
   it('should render input as type text by default', () => {
     const wrapper = mount(<NumericFormat />);
     expect(wrapper.find('input').instance().getAttribute('type')).toEqual('text');
@@ -551,6 +530,13 @@ describe('NumberFormat as input', () => {
     );
     simulateKeyInput(wrapper.find('input'), '5678', 2, 3);
     expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should call onChange if value is changed or reset #669 ', () => {
+    const spy = jasmine.createSpy('onChange');
+    const wrapper = mount(<NumericFormat value={1} onChange={spy} />);
+    simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
+    expect(spy).toHaveBeenCalled();
   });
 
   describe('Test masking', () => {
