@@ -156,13 +156,8 @@ describe('Test keypress and caret position changes', () => {
       expect(caretPos).toEqual(7);
     });
 
-    it('after typing decimal cursor position should go after the . when suffix is provided. #673', () => {
-      let caretPos;
-      const setSelectionRange = (pos) => {
-        caretPos = pos;
-      };
-
-      const wrapper = mount(
+    it('after typing decimal cursor position should go after the . when suffix is provided. #673', async () => {
+      const { input } = await render(
         <NumericFormat
           type="text"
           allowNegative={false}
@@ -173,9 +168,20 @@ describe('Test keypress and caret position changes', () => {
           suffix=" USD"
         />,
       );
-      simulateKeyInput(wrapper.find('input'), '.', 3, 3, setSelectionRange);
+      simulateNativeKeyInput(input, '.', 3, 3);
+      expect(input.selectionStart).toEqual(4);
+    });
 
-      expect(caretPos).toEqual(4);
+    it('should bring caret to correct position if user types same number used in format pattern', async () => {
+      const { input } = await render(<PatternFormat format="+1 (###) 2##-####" mask="_" />);
+
+      simulateNativeKeyInput(input, '1', 0, 0);
+      expect(input.selectionStart).toEqual(5);
+
+      simulateNativeKeyInput(input, '23', 5, 5);
+      simulateNativeKeyInput(input, '2', 7, 7);
+
+      expect(input.selectionStart).toEqual(11);
     });
   });
 
@@ -186,7 +192,6 @@ describe('Test keypress and caret position changes', () => {
       );
 
       simulateNativeKeyInput(input, '{backspace}', 4, 4);
-      await wait(1);
       expect(input.value).toEqual('+1 (123) 456 7 89 US');
       expect(input.selectionStart).toEqual(4);
     });
@@ -196,7 +201,6 @@ describe('Test keypress and caret position changes', () => {
         <PatternFormat format="+1 (###) ### # ## US" value="+1 (123) 456 7 89 US" />,
       );
       simulateNativeKeyInput(input, '{delete}', 17, 17);
-      await wait(1);
       expect(input.value).toEqual('+1 (123) 456 7 89 US');
       expect(input.selectionStart).toEqual(17);
     });
@@ -206,22 +210,18 @@ describe('Test keypress and caret position changes', () => {
         <PatternFormat format="+1 (###) ### # ## US" mask="_" value="+1 (123) 456 7 89 US" />,
       );
       simulateNativeKeyInput(input, '{backspace}', 10, 10);
-      await wait(1);
       expect(input.value).toEqual('+1 (123) 567 8 9_ US');
       expect(input.selectionStart).toEqual(9);
 
       simulateNativeKeyInput(input, '{backspace}', 9, 9);
-      await wait(1);
       expect(input.value).toEqual('+1 (125) 678 9 __ US');
       expect(input.selectionStart).toEqual(6);
 
       simulateNativeKeyInput(input, '{delete}', 7, 7);
-      await wait(1);
       expect(input.value).toEqual('+1 (125) 789 _ __ US');
       expect(input.selectionStart).toEqual(9);
 
       simulateNativeKeyInput(input, '{delete}', 9, 9);
-      await wait(1);
       expect(input.value).toEqual('+1 (125) 89_ _ __ US');
       expect(input.selectionStart).toEqual(9);
     });
@@ -238,7 +238,6 @@ describe('Test keypress and caret position changes', () => {
         />,
       );
       simulateNativeKeyInput(input, '{backspace}', 4, 4);
-      await wait(1);
       expect(input.value).toEqual('Rs. 12,345.50 /sq.feet');
       expect(input.selectionStart).toEqual(4);
     });
@@ -253,7 +252,6 @@ describe('Test keypress and caret position changes', () => {
         />,
       );
       simulateNativeKeyInput(input, '{delete}', 13, 13);
-      await wait();
       expect(input.value).toEqual('Rs. 12,345.50 /sq.feet');
       expect(input.selectionStart).toEqual(13);
     });
@@ -270,27 +268,22 @@ describe('Test keypress and caret position changes', () => {
 
       // backspace after thousand separator separator
       simulateNativeKeyInput(input, '{backspace}', 7, 7);
-      await wait();
       expect(input.value).toEqual('Rs. 1,345.50 /sq.feet');
       expect(input.selectionStart).toEqual(5);
 
       // delete before thousand separator separator
       simulateNativeKeyInput(input, '{delete}', 5, 5);
-      await wait();
       expect(input.value).toEqual('Rs. 145.50 /sq.feet');
       expect(input.selectionStart).toEqual(5);
 
       // backspace after decimal separator
       simulateNativeKeyInput(input, '{backspace}', 8, 8);
-      await wait();
       expect(input.value).toEqual('Rs. 14,550 /sq.feet');
       expect(input.selectionStart).toEqual(8);
 
       // delete before decimal separator
       simulateNativeKeyInput(input, '.', 8, 8);
-      await wait();
       simulateNativeKeyInput(input, '{delete}', 7, 7);
-      await wait();
       expect(input.value).toEqual('Rs. 14,550 /sq.feet');
       expect(input.selectionStart).toEqual(8);
     });
@@ -301,7 +294,6 @@ describe('Test keypress and caret position changes', () => {
       );
 
       simulateNativeKeyInput(input, '{backspace}', 10, 10);
-      await wait();
       expect(input.value).toEqual('$234,234');
       expect(input.selectionStart).toEqual(8);
     });
@@ -312,7 +304,6 @@ describe('Test keypress and caret position changes', () => {
       );
 
       simulateNativeKeyInput(input, '{backspace}', 4, 4);
-      await wait();
       expect(input.value).toEqual('100');
       expect(input.selectionStart).toEqual(2);
     });
@@ -331,7 +322,6 @@ describe('Test keypress and caret position changes', () => {
       );
 
       simulateNativeKeyInput(input, '{backspace}', 2, 2);
-      await wait();
 
       expect(input.value).toEqual('$1,000');
       expect(input.selectionStart).toEqual(1);

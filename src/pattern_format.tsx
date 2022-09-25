@@ -110,24 +110,32 @@ export function getCaretBoundary<BaseType = InputAttributes>(
   const boundaryAry = Array.from({ length: formattedValue.length + 1 }).map(() => true);
 
   let hashCount = 0;
-  const maskAndFormatMap = format.split('').map((char) => {
+  let firstEmptySlot = -1;
+  const maskAndIndexMap: Record<number, string | undefined> = {};
+
+  format.split('').forEach((char, index) => {
+    let maskAtIndex = undefined;
     if (char === patternChar) {
       hashCount++;
-      return getMaskAtIndex(mask, hashCount - 1);
+      maskAtIndex = getMaskAtIndex(mask, hashCount - 1);
+      if (firstEmptySlot === -1 && formattedValue[index] === maskAtIndex) {
+        firstEmptySlot = index;
+      }
     }
 
-    return undefined;
+    maskAndIndexMap[index] = maskAtIndex;
   });
 
   const isPosAllowed = (pos: number) => {
     // the position is allowed if the position is not masked and valid number area
-    return format[pos] === patternChar && formattedValue[pos] !== maskAndFormatMap[pos];
+    return format[pos] === patternChar && formattedValue[pos] !== maskAndIndexMap[pos];
   };
 
   for (let i = 0, ln = boundaryAry.length; i < ln; i++) {
     // consider caret to be in boundary if it is before or after numeric value
     // Note: on pattern based format its denoted by patternCharacter
-    boundaryAry[i] = isPosAllowed(i) || isPosAllowed(i - 1);
+    // we should also allow user to put cursor on first empty slot
+    boundaryAry[i] = i === firstEmptySlot || isPosAllowed(i) || isPosAllowed(i - 1);
   }
 
   // the first patternChar position is always allowed
@@ -163,35 +171,44 @@ export function usePatternFormat<BaseType = InputAttributes>(props: PatternForma
     const { selectionStart, selectionEnd, value } = el;
 
     // if multiple characters are selected and user hits backspace, no need to handle anything manually
-    if (selectionStart !== selectionEnd || !selectionStart) {
+    if (selectionStart !== selectionEnd) {
       onKeyDown(e);
       return;
     }
 
+    // bring the cursor to closest numeric section
+    let caretPos = selectionStart;
+
     // if backspace is pressed after the format characters, bring it to numeric section
     // if delete is pressed before the format characters, bring it to numeric section
     if (key === 'Backspace' || key === 'Delete') {
-      // bring the cursor to closest numeric section
-      let index = selectionStart;
-
-      let direction: string;
-
+      let direction: string = 'right';
       if (key === 'Backspace') {
-        while (index > 0 && formatProp[index - 1] !== patternChar) {
-          index--;
+        while (caretPos > 0 && formatProp[caretPos - 1] !== patternChar) {
+          caretPos--;
         }
         direction = 'left';
       } else {
         const formatLn = formatProp.length;
-        while (index < formatLn && formatProp[index] !== patternChar) {
-          index++;
+        while (caretPos < formatLn && formatProp[caretPos] !== patternChar) {
+          caretPos++;
         }
         direction = 'right';
       }
-      if (index !== selectionStart) {
-        index = getCaretPosInBoundary(value, index, _getCaretBoundary(value), direction);
-        setCaretPosition(el, index);
-      }
+
+      caretPos = getCaretPosInBoundary(value, caretPos, _getCaretBoundary(value), direction);
+    } else if (
+      formatProp[caretPos] !== patternChar &&
+      key !== 'ArrowLeft' &&
+      key !== 'ArrowRight'
+    ) {
+      // if user is typing on format character position, bring user to next allowed caret position
+      caretPos = getCaretPosInBoundary(value, caretPos + 1, _getCaretBoundary(value), 'right');
+    }
+
+    // if we changing caret position, set the caret position
+    if (caretPos !== selectionStart) {
+      setCaretPosition(el, caretPos);
     }
 
     onKeyDown(e);

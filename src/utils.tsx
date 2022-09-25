@@ -302,9 +302,26 @@ export function getMaskAtIndex(mask: string | string[] = ' ', index: number) {
   return mask[index] || ' ';
 }
 
-export function getCaretPosition(formattedValue: string, curValue: string, curCaretPos: number) {
+export function getCaretPosition(
+  newFormattedValue: string,
+  lastFormattedValue: string,
+  curValue: string,
+  curCaretPos: number,
+  boundary: boolean[],
+) {
+  /**
+   * if something got inserted on empty value, add the formatted character before the current value,
+   * This is to avoid the case where typed character is present on format characters
+   */
+  const firstAllowedPosition = boundary.findIndex((b) => b);
+  const prefixFormat = newFormattedValue.slice(0, firstAllowedPosition);
+  if (!lastFormattedValue && !curValue.startsWith(prefixFormat)) {
+    curValue = prefixFormat + curValue;
+    curCaretPos = curCaretPos + prefixFormat.length;
+  }
+
   const curValLn = curValue.length;
-  const formattedValueLn = formattedValue.length;
+  const formattedValueLn = newFormattedValue.length;
 
   // create index map
   const addedIndexMap: { [key: number]: boolean } = {};
@@ -313,7 +330,7 @@ export function getCaretPosition(formattedValue: string, curValue: string, curCa
   for (let i = 0; i < curValLn; i++) {
     indexMap[i] = -1;
     for (let j = 0, jLn = formattedValueLn; j < jLn; j++) {
-      if (curValue[i] === formattedValue[j] && addedIndexMap[j] !== true) {
+      if (curValue[i] === newFormattedValue[j] && addedIndexMap[j] !== true) {
         indexMap[i] = j;
         addedIndexMap[j] = true;
         break;
