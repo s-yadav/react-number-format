@@ -27,7 +27,7 @@ function defaultFormat(value: string) {
   return value;
 }
 
-export default function NumberFormatBase<BaseType = InputAttributes>(
+const  NumberFormatBase = <BaseType = InputAttributes>(
   props: NumberFormatBaseProps<BaseType>,
 ): React.ReactElement {
   const {
@@ -388,3 +388,6 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
 
   return <input {...inputProps} ref={getInputRef} />;
 }
+
+
+export default NumberFormatBase;

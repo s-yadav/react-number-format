@@ -109,10 +109,6 @@ import { NumericFormat } from 'react-number-format';
 
 ### getInputRef `elm => void`
 
-:::caution Deprecated
-This is deprecated in favour of passing ref directly instead of using getInputRef.
-:::
-
 **default**: `null`
 
 Method to get reference of input, span (based on displayType prop) or the customInput's reference.
@@ -123,14 +119,7 @@ import { useRef } from 'react';
 
 export default function App() {
   let ref = useRef();
-  return (
-    <NumericFormat
-      getInputRef={(inputRef) => {
-        ref = inputRef;
-        console.log(ref);
-      }}
-    />
-  );
+  return <NumericFormat getInputRef={ref} />;
 }
 ```
 
