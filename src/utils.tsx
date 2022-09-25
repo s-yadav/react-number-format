@@ -336,7 +336,7 @@ export function getCaretPosition(formattedValue: string, curValue: string, curCa
   const endIndex = pos === curValLn || indexMap[pos] === -1 ? formattedValueLn : indexMap[pos];
 
   pos = curCaretPos - 1;
-  while (pos > 0 && (indexMap[pos] === -1 || !charIsNumber(curValue[pos]))) pos--;
+  while (pos > 0 && indexMap[pos] === -1) pos--;
   const startIndex = pos === -1 || indexMap[pos] === -1 ? 0 : indexMap[pos] + 1;
 
   /**
@@ -350,6 +350,36 @@ export function getCaretPosition(formattedValue: string, curValue: string, curCa
    * keep the new caret position on start index or keep it closer to endIndex
    */
   return curCaretPos - startIndex < endIndex - curCaretPos ? startIndex : endIndex;
+}
+
+/* This keeps the caret within typing area so people can't type in between prefix or suffix or format characters */
+export function getCaretPosInBoundary(
+  value: string,
+  caretPos: number,
+  boundary: boolean[],
+  direction?: string,
+) {
+  const valLn = value.length;
+
+  // clamp caret position to [0, value.length]
+  caretPos = clamp(caretPos, 0, valLn);
+
+  if (direction === 'left') {
+    while (caretPos >= 0 && !boundary[caretPos]) caretPos--;
+
+    // if we don't find any suitable caret position on left, set it on first allowed position
+    if (caretPos === -1) caretPos = boundary.indexOf(true);
+  } else {
+    while (caretPos <= valLn && !boundary[caretPos]) caretPos++;
+
+    // if we don't find any suitable caret position on right, set it on last allowed position
+    if (caretPos > valLn) caretPos = boundary.lastIndexOf(true);
+  }
+
+  // if we still don't find caret position, set it at the end of value
+  if (caretPos === -1) caretPos = valLn;
+
+  return caretPos;
 }
 
 export function caretUnknownFormatBoundary(formattedValue: string) {

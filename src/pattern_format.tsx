@@ -1,6 +1,12 @@
 import React from 'react';
 import { PatternFormatProps, InputAttributes, ChangeMeta, InternalNumberFormatBase } from './types';
-import { getDefaultChangeMeta, getMaskAtIndex, noop, setCaretPosition } from './utils';
+import {
+  getCaretPosInBoundary,
+  getDefaultChangeMeta,
+  getMaskAtIndex,
+  noop,
+  setCaretPosition,
+} from './utils';
 import NumberFormatBase from './number_format_base';
 
 export function format<BaseType = InputAttributes>(
@@ -147,10 +153,14 @@ export function usePatternFormat<BaseType = InputAttributes>(props: PatternForma
   // validate props
   validateProps(props);
 
+  const _getCaretBoundary = (formattedValue: string) => {
+    return getCaretBoundary(formattedValue, props);
+  };
+
   const _onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const { key } = e;
     const el = e.target as HTMLInputElement;
-    const { selectionStart, selectionEnd } = el;
+    const { selectionStart, selectionEnd, value } = el;
 
     // if multiple characters are selected and user hits backspace, no need to handle anything manually
     if (selectionStart !== selectionEnd || !selectionStart) {
@@ -164,18 +174,22 @@ export function usePatternFormat<BaseType = InputAttributes>(props: PatternForma
       // bring the cursor to closest numeric section
       let index = selectionStart;
 
+      let direction: string;
+
       if (key === 'Backspace') {
         while (index > 0 && formatProp[index - 1] !== patternChar) {
           index--;
         }
+        direction = 'left';
       } else {
         const formatLn = formatProp.length;
         while (index < formatLn && formatProp[index] !== patternChar) {
           index++;
         }
+        direction = 'right';
       }
-
       if (index !== selectionStart) {
+        index = getCaretPosInBoundary(value, index, _getCaretBoundary(value), direction);
         setCaretPosition(el, index);
       }
     }
@@ -188,7 +202,7 @@ export function usePatternFormat<BaseType = InputAttributes>(props: PatternForma
     format: (numStr: string) => format(numStr, props),
     removeFormatting: (inputValue: string, changeMeta: ChangeMeta) =>
       removeFormatting(inputValue, changeMeta, props),
-    getCaretBoundary: (formattedValue: string) => getCaretBoundary(formattedValue, props),
+    getCaretBoundary: _getCaretBoundary,
     onKeyDown: _onKeyDown,
   };
 }

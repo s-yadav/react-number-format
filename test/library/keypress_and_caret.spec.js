@@ -155,6 +155,28 @@ describe('Test keypress and caret position changes', () => {
       expect(getInputValue(wrapper)).toEqual('123 999 845');
       expect(caretPos).toEqual(7);
     });
+
+    it('after typing decimal cursor position should go after the . when suffix is provided. #673', () => {
+      let caretPos;
+      const setSelectionRange = (pos) => {
+        caretPos = pos;
+      };
+
+      const wrapper = mount(
+        <NumericFormat
+          type="text"
+          allowNegative={false}
+          valueIsNumericString={true}
+          decimalScale={8}
+          placeholder="Enter Amount"
+          defaultValue="123"
+          suffix=" USD"
+        />,
+      );
+      simulateKeyInput(wrapper.find('input'), '.', 3, 3, setSelectionRange);
+
+      expect(caretPos).toEqual(4);
+    });
   });
 
   describe('Test delete/backspace with format pattern', async () => {

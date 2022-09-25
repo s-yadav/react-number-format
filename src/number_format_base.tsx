@@ -12,11 +12,11 @@ import {
   geInputCaretPosition,
   setCaretPosition,
   getCaretPosition,
-  clamp,
   charIsNumber,
   useInternalValues,
   noop,
   caretUnknownFormatBoundary,
+  getCaretPosInBoundary,
 } from './utils';
 
 function defaultRemoveFormatting(value: string) {
@@ -136,29 +136,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
 
   /* This keeps the caret within typing area so people can't type in between prefix or suffix */
   const correctCaretPosition = (value: string, caretPos: number, direction?: string) => {
-    const valLn = value.length;
-
-    // clamp caret position to [0, value.length]
-    caretPos = clamp(caretPos, 0, valLn);
-
-    const boundary = getCaretBoundary(value);
-
-    if (direction === 'left') {
-      while (caretPos >= 0 && !boundary[caretPos]) caretPos--;
-
-      // if we don't find any suitable caret position on left, set it on first allowed position
-      if (caretPos === -1) caretPos = boundary.indexOf(true);
-    } else {
-      while (caretPos <= valLn && !boundary[caretPos]) caretPos++;
-
-      // if we don't find any suitable caret position on right, set it on last allowed position
-      if (caretPos > valLn) caretPos = boundary.lastIndexOf(true);
-    }
-
-    // if we still don't find caret position, set it at the end of value
-    if (caretPos === -1) caretPos = valLn;
-
-    return caretPos;
+    return getCaretPosInBoundary(value, caretPos, getCaretBoundary(value), direction);
   };
 
   const getNewCaretPosition = (inputValue: string, formattedValue: string, caretPos: number) => {
