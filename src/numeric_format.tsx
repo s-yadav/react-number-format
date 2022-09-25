@@ -330,12 +330,14 @@ export function useNumericFormat<BaseType = InputAttributes>(props: NumericForma
       e.preventDefault();
     }
 
+    const _thousandSeparator = thousandSeparator === true ? ',' : thousandSeparator;
+
     // move cursor when delete or backspace is pressed before/after thousand separator
-    if (key === 'Backspace' && value[(selectionStart as number) - 1] === thousandSeparator) {
+    if (key === 'Backspace' && value[(selectionStart as number) - 1] === _thousandSeparator) {
       setCaretPosition(el, (selectionStart as number) - 1);
     }
 
-    if (key === 'Delete' && value[selectionStart as number] === thousandSeparator) {
+    if (key === 'Delete' && value[selectionStart as number] === _thousandSeparator) {
       setCaretPosition(el, (selectionStart as number) + 1);
     }
 

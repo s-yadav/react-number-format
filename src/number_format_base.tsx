@@ -139,11 +139,18 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     return getCaretPosInBoundary(value, caretPos, getCaretBoundary(value), direction);
   };
 
-  const getNewCaretPosition = (inputValue: string, formattedValue: string, caretPos: number) => {
-    let updatedCaretPos = getCaretPosition(formattedValue, inputValue, caretPos);
+  const getNewCaretPosition = (inputValue: string, newFormattedValue: string, caretPos: number) => {
+    const caretBoundary = getCaretBoundary(newFormattedValue);
+    let updatedCaretPos = getCaretPosition(
+      newFormattedValue,
+      formattedValue,
+      inputValue,
+      caretPos,
+      caretBoundary,
+    );
 
     //correct caret position if its outside of editable area
-    updatedCaretPos = correctCaretPosition(formattedValue, updatedCaretPos);
+    updatedCaretPos = getCaretPosInBoundary(newFormattedValue, updatedCaretPos, caretBoundary);
 
     return updatedCaretPos;
   };
