@@ -145,7 +145,7 @@ function CardExpiry(props) {
     return format(`${month}${year}`);
   };
 
-  return <NumberFormatBase format={_format} {...rest} />;
+  return <NumberFormatBase format={_format} {...props} />;
 }
 ```
 
