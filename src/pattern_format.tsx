@@ -9,20 +9,44 @@ import {
 } from './utils';
 import NumberFormatBase from './number_format_base';
 
+function _getFormattedNumberArray(format: string, patternChar: string, numStr: string, formatOnType: boolean) {
+  const formatArray = format.split('');
+  if (!formatOnType) {
+    return formatArray;
+  }
+  let hashCount = 0;
+  // find last pattern index
+  const replacePatternIdx = formatArray.findIndex((char) => {
+    if (char === patternChar) {
+      hashCount += 1;
+    }
+    return hashCount === numStr.length
+  })
+
+  // filter format array until numStr length
+  return formatArray.filter((_, index) => {
+    return replacePatternIdx >= 0 
+      ? index <= replacePatternIdx
+      : true
+  });
+}
+
 export function format<BaseType = InputAttributes>(
   numStr: string,
   props: PatternFormatProps<BaseType>,
 ) {
   const format = props.format as string;
-  const { allowEmptyFormatting, mask, patternChar = '#' } = props;
+  const { allowEmptyFormatting, mask, patternChar = '#', formatOnType } = props;
 
   if (numStr === '' && !allowEmptyFormatting) return '';
 
-  let hashCount = 0;
-  const formattedNumberAry = format.split('');
+  const formattedNumberAry = _getFormattedNumberArray(format, patternChar, numStr, formatOnType);
+  
+  let hashCount = 0
+
   for (let i = 0, ln = format.length; i < ln; i++) {
     if (format[i] === patternChar) {
-      formattedNumberAry[i] = numStr[hashCount] || getMaskAtIndex(mask, hashCount);
+      formattedNumberAry[i] = numStr[hashCount] || getMaskAtIndex(mask, hashCount, formatOnType);
       hashCount += 1;
     }
   }
