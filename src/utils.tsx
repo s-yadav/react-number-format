@@ -295,6 +295,9 @@ export function getDefaultChangeMeta(value: string) {
 }
 
 export function getMaskAtIndex(mask: string | string[] = ' ', index: number, formatOnType = false) {
+  if (formatOnType) {
+    return '';
+  }
   if (typeof mask === 'string') {
     return mask;
   }
