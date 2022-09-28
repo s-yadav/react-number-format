@@ -153,12 +153,12 @@ function CardExpiry(props) {
   <summary>
   Demo
   </summary>
-  <iframe src="https://codesandbox.io/embed/card-expiry-field-pattern-format-3yzksf?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     title="Card Expiry Field (Pattern Format)"
+  <iframe src="https://codesandbox.io/embed/card-expiry-field-with-usepatternformat-2wd7ej?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     title="Card Expiry Field with usePatternFormat"
      className="csb"
      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe> 
+   ></iframe>
 </details>
 
 Another example for NumericFormat could be support for custom numerals.
