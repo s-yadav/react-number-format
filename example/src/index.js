@@ -154,6 +154,26 @@ class App extends React.Component {
           <h3>Custom Numeral: add support for custom languages </h3>
           <NumericFormat customNumerals={['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']} />
         </div>
+
+        <div className="example">
+          <h3>Format on type</h3>
+          <PatternFormat format="###.###.###-##" formatOnType />
+        </div>
+
+        <div className="example">
+          <h3>Format phone number on type</h3>
+          <PatternFormat format="+1 (###) ###-####" formatOnType />
+        </div>
+
+        <div className="example">
+          <h3>Format postal code on type</h3>
+          <PatternFormat format="##.###-###" formatOnType />
+        </div>
+
+        <div className="example">
+          <h3>Format date on type</h3>
+          <PatternFormat format="##/##/####" formatOnType />
+        </div>
       </div>
     );
   }
