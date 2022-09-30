@@ -93,7 +93,7 @@ export type NumericFormatProps<BaseType = InputAttributes> = NumberFormatProps<
     thousandSeparator?: boolean | string;
     decimalSeparator?: string;
     allowedDecimalSeparators?: Array<string>;
-    thousandsGroupStyle?: 'lakh' | 'wan' | 'none';
+    thousandsGroupStyle?: 'thousand' | 'lakh' | 'wan' | 'none';
     decimalScale?: number;
     fixedDecimalScale?: boolean;
     allowNegative?: boolean;
