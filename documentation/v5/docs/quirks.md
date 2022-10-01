@@ -34,3 +34,14 @@ Its recommended to use formattedValue / value / floatValue based on the initial 
 6. Its recommended to use formattedValue / value / floatValue based on the initial state (it should be same as the initial state format) which you are passing as value prop. If you are saving the `value` key on state make sure to pass valueIsNumericString prop to true.
 
 7. onValueChange is not same as onChange. It gets called on whenever there is change in value which can be caused by any event like change or blur event or by a prop change. It also provides a second argument which contains the event object and the reason for this function trigger.
+
+## SourceInfo object
+
+The `sourceInfo` object indicates whether the triggered change is due to an event or a prop change. This is particularly useful in identify whether the change is user driven or is an uncontrolled change due to any prop value being updated.
+
+```js
+{
+  event: SyntheticEvent; // This is the event object of type Synthetic Event
+  source: 'event' | 'prop'; // Source information indicating whether it is due to an event or a prop change
+}
+```
