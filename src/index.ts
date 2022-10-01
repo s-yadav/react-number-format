@@ -15,10 +15,18 @@ import {
   usePatternFormat,
 } from './pattern_format';
 
-import { NumericFormatProps, NumberFormatBaseProps, PatternFormatProps } from './types';
-
 export { NumberFormatBase, NumericFormat, PatternFormat };
-export { NumericFormatProps, NumberFormatBaseProps, PatternFormatProps };
+
+export type {
+  NumericFormatProps,
+  NumberFormatBaseProps,
+  PatternFormatProps,
+  SourceInfo,
+  NumberFormatValues,
+  OnValueChange,
+  InputAttributes,
+  ChangeMeta,
+} from './types';
 
 export { numericFormatter, removeNumericFormat, getNumericCaretBoundary, useNumericFormat };
 export { patterFormatter, removePatternFormat, getPatternCaretBoundary, usePatternFormat };
