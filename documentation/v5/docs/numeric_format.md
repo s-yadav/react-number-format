@@ -9,7 +9,7 @@ sidebar_position: 3
 
 **default**: `false`
 
-By default, on blur of an input, leading zeros are removed. To disable the behaviour, set `allowLeadingZeros` to `true`.
+This allows enabling or disabling leading zeros in the input field. By default, on blur of an input, leading zeros are removed. To allow all 0s in the input field, set `allowLeadingZeros` to `true`. This does not, however, control trailing zeros.
 
 ```js
 import { NumericFormat } from 'react-number-format';
