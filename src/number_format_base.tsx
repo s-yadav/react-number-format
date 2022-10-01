@@ -37,7 +37,6 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     renderText,
     getInputRef,
     format = defaultFormat,
-    /* eslint-disable no-unused-vars */
     removeFormatting = defaultRemoveFormatting,
     defaultValue,
     valueIsNumericString,
@@ -50,7 +49,6 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     onBlur = noop,
     value: propValue,
     getCaretBoundary = caretUnknownFormatBoundary,
-    /* eslint-enable no-unused-vars */
     ...otherProps
   } = props;
 

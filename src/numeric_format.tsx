@@ -21,7 +21,7 @@ import {
   InputAttributes,
   FormatInputValueFunction,
   RemoveFormattingFunction,
-  InternalNumberFormatBase,
+  NumberFormatBaseProps,
 } from './types';
 import NumberFormatBase from './number_format_base';
 
@@ -243,8 +243,17 @@ function validateProps<BaseType = InputAttributes>(props: NumericFormatProps<Bas
   }
 }
 
-export function useNumericFormat<BaseType = InputAttributes>(props: NumericFormatProps<BaseType>) {
+export function useNumericFormat<BaseType = InputAttributes>(
+  props: NumericFormatProps<BaseType>,
+): NumberFormatBaseProps<BaseType> {
   const {
+    /* eslint-disable no-unused-vars */
+    decimalSeparator,
+    allowedDecimalSeparators,
+    thousandsGroupStyle,
+    suffix,
+    allowNegative,
+    /* eslint-enable no-unused-vars */
     allowLeadingZeros,
     onKeyDown = noop,
     onBlur = noop,
@@ -256,6 +265,7 @@ export function useNumericFormat<BaseType = InputAttributes>(props: NumericForma
     value,
     valueIsNumericString,
     onValueChange,
+    ...restProps
   } = props;
 
   // validate props
@@ -381,6 +391,7 @@ export function useNumericFormat<BaseType = InputAttributes>(props: NumericForma
   };
 
   return {
+    ...(restProps as NumberFormatBaseProps<BaseType>),
     value: formattedValue,
     valueIsNumericString: false,
     onValueChange: _onValueChange,
@@ -395,29 +406,7 @@ export function useNumericFormat<BaseType = InputAttributes>(props: NumericForma
 export default function NumericFormat<BaseType = InputAttributes>(
   props: NumericFormatProps<BaseType>,
 ) {
-  const {
-    /* eslint-disable no-unused-vars */
-    decimalSeparator,
-    allowedDecimalSeparators,
-    thousandsGroupStyle,
-    suffix,
-    allowNegative,
-    allowLeadingZeros,
-    onKeyDown,
-    onBlur,
-    thousandSeparator,
-    decimalScale,
-    fixedDecimalScale,
-    prefix = '',
-    defaultValue,
-    value,
-    valueIsNumericString,
-    onValueChange,
-    /* eslint-enable no-unused-vars */
-    ...restProps
-  } = props;
-
   const numericFormatProps = useNumericFormat(props);
 
-  return <NumberFormatBase {...(restProps as InternalNumberFormatBase)} {...numericFormatProps} />;
+  return <NumberFormatBase {...numericFormatProps} />;
 }

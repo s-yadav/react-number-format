@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
+import { renderHook } from '@testing-library/react-hooks/dom';
 
 import TextField from 'material-ui/TextField';
 
-import NumericFormat from '../../src/numeric_format';
+import NumericFormat, { useNumericFormat } from '../../src/numeric_format';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {
@@ -14,7 +15,7 @@ import {
   shallow,
   getInputValue,
 } from '../test_util';
-import PatternFormat from '../../src/pattern_format';
+import PatternFormat, { usePatternFormat } from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
 
 /*** format_number input as input ****/
@@ -642,5 +643,25 @@ describe('NumberFormat as input', () => {
       wrapper.setState({ value: '100.10' });
       expect(getInputValue(wrapper)).toEqual('$100.10');
     });
+  });
+});
+
+describe('Test hooks', () => {
+  it('useNumericFormat hook should return all the expected props for NumberFormatBase', () => {
+    const { result } = renderHook(() =>
+      useNumericFormat({ thousandSeparator: '.', decimalSeparator: ',', maxLength: 5 }),
+    );
+
+    expect('maxLength' in result.current).toEqual(true);
+    expect('thousandSeparator' in result.current).toEqual(false);
+  });
+
+  it('usePatternFormat hook should return all the expected props for NumberFormatBase', () => {
+    const { result } = renderHook(() =>
+      usePatternFormat({ format: '### ##', mask: '_', maxLength: 5 }),
+    );
+
+    expect('maxLength' in result.current).toEqual(true);
+    expect('mask' in result.current).toEqual(false);
   });
 });
