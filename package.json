@@ -50,6 +50,7 @@
     "@rollup/plugin-buble": "^0.21.3",
     "@rollup/plugin-typescript": "^8.3.0",
     "@testing-library/react": "^12.1.2",
+    "@testing-library/react-hooks": "8.0.1",
     "@testing-library/user-event": "^13.5.0",
     "@types/react": "^18.0.6",
     "@typescript-eslint/parser": "^5.15.0",

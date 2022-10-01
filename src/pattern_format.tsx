@@ -1,5 +1,11 @@
 import React from 'react';
-import { PatternFormatProps, InputAttributes, ChangeMeta, InternalNumberFormatBase } from './types';
+import {
+  PatternFormatProps,
+  InputAttributes,
+  ChangeMeta,
+  InternalNumberFormatBase,
+  NumberFormatBaseProps,
+} from './types';
 import {
   getCaretPosInBoundary,
   getDefaultChangeMeta,
@@ -155,8 +161,20 @@ function validateProps<BaseType = InputAttributes>(props: PatternFormatProps<Bas
   }
 }
 
-export function usePatternFormat<BaseType = InputAttributes>(props: PatternFormatProps<BaseType>) {
-  const { format: formatProp, inputMode = 'numeric', onKeyDown = noop, patternChar = '#' } = props;
+export function usePatternFormat<BaseType = InputAttributes>(
+  props: PatternFormatProps<BaseType>,
+): NumberFormatBaseProps<BaseType> {
+  const {
+    /* eslint-disable no-unused-vars */
+    mask,
+    allowEmptyFormatting,
+    /* eslint-enable no-unused-vars */
+    format: formatProp,
+    inputMode = 'numeric',
+    onKeyDown = noop,
+    patternChar = '#',
+    ...restProps
+  } = props;
 
   // validate props
   validateProps(props);
@@ -215,6 +233,7 @@ export function usePatternFormat<BaseType = InputAttributes>(props: PatternForma
   };
 
   return {
+    ...(restProps as NumberFormatBaseProps<BaseType>),
     inputMode,
     format: (numStr: string) => format(numStr, props),
     removeFormatting: (inputValue: string, changeMeta: ChangeMeta) =>
@@ -227,19 +246,7 @@ export function usePatternFormat<BaseType = InputAttributes>(props: PatternForma
 export default function PatternFormat<BaseType = InputAttributes>(
   props: PatternFormatProps<BaseType>,
 ) {
-  const {
-    /* eslint-disable no-unused-vars */
-    mask,
-    allowEmptyFormatting,
-    format: formatProp,
-    inputMode,
-    onKeyDown,
-    patternChar,
-    /* eslint-enable no-unused-vars */
-    ...restProps
-  } = props;
-
   const patternFormatProps = usePatternFormat(props);
 
-  return <NumberFormatBase {...(restProps as InternalNumberFormatBase)} {...patternFormatProps} />;
+  return <NumberFormatBase {...patternFormatProps} />;
 }
