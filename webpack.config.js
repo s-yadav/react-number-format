@@ -5,7 +5,7 @@ module.exports = {
   entry: {
     bundle: ['./example/src/index.js'],
   },
-  devtool: 'eval',
+  devtool: 'eval-source-map',
   output: {
     filename: '[name].js',
   },
