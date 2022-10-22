@@ -284,6 +284,19 @@ describe('NumberFormat as input', () => {
     simulateKeyInput(wrapper.find('input'), '8', 0, format.length);
     expect(getInputValue(wrapper)).toEqual('+1 (8__) ___ _ __ US');
   });
+  
+  it('should give proper value when format character has number #652', () => {
+    //https://github.com/s-yadav/react-number-format/issues/652#issuecomment-1278200770
+    const spy = jasmine.createSpy();
+    const wrapper = mount(<PatternFormat  format="13###" mask="_" onValueChange={spy} />);
+    simulateKeyInput(wrapper.find('input'), '3', 0);
+    simulateKeyInput(wrapper.find('input'), '4', 3);
+    expect(spy.calls.argsFor(1)[0]).toEqual({
+      formattedValue: '1334_',
+      value: '34',
+      floatValue: 34,
+    });
+  })
 
   it('should not allow replacing all characters with number when formatting is present for NumericFormats', () => {
     //check for numeric input

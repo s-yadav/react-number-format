@@ -49,7 +49,7 @@ export function removeFormatting<BaseType = InputAttributes>(
   const removeFormatChar = (string: string, startIndex: number) => {
     let str = '';
     for (let i = 0; i < string.length; i++) {
-      if (isNumericSlot(startIndex + i)) {
+      if (isNumericSlot(startIndex + i) && string[i].match(/\d/)) {
         str += string[i];
       }
     }
