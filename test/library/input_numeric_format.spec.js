@@ -685,6 +685,36 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.find('input').prop('value')).toEqual('0.00000001');
   });
 
+  describe('should handle if only partial prefix or suffix is removed using double click select and the remove. #694', () => {
+    it('while changing suffix', () => {
+      const wrapper = mount(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
+
+      simulateKeyInput(wrapper.find('input'), '2', 9, 12);
+      expect(wrapper.find('input').prop('value')).toEqual('100-1000 USD');
+    });
+
+    it('while changing prefix', () => {
+      const wrapper = mount(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
+
+      simulateKeyInput(wrapper.find('input'), '2', 0, 2);
+      expect(wrapper.find('input').prop('value')).toEqual('100-1000 USD');
+    });
+
+    it('while deleting suffix', () => {
+      const wrapper = mount(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
+
+      simulateKeyInput(wrapper.find('input'), 'Backspace', 9, 12);
+      expect(wrapper.find('input').prop('value')).toEqual('100-1000 USD');
+    });
+
+    fit('while deleting prefix', () => {
+      const wrapper = mount(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
+
+      simulateKeyInput(wrapper.find('input'), 'Backspace', 0, 3);
+      expect(wrapper.find('input').prop('value')).toEqual('100-1000 USD');
+    });
+  });
+
   describe('Test thousand group style', () => {
     it('should format on english style thousand grouping', () => {
       const wrapper = mount(<NumericFormat thousandSeparator={true} value={12345678} />);

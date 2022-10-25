@@ -136,24 +136,56 @@ export function removeFormatting<BaseType = InputAttributes>(
     value = value.substring(0, start) + separator + value.substring(start + 1, value.length);
   }
 
-  let hasNegation = false;
+  const stripNegation = (value: string, start: number, end: number) => {
+    /**
+     * if prefix starts with - the number hast to have two - at the start
+     * if suffix starts with - and the value length is same as suffix length, then the - sign is from the suffix
+     * In other cases, if the value starts with - then it is a negation
+     */
+    let hasNegation = false;
+    let hasDoubleNegation = false;
+    if (prefix.startsWith('-')) hasNegation = !value.startsWith('--');
+    else if (value.startsWith('--')) {
+      hasNegation = false;
+      hasDoubleNegation = true;
+    } else if (suffix.startsWith('-') && value.length === suffix.length) hasNegation = false;
+    else if (value[0] === '-') hasNegation = true;
 
-  /**
-   * if prefix starts with - the number hast to have two - at the start
-   * if suffix starts with - and the value length is same as suffix length, then the - sign is from the suffix
-   * In other cases, if the value starts with - then it is a negation
-   */
-  if (prefix.startsWith('-')) hasNegation = value.startsWith('--');
-  else if (suffix.startsWith('-') && value.length === suffix.length) hasNegation = false;
-  else if (value[0] === '-') hasNegation = true;
+    let charsToRemove = hasNegation ? 1 : 0;
+    if (hasDoubleNegation) charsToRemove = 2;
 
-  // remove negation from start to simplify prefix logic as negation comes before prefix
-  if (hasNegation) {
-    value = value.substring(1);
+    // remove negation/double negation from start to simplify prefix logic as negation comes before prefix
+    if (charsToRemove) {
+      value = value.substring(charsToRemove);
 
-    // account for the removal of the negation for start and end index
-    start -= 1;
-    end -= 1;
+      // account for the removal of the negation for start and end index
+      start -= charsToRemove;
+      end -= charsToRemove;
+    }
+
+    return { value, start, end, hasNegation };
+  };
+
+  const toMetadata = stripNegation(value, start, end);
+  const { hasNegation } = toMetadata;
+  ({ value, start, end } = toMetadata);
+
+  const {
+    start: fromStart,
+    end: fromEnd,
+    value: lastValue,
+  } = stripNegation(changeMeta.lastValue, from.start, from.end);
+
+  // if only prefix and suffix part is updated reset the value to last value
+  // if the changed range is from suffix in the updated value, and the the suffix starts with the same characters, allow the change
+  const updatedSuffixPart = value.substring(start, end);
+  if (
+    value.length &&
+    lastValue.length &&
+    (fromStart > lastValue.length - suffix.length || fromEnd < prefix.length) &&
+    !(updatedSuffixPart && suffix.startsWith(updatedSuffixPart))
+  ) {
+    value = lastValue;
   }
 
   /**
@@ -167,7 +199,7 @@ export function removeFormatting<BaseType = InputAttributes>(
   else if (start < prefix.length) startIndex = start;
   value = value.substring(startIndex);
 
-  // account for deleted prefix for end index
+  // account for deleted prefix for end
   end -= startIndex;
 
   /**
@@ -180,6 +212,9 @@ export function removeFormatting<BaseType = InputAttributes>(
   const suffixStartIndex = value.length - suffix.length;
 
   if (value.endsWith(suffix)) endIndex = suffixStartIndex;
+  // if the suffix is removed from the end
+  else if (end > suffixStartIndex) endIndex = end;
+  // if the suffix is removed from start
   else if (end > value.length - suffix.length) endIndex = end;
 
   value = value.substring(0, endIndex);
