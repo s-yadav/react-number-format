@@ -13,6 +13,7 @@ import {
   isNanValue,
   setCaretPosition,
   toNumericString,
+  charIsNumber,
 } from './utils';
 import {
   NumericFormatProps,
@@ -247,8 +248,8 @@ export function useNumericFormat<BaseType = InputAttributes>(
   props: NumericFormatProps<BaseType>,
 ): NumberFormatBaseProps<BaseType> {
   const {
+    decimalSeparator = '.',
     /* eslint-disable no-unused-vars */
-    decimalSeparator,
     allowedDecimalSeparators,
     thousandsGroupStyle,
     suffix,
@@ -390,10 +391,16 @@ export function useNumericFormat<BaseType = InputAttributes>(
     onBlur(e);
   };
 
+  const isValidInputCharacter = (inputChar: string) => {
+    if (inputChar === decimalSeparator) return true;
+    return charIsNumber(inputChar);
+  };
+
   return {
     ...(restProps as NumberFormatBaseProps<BaseType>),
     value: formattedValue,
     valueIsNumericString: false,
+    isValidInputCharacter,
     onValueChange: _onValueChange,
     format: _format,
     removeFormatting: _removeFormatting,

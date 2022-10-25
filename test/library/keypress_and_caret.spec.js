@@ -327,6 +327,16 @@ describe('Test keypress and caret position changes', () => {
       expect(input.selectionStart).toEqual(1);
       expect(spy).toHaveBeenCalled();
     });
+
+    it('should maintain correct caret position if one of thousand separator is removed due to backspace. #695', async () => {
+      const { input } = await render(
+        <NumericFormat value={1234567.8901} thousandSeparator="." decimalSeparator="," />,
+      );
+
+      simulateNativeKeyInput(input, '{backspace}', 9, 9);
+      expect(input.value).toEqual('123.456,8901');
+      expect(input.selectionStart).toEqual(7);
+    });
   });
 
   describe('Test arrow keys', () => {
