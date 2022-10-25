@@ -308,6 +308,7 @@ export function getCaretPosition(
   curValue: string,
   curCaretPos: number,
   boundary: boolean[],
+  isValidInputCharacter: (char: string) => boolean,
 ) {
   /**
    * if something got inserted on empty value, add the formatted character before the current value,
@@ -345,7 +346,7 @@ export function getCaretPosition(
    * that mapped index
    */
   let pos = curCaretPos;
-  while (pos < curValLn && (indexMap[pos] === -1 || !charIsNumber(curValue[pos]))) {
+  while (pos < curValLn && (indexMap[pos] === -1 || !isValidInputCharacter(curValue[pos]))) {
     pos++;
   }
 

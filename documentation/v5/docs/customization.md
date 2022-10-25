@@ -9,10 +9,11 @@ React Number Format v5 is a complete rewrite with a goal of keeping it fully cus
 
 The primary thing which react number format controls is apply formatting in place (in the input) while managing correct caret position. It tries to understand what user is trying to do, add number, cut/paste, delete, and manage cursor position accordingly.
 
-At the core of React number format lies NumberFormatBase, which works on three main props controlled from parent.
+At the core of React number format lies NumberFormatBase, which works on four main props controlled from parent.
 
 - **format**: A format function which can turn any numeric string to a formatted string.
 - **removeFormatting**: A function to removing formatting from a formatted string and return numeric string.
+- **isValidInputCharacter**: A function to tell if a character in the formatted value is a valid typeable character. You don't need to pass it most of the time, as it defaults numeric characters (0-9). But case like additional character is allowed to type, for example decimal separator in currency format.
 - **getCaretBoundary**: A function given a formatted string, returns boundaries of valid cursor position. basically an array of boolean, where index of specify caret position. true at a index signifies user can put their caret at the position, false means the caret position is not allowed and the caret will move to closet allowed position.
 
 Most of the time you don't have to define getCaretBoundary, as the default one is enough, but in case you need to define, it looks something like this.

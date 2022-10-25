@@ -49,6 +49,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     onBlur = noop,
     value: propValue,
     getCaretBoundary = caretUnknownFormatBoundary,
+    isValidInputCharacter = charIsNumber,
     ...otherProps
   } = props;
 
@@ -145,6 +146,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       inputValue,
       caretPos,
       caretBoundary,
+      isValidInputCharacter,
     );
 
     //correct caret position if its outside of editable area
@@ -283,10 +285,10 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     if (key === 'ArrowLeft' || key === 'ArrowRight') {
       const direction = key === 'ArrowLeft' ? 'left' : 'right';
       newCaretPosition = correctCaretPosition(value, expectedCaretPosition, direction);
-    } else if (key === 'Delete' && !charIsNumber(value[expectedCaretPosition])) {
+    } else if (key === 'Delete' && !isValidInputCharacter(value[expectedCaretPosition])) {
       // in case of delete go to closest caret boundary on the right side
       newCaretPosition = correctCaretPosition(value, expectedCaretPosition, 'right');
-    } else if (key === 'Backspace' && !charIsNumber(value[expectedCaretPosition])) {
+    } else if (key === 'Backspace' && !isValidInputCharacter(value[expectedCaretPosition])) {
       // in case of backspace go to closest caret boundary on the left side
       newCaretPosition = correctCaretPosition(value, expectedCaretPosition, 'left');
     }

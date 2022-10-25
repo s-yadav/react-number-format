@@ -76,6 +76,7 @@ type NumberFormatBase = {
   onFocus?: InputAttributes['onFocus'];
   onBlur?: InputAttributes['onBlur'];
   getCaretBoundary: (formattedValue: string) => boolean[];
+  isValidInputCharacter?: (character: string) => boolean;
 };
 
 export type NumberFormatBaseProps<BaseType = InputAttributes> = NumberFormatProps<
@@ -85,7 +86,7 @@ export type NumberFormatBaseProps<BaseType = InputAttributes> = NumberFormatProp
 
 export type InternalNumberFormatBase = Omit<
   NumberFormatBase,
-  'format' | 'removeFormatting' | 'getCaretBoundary'
+  'format' | 'removeFormatting' | 'getCaretBoundary' | 'isValidInputCharacter'
 >;
 
 export type NumericFormatProps<BaseType = InputAttributes> = NumberFormatProps<
