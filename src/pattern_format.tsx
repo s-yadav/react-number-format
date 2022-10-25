@@ -7,6 +7,7 @@ import {
   NumberFormatBaseProps,
 } from './types';
 import {
+  charIsNumber,
   getCaretPosInBoundary,
   getDefaultChangeMeta,
   getMaskAtIndex,
@@ -49,7 +50,7 @@ export function removeFormatting<BaseType = InputAttributes>(
   const removeFormatChar = (string: string, startIndex: number) => {
     let str = '';
     for (let i = 0; i < string.length; i++) {
-      if (isNumericSlot(startIndex + i) && string[i].match(/\d/)) {
+      if (isNumericSlot(startIndex + i) && charIsNumber(string[i])) {
         str += string[i];
       }
     }
