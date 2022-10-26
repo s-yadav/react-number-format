@@ -136,9 +136,9 @@ const MAX_LIMIT = 1000;
 
 <NumericFormat
   value={11}
-  isAllowed={(values, sourceInfo) => {
-    const { value } = values;
-    return value < MAX_LIMIT;
+  isAllowed={(values) => {
+    const { floatValue } = values;
+    return floatValue < MAX_LIMIT;
   }}
 />;
 ```
