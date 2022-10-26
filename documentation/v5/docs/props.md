@@ -166,7 +166,6 @@ If value is passed as string representation of numbers (unformatted) then this s
 import { NumericFormat } from 'react-number-format';
 
 <NumericFormat
-  value={val}
   type="text"
   value="123456789"
   valueIsNumericString={true}
