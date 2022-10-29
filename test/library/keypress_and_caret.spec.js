@@ -69,7 +69,7 @@ describe('Test keypress and caret position changes', () => {
     expect(caretPos).toEqual(2);
   });
 
-  fit('should maintain caret position when isAllowed returns false', async () => {
+  it('should maintain caret position when isAllowed returns false', async () => {
     const { input } = await render(
       <NumericFormat
         isAllowed={({ floatValue }) => {
