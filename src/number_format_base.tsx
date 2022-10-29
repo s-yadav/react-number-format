@@ -232,6 +232,12 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     const _formattedValue = _format(_numAsString);
 
     if (isAllowed && !isAllowed(getValueObject(_formattedValue, _numAsString))) {
+      //reset the caret position
+      const input = event.target as HTMLInputElement;
+      const currentCaretPosition = geInputCaretPosition(input);
+
+      const caretPos = getNewCaretPosition(inputValue, formattedValue, currentCaretPosition);
+      setPatchedCaretPosition(input, caretPos, formattedValue);
       return false;
     }
 

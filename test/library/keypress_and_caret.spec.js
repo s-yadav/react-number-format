@@ -69,6 +69,24 @@ describe('Test keypress and caret position changes', () => {
     expect(caretPos).toEqual(2);
   });
 
+  fit('should maintain caret position when isAllowed returns false', async () => {
+    const { input } = await render(
+      <NumericFormat
+        isAllowed={({ floatValue }) => {
+          return floatValue < 100;
+        }}
+        value={100.222}
+      />,
+    );
+
+    simulateNativeKeyInput(input, '1', 2, 2);
+
+    expect(input.value).toEqual('100.222');
+
+    await wait(100);
+    expect(input.selectionStart).toEqual(2);
+  });
+
   describe('Test character insertion', () => {
     it('should add any number properly when input is empty without format prop passed', () => {
       const wrapper = mount(<NumericFormat thousandSeparator={true} prefix={'$'} />);
