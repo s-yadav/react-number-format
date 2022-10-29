@@ -9,7 +9,7 @@ import {
 } from './numeric_format';
 
 import {
-  format as patterFormatter,
+  format as patternFormatter,
   removeFormatting as removePatternFormat,
   getCaretBoundary as getPatternCaretBoundary,
   usePatternFormat,
@@ -29,4 +29,4 @@ export type {
 } from './types';
 
 export { numericFormatter, removeNumericFormat, getNumericCaretBoundary, useNumericFormat };
-export { patterFormatter, removePatternFormat, getPatternCaretBoundary, usePatternFormat };
+export { patternFormatter, removePatternFormat, getPatternCaretBoundary, usePatternFormat };
