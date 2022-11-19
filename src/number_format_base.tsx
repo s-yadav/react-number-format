@@ -336,7 +336,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
   const _onFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     // Workaround Chrome and Safari bug https://bugs.chromium.org/p/chromium/issues/detail?id=779328
     // (onFocus event target selectionStart is always 0 before setTimeout)
-    e.persist();
+    if (e.persist) e.persist();
 
     const el = e.target;
     focusedElm.current = el;
