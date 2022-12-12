@@ -194,6 +194,10 @@ import { NumericFormat } from 'react-number-format';
 
 This handler provides access to any values changes in the input field and is triggered only when a prop changes or the user input changes. It provides two arguments namely the [valueObject](quirks#values-object) as the first and the [sourceInfo](quirks#sourceInfo) as the second. The [valueObject](quirks#values-object) parameter contains the `formattedValue`, `value` and the `floatValue` of the given input field. The [sourceInfo](quirks#sourceInfo) contains the `event` Object and a `source` key which indicates whether the triggered change is due to an event or a prop change. This is particularly useful in identify whether the change is user driven or is an uncontrolled change due to any prop value being updated.
 
+:::info
+If you are using `values.value` which is non formatted value as numeric string. Make sure to pass valueIsNumericString to be true.
+:::
+
 ```js
 import { NumericFormat } from 'react-number-format';
 
