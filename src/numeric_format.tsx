@@ -330,15 +330,20 @@ export function useNumericFormat<BaseType = InputAttributes>(
     }
 
     // don't allow user to delete decimal separator when decimalScale and fixedDecimalScale is set
-    const { decimalSeparator } = getSeparators(props);
+    const { decimalSeparator, allowedDecimalSeparators } = getSeparators(props);
     if (
       key === 'Backspace' &&
-      value[(selectionStart as number) - 1] === decimalSeparator &&
+      value[selectionStart - 1] === decimalSeparator &&
       decimalScale &&
       fixedDecimalScale
     ) {
-      setCaretPosition(el, (selectionStart as number) - 1);
+      setCaretPosition(el, selectionStart - 1);
       e.preventDefault();
+    }
+
+    // if user presses the allowed decimal separator before the separator, move the cursor after the separator
+    if (allowedDecimalSeparators?.includes(key) && value[selectionStart] === decimalSeparator) {
+      setCaretPosition(el, selectionStart + 1);
     }
 
     const _thousandSeparator = thousandSeparator === true ? ',' : thousandSeparator;
