@@ -76,9 +76,13 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     // if the formatted value is not synced to parent, or if the formatted value is different
     if (lastUpdatedValue.current === undefined || newFormattedValue !== lastUpdatedValue.current) {
       const input = focusedElm.current;
+
+      // formatting can remove some of the number chars, so we need to fine number string again
+      const _numAsString = removeFormatting(newFormattedValue, undefined);
+
       updateValue({
         formattedValue: newFormattedValue,
-        numAsString: numAsString,
+        numAsString: _numAsString,
         input,
         setCaretPosition: true,
         source: SourceType.props,
@@ -228,8 +232,11 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       ...changeRange,
       lastValue: formattedValue,
     };
-    const _numAsString = removeFormatting(inputValue, changeMeta);
+    let _numAsString = removeFormatting(inputValue, changeMeta);
     const _formattedValue = _format(_numAsString);
+
+    // formatting can remove some of the number chars, so we need to fine number string again
+    _numAsString = removeFormatting(_formattedValue, undefined);
 
     if (isAllowed && !isAllowed(getValueObject(_formattedValue, _numAsString))) {
       //reset the caret position
