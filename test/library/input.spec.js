@@ -14,6 +14,9 @@ import {
   mount,
   shallow,
   getInputValue,
+  render,
+  wait,
+  simulateNativeKeyInput
 } from '../test_util';
 import PatternFormat, { usePatternFormat } from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
@@ -552,6 +555,34 @@ describe('NumberFormat as input', () => {
     simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
     expect(spy).toHaveBeenCalled();
   });
+
+  it('should not give wrong value, when user enter more number than the given hash in PatternFormat #712', async () => {
+    const Component = () => {
+      const [value, setValue] = useState("1232345124");
+      return (
+        <div>
+          <PatternFormat
+            value={value}
+            format="(###) #### ###"
+            valueIsNumericString
+            mask="_"
+            onValueChange={(values) => {
+              setValue(values.value);
+            }}
+          />
+          <span data-testid="value">{value}</span>
+        </div>
+      )
+    }
+
+    const {input, view} = await render(<Component />);
+    simulateNativeKeyInput(input, '1', 1, 1);
+    await wait(100);
+
+    expect(input.value).toEqual('(112) 3234 512');
+    const value = await view.getByTestId('value');
+    expect(value.innerText).toEqual('1123234512');
+  })
 
   describe('Test masking', () => {
     it('should allow mask as string', () => {

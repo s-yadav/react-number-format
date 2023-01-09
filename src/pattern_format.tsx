@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  PatternFormatProps,
-  InputAttributes,
-  ChangeMeta,
-  InternalNumberFormatBase,
-  NumberFormatBaseProps,
-} from './types';
+import { PatternFormatProps, InputAttributes, ChangeMeta, NumberFormatBaseProps } from './types';
 import {
   charIsNumber,
   getCaretPosInBoundary,
@@ -73,7 +67,9 @@ export function removeFormatting<BaseType = InputAttributes>(
     let str = '';
     for (let i = 0; i < value.length; i++) {
       if (isNumericSlot(i)) {
-        str += value[i];
+        if (charIsNumber(value[i])) {
+          str += value[i];
+        }
       } else if (value[i] !== format[i]) {
         // if there is a mismatch on the pattern, do plane number extract
         return extractNumbers(value);
