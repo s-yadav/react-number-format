@@ -20,7 +20,7 @@ export enum SourceType {
 }
 
 export interface SourceInfo {
-  event?: SyntheticEvent;
+  event?: SyntheticEvent<HTMLInputElement>;
   source: SourceType;
 }
 

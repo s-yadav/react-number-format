@@ -87,6 +87,25 @@ describe('Test keypress and caret position changes', () => {
     expect(input.selectionStart).toEqual(2);
   });
 
+  it('should update caret position when any of the decimal separator is pressed just before the decimal separator #711', async () => {
+    const { input } = await render(
+      <NumericFormat
+        value={12}
+        allowedDecimalSeparators={[',', '.']}
+        decimalSeparator=","
+        thousandSeparator="."
+        decimalScale={3}
+        fixedDecimalScale
+      />,
+    );
+
+    simulateNativeKeyInput(input, ',', 2, 2);
+    expect(input.selectionStart).toEqual(3);
+
+    simulateNativeKeyInput(input, '.', 2, 2);
+    expect(input.selectionStart).toEqual(3);
+  });
+
   describe('Test character insertion', () => {
     it('should add any number properly when input is empty without format prop passed', () => {
       const wrapper = mount(<NumericFormat thousandSeparator={true} prefix={'$'} />);
