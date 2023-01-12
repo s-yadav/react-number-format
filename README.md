@@ -2,7 +2,7 @@
 
 # react-number-format
 
-React Number format is a input formatter library with a sohpisticated and light weight caret engine.
+React Number format is a input formatter library with a sophisticated and lightweight caret engine.
 
 ### Features
 
