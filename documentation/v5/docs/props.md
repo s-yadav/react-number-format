@@ -171,7 +171,6 @@ import { NumericFormat } from 'react-number-format';
   valueIsNumericString={true}
   decimalSeparator=","
   displayType="input"
-  type="text"
 />;
 ```
 
