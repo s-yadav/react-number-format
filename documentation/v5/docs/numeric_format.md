@@ -155,6 +155,30 @@ import { NumericFormat } from 'react-number-format';
    ></iframe>
 </details>
 
+### fixedDecimalScale `boolean`
+
+**default**: `false`
+
+If set to `true`, it adds trailing 0s after `decimalSeparator` to match given `decimalScale`.
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat value={12323.1} decimalScale={3} fixedDecimalScale />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+    <iframe src="https://codesandbox.io/embed/fixeddecimalscale-demo-kwbnev?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     className='csb'
+     title="allowNegative-demo"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+
 ### prefix `string`
 
 **default**:`undefined`
