@@ -16,7 +16,7 @@ import {
   getInputValue,
   render,
   wait,
-  simulateNativeKeyInput
+  simulateNativeKeyInput,
 } from '../test_util';
 import PatternFormat, { usePatternFormat } from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
@@ -287,11 +287,11 @@ describe('NumberFormat as input', () => {
     simulateKeyInput(wrapper.find('input'), '8', 0, format.length);
     expect(getInputValue(wrapper)).toEqual('+1 (8__) ___ _ __ US');
   });
-  
+
   it('should give proper value when format character has number #652', () => {
     //https://github.com/s-yadav/react-number-format/issues/652#issuecomment-1278200770
     const spy = jasmine.createSpy();
-    const wrapper = mount(<PatternFormat  format="13###" mask="_" onValueChange={spy} />);
+    const wrapper = mount(<PatternFormat format="13###" mask="_" onValueChange={spy} />);
     simulateKeyInput(wrapper.find('input'), '3', 0);
     simulateKeyInput(wrapper.find('input'), '4', 3);
     expect(spy.calls.argsFor(1)[0]).toEqual({
@@ -299,7 +299,7 @@ describe('NumberFormat as input', () => {
       value: '34',
       floatValue: 34,
     });
-  })
+  });
 
   it('should not allow replacing all characters with number when formatting is present for NumericFormats', () => {
     //check for numeric input
@@ -558,7 +558,7 @@ describe('NumberFormat as input', () => {
 
   it('should not give wrong value, when user enter more number than the given hash in PatternFormat #712', async () => {
     const Component = () => {
-      const [value, setValue] = useState("1232345124");
+      const [value, setValue] = useState('1232345124');
       return (
         <div>
           <PatternFormat
@@ -572,17 +572,17 @@ describe('NumberFormat as input', () => {
           />
           <span data-testid="value">{value}</span>
         </div>
-      )
-    }
+      );
+    };
 
-    const {input, view} = await render(<Component />);
+    const { input, view } = await render(<Component />);
     simulateNativeKeyInput(input, '1', 1, 1);
     await wait(100);
 
     expect(input.value).toEqual('(112) 3234 512');
     const value = await view.getByTestId('value');
     expect(value.innerText).toEqual('1123234512');
-  })
+  });
 
   describe('Test masking', () => {
     it('should allow mask as string', () => {

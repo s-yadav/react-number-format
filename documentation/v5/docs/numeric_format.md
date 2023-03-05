@@ -171,7 +171,7 @@ import { NumericFormat } from 'react-number-format';
   <summary>
   Demo
   </summary>
-    <iframe src="https://codesandbox.io/embed/fixeddecimalscale-demo-kwbnev?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+    <iframe src="https://codesandbox.io/s/fixeddecimalscale-demo-3jnvz7?fontsize=14&hidenavigation=1&theme=dark&view=preview"
      className='csb'
      title="allowNegative-demo"
      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
