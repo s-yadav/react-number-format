@@ -21,7 +21,6 @@ class App extends React.Component {
     return (
       <div>
         <div className="example">
-          <NumericFormat prefix='100-'  suffix={"000 USD"} />
           <h3>Prefix and thousand separator : Format currency as text</h3>
           <NumericFormat value={2456981} displayType="text" thousandSeparator={true} prefix="$" />
         </div>

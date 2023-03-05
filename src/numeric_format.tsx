@@ -35,7 +35,7 @@ export function format<BaseType = InputAttributes>(
     fixedDecimalScale,
     prefix = '',
     suffix = '',
-    allowNegative = true,
+    allowNegative,
     thousandsGroupStyle = 'thousand',
   } = props;
 
@@ -123,12 +123,24 @@ export function removeFormatting<BaseType = InputAttributes>(
   changeMeta: ChangeMeta = getDefaultChangeMeta(value),
   props: NumericFormatProps<BaseType>,
 ) {
-  const { allowNegative = true, prefix = '', suffix = '', decimalScale } = props;
+  const { allowNegative, prefix = '', suffix = '', decimalScale } = props;
   const { from, to } = changeMeta;
   let { start, end } = to;
   const { allowedDecimalSeparators, decimalSeparator } = getSeparators(props);
 
   const isBeforeDecimalSeparator = value[end] === decimalSeparator;
+
+  /**
+   * If only a number is added on empty input which matches with the prefix or suffix,
+   * then don't remove it, just return the same
+   */
+  if (
+    charIsNumber(value) &&
+    (value === prefix || value === suffix) &&
+    changeMeta.lastValue === ''
+  ) {
+    return value;
+  }
 
   /** Check for any allowed decimal separator is added in the numeric format and replace it with decimal separator */
   if (end - start === 1 && allowedDecimalSeparators.indexOf(value[start]) !== -1) {
@@ -138,18 +150,23 @@ export function removeFormatting<BaseType = InputAttributes>(
 
   const stripNegation = (value: string, start: number, end: number) => {
     /**
-     * if prefix starts with - the number hast to have two - at the start
+     * if prefix starts with - we don't allow negative number to avoid confusion
      * if suffix starts with - and the value length is same as suffix length, then the - sign is from the suffix
      * In other cases, if the value starts with - then it is a negation
      */
     let hasNegation = false;
     let hasDoubleNegation = false;
-    if (prefix.startsWith('-')) hasNegation = !value.startsWith('--');
-    else if (value.startsWith('--')) {
+
+    if (prefix.startsWith('-')) {
+      hasNegation = false;
+    } else if (value.startsWith('--')) {
       hasNegation = false;
       hasDoubleNegation = true;
-    } else if (suffix.startsWith('-') && value.length === suffix.length) hasNegation = false;
-    else if (value[0] === '-') hasNegation = true;
+    } else if (suffix.startsWith('-') && value.length === suffix.length) {
+      hasNegation = false;
+    } else if (value[0] === '-') {
+      hasNegation = true;
+    }
 
     let charsToRemove = hasNegation ? 1 : 0;
     if (hasDoubleNegation) charsToRemove = 2;
@@ -267,8 +284,10 @@ export function getCaretBoundary<BaseType = InputAttributes>(
   return boundaryAry;
 }
 
-function validateProps<BaseType = InputAttributes>(props: NumericFormatProps<BaseType>) {
+function validateAndUpdateProps<BaseType = InputAttributes>(props: NumericFormatProps<BaseType>) {
   const { thousandSeparator, decimalSeparator } = getSeparators(props);
+  // eslint-disable-next-line prefer-const
+  let { prefix = '', allowNegative = true } = props;
 
   if (thousandSeparator === decimalSeparator) {
     throw new Error(`
@@ -277,11 +296,30 @@ function validateProps<BaseType = InputAttributes>(props: NumericFormatProps<Bas
         decimalSeparator: ${decimalSeparator} (default value for decimalSeparator is .)
      `);
   }
+
+  if (prefix.startsWith('-') && allowNegative) {
+    // TODO: throw error in next major version
+    console.error(`
+      Prefix can't start with '-' when allowNegative is true.
+      prefix: ${prefix}
+      allowNegative: ${allowNegative}
+    `);
+
+    allowNegative = false;
+  }
+
+  return {
+    ...props,
+    allowNegative,
+  };
 }
 
 export function useNumericFormat<BaseType = InputAttributes>(
   props: NumericFormatProps<BaseType>,
 ): NumberFormatBaseProps<BaseType> {
+  // validate props
+  props = validateAndUpdateProps(props);
+
   const {
     decimalSeparator = '.',
     /* eslint-disable no-unused-vars */
@@ -303,9 +341,6 @@ export function useNumericFormat<BaseType = InputAttributes>(
     onValueChange,
     ...restProps
   } = props;
-
-  // validate props
-  validateProps(props);
 
   const _format: FormatInputValueFunction = (numStr) => format(numStr, props);
 
@@ -359,7 +394,12 @@ export function useNumericFormat<BaseType = InputAttributes>(
     }
 
     // if user hits backspace, while the cursor is before prefix, and the input has negation, remove the negation
-    if (key === 'Backspace' && value[0] === '-' && selectionStart === prefix.length + 1) {
+    if (
+      key === 'Backspace' &&
+      value[0] === '-' &&
+      selectionStart === prefix.length + 1 &&
+      allowNegative
+    ) {
       // bring the cursor to after negation
       setCaretPosition(el, 1);
     }
