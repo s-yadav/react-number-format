@@ -10,6 +10,8 @@ import {
   mount,
   shallow,
   getInputValue,
+  render,
+  simulateNativeKeyInput,
 } from '../test_util';
 
 /**
@@ -685,33 +687,59 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.find('input').prop('value')).toEqual('0.00000001');
   });
 
+  describe('should allow typing number if prefix or suffix is just an number #691', () => {
+    it('when prefix is number', async () => {
+      const { input } = await render(<NumericFormat prefix="1" />);
+      simulateNativeKeyInput(input, '1', 0, 0);
+      expect(input.value).toEqual('11');
+    });
+
+    it('when prefix is multiple digit', async () => {
+      const { input } = await render(<NumericFormat prefix="11" />);
+      simulateNativeKeyInput(input, '11', 0, 0);
+      expect(input.value).toEqual('1111');
+    });
+
+    it('when suffix is number', async () => {
+      const { input } = await render(<NumericFormat suffix="1" />);
+      simulateNativeKeyInput(input, '1', 0, 0);
+      expect(input.value).toEqual('11');
+    });
+
+    it('when prefix and suffix both are number', async () => {
+      const { input } = await render(<NumericFormat prefix="1" suffix="1" />);
+      simulateNativeKeyInput(input, '1', 0, 0);
+      expect(input.value).toEqual('111');
+    });
+  });
+
   describe('should handle if only partial prefix or suffix is removed using double click select and the remove. #694', () => {
-    it('while changing suffix', () => {
-      const wrapper = mount(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
+    it('while changing suffix', async () => {
+      const { input } = await render(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
 
-      simulateKeyInput(wrapper.find('input'), '2', 9, 12);
-      expect(wrapper.find('input').prop('value')).toEqual('100-1000 USD');
+      simulateNativeKeyInput(input, '2', 9, 12);
+      expect(input.value).toEqual('100-1000 USD');
     });
 
-    it('while changing prefix', () => {
-      const wrapper = mount(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
+    it('while changing prefix', async () => {
+      const { input } = await render(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
 
-      simulateKeyInput(wrapper.find('input'), '2', 0, 2);
-      expect(wrapper.find('input').prop('value')).toEqual('100-1000 USD');
+      simulateNativeKeyInput(input, '2', 0, 2);
+      expect(input.value).toEqual('100-1000 USD');
     });
 
-    it('while deleting suffix', () => {
-      const wrapper = mount(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
+    it('while deleting suffix', async () => {
+      const { input } = await render(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
 
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 9, 12);
-      expect(wrapper.find('input').prop('value')).toEqual('100-1000 USD');
+      simulateNativeKeyInput(input, 'Backspace', 9, 12);
+      expect(input.value).toEqual('100-1000 USD');
     });
 
-    fit('while deleting prefix', () => {
-      const wrapper = mount(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
+    it('while deleting prefix', async () => {
+      const { input } = await render(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
 
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 0, 3);
-      expect(wrapper.find('input').prop('value')).toEqual('100-1000 USD');
+      simulateNativeKeyInput(input, 'Backspace', 0, 3);
+      expect(input.value).toEqual('100-1000 USD');
     });
   });
 
