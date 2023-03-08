@@ -331,7 +331,13 @@ export function getCaretPosition(
   for (let i = 0; i < curValLn; i++) {
     indexMap[i] = -1;
     for (let j = 0, jLn = formattedValueLn; j < jLn; j++) {
-      if (curValue[i] === newFormattedValue[j] && addedIndexMap[j] !== true) {
+      const isAllowedDecimalSeparator =
+        isValidInputCharacter(curValue[i]) && isValidInputCharacter(newFormattedValue[j]);
+
+      if (
+        (curValue[i] === newFormattedValue[j] || isAllowedDecimalSeparator) &&
+        addedIndexMap[j] !== true
+      ) {
         indexMap[i] = j;
         addedIndexMap[j] = true;
         break;
