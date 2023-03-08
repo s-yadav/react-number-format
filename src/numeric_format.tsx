@@ -474,7 +474,7 @@ export function useNumericFormat<BaseType = InputAttributes>(
   const isValidInputCharacter = (inputChar: string) => {
     if (inputChar === decimalSeparator) return true;
 
-    if (allowedDecimalSeparators.includes(inputChar)) {
+    if (allowedDecimalSeparators?.includes(inputChar)) {
       return true;
     }
 
