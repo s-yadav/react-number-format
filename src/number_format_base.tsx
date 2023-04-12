@@ -69,28 +69,6 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     onFormattedValueChange(values, source);
   };
 
-  // check if there is any change in the value due to props change
-  useEffect(() => {
-    const newFormattedValue = (format as FormatInputValueFunction)(numAsString);
-
-    // if the formatted value is not synced to parent, or if the formatted value is different
-    if (lastUpdatedValue.current === undefined || newFormattedValue !== lastUpdatedValue.current) {
-      const input = focusedElm.current;
-
-      // formatting can remove some of the number chars, so we need to fine number string again
-      const _numAsString = removeFormatting(newFormattedValue, undefined);
-
-      updateValue({
-        formattedValue: newFormattedValue,
-        numAsString: _numAsString,
-        input,
-        setCaretPosition: true,
-        source: SourceType.props,
-        event: undefined,
-      });
-    }
-  });
-
   const [mounted, setMounted] = useState(false);
   const focusedElm = useRef<HTMLInputElement | null>(null);
 
@@ -218,6 +196,26 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       _onValueChange(getValueObject(newFormattedValue, numAsString), { event, source });
     }
   };
+
+  // check if there is any change in the value due to props change
+  const newFormattedValue = (format as FormatInputValueFunction)(numAsString);
+
+  // if the formatted value is not synced to parent, or if the formatted value is different
+  if (lastUpdatedValue.current === undefined || newFormattedValue !== lastUpdatedValue.current) {
+    const input = focusedElm.current;
+
+    // formatting can remove some of the number chars, so we need to fine number string again
+    const _numAsString = removeFormatting(newFormattedValue, undefined);
+
+    updateValue({
+      formattedValue: newFormattedValue,
+      numAsString: _numAsString,
+      input,
+      setCaretPosition: true,
+      source: SourceType.props,
+      event: undefined,
+    });
+  }
 
   const formatInputValue = (
     inputValue: string,
