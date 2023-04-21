@@ -130,6 +130,31 @@ import { NumericFormat } from 'react-number-format';
    ></iframe>
 </details>
 
+### minDecimalScale `number`
+
+**default**: `undefined`
+
+If defined, it enforces a minimum number of digits after the decimal point.
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat value={12323.3334} minDecimalScale={3} />;
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+
+<iframe src="https://codesandbox.io/embed/decimalscale-demo-uc92li?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     className='csb'
+     title="decimalScale-demo"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+
 ### decimalSeparator `string`
 
 **default**: '.'

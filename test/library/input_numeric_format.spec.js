@@ -215,6 +215,22 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(getInputValue(wrapper)).toEqual('4111.11');
   });
 
+  it('should enforce a minimum decimal scale if specified', () => {
+    const wrapper = mount(<NumericFormat decimalScale={8} minDecimalScale={2} value={24} />);
+    expect(getInputValue(wrapper)).toEqual('24.00');
+
+    const input = wrapper.find('input');
+    input.simulate('change', getCustomEvent('24.1234'));
+    expect(getInputValue(wrapper)).toEqual('24.1234');
+
+    input.simulate('change', getCustomEvent('24.1234567890'));
+    expect(getInputValue(wrapper)).toEqual('24.12345678');
+
+    // Rounding logic
+    wrapper.setProps({ value: 24.123456789 });
+    expect(getInputValue(wrapper)).toEqual('24.12345679');
+  });
+
   it('should not add zeros to fixedDecimalScale is not set', () => {
     const wrapper = mount(<NumericFormat decimalScale={4} value={24.45} />);
     expect(getInputValue(wrapper)).toEqual('24.45');
