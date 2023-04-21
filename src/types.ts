@@ -96,6 +96,7 @@ export type NumericFormatProps<BaseType = InputAttributes> = NumberFormatProps<
     allowedDecimalSeparators?: Array<string>;
     thousandsGroupStyle?: 'thousand' | 'lakh' | 'wan' | 'none';
     decimalScale?: number;
+    minDecimalScale?: number;
     fixedDecimalScale?: boolean;
     allowNegative?: boolean;
     allowLeadingZeros?: boolean;

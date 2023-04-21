@@ -1,30 +1,30 @@
 import React from 'react';
-import {
-  escapeRegExp,
-  splitDecimal,
-  limitToScale,
-  applyThousandSeparator,
-  getDefaultChangeMeta,
-  fixLeadingZero,
-  noop,
-  useInternalValues,
-  isNil,
-  roundToPrecision,
-  isNanValue,
-  setCaretPosition,
-  toNumericString,
-  charIsNumber,
-} from './utils';
-import {
-  NumericFormatProps,
-  ChangeMeta,
-  SourceType,
-  InputAttributes,
-  FormatInputValueFunction,
-  RemoveFormattingFunction,
-  NumberFormatBaseProps,
-} from './types';
 import NumberFormatBase from './number_format_base';
+import {
+  ChangeMeta,
+  FormatInputValueFunction,
+  InputAttributes,
+  NumberFormatBaseProps,
+  NumericFormatProps,
+  RemoveFormattingFunction,
+  SourceType,
+} from './types';
+import {
+  applyThousandSeparator,
+  charIsNumber,
+  escapeRegExp,
+  fixLeadingZero,
+  getDefaultChangeMeta,
+  isNanValue,
+  isNil,
+  limitToScale,
+  noop,
+  roundToPrecision,
+  setCaretPosition,
+  splitDecimal,
+  toNumericString,
+  useInternalValues,
+} from './utils';
 
 export function format<BaseType = InputAttributes>(
   numStr: string,
@@ -32,6 +32,7 @@ export function format<BaseType = InputAttributes>(
 ) {
   const {
     decimalScale,
+    minDecimalScale,
     fixedDecimalScale,
     prefix = '',
     suffix = '',
@@ -52,13 +53,15 @@ export function format<BaseType = InputAttributes>(
    * Or if decimalScale is > 0 and fixeDecimalScale is true (even if numStr has no decimal)
    */
   const hasDecimalSeparator =
-    (decimalScale !== 0 && numStr.indexOf('.') !== -1) || (decimalScale && fixedDecimalScale);
+    (decimalScale !== 0 && numStr.indexOf('.') !== -1) ||
+    (decimalScale && fixedDecimalScale) ||
+    (minDecimalScale && minDecimalScale !== 0);
 
   let { beforeDecimal, afterDecimal, addNegation } = splitDecimal(numStr, allowNegative); // eslint-disable-line prefer-const
 
   //apply decimal precision if its defined
-  if (decimalScale !== undefined) {
-    afterDecimal = limitToScale(afterDecimal, decimalScale, !!fixedDecimalScale);
+  if (decimalScale !== undefined || minDecimalScale !== undefined) {
+    afterDecimal = limitToScale(afterDecimal, decimalScale, minDecimalScale, !!fixedDecimalScale);
   }
 
   if (thousandSeparator) {
@@ -333,6 +336,7 @@ export function useNumericFormat<BaseType = InputAttributes>(
     onBlur = noop,
     thousandSeparator,
     decimalScale,
+    minDecimalScale,
     fixedDecimalScale,
     prefix = '',
     defaultValue,
@@ -367,7 +371,7 @@ export function useNumericFormat<BaseType = InputAttributes>(
      * we don't need to do it for onChange events, as we want to prevent typing there
      */
     if (_valueIsNumericString && typeof decimalScale === 'number') {
-      return roundToPrecision(value, decimalScale, Boolean(fixedDecimalScale));
+      return roundToPrecision(value, decimalScale, minDecimalScale, Boolean(fixedDecimalScale));
     }
 
     return value;
@@ -449,8 +453,8 @@ export function useNumericFormat<BaseType = InputAttributes>(
     }
 
     // apply fixedDecimalScale on blur event
-    if (fixedDecimalScale && decimalScale) {
-      _value = roundToPrecision(_value, decimalScale, fixedDecimalScale);
+    if ((fixedDecimalScale && decimalScale) || minDecimalScale) {
+      _value = roundToPrecision(_value, decimalScale, minDecimalScale, fixedDecimalScale);
     }
 
     if (_value !== numAsString) {
