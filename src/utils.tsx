@@ -423,46 +423,55 @@ export function useInternalValues(
 ): [{ formattedValue: string; numAsString: string }, OnValueChange] {
   type Values = { formattedValue: string; numAsString: string };
 
-  const propValues = useRef<Values>();
+  const getValues = usePersistentCallback(
+    (value: string | number | null | undefined, valueIsNumericString: boolean) => {
+      let formattedValue, numAsString;
+      if (isNil(value) || isNanValue(value)) {
+        numAsString = '';
+        formattedValue = '';
+      } else if (typeof value === 'number' || valueIsNumericString) {
+        numAsString = typeof value === 'number' ? toNumericString(value) : value;
+        formattedValue = format(numAsString);
+      } else {
+        numAsString = removeFormatting(value, undefined);
+        formattedValue = value;
+      }
 
-  const getValues = usePersistentCallback((value: string | number | null | undefined) => {
-    let formattedValue, numAsString;
-    if (isNil(value) || isNanValue(value)) {
-      numAsString = '';
-      formattedValue = '';
-    } else if (typeof value === 'number' || valueIsNumericString) {
-      numAsString = typeof value === 'number' ? toNumericString(value) : value;
-      formattedValue = format(numAsString);
-    } else {
-      numAsString = removeFormatting(value, undefined);
-      formattedValue = value;
-    }
-
-    return { formattedValue, numAsString };
-  });
+      return { formattedValue, numAsString };
+    },
+  );
 
   const [values, setValues] = useState<Values>(() => {
-    return getValues(defaultValue);
+    return getValues(isNil(value) ? defaultValue : value, valueIsNumericString);
   });
+  const lastPropBasedValue = useRef<Values>(values);
 
-  const _onValueChange: typeof onValueChange = (values, sourceInfo) => {
-    setValues({
-      formattedValue: values.formattedValue,
-      numAsString: values.value,
-    });
+  const _onValueChange: typeof onValueChange = (newValues, sourceInfo) => {
+    if (newValues.formattedValue !== values.formattedValue) {
+      setValues({
+        formattedValue: newValues.formattedValue,
+        numAsString: newValues.value,
+      });
+    }
 
-    onValueChange(values, sourceInfo);
+    // call parent on value change if only if formatted value is changed
+    onValueChange(newValues, sourceInfo);
   };
 
-  useMemo(() => {
-    //if element is moved to uncontrolled mode, don't reset the value
-    if (!isNil(value)) {
-      propValues.current = getValues(value);
-      setValues(propValues.current);
-    } else {
-      propValues.current = undefined;
-    }
-  }, [value, getValues]);
+  // if value is switch from controlled to uncontrolled, use the internal state's value to format with new props
+  let _value = value;
+  let _valueIsNumericString = valueIsNumericString;
+  if (isNil(value)) {
+    _value = values.numAsString;
+    _valueIsNumericString = true;
+  }
+
+  const newValues = getValues(_value, _valueIsNumericString);
+
+  if (newValues.formattedValue !== lastPropBasedValue.current.formattedValue) {
+    lastPropBasedValue.current = newValues;
+    setValues(newValues);
+  }
 
   return [values, _onValueChange];
 }
