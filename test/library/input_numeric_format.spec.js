@@ -687,6 +687,13 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(wrapper.find('input').prop('value')).toEqual('0.00000001');
   });
 
+  it('should handle formatting correctly when valueIsNumericString is set to false and float value is provided, #741', async () => {
+    const { input } = await render(
+      <NumericFormat value={12345} valueIsNumericString={false} thousandSeparator={true} />,
+    );
+    expect(input.value).toEqual('12,345');
+  });
+
   describe('should allow typing number if prefix or suffix is just an number #691', () => {
     it('when prefix is number', async () => {
       const { input } = await render(<NumericFormat prefix="1" />);
