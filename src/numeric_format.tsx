@@ -10,10 +10,10 @@ import {
   useInternalValues,
   isNil,
   roundToPrecision,
-  isNanValue,
   setCaretPosition,
   toNumericString,
   charIsNumber,
+  isNotValidValue,
 } from './utils';
 import {
   NumericFormatProps,
@@ -116,6 +116,19 @@ function handleNegation(value: string = '', allowNegative: boolean) {
 
 function getNumberRegex(decimalSeparator: string, global: boolean) {
   return new RegExp(`(^-)|[0-9]|${escapeRegExp(decimalSeparator)}`, global ? 'g' : undefined);
+}
+
+function isNumericString(
+  val: string | number | undefined | null,
+  prefix?: string,
+  suffix?: string,
+) {
+  // for empty value we can always treat it as numeric string
+  if (val === '') return true;
+
+  return (
+    !prefix?.match(/\d/) && !suffix?.match(/\d/) && typeof val === 'string' && !isNaN(Number(val))
+  );
 }
 
 export function removeFormatting<BaseType = InputAttributes>(
@@ -347,7 +360,10 @@ export function useNumericFormat<BaseType = InputAttributes>(
   const _removeFormatting: RemoveFormattingFunction = (inputValue, changeMeta) =>
     removeFormatting(inputValue, changeMeta, props);
 
-  let _valueIsNumericString = valueIsNumericString;
+  const _value = isNil(value) ? defaultValue : value;
+
+  // try to figure out isValueNumericString based on format prop and value
+  let _valueIsNumericString = valueIsNumericString ?? isNumericString(_value, prefix, suffix);
 
   if (!isNil(value)) {
     _valueIsNumericString = valueIsNumericString ?? typeof value === 'number';
@@ -356,7 +372,7 @@ export function useNumericFormat<BaseType = InputAttributes>(
   }
 
   const roundIncomingValueToPrecision = (value: string | number | null | undefined) => {
-    if (isNil(value) || isNanValue(value)) return value;
+    if (isNotValidValue(value)) return value;
 
     if (typeof value === 'number') {
       value = toNumericString(value);

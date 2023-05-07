@@ -463,15 +463,29 @@ describe('NumberFormat as input', () => {
     expect(getInputValue(wrapper)).toEqual('1.2');
   });
 
-  it('should call onValueChange in change caused by prop change', () => {
+  it('should call onValueChange in change caused by prop change', async (done) => {
     const spy = jasmine.createSpy();
-    const wrapper = mount(<NumericFormat value="1234" onValueChange={spy} />);
-    wrapper.setProps({ thousandSeparator: true });
+    const { rerender } = await render(
+      <NumericFormat value="1234" valueIsNumericString onValueChange={spy} />,
+    );
+    await rerender(
+      <NumericFormat
+        value="1234"
+        valueIsNumericString
+        thousandSeparator={true}
+        onValueChange={spy}
+      />,
+    );
+
+    await wait(100);
+
     expect(spy.calls.argsFor(0)[0]).toEqual({
       formattedValue: '1,234',
       value: '1234',
       floatValue: 1234,
     });
+
+    done();
   });
 
   it('should call onValueChange with the right source information', () => {
