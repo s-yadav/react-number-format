@@ -38,6 +38,7 @@ function NumberFormatBaseTest() {
         size="small"
         style={{ color: '#222' }}
       />
+      <NumberFormatBase defaultValue="123" format={(value) => value} />
     </>
   );
 }
