@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { renderHook } from '@testing-library/react-hooks/dom';
 
 import TextField from 'material-ui/TextField';
@@ -525,6 +525,22 @@ describe('NumberFormat as input', () => {
       expect(spy).toHaveBeenCalled();
       done();
     }, 0);
+  });
+
+  it('should not reset the selection when manually focused on mount', async () => {
+    function Test() {
+      const localInputRef = useRef();
+      useEffect(() => {
+        // eslint-disable-next-line no-unused-expressions
+        localInputRef.current?.select();
+      }, []);
+
+      return <NumericFormat getInputRef={(elm) => (localInputRef.current = elm)} value="12345" />;
+    }
+
+    const { input } = await render(<Test />);
+    expect(input.selectionStart).toEqual(0);
+    expect(input.selectionEnd).toEqual(5);
   });
 
   it('should not call onFocus prop when focused then blurred in the same event loop', (done) => {
