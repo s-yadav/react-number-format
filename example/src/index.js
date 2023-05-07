@@ -7,43 +7,6 @@ import NumberFormatBase from '../../src/number_format_base';
 import TextField from 'material-ui/TextField';
 import { cardExpiry } from '../../custom_formatters/card_expiry';
 
-export default function Test() {
-  const localInputRef = React.useRef();
-  // Simulates both eager typing and waiting for an arbitratry amount of time
-  React.useEffect(() => {
-    // If we call select too early, the `NumericFormat`'s
-    // `setPatchedCaretPosition` function will reset the selection. To avoid
-    // this, we need to wait for 3 task cycles (empirically determined)
-    // before calling it.
-    //
-    // cf. https://github.com/s-yadav/react-number-format/blob/3443f1adf3a904c19a9fca1183cf3af08a0bf714/src/number_format_base.tsx#L127-L133
-    console.log('inside Test', localInputRef.current);
-    localInputRef.current?.select();
-    console.log(
-      '--------',
-      localInputRef.current?.selectionStart,
-      localInputRef.current?.selectionEnd,
-    );
-  }, []);
-
-  return (
-    <div>
-      <label>
-        <div>NumericFormat</div>
-        <NumericFormat
-          value="12345"
-          getInputRef={(elm) => (localInputRef.current = elm)}
-          suffix="$"
-        />
-      </label>
-      <label>
-        <div>Native input</div>
-        <input value="12345" />
-      </label>
-    </div>
-  );
-}
-
 class App extends React.Component {
   constructor() {
     super();
@@ -57,8 +20,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Test />
-        {/* <div className="example">
+        <div className="example">
           <h3>Prefix and thousand separator : Format currency as text</h3>
           <NumericFormat value={2456981} displayType="text" thousandSeparator={true} prefix="$" />
         </div>
@@ -191,7 +153,7 @@ class App extends React.Component {
         <div className="example">
           <h3>Custom Numeral: add support for custom languages </h3>
           <NumericFormat customNumerals={['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']} />
-        </div> */}
+        </div>
       </div>
     );
   }

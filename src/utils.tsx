@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { NumberFormatBaseProps, FormatInputValueFunction, OnValueChange } from './types';
 
 // basic noop function
@@ -17,6 +17,10 @@ export function isNil(val: any): val is null | undefined {
 
 export function isNanValue(val: string | number) {
   return typeof val === 'number' && isNaN(val);
+}
+
+export function isNotValidValue(val: string | number | null | undefined) {
+  return isNil(val) || isNanValue(val) || (typeof val === 'number' && !isFinite(val));
 }
 
 export function escapeRegExp(str: string) {
@@ -426,7 +430,7 @@ export function useInternalValues(
   const getValues = usePersistentCallback(
     (value: string | number | null | undefined, valueIsNumericString: boolean) => {
       let formattedValue, numAsString;
-      if (isNil(value) || isNanValue(value)) {
+      if (isNotValidValue(value)) {
         numAsString = '';
         formattedValue = '';
       } else if (typeof value === 'number' || valueIsNumericString) {

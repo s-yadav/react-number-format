@@ -5,6 +5,7 @@ import {
   getCaretPosInBoundary,
   getDefaultChangeMeta,
   getMaskAtIndex,
+  isNil,
   noop,
   setCaretPosition,
 } from './utils';
@@ -158,6 +159,13 @@ function validateProps<BaseType = InputAttributes>(props: PatternFormatProps<Bas
   }
 }
 
+function isNumericString(val: string | number | null | undefined, format: string) {
+  //we can treat empty string as numeric string
+  if (val === '') return true;
+
+  return !format?.match(/\d/) && typeof val === 'string' && (!!val.match(/^\d+$/) || val === '');
+}
+
 export function usePatternFormat<BaseType = InputAttributes>(
   props: PatternFormatProps<BaseType>,
 ): NumberFormatBaseProps<BaseType> {
@@ -170,6 +178,9 @@ export function usePatternFormat<BaseType = InputAttributes>(
     inputMode = 'numeric',
     onKeyDown = noop,
     patternChar = '#',
+    value,
+    defaultValue,
+    valueIsNumericString,
     ...restProps
   } = props;
 
@@ -229,12 +240,21 @@ export function usePatternFormat<BaseType = InputAttributes>(
     onKeyDown(e);
   };
 
+  // try to figure out isValueNumericString based on format prop and value
+  const _value = isNil(value) ? defaultValue : value;
+  const isValueNumericString = valueIsNumericString ?? isNumericString(_value, formatProp);
+
+  const _props = { ...props, valueIsNumericString: isValueNumericString };
+
   return {
     ...(restProps as NumberFormatBaseProps<BaseType>),
+    value,
+    defaultValue,
+    valueIsNumericString: isValueNumericString,
     inputMode,
-    format: (numStr: string) => format(numStr, props),
+    format: (numStr: string) => format(numStr, _props),
     removeFormatting: (inputValue: string, changeMeta: ChangeMeta) =>
-      removeFormatting(inputValue, changeMeta, props),
+      removeFormatting(inputValue, changeMeta, _props),
     getCaretBoundary: _getCaretBoundary,
     onKeyDown: _onKeyDown,
   };

@@ -512,7 +512,7 @@ describe('Test keypress and caret position changes', () => {
       expect(onFocus).toHaveBeenCalledTimes(0);
     });
 
-    it('should correct wrong caret positon on focus when allowEmptyFormatting is set', () => {
+    it('should correct wrong caret position on focus when allowEmptyFormatting is set', () => {
       jasmine.clock().install();
       const wrapper = mount(
         <PatternFormat

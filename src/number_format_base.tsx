@@ -62,10 +62,10 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     onValueChange,
   );
 
-  const lastUpdatedValue = useRef<string>(formattedValue);
+  const lastUpdatedValue = useRef({ formattedValue, numAsString });
 
   const _onValueChange: NumberFormatBaseProps['onValueChange'] = (values, source) => {
-    lastUpdatedValue.current = values.formattedValue;
+    lastUpdatedValue.current = { formattedValue: values.formattedValue, numAsString: values.value };
     onFormattedValueChange(values, source);
   };
 
@@ -115,7 +115,6 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     setCaretPosition(el, caretPos);
 
     timeout.current.setCaretTimeout = setTimeout(() => {
-      console.log('inside patched caret position');
       if (el.value === currentValue && el.selectionStart !== el.selectionEnd) {
         setCaretPosition(el, caretPos);
       }
@@ -204,22 +203,30 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     }
   };
 
-  console.log('formatted value-------', formattedValue, numAsString);
-
-  // if the formatted value is not synced to parent, or if the formatted value is different from last synced value sync it
+  /**
+   * if the formatted value is not synced to parent, or if the formatted value is different from last synced value sync it
+   * we also don't need to sync to the parent if no formatting is applied
+   * if the formatting props is removed, in which case last formatted value will be different from the numeric string value
+   * in such case we need to inform the parent.
+   */
   useEffect(() => {
-    if (formattedValue !== lastUpdatedValue.current) {
+    const { formattedValue: lastFormattedValue, numAsString: lastNumAsString } =
+      lastUpdatedValue.current;
+    if (
+      formattedValue !== lastFormattedValue &&
+      (formattedValue !== numAsString || lastFormattedValue !== lastNumAsString)
+    ) {
       _onValueChange(getValueObject(formattedValue, numAsString), {
         event: undefined,
         source: SourceType.props,
       });
     }
-  }, [formattedValue]);
+  }, [formattedValue, numAsString]);
 
   // also if formatted value is changed from the props, we need to update the caret position
   useLayoutEffect(() => {
     const input = focusedElm.current;
-    if (formattedValue !== lastUpdatedValue.current && input) {
+    if (formattedValue !== lastUpdatedValue.current.formattedValue && input) {
       updateValueAndCaretPosition({
         formattedValue: formattedValue,
         numAsString: numAsString,
@@ -256,6 +263,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       const currentCaretPosition = geInputCaretPosition(input);
 
       const caretPos = getNewCaretPosition(inputValue, formattedValue, currentCaretPosition);
+      input.value = formattedValue;
       setPatchedCaretPosition(input, caretPos, formattedValue);
       return false;
     }
@@ -360,11 +368,8 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     const el = e.target;
     focusedElm.current = el;
 
-    console.log('onFocus', el.selectionStart, el.selectionEnd);
-
     timeout.current.focusTimeout = setTimeout(() => {
       const { selectionStart, selectionEnd, value = '' } = el;
-      console.log('onFocusTimeout', el.selectionStart, el.selectionEnd);
 
       const caretPosition = correctCaretPosition(value, selectionStart as number);
 
