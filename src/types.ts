@@ -62,8 +62,8 @@ type NumberFormatBase = {
   displayType?: 'input' | 'text';
   inputMode?: InputAttributes['inputMode'];
   renderText?: (formattedValue: string, otherProps: Partial<NumberFormatBase>) => React.ReactNode;
-  format: FormatInputValueFunction;
-  removeFormatting: RemoveFormattingFunction;
+  format?: FormatInputValueFunction;
+  removeFormatting?: RemoveFormattingFunction;
   getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any>;
   value?: number | string | null;
   defaultValue?: number | string | null;
@@ -75,7 +75,7 @@ type NumberFormatBase = {
   onChange?: InputAttributes['onChange'];
   onFocus?: InputAttributes['onFocus'];
   onBlur?: InputAttributes['onBlur'];
-  getCaretBoundary: (formattedValue: string) => boolean[];
+  getCaretBoundary?: (formattedValue: string) => boolean[];
   isValidInputCharacter?: (character: string) => boolean;
 };
 
