@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import NumericFormat from '../../src/numeric_format';
 import PatternFormat from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
@@ -104,6 +104,32 @@ describe('Test keypress and caret position changes', () => {
 
     simulateNativeKeyInput(input, '.', 2, 2);
     expect(input.selectionStart).toEqual(3);
+  });
+
+  it('should not break the cursor position when format prop is updated', async () => {
+    const Test = () => {
+      const [val, setValue] = useState();
+      return (
+        <NumericFormat
+          thousandSeparator=" "
+          decimalScale={2}
+          placeholder="0,00"
+          fixedDecimalScale
+          thousandsGroupStyle="thousand"
+          decimalSeparator=","
+          value={val}
+          onValueChange={(v) => {
+            setValue(v.floatValue);
+          }}
+          prefix={val > 0 ? '+' : undefined}
+        />
+      );
+    };
+
+    const { input } = await render(<Test />);
+    simulateNativeKeyInput(input, '1', 0, 0);
+    expect(input.value).toEqual('+1,00');
+    expect(input.selectionStart).toEqual(2);
   });
 
   describe('Test character insertion', () => {
