@@ -224,17 +224,25 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
   }, [formattedValue, numAsString]);
 
   // also if formatted value is changed from the props, we need to update the caret position
+  // keep the last caret position if element is focused
+  const currentCaretPosition = focusedElm.current
+    ? geInputCaretPosition(focusedElm.current)
+    : undefined;
+
   useLayoutEffect(() => {
     const input = focusedElm.current;
     if (formattedValue !== lastUpdatedValue.current.formattedValue && input) {
-      updateValueAndCaretPosition({
-        formattedValue: formattedValue,
-        numAsString: numAsString,
-        input,
-        setCaretPosition: true,
-        source: SourceType.props,
-        event: undefined,
-      });
+      const caretPos = getNewCaretPosition(
+        lastUpdatedValue.current.formattedValue,
+        formattedValue,
+        currentCaretPosition,
+      );
+      /**
+       * set the value imperatively, as we set the caret position as well imperatively.
+       * This is to keep value and caret position in sync
+       */
+      input.value = formattedValue;
+      setPatchedCaretPosition(input, caretPos, formattedValue);
     }
   }, [formattedValue]);
 
