@@ -34,7 +34,7 @@ describe('Test keypress and caret position changes', () => {
     cleanup();
   });
 
-  it('should maintain caret position if suffix/prefix is updated while typing #249', () => {
+  it('should maintain caret position if suffix/prefix is updated while typing #249', async () => {
     class TestComp extends React.Component {
       constructor() {
         super();
@@ -58,15 +58,15 @@ describe('Test keypress and caret position changes', () => {
       }
     }
 
-    const wrapper = mount(<TestComp />);
-    simulateFocusEvent(wrapper.find('input'), 0, 0, setSelectionRange);
-    simulateKeyInput(wrapper.find('input'), '4', 2, 2, setSelectionRange);
-    expect(ReactDOM.findDOMNode(wrapper.instance()).value).toEqual('$$1423');
-    expect(caretPos).toEqual(4);
+    const { input } = await render(<TestComp />);
+    simulateNativeKeyInput(input, '4', 2, 2);
+    expect(input.value).toEqual('$$1423');
+    expect(input.selectionStart).toEqual(4);
 
-    simulateKeyInput(wrapper.find('input'), 'Backspace', 4, 4, setSelectionRange);
-    expect(ReactDOM.findDOMNode(wrapper.instance()).value).toEqual('$123');
-    expect(caretPos).toEqual(2);
+    simulateNativeKeyInput(input, '{backspace}', 4, 4);
+
+    expect(input.value).toEqual('$123');
+    expect(input.selectionStart).toEqual(2);
   });
 
   it('should maintain caret position when isAllowed returns false', async () => {
