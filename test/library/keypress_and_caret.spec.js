@@ -2,19 +2,17 @@ import React, { useState } from 'react';
 import NumericFormat from '../../src/numeric_format';
 import PatternFormat from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
-import ReactDOM from 'react-dom';
-import { cleanup } from '@testing-library/react';
+import { cleanup, fireEvent } from '@testing-library/react';
 
 import {
-  simulateKeyInput,
-  simulateMousUpEvent,
   simulateFocusEvent,
   mount,
   persist,
-  getInputValue,
   render,
   simulateNativeKeyInput,
   wait,
+  simulatePaste,
+  simulateNativeMouseUpEvent,
 } from '../test_util';
 import { cardExpiry } from '../../custom_formatters/card_expiry';
 
@@ -133,90 +131,84 @@ describe('Test keypress and caret position changes', () => {
   });
 
   describe('Test character insertion', () => {
-    it('should add any number properly when input is empty without format prop passed', () => {
-      const wrapper = mount(<NumericFormat thousandSeparator={true} prefix={'$'} />);
+    it('should add any number properly when input is empty without format prop passed', async () => {
+      const { input } = await render(<NumericFormat thousandSeparator={true} prefix={'$'} />);
 
-      simulateKeyInput(wrapper.find('input'), '1', 0);
+      simulateNativeKeyInput(input, '1', 0, 0);
+      expect(input.value).toEqual('$1');
 
-      expect(getInputValue(wrapper)).toEqual('$1');
+      input.value = '';
 
-      wrapper.setProps({ value: '' });
-      wrapper.update();
-
-      simulateKeyInput(wrapper.find('input'), '2456789', 0);
-
-      expect(getInputValue(wrapper)).toEqual('$2,456,789');
+      simulateNativeKeyInput(input, '2456789', 0, 0);
+      expect(input.value).toEqual('$2,456,789');
     });
 
-    it('should add any number properly when input is empty with format prop passed', () => {
+    it('should add any number properly when input is empty with format prop passed', async () => {
       //case 1: Enter first number
-      const wrapper = mount(<PatternFormat format="#### #### #### ####" mask="_" />);
-      simulateKeyInput(wrapper.find('input'), '1', 0);
-      expect(getInputValue(wrapper)).toEqual('1___ ____ ____ ____');
+      const { input, rerender } = await render(
+        <PatternFormat format="#### #### #### ####" mask="_" />,
+      );
+      simulateNativeKeyInput(input, '1', 0, 0);
+      expect(input.value).toEqual('1___ ____ ____ ____');
 
       //case 2: if nun numeric character got added
-      wrapper.setProps({ value: '' });
-      wrapper.update();
-      simulateKeyInput(wrapper.find('input'), 'b', 0);
-      expect(getInputValue(wrapper)).toEqual('');
+      input.value = '';
+      simulateNativeKeyInput(input, 'b', 0, 0);
+      expect(input.value).toEqual('');
 
       //case 3: Enter first multiple number
-      wrapper.setProps({ value: undefined });
-      wrapper.setProps({ value: '' });
-      wrapper.update();
-      simulateKeyInput(wrapper.find('input'), '2456789', 0);
-      expect(getInputValue(wrapper)).toEqual('2456 789_ ____ ____');
+      input.value = '';
+      simulatePaste(input, '2456789', 0, 0);
+      expect(input.value).toEqual('2456 789_ ____ ____');
 
       //case 4: When alpha numeric character got added
-      wrapper.setProps({ value: undefined });
-      wrapper.setProps({ value: '' });
-      wrapper.update();
-      simulateKeyInput(wrapper.find('input'), '245sf6789', 0);
-      expect(getInputValue(wrapper)).toEqual('2456 789_ ____ ____');
+      input.value = '';
+      simulatePaste(input, '245sf6789', 0, 0);
+      expect(input.value).toEqual('2456 789_ ____ ____');
 
       //case 5: Similiar to case 4 but a formatted value got added
-      wrapper.setProps({ value: undefined });
-      wrapper.setProps({ value: '' });
-      wrapper.update();
-      simulateKeyInput(wrapper.find('input'), '1234 56', 0);
-      expect(getInputValue(wrapper)).toEqual('1234 56__ ____ ____');
+      input.value = '';
+      simulatePaste(input, '1234 56', 0, 0);
+      expect(input.value).toEqual('1234 56__ ____ ____');
 
       //case 6: If format has numbers
-      wrapper.setProps({ value: undefined });
-      wrapper.setProps({ value: '', format: '+1 (###) ### # ##' });
-      wrapper.update();
-      simulateKeyInput(wrapper.find('input'), '123456', 0);
-      expect(getInputValue(wrapper)).toEqual('+1 (123) 456 _ __');
+      rerender(<PatternFormat format="+1 (###) ### # ##" mask="_" value={''} />);
+      simulatePaste(input, '123456', 0, 0);
+      expect(input.value).toEqual('+1 (123) 456 _ __');
 
       //case 7: If format has numbers and and formatted value is inserted
-      wrapper.setProps({ value: undefined });
-      wrapper.setProps({ value: '' });
-      wrapper.update();
-      simulateKeyInput(wrapper.find('input'), '+1 (965) 432 1 19', 0);
-      expect(getInputValue(wrapper)).toEqual('+1 (965) 432 1 19');
+      input.value = '';
+      simulatePaste(input, '+1 (965) 432 1 19', 0, 0);
+      expect(input.value).toEqual('+1 (965) 432 1 19');
     });
 
-    it('should handle addition of characters at a cursor position', () => {
-      let wrapper = mount(<NumericFormat thousandSeparator={true} prefix={'$'} value="$12,345" />);
+    it('should handle addition of characters at a cursor position for numeric format', async () => {
+      const { input } = await render(
+        <NumericFormat thousandSeparator={true} prefix={'$'} value="$12,345" />,
+      );
 
-      simulateKeyInput(wrapper.find('input'), '8', 2, 2, setSelectionRange);
-      expect(getInputValue(wrapper)).toEqual('$182,345');
-      expect(caretPos).toEqual(3);
+      simulateNativeKeyInput(input, '8', 2, 2);
+      expect(input.value).toEqual('$182,345');
+      expect(input.selectionStart).toEqual(3);
 
-      simulateKeyInput(wrapper.find('input'), '67', 3, 3, setSelectionRange);
-      expect(getInputValue(wrapper)).toEqual('$18,672,345');
-      expect(caretPos).toEqual(6);
+      simulateNativeKeyInput(input, '67', 3, 3);
+      expect(input.value).toEqual('$18,672,345');
+      expect(input.selectionStart).toEqual(6);
+    });
 
-      wrapper = mount(<PatternFormat format={'### ### ###'} value="$12,345" />);
-      wrapper.setProps({ format: '### ### ###', value: '123 456 789' });
-      wrapper.update();
-      simulateKeyInput(wrapper.find('input'), '8', 3, 3, setSelectionRange);
-      expect(getInputValue(wrapper)).toEqual('123 845 678');
-      expect(caretPos).toEqual(5);
+    it('should handle addition of characters at a cursor position for patter format', async () => {
+      const { input, rerender } = await render(
+        <PatternFormat format={'### ### ###'} value="$12,345" />,
+      );
 
-      simulateKeyInput(wrapper.find('input'), '999', 4, 4, setSelectionRange);
-      expect(getInputValue(wrapper)).toEqual('123 999 845');
-      expect(caretPos).toEqual(7);
+      rerender(<PatternFormat format={'### ### ###'} value="123 456 789" />);
+      simulateNativeKeyInput(input, '8', 3, 3);
+      expect(input.value).toEqual('123 845 678');
+      expect(input.selectionStart).toEqual(5);
+
+      simulateNativeKeyInput(input, '999', 4, 4);
+      expect(input.value).toEqual('123 999 845');
+      expect(input.selectionStart).toEqual(7);
     });
 
     it('after typing decimal cursor position should go after the . when suffix is provided. #673', async () => {
@@ -403,8 +395,8 @@ describe('Test keypress and caret position changes', () => {
   });
 
   describe('Test arrow keys', () => {
-    it('should keep caret position between the prefix and suffix', () => {
-      const wrapper = mount(
+    it('should keep caret position between the prefix and suffix', async () => {
+      const { input } = await render(
         <NumericFormat
           thousandSeparator=","
           prefix="Rs. "
@@ -412,43 +404,43 @@ describe('Test keypress and caret position changes', () => {
           value="Rs. 12,345.50 /sq.feet"
         />,
       );
-      simulateKeyInput(wrapper.find('input'), 'ArrowLeft', 4, 4, setSelectionRange);
-      expect(caretPos).toEqual(4);
+      simulateNativeKeyInput(input, '{arrowleft}', 4, 4);
+      expect(input.selectionStart).toEqual(4);
 
-      simulateKeyInput(wrapper.find('input'), 'ArrowRight', 13, 13, setSelectionRange);
-      expect(caretPos).toEqual(13);
+      simulateNativeKeyInput(input, '{arrowright}', 13, 13);
+      expect(input.selectionStart).toEqual(13);
     });
 
-    it('should keep caret position within typable area', () => {
-      const wrapper = mount(
+    it('should keep caret position within typable area', async () => {
+      const { input } = await render(
         <PatternFormat format="+1 (###) ### # ## US" value="+1 (123) 456 7 89 US" />,
       );
-      simulateKeyInput(wrapper.find('input'), 'ArrowLeft', 4, 4, setSelectionRange);
-      expect(caretPos).toEqual(4);
+      simulateNativeKeyInput(input, '{arrowleft}', 4, 4);
+      expect(input.selectionStart).toEqual(4);
 
-      simulateKeyInput(wrapper.find('input'), 'ArrowRight', 17, 17, setSelectionRange);
-      expect(caretPos).toEqual(17);
+      simulateNativeKeyInput(input, '{arrowright}', 17, 17);
+      expect(input.selectionStart).toEqual(17);
 
-      simulateKeyInput(wrapper.find('input'), 'ArrowRight', 7, 7, setSelectionRange);
-      expect(caretPos).toEqual(9);
+      simulateNativeKeyInput(input, '{arrowright}', 7, 7);
+      expect(input.selectionStart).toEqual(9);
 
-      simulateKeyInput(wrapper.find('input'), 'ArrowLeft', 9, 9, setSelectionRange);
-      expect(caretPos).toEqual(7);
+      simulateNativeKeyInput(input, '{arrowleft}', 9, 9);
+      expect(input.selectionStart).toEqual(7);
 
-      caretPos = undefined;
-      simulateKeyInput(wrapper.find('input'), 'ArrowRight', 12, 12, setSelectionRange);
-      expect(caretPos).toEqual(13);
+      simulateNativeKeyInput(input, '{arrowright}', 12, 12);
+      expect(input.selectionStart).toEqual(13);
 
-      caretPos = undefined;
-      simulateKeyInput(wrapper.find('input'), 'ArrowLeft', 13, 13, setSelectionRange);
-      expect(caretPos).toEqual(12);
+      simulateNativeKeyInput(input, '{arrowleft}', 13, 13);
+      expect(input.selectionStart).toEqual(12);
     });
 
-    it('should not move caret positon from left most to right most if left key pressed. #154', () => {
-      const wrapper = mount(<NumberFormatBase format={cardExpiry} value="11/11" />);
-      caretPos = undefined;
-      simulateKeyInput(wrapper.find('input'), 'ArrowLeft', 0, 0, setSelectionRange);
-      expect(caretPos).toEqual(0);
+    it('should not move caret positon from left most to right most if left key pressed. #154', async () => {
+      const { input } = await render(<NumberFormatBase format={cardExpiry} value="11/11" />);
+
+      input.setSelectionRange(0, 0);
+      fireEvent.keyDown(input, { key: 'ArrowLeft' });
+
+      expect(input.selectionStart).toEqual(0);
     });
   });
 
@@ -457,42 +449,41 @@ describe('Test keypress and caret position changes', () => {
       jasmine.clock().uninstall();
     });
 
-    it('should always keep caret on typable area when we click on the input', () => {
-      const wrapper = mount(
+    it('should always keep caret on typable area when we click on the input', async () => {
+      const { input } = await render(
         <PatternFormat format="+1 (###) ### # ## US" value="+1 (123) 456 7 89 US" />,
       );
 
-      simulateMousUpEvent(wrapper.find('input'), 0, setSelectionRange);
-      expect(caretPos).toEqual(4);
+      simulateNativeMouseUpEvent(input, 0);
+      expect(input.selectionStart).toEqual(4);
 
-      simulateMousUpEvent(wrapper.find('input'), 8, setSelectionRange);
-      expect([7, 9]).toContain(caretPos);
+      simulateNativeMouseUpEvent(input, 8);
+      expect(input.selectionStart).toEqual(9);
 
-      simulateMousUpEvent(wrapper.find('input'), 19, setSelectionRange);
-      expect(caretPos).toEqual(17);
+      simulateNativeMouseUpEvent(input, 19);
+      expect(input.selectionStart).toEqual(17);
     });
 
-    it('should limit the caret position to the next position of the typed number', () => {
-      const wrapper = mount(<PatternFormat format="##/##/####" />);
+    it('should limit the caret position to the next position of the typed number', async () => {
+      const { input, rerender } = await render(<PatternFormat format="##/##/####" />);
 
-      simulateKeyInput(wrapper.find('input'), '1', 0);
-      expect(getInputValue(wrapper)).toEqual('1 /  /    ');
+      simulateNativeKeyInput(input, '1', 0, 0);
+      expect(input.value).toEqual('1 /  /    ');
 
-      simulateMousUpEvent(wrapper.find('input'), 4, setSelectionRange);
-      expect(caretPos).toEqual(1);
+      simulateNativeMouseUpEvent(input, 4);
+      expect(input.selectionStart).toEqual(1);
 
-      wrapper.setProps({
-        mask: ['D', 'D', 'M', 'M', 'Y', 'Y', 'Y', 'Y'],
-      });
-      wrapper.update();
+      rerender(
+        <PatternFormat format="##/##/####" mask={['D', 'D', 'M', 'M', 'Y', 'Y', 'Y', 'Y']} />,
+      );
 
-      expect(getInputValue(wrapper)).toEqual('1D/MM/YYYY');
-      simulateMousUpEvent(wrapper.find('input'), 4, setSelectionRange);
-      expect(caretPos).toEqual(1);
+      expect(input.value).toEqual('1D/MM/YYYY');
+      simulateNativeMouseUpEvent(input, 4);
+      expect(input.selectionStart).toEqual(1);
     });
 
-    it('should always keep caret position between suffix and prefix', () => {
-      const wrapper = mount(
+    it('should always keep caret position between suffix and prefix', async () => {
+      const { input } = await render(
         <NumericFormat
           thousandSeparator=","
           prefix="Rs. "
@@ -501,11 +492,11 @@ describe('Test keypress and caret position changes', () => {
         />,
       );
 
-      simulateMousUpEvent(wrapper.find('input'), 0, setSelectionRange);
-      expect(caretPos).toEqual(4);
+      simulateNativeMouseUpEvent(input, 0);
+      expect(input.selectionStart).toEqual(4);
 
-      simulateMousUpEvent(wrapper.find('input'), 17, setSelectionRange);
-      expect(caretPos).toEqual(13);
+      simulateNativeMouseUpEvent(input, 17);
+      expect(input.selectionStart).toEqual(13);
     });
 
     it('should correct wrong caret position on focus', () => {
