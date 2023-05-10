@@ -326,6 +326,10 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     if (key === 'ArrowLeft' || key === 'ArrowRight') {
       const direction = key === 'ArrowLeft' ? 'left' : 'right';
       newCaretPosition = correctCaretPosition(value, expectedCaretPosition, direction);
+      // arrow left or right only moves the caret, so no need to handle the event, if we are handling it manually
+      if (newCaretPosition !== expectedCaretPosition) {
+        e.preventDefault();
+      }
     } else if (key === 'Delete' && !isValidInputCharacter(value[expectedCaretPosition])) {
       // in case of delete go to closest caret boundary on the right side
       newCaretPosition = correctCaretPosition(value, expectedCaretPosition, 'right');
