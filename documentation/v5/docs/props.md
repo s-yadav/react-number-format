@@ -160,18 +160,14 @@ const MAX_LIMIT = 1000;
 
 **default**: false
 
-If value is passed as string representation of numbers (unformatted) then this should be passed as `true`.
+If value is passed as string representation of numbers (unformatted) and number is used in any format props like in prefix or suffix in numeric format and format prop in pattern format then this should be passed as `true`.
+
+**Note**: Prior to 5.2.0 its was always required to be passed as true when value is passed as string representation of numbers (unformatted).
 
 ```js
-import { NumericFormat } from 'react-number-format';
+import { PatternFormat } from 'react-number-format';
 
-<NumericFormat
-  type="text"
-  value="123456789"
-  valueIsNumericString={true}
-  decimalSeparator=","
-  displayType="input"
-/>;
+<PatternFormat format="+1 (###) ###-####" value="123456789" valueIsNumericString={true} />;
 ```
 
 <details>
@@ -194,7 +190,7 @@ import { NumericFormat } from 'react-number-format';
 This handler provides access to any values changes in the input field and is triggered only when a prop changes or the user input changes. It provides two arguments namely the [valueObject](quirks#values-object) as the first and the [sourceInfo](quirks#sourceInfo) as the second. The [valueObject](quirks#values-object) parameter contains the `formattedValue`, `value` and the `floatValue` of the given input field. The [sourceInfo](quirks#sourceInfo) contains the `event` Object and a `source` key which indicates whether the triggered change is due to an event or a prop change. This is particularly useful in identify whether the change is user driven or is an uncontrolled change due to any prop value being updated.
 
 :::info
-If you are using `values.value` which is non formatted value as numeric string. Make sure to pass valueIsNumericString to be true.
+If you are using `values.value` which is non formatted value as numeric string. Make sure to pass valueIsNumericString to be true if any of the format prop as number on it. See [valueIsNumericString](#valueisnumericstring-boolean) for more details.
 :::
 
 ```js
