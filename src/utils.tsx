@@ -314,6 +314,15 @@ export function getCaretPosition(
   boundary: boolean[],
   isValidInputCharacter: (char: string) => boolean,
 ) {
+  const changeRange = findChangeRange(curValue, newFormattedValue);
+  const { from, to } = changeRange;
+
+  // if only last typed character is changed in the
+  if (from.end - from.start === 1 && from.end === to.end && to.end === curCaretPos) {
+    // don't do anything
+    return curCaretPos;
+  }
+
   /**
    * if something got inserted on empty value, add the formatted character before the current value,
    * This is to avoid the case where typed character is present on format characters
