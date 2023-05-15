@@ -614,6 +614,16 @@ describe('NumberFormat as input', () => {
     expect(value.innerText).toEqual('1123234512');
   });
 
+  it('should try to correct the value if old formatted value is provided but the format prop changes', async () => {
+    const { input, rerender } = await render(
+      <NumericFormat value="$1,234" prefix="$" thousandSeparator />,
+    );
+    expect(input.value).toEqual('$1,234');
+
+    await rerender(<NumericFormat value="$1,234" prefix="Rs. " thousandSeparator />);
+    expect(input.value).toEqual('Rs. 1,234');
+  });
+
   describe('Test masking', () => {
     it('should allow mask as string', () => {
       const wrapper = mount(<PatternFormat format="#### #### ####" mask="_" />);

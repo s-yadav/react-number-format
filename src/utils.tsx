@@ -447,7 +447,7 @@ export function useInternalValues(
         formattedValue = format(numAsString);
       } else {
         numAsString = removeFormatting(value, undefined);
-        formattedValue = value;
+        formattedValue = format(numAsString);
       }
 
       return { formattedValue, numAsString };
