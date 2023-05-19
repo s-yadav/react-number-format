@@ -229,7 +229,10 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     ? geInputCaretPosition(focusedElm.current)
     : undefined;
 
-  useLayoutEffect(() => {
+  // needed to prevent warning with useLayoutEffect on server
+  const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
+
+  useIsomorphicLayoutEffect(() => {
     const input = focusedElm.current;
     if (formattedValue !== lastUpdatedValue.current.formattedValue && input) {
       const caretPos = getNewCaretPosition(
