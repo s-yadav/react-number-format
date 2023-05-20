@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { NumberFormatBaseProps, FormatInputValueFunction, OnValueChange } from './types';
 
 // basic noop function
@@ -457,7 +457,6 @@ export function useInternalValues(
   const [values, setValues] = useState<Values>(() => {
     return getValues(isNil(value) ? defaultValue : value, valueIsNumericString);
   });
-  const lastPropBasedValue = useRef<Values>(values);
 
   const _onValueChange: typeof onValueChange = (newValues, sourceInfo) => {
     if (newValues.formattedValue !== values.formattedValue) {
@@ -481,10 +480,9 @@ export function useInternalValues(
 
   const newValues = getValues(_value, _valueIsNumericString);
 
-  if (newValues.formattedValue !== lastPropBasedValue.current.formattedValue) {
-    lastPropBasedValue.current = newValues;
+  useMemo(() => {
     setValues(newValues);
-  }
+  }, [newValues.formattedValue]);
 
   return [values, _onValueChange];
 }
