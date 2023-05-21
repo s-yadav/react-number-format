@@ -14,7 +14,7 @@ export default function PropsCustomInput() {
     
     return (
         <>
-            <code>Use `customInput` field to reference any custom text fields.</code>
+            <p>Use <code>customInput</code> field to reference any custom text fields.</p>
             <p>
                 <NumericFormat
                     value={12323}
@@ -23,10 +23,10 @@ export default function PropsCustomInput() {
                     customInput={TextField}
                 />
             </p>
-            <code>
+            <p>
                 You can also pass all the props relevant to the custom text field as
-                props to NumbericFormat
-            </code>
+                props to <code>NumericFormat</code>
+            </p>
             <p>
                 <NumericFormat
                     value={12323}
