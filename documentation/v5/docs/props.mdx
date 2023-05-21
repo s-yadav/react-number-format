@@ -2,6 +2,9 @@
 sidebar_position: 2
 title: Props
 ---
+import PropsCustomInput from '../src/components/Examples/Props/CustomInput'
+import PropsValue from '../src/components/Examples/Props/Value'
+import PropsDefaultValue from '../src/components/Examples/Props/DefaultValue'
 
 # Common Props
 
@@ -17,18 +20,10 @@ import { TextField } from '@mui/material';
 
 <NumericFormat value={12323} customInput={TextField} />;
 ```
+:::note Example
 
-<details>
-  <summary>
-  Demo
-  </summary>
-  <iframe src="https://codesandbox.io/embed/custominput-demo-u3wg9m?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     className="csb"
-     title="customInput-demo"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
-</details>
+<PropsCustomInput />
+:::
 
 ### value `number | string`
 
@@ -46,17 +41,10 @@ import { NumericFormat } from 'react-number-format';
 <NumericFormat value={123} />;
 ```
 
-<details>
-  <summary>
-  Demo
-  </summary>
-  <iframe src="https://codesandbox.io/embed/value-demo-ziuzcp?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-      className='csb'
-      title="value-demo"
-      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>   
-  </details>
+:::note Example
+
+<PropsValue value={123} />
+:::
 
 ### defaultValue `number | string`
 
@@ -70,17 +58,10 @@ import { NumericFormat } from 'react-number-format';
 <NumericFormat defaultValue="12312" />;
 ```
 
-<details>
-  <summary>
-  Demo
-  </summary>
-  <iframe src="https://codesandbox.io/embed/defaultvalue-demo-1qc7fk?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     className='csb'
-     title="defaultValue-demo"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
-</details>
+:::note Example
+
+<PropsDefaultValue />
+:::
 
 ### displayType `text | input`
 
