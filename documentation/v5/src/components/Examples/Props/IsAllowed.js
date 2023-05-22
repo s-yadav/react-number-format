@@ -2,7 +2,7 @@ import React from 'react';
 import { NumericFormat } from 'react-number-format';
 const MAX_LIMIT = 1000;
 
-export default function PropsIsAllowed() {
+export default function IsAllowed() {
     return (
         <>
             <p>Only values less than 1000 are allowed</p>

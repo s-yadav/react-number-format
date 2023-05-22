@@ -1,7 +1,7 @@
 import { NumericFormat } from "react-number-format";
 import React, { useState } from "react";
 
-export default function PropsValue({ value, onChange, ...rest }) {
+export default function Value({ value, onChange, ...rest }) {
     const [internalValue, setInternalValue] = useState(value);
 
     const _onChange = (e) => {

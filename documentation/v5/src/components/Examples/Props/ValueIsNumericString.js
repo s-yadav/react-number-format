@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PatternFormat } from 'react-number-format';
 
-export default function PropValueIsNumericString() {
+export default function ValueIsNumericString() {
     const [val, setVal] = useState("123456789");
 
     return (

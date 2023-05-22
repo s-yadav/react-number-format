@@ -10,7 +10,7 @@ const materialUITextFieldProps = {
     variant: "filled"
 };
 
-export default function PropsCustomInput() {
+export default function CustomInput() {
     
     return (
         <>

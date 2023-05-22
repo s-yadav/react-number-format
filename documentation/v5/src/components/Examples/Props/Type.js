@@ -1,7 +1,7 @@
 import React from 'react';
 import { NumericFormat } from 'react-number-format';
 
-export default function PropsType() {
+export default function Type() {
     return (
         <>
             <div>

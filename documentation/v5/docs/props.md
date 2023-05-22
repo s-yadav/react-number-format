@@ -2,15 +2,15 @@
 sidebar_position: 2
 title: Props
 ---
-import PropsCustomInput from '../src/components/Examples/Props/CustomInput'
-import PropsValue from '../src/components/Examples/Props/Value'
-import PropsDefaultValue from '../src/components/Examples/Props/DefaultValue'
-import PropsDisplayType from '../src/components/Examples/Props/DisplayType'
-import PropsIsAllowed from '../src/components/Examples/Props/IsAllowed'
-import PropValueIsNumericString from '../src/components/Examples/Props/ValueIsNumericString'
-import PropsOnValueChange from '../src/components/Examples/Props/OnValueChange'
-import PropsRenderText from '../src/components/Examples/Props/RenderText'
-import PropsType from '../src/components/Examples/Props/Type'
+import CustomInput from '../src/components/Examples/Props/CustomInput'
+import Value from '../src/components/Examples/Props/Value'
+import DefaultValue from '../src/components/Examples/Props/DefaultValue'
+import DisplayType from '../src/components/Examples/Props/DisplayType'
+import IsAllowed from '../src/components/Examples/Props/IsAllowed'
+import ValueIsNumericString from '../src/components/Examples/Props/ValueIsNumericString'
+import OnValueChange from '../src/components/Examples/Props/OnValueChange'
+import RenderText from '../src/components/Examples/Props/RenderText'
+import Type from '../src/components/Examples/Props/Type'
 
 # Common Props
 
@@ -28,7 +28,7 @@ import { TextField } from '@mui/material';
 ```
 :::note Example
 
-<PropsCustomInput />
+<CustomInput />
 :::
 
 ### value `number | string`
@@ -49,7 +49,7 @@ import { NumericFormat } from 'react-number-format';
 
 :::note Example
 
-<PropsValue value={123} />
+<Value value={123} />
 :::
 
 ### defaultValue `number | string`
@@ -66,7 +66,7 @@ import { NumericFormat } from 'react-number-format';
 
 :::note Example
 
-<PropsDefaultValue />
+<DefaultValue />
 :::
 
 ### displayType `text | input`
@@ -84,7 +84,7 @@ import { NumericFormat } from 'react-number-format';
 
 :::note Example
 
-<PropsDisplayType />
+<DisplayType />
 :::
 
 
@@ -126,7 +126,7 @@ const MAX_LIMIT = 1000;
 
 :::note Example
 
-<PropsIsAllowed />
+<IsAllowed />
 :::
 
 ### valueIsNumericString `boolean`
@@ -173,7 +173,7 @@ import { NumericFormat } from 'react-number-format';
 
 :::note Example
 
-<PropsOnValueChange />
+<OnValueChange />
 :::
 
 ### renderText `(formattedValue, customProps) => React Element`
@@ -196,7 +196,7 @@ import { NumericFormat } from 'react-number-format';
 
 :::note Example
 
-<PropsRenderText />
+<RenderText />
 :::
 
 ### type `string`
@@ -215,7 +215,7 @@ import { NumericFormat } from 'react-number-format';
 
 :::note Example
 
-<PropsType />
+<Type />
 :::
 
 ### Other Props

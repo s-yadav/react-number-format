@@ -1,7 +1,7 @@
 import { NumericFormat } from "react-number-format";
 import React from "react";
 
-export default function PropsDisplayType() {
+export default function DisplayType() {
     return (
         <>
             <p>
