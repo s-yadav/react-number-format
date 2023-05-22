@@ -5,6 +5,12 @@ title: Props
 import PropsCustomInput from '../src/components/Examples/Props/CustomInput'
 import PropsValue from '../src/components/Examples/Props/Value'
 import PropsDefaultValue from '../src/components/Examples/Props/DefaultValue'
+import PropsDisplayType from '../src/components/Examples/Props/DisplayType'
+import PropsIsAllowed from '../src/components/Examples/Props/IsAllowed'
+import PropValueIsNumericString from '../src/components/Examples/Props/ValueIsNumericString'
+import PropsOnValueChange from '../src/components/Examples/Props/OnValueChange'
+import PropsRenderText from '../src/components/Examples/Props/RenderText'
+import PropsType from '../src/components/Examples/Props/Type'
 
 # Common Props
 
@@ -76,17 +82,11 @@ import { NumericFormat } from 'react-number-format';
 <NumericFormat displayType="text" value={110} />;
 ```
 
-<details>
-  <summary>
-  Demo
-  </summary>
-   <iframe src="https://codesandbox.io/embed/displaytype-demo-hgcvs9?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     className='csb'
-     title="displayType-demo"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
-</details>
+:::note Example
+
+<PropsDisplayType />
+:::
+
 
 ### getInputRef `elm => void`
 
@@ -124,18 +124,10 @@ const MAX_LIMIT = 1000;
 />;
 ```
 
-<details>
-  <summary>
-  Demo
-  </summary>
-  <iframe src="https://codesandbox.io/embed/isallowed-demo-3hrw7z?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     className='csb'
-     title="isAllowed-demo"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
+:::note Example
 
-</details>
+<PropsIsAllowed />
+:::
 
 ### valueIsNumericString `boolean`
 
@@ -151,18 +143,11 @@ import { PatternFormat } from 'react-number-format';
 <PatternFormat format="+1 (###) ###-####" value="123456789" valueIsNumericString={true} />;
 ```
 
-<details>
-  <summary>
-  Demo
-  </summary>
-  <iframe src="https://codesandbox.io/embed/valueIsNumericString-demo-gjdqgr?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     className='csb'
-     title="valueIsNumericString-demo"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
+:::note Example
 
-</details>
+<PropValueIsNumericString />
+:::
+
 
 ### onValueChange `(values, sourceInfo) => {}`
 
@@ -186,17 +171,10 @@ import { NumericFormat } from 'react-number-format';
 />;
 ```
 
-<details>
-  <summary>
-  Demo
-  </summary>
-   <iframe src="https://codesandbox.io/embed/onvaluechange-demo-c5nl2f?fontsize=14&hidenavigation=1&theme=dark&view=editor"
-      className='csb'
-      title="onvaluechange-demo"
-      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
-</details>
+:::note Example
+
+<PropsOnValueChange />
+:::
 
 ### renderText `(formattedValue, customProps) => React Element`
 
@@ -216,16 +194,10 @@ import { NumericFormat } from 'react-number-format';
 />;
 ```
 
-<details>
-  <summary>
-  Demo
-  </summary>
-  <iframe src="https://codesandbox.io/embed/rendertext-demo-lg3dml?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-      className='csb'
-      title="renderText-demo"
-      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe></details>
+:::note Example
+
+<PropsRenderText />
+:::
 
 ### type `string`
 
@@ -237,19 +209,14 @@ This allows passing the input type attribute value, Supported types include `tex
 import { NumericFormat } from 'react-number-format';
 
 <NumericFormat value={123} type="text" />;
+<NumericFormat value={123456} type="tel" />;
+<NumericFormat value={1212121} type="password" />;
 ```
 
-<details>
-  <summary>
-  Demo
-  </summary>
-  <iframe src="https://codesandbox.io/embed/type-demo-4qwwjk?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-      className='csb'
-      title="type-demo"
-      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>  
-</details>
+:::note Example
+
+<PropsType />
+:::
 
 ### Other Props
 
