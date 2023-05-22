@@ -4,7 +4,7 @@ import { NumericFormat } from 'react-number-format';
 export default function PropsRenderText() {
     return (
         <>
-            <p>
+            <div>
                 <NumericFormat
                     value={1231231}
                     thousandsGroupStyle="lakh"
@@ -12,7 +12,7 @@ export default function PropsRenderText() {
                     displayType="text"
                     renderText={(value) => <b>{value}</b>}
                 />
-            </p>
+            </div>
         </>
     )
 }

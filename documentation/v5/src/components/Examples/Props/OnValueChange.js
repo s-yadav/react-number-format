@@ -7,7 +7,7 @@ export default function PropsOnValueChange() {
     return (
         <>
             <p>To see the value change, type something in the input field</p>
-            <p>
+            <div>
                 <NumericFormat
                     value={1234}
                     prefix="$"
@@ -15,7 +15,7 @@ export default function PropsOnValueChange() {
                         setValuesObj(values);
                     }}
                 />
-            </p>
+            </div>
             <hr />
             <code>{JSON.stringify(valuesObj)}</code>
             <hr />

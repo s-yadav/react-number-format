@@ -7,15 +7,15 @@ export default function PropsDisplayType() {
             <p>
                 <code>displayType</code> as input
             </p>
-            <p>
+            <div>
                 <NumericFormat displayType="input" value={110} />
-            </p>
+            </div>
             <p>
                 <code>displayType</code> as text
             </p>
-            <p>
+            <div>
                 <NumericFormat displayType="text" value={110} />
-            </p>
+            </div>
         </>
     )
 }

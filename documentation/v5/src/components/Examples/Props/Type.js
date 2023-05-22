@@ -4,15 +4,15 @@ import { NumericFormat } from 'react-number-format';
 export default function PropsType() {
     return (
         <>
-            <p>
+            <div>
                 Text: <NumericFormat type="text" value={123} />
-            </p>
-            <p>
+            </div>
+            <div>
                 Tel: <NumericFormat type="tel" value={123456} />
-            </p>
-            <p>
+            </div>
+            <div>
                 Password: <NumericFormat type="password" value={1212121} />
-            </p>
+            </div>
         </>
     )
 }

@@ -6,7 +6,7 @@ export default function PropsIsAllowed() {
     return (
         <>
             <p>Only values less than 1000 are allowed</p>
-            <p>
+            <div>
                 <NumericFormat
                     value={11}
                     isAllowed={(values) => {
@@ -15,7 +15,7 @@ export default function PropsIsAllowed() {
                         return floatValue < MAX_LIMIT;
                     }}
                 />
-            </p>
+            </div>
         </>
     )
 }

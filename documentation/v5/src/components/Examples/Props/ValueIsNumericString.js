@@ -6,7 +6,7 @@ export default function PropValueIsNumericString() {
 
     return (
         <>
-            <p>
+            <div>
                 <PatternFormat
                     format="+1 (###) ###-####"
                     value={val}
@@ -16,7 +16,7 @@ export default function PropValueIsNumericString() {
                     }}
                     valueIsNumericString={true}
                 />
-            </p>
+            </div>
         </>
     )
 }

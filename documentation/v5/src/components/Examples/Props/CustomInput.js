@@ -15,19 +15,19 @@ export default function PropsCustomInput() {
     return (
         <>
             <p>Use <code>customInput</code> field to reference any custom text fields.</p>
-            <p>
+            <div>
                 <NumericFormat
                     value={12323}
                     prefix="$"
                     thousandSeparator
                     customInput={TextField}
                 />
-            </p>
+            </div>
             <p>
                 You can also pass all the props relevant to the custom text field as
                 props to <code>NumericFormat</code>
             </p>
-            <p>
+            <div>
                 <NumericFormat
                     value={12323}
                     prefix="$"
@@ -35,7 +35,7 @@ export default function PropsCustomInput() {
                     customInput={TextField}
                     {...materialUITextFieldProps}
                 />
-            </p>
+            </div>
         </>
     )
 }
