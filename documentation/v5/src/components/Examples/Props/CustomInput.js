@@ -23,6 +23,7 @@ export default function CustomInput() {
                     customInput={TextField}
                 />
             </div>
+            <br />
             <p>
                 You can also pass all the props relevant to the custom text field as
                 props to <code>NumericFormat</code>
