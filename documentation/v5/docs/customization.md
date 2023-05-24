@@ -3,6 +3,11 @@ title: Customization
 sidebar_position: 5
 ---
 
+import CustomNumberFormat from '../src/components/Examples/Customization/CustomNumberFormat'
+import CardExpiry from '../src/components/Examples/Customization/CardExpiry'
+import CardExpiryFormat from '../src/components/Examples/Customization/CardExpiryFormat'
+import CustomNumericFormat from '../src/components/Examples/Customization/CustomNumericFormat'
+
 ## Concept
 
 React Number Format v5 is a complete rewrite with a goal of keeping it fully customizable to support all the custom case different product can have.
@@ -58,17 +63,11 @@ function MyCustomNumberFormat(props) {
 }
 ```
 
-<details>
-  <summary>
-  Demo
-  </summary>
-  <iframe src="https://codesandbox.io/embed/custom-numeric-format-ovl6km?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-      title="Custom Numeric Format"
-      className="csb"
-      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-    ></iframe>
-</details>
+:::note Example
+
+<CustomNumberFormat />
+:::
+
 
 Another example of card expiry field.
 
@@ -101,17 +100,10 @@ function CardExpiry(props) {
 }
 ```
 
-<details>
-  <summary>
-  Demo
-  </summary>
-  <iframe src="https://codesandbox.io/embed/card-expiry-field-eovgoh?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     title="Card Expiry Field"
-     className="csb"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
-</details>
+:::note Example
+
+<CardExpiry />
+:::
 
 A couple of time we want to get all the features of NumericFormat or PatterFormat, and apply some customization on top of it. Well NumberFormat allows to do that as well. It provides
 `usePatternFormat` and `useNumericFormat` hook which can be used in conjunction with NumberFormatBase.
@@ -150,17 +142,11 @@ function CardExpiry(props) {
 }
 ```
 
-<details>
-  <summary>
-  Demo
-  </summary>
-  <iframe src="https://codesandbox.io/embed/card-expiry-field-pattern-format-3yzksf?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     title="Card Expiry Field (Pattern Format)"
-     className="csb"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe> 
-</details>
+:::note Example
+
+<CardExpiryFormat />
+:::
+
 
 Another example for NumericFormat could be support for custom numerals.
 
@@ -189,14 +175,8 @@ function CustomNumeralNumericFormat(props) {
 }
 ```
 
-<details>
-  <summary>
-  Demo
-  </summary>
-  <iframe src="https://codesandbox.io/embed/custom-numeral-numer-format-forked-s8e1s4?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     title="Custom Numeral (Numer Format)"
-     className="csb"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
-</details>
+:::note Example
+
+<CustomNumericFormat />
+:::
+
