@@ -34,7 +34,8 @@
     "build": "cross-env yarn build-dist && yarn build-types && yarn test-build && yarn test-ts && yarn format && yarn build-doc && yarn publish-doc",
     "build-dist": "cross-env NODE_ENV=production rollup -c rollup.config.js",
     "build-types": "tsc -p tsconfig.build.json",
-    "test": "cross-env NODE_ENV=test karma start && yarn test-ts",
+    "test": "vitest && yarn test-ts",
+    "coverage": "vitest run --coverage",
     "test-build": "cross-env NODE_ENV=production TEST_BROWSER=ChromeHeadless karma start",
     "test-ts": "yarn tsc --noEmit",
     "lint": "cross-env eslint src/**"
@@ -77,6 +78,7 @@
     "gh-pages": "^4.0.0",
     "jasmine": "^2.4.1",
     "jasmine-core": "^2.4.1",
+    "jsdom": "^22.0.0",
     "karma": "^4.3.0",
     "karma-chrome-launcher": "^3.1.0",
     "karma-cli": "^2.0.0",
@@ -103,6 +105,7 @@
     "rollup-plugin-uglify": "^6.0.3",
     "ts-loader": "^9.2.6",
     "typescript": "^4.6.3",
+    "vitest": "^0.31.1",
     "webpack": "^5.69.1",
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.7.4"
