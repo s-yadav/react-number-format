@@ -1,163 +1,99 @@
-import Enzyme, { shallow, mount } from 'enzyme';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+// @ts-check
+import { expect, afterEach } from 'vitest';
+import matchers from '@testing-library/jest-dom/matchers';
 import userEvent from '@testing-library/user-event';
-import { render as testRender } from '@testing-library/react';
+import { cleanup, render as testRender, fireEvent } from '@testing-library/react';
 
-Enzyme.configure({ adapter: new Adapter() });
+expect.extend(matchers);
 
-const noop = function () {};
-
-export const persist = jasmine.createSpy();
-
-//keep input element singleton
-const target = document.createElement('input');
-
-export function getCustomEvent(value, selectionStart, selectionEnd) {
-  let event = new Event('custom');
-  const el = document.createElement('input');
-  event = { ...event, target: el, persist };
-  event.target = el;
-  el.value = value;
-  el.selectionStart = selectionStart;
-  el.selectionEnd = selectionEnd;
-  return event;
-}
-
-function getEvent(eventProps, targetProps) {
-  let event = new Event('custom');
-
-  Object.keys(targetProps).forEach((key) => {
-    target[key] = targetProps[key];
-  });
-
-  event = { ...event, ...eventProps, target };
-
-  return event;
-}
-
-export function setCaretPosition(event, caretPos) {
-  const { target } = event;
-  target.focus();
-  target.setSelectionRange(caretPos, caretPos);
-}
-
-export function simulateKeyInput(input, key, selectionStart, selectionEnd, setSelectionRange) {
-  if (selectionEnd === undefined) {
-    selectionEnd = selectionStart;
-  }
-
-  const currentValue = input.prop('value');
-  let defaultPrevented = false;
-
-  const keydownEvent = getEvent(
-    {
-      preventDefault: function () {
-        defaultPrevented = true;
-      },
-      key,
-      isUnitTestRun: true,
-      persist: persist.bind(null, 'keydown'),
-    },
-    {
-      value: currentValue,
-      selectionStart,
-      selectionEnd,
-      setSelectionRange: setSelectionRange || noop,
-      focus: noop,
-    },
-  );
-
-  //fire key down event
-  input.simulate('keydown', keydownEvent);
-
-  //fire change event
-  if (!defaultPrevented && key !== 'ArrowLeft' && key !== 'ArrowRight') {
-    //get changed caret positon
-    let newCaretPosition, newValue;
-
-    if (key === 'Backspace') {
-      newCaretPosition = selectionStart !== selectionEnd ? selectionStart : selectionStart - 1;
-      newValue =
-        selectionStart !== selectionEnd
-          ? currentValue.substring(0, selectionStart) +
-            currentValue.substring(selectionEnd, currentValue.length)
-          : currentValue.substring(0, newCaretPosition) +
-            currentValue.substring(selectionStart, currentValue.length);
-    } else if (key === 'Delete') {
-      newCaretPosition = selectionStart;
-      newValue =
-        selectionStart !== selectionEnd
-          ? currentValue.substring(0, selectionStart) +
-            currentValue.substring(selectionEnd, currentValue.length)
-          : currentValue.substring(0, selectionStart) +
-            currentValue.substring(selectionStart + 1, currentValue.length);
-    } else {
-      newCaretPosition = selectionStart + key.length;
-      newValue =
-        selectionStart !== selectionEnd
-          ? currentValue.substring(0, selectionStart) +
-            key +
-            currentValue.substring(selectionEnd, currentValue.length)
-          : currentValue.substring(0, selectionStart) +
-            key +
-            currentValue.substring(selectionStart, currentValue.length);
-    }
-
-    const changeEvent = getEvent(
-      {
-        persist: persist.bind(null, 'change'),
-        key,
-      },
-      {
-        value: newValue,
-        selectionStart: newCaretPosition,
-        selectionEnd: newCaretPosition,
-        setSelectionRange: setSelectionRange || noop,
-        focus: noop,
-      },
-    );
-    input.simulate('change', changeEvent);
-  }
-}
+afterEach(() => {
+  cleanup();
+});
 
 export async function render(elm) {
   const view = testRender(elm);
-  const input = await view.getByRole('textbox');
-  return { ...view, view: view, input };
+
+  // /** @type {HTMLInputElement} */
+  const input = view.getByRole('textbox');
+
+  const user = userEvent.setup();
+
+  return { ...view, view: view, input, user };
 }
 
-export function simulateNativeKeyInput(input, key, selectionStart = 0, selectionEnd = 0) {
-  input.setSelectionRange(selectionStart, selectionEnd);
-  userEvent.type(input, key);
+export async function simulateKeyInput(user, input, key, selectionStart = 0, selectionEnd) {
+  const v = input.value;
+
+  let [start, end] = [selectionStart, selectionEnd ?? selectionStart];
+  if (selectionStart > v.length) {
+    start = v.length;
+  }
+  if (end > v.length) {
+    end = v.length;
+  }
+
+  if (key.length === 0) {
+    return;
+  }
+
+  const specialKeys = ['{Backspace}', '{Delete}'];
+
+  if (specialKeys.includes(key)) {
+    if (start === end) {
+      await input.focus();
+      await input.setSelectionRange(start, end);
+
+      await user.keyboard(key);
+    } else {
+      let newValue;
+
+      if (key === '{Backspace}') {
+        // input.setRangeText('', start, end);
+        newValue = v.slice(0, start) + v.slice(end, v.length);
+      } else if (key === '{Delete}') {
+        // input.setRangeText('', start, end, 'end');
+        newValue = v.slice(0, start) + v.slice(end, v.length);
+      }
+
+      fireEvent.change(input, { target: { value: newValue } });
+    }
+  }
+
+  if (key.length === 1 && !specialKeys.includes(key)) {
+    if (start === end) {
+      await input.focus();
+      await input.setSelectionRange(start, end);
+
+      await user.keyboard(key);
+    } else {
+      let newValue;
+
+      newValue = v.slice(0, start) + key + v.slice(end, v.length);
+      fireEvent.change(input, { target: { value: newValue } });
+      end = start;
+    }
+  } else if (key.length > 1 && !specialKeys.includes(key)) {
+    let newValue;
+    newValue = v.slice(0, start) + v.slice(end, v.length);
+    end = start;
+
+    fireEvent.change(input, { target: { value: newValue } });
+
+    await input.focus();
+    await input.setSelectionRange(start, end);
+
+    for (let i = 0; i < key.length; i++) {
+      await user.keyboard(key[i]);
+    }
+  }
 }
 
-export function simulatePaste(input, test, selectionStart = 0, selectionEnd = 0) {
-  input.setSelectionRange(selectionStart, selectionEnd);
-  userEvent.paste(input, test);
-}
-
-export function simulateNativeMouseUpEvent(input, selectionStart) {
-  input.setSelectionRange(selectionStart, selectionStart);
-  userEvent.click(input);
-}
-
-export function simulateMousUpEvent(input, selectionStart, setSelectionRange) {
+export function simulateMouseUpEvent(user, input, selectionStart) {
   const selectionEnd = selectionStart;
 
-  const currentValue = input.prop('value');
-
-  const mouseUpEvent = getEvent(
-    {},
-    {
-      value: currentValue,
-      selectionStart,
-      selectionEnd,
-      setSelectionRange: setSelectionRange || noop,
-      focus: noop,
-    },
-  );
-
-  input.simulate('mouseup', mouseUpEvent);
+  fireEvent.mouseUp(input, {
+    target: { selectionStart, selectionEnd },
+  });
 }
 
 export function simulateFocusEvent(input, selectionStart = 0, selectionEnd, setSelectionRange) {
@@ -165,49 +101,13 @@ export function simulateFocusEvent(input, selectionStart = 0, selectionEnd, setS
     selectionEnd = selectionStart;
   }
 
-  const currentValue = input.prop('value');
+  input.focus();
+}
 
-  const focusEvent = getEvent(
-    {
-      persist: persist.bind(null, 'focus'),
-    },
-    {
-      value: currentValue,
-      selectionStart,
-      selectionEnd,
-      setSelectionRange: setSelectionRange || noop,
-      focus: noop,
-    },
-  );
-
-  input.simulate('focus', focusEvent);
+export async function clearInput(user, input) {
+  await user.clear(input);
 }
 
 export function simulateBlurEvent(input) {
-  const currentValue = input.prop('value');
-
-  const blurEvent = getEvent(
-    {
-      persist: persist.bind(null, 'blur'),
-    },
-    {
-      value: currentValue,
-    },
-  );
-
-  input.simulate('blur', blurEvent);
-}
-
-export { Enzyme, shallow, mount };
-
-export function getInputValue(wrapper) {
-  return wrapper.find('input').instance().value;
-}
-
-export async function wait(delay) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, delay);
-  });
+  fireEvent.blur(input);
 }
