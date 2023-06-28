@@ -7,7 +7,7 @@ import {
   getCustomEvent,
   simulateBlurEvent,
   render,
-  simulateNativeKeyInput,
+  simulateKeyInput,
   clearInput,
 } from '../test_util';
 
@@ -41,7 +41,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   it('should maintain decimal points', async () => {
     const { input, user } = await render(<NumericFormat thousandSeparator={true} prefix={'$'} />);
 
-    await simulateNativeKeyInput(user, input, '2456981.89', 0);
+    await simulateKeyInput(user, input, '2456981.89', 0);
 
     expect(input).toHaveValue('$2,456,981.89');
   });
@@ -49,11 +49,11 @@ describe('Test NumberFormat as input with numeric format options', () => {
   it('supports negative numbers', async () => {
     const { input, user } = await render(<NumericFormat thousandSeparator={true} prefix={'$'} />);
 
-    await simulateNativeKeyInput(user, input, '-', 0);
+    await simulateKeyInput(user, input, '-', 0);
 
     expect(input).toHaveValue('-');
 
-    await simulateNativeKeyInput(user, input, '123.55', 1);
+    await simulateKeyInput(user, input, '123.55', 1);
 
     expect(input).toHaveValue('-$123.55');
   });
@@ -65,12 +65,12 @@ describe('Test NumberFormat as input with numeric format options', () => {
 
     expect(input).toHaveValue('-$2,456,981.89');
 
-    await simulateNativeKeyInput(user, input, '-', 1);
+    await simulateKeyInput(user, input, '-', 1);
 
     expect(input).toHaveValue('$2,456,981.89');
 
     rerender(<NumericFormat thousandSeparator={true} prefix={'$'} value={''} />);
-    await simulateNativeKeyInput(user, input, '--', 0);
+    await simulateKeyInput(user, input, '--', 0);
     expect(input).toHaveValue('');
   });
 
@@ -79,12 +79,12 @@ describe('Test NumberFormat as input with numeric format options', () => {
       <NumericFormat thousandSeparator={true} prefix={'$'} value={2456981.89} />,
     );
 
-    await simulateNativeKeyInput(user, input, '-', 5);
+    await simulateKeyInput(user, input, '-', 5);
 
     expect(input).toHaveValue('-$2,456,981.89');
 
     //restore negation back
-    await simulateNativeKeyInput(user, input, '-', 7);
+    await simulateKeyInput(user, input, '-', 7);
 
     expect(input).toHaveValue('$2,456,981.89');
   });
@@ -93,7 +93,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     const { input, rerender, user } = await render(
       <NumericFormat thousandSeparator={'.'} decimalSeparator={','} prefix={'$'} />,
     );
-    await simulateNativeKeyInput(user, input, '2456981,89', 0);
+    await simulateKeyInput(user, input, '2456981,89', 0);
     // await user.type(input, '2456981,89', { initialSelectionStart: 0 });
 
     expect(input).toHaveValue('$2.456.981,89');
@@ -111,7 +111,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     );
     await clearInput(user, input);
 
-    await simulateNativeKeyInput(user, input, "2456981'89", 0);
+    await simulateKeyInput(user, input, "2456981'89", 0);
     expect(input).toHaveValue("$2 456 981'89");
   });
 
@@ -349,7 +349,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         value="$1,234.000"
       />,
     );
-    await simulateNativeKeyInput(user, input, '{Backspace}', 7);
+    await simulateKeyInput(user, input, '{Backspace}', 7);
     expect(input).toHaveValue('$1,234.000');
 
     simulateBlurEvent(input);
@@ -363,7 +363,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         value="$1,234.000"
       />,
     );
-    await simulateNativeKeyInput(user, input, '{Backspace}', 7);
+    await simulateKeyInput(user, input, '{Backspace}', 7);
     expect(input).toHaveValue('$1,234,000');
   });
 
@@ -378,7 +378,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         value={'1,234.00'}
       />,
     );
-    await simulateNativeKeyInput(user, input, '56', 1, 9);
+    await simulateKeyInput(user, input, '56', 1, 9);
     expect(input).toHaveValue('$56.00');
 
     // simulateBlurEvent(input);
@@ -395,7 +395,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     );
     input.selectionStart = 0;
     input.selectionEnd = 0;
-    await simulateNativeKeyInput(user, input, '1', 0, 5);
+    await simulateKeyInput(user, input, '1', 0, 5);
     // expect(input).toHaveValue('1.00%');
 
     rerender(
@@ -408,7 +408,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         value="23%"
       />,
     );
-    await simulateNativeKeyInput(user, input, '15', 1, 6);
+    await simulateKeyInput(user, input, '15', 1, 6);
     expect(input).toHaveValue('$15.00%');
   });
 
@@ -475,7 +475,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         prefix={'$'}
       />,
     );
-    await simulateNativeKeyInput(user, input, '0', 1);
+    await simulateKeyInput(user, input, '0', 1);
 
     expect(input).toHaveValue('$023,456.78');
 
@@ -490,7 +490,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
       />,
     );
 
-    await simulateNativeKeyInput(user, input, '{Backspace}', 2);
+    await simulateKeyInput(user, input, '{Backspace}', 2);
 
     expect(input).toHaveValue('$0000.25');
 
@@ -508,7 +508,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
       />,
     );
 
-    await simulateNativeKeyInput(user, input, '0', 1);
+    await simulateKeyInput(user, input, '0', 1);
     simulateBlurEvent(input);
 
     expect(input).toHaveValue('$23,456.78');
@@ -522,7 +522,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
       />,
     );
 
-    await simulateNativeKeyInput(user, input, '{Backspace}', 2);
+    await simulateKeyInput(user, input, '{Backspace}', 2);
     simulateBlurEvent(input);
     expect(input).toHaveValue('$0.25');
   });
@@ -538,7 +538,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
       />,
     );
 
-    await simulateNativeKeyInput(user, input, '0', 1);
+    await simulateKeyInput(user, input, '0', 1);
     simulateBlurEvent(input);
 
     expect(input).toHaveValue('$023,456.78');
@@ -553,14 +553,14 @@ describe('Test NumberFormat as input with numeric format options', () => {
       />,
     );
 
-    await simulateNativeKeyInput(user, input, '{Backspace}', 2);
+    await simulateKeyInput(user, input, '{Backspace}', 2);
     simulateBlurEvent(input);
     expect(input).toHaveValue('$0000.25');
   });
 
   it('should make input empty when there is only non numeric values (ie just -) on blur', async () => {
     const { input, user } = await render(<NumericFormat decimalScale={2} />);
-    await simulateNativeKeyInput(user, input, '-', 0);
+    await simulateKeyInput(user, input, '-', 0);
     simulateBlurEvent(input);
 
     expect(input).toHaveValue('');
@@ -571,11 +571,11 @@ describe('Test NumberFormat as input with numeric format options', () => {
       <NumericFormat value={0.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'} />,
     );
 
-    await simulateNativeKeyInput(user, input, '{Backspace}', 2);
+    await simulateKeyInput(user, input, '{Backspace}', 2);
 
     expect(input).toHaveValue('$.78');
 
-    await simulateNativeKeyInput(user, input, '2', 1);
+    await simulateKeyInput(user, input, '2', 1);
     expect(input).toHaveValue('$2.78');
   });
 
@@ -583,7 +583,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     const { input, user } = await render(
       <NumericFormat value={0.78} thousandSeparator={','} decimalSeparator={'.'} prefix={'$'} />,
     );
-    await simulateNativeKeyInput(user, input, '{Backspace}', 2);
+    await simulateKeyInput(user, input, '{Backspace}', 2);
 
     expect(input).toHaveValue('$.78');
 
@@ -595,7 +595,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     const { input, user } = await render(
       <NumericFormat thousandSeparator={','} decimalSeparator={'.'} prefix={'$'} />,
     );
-    await simulateNativeKeyInput(user, input, '.', 0);
+    await simulateKeyInput(user, input, '.', 0);
 
     expect(input).toHaveValue('$.');
   });
@@ -606,7 +606,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     );
     expect(input).toHaveValue('$0.');
 
-    await simulateNativeKeyInput(user, input, '{Backspace}', 2);
+    await simulateKeyInput(user, input, '{Backspace}', 2);
     expect(input).toHaveValue('');
   });
 
@@ -614,7 +614,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     const { input, user } = await render(
       <NumericFormat decimalSeparator={'.'} prefix={'$'} value="$.3" />,
     );
-    await simulateNativeKeyInput(user, input, '{Backspace}', 4);
+    await simulateKeyInput(user, input, '{Backspace}', 4);
     expect(input).toHaveValue('$.');
   });
 
@@ -622,7 +622,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     const { input, user } = await render(
       <NumericFormat decimalSeparator={'.'} prefix={'$'} value="$34.35" />,
     );
-    await simulateNativeKeyInput(user, input, '.', 0, 6);
+    await simulateKeyInput(user, input, '.', 0, 6);
     expect(input).toHaveValue('$.');
   });
 
@@ -670,7 +670,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   it('should give correct formatted value when pasting a number with decimal and decimal scale is set to zero, issue #145', async () => {
     // TODO: Incorrect assertion
     const { input, user } = await render(<NumericFormat decimalScale={0} />);
-    await simulateNativeKeyInput(user, input, '9.55');
+    await simulateKeyInput(user, input, '9.55');
     simulateBlurEvent(input);
     expect(input).toHaveValue('9');
   });
@@ -679,9 +679,9 @@ describe('Test NumberFormat as input with numeric format options', () => {
     const { input, user } = await render(
       <NumericFormat decimalScale={0} thousandSeparator={true} />,
     );
-    await simulateNativeKeyInput(user, input, '10000');
+    await simulateKeyInput(user, input, '10000');
     expect(input).toHaveValue('10,000');
-    await simulateNativeKeyInput(user, input, '0', 6);
+    await simulateKeyInput(user, input, '0', 6);
     expect(input).toHaveValue('100,000');
   });
 
@@ -696,7 +696,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   it(`should not add 0 after minus immediately after minus is entered in case valueIsNumericString and
     decimalScale props are passed #198`, async () => {
     const { input, user } = await render(<NumericFormat valueIsNumericString decimalScale={2} />);
-    await simulateNativeKeyInput(user, input, '-', 0, 0);
+    await simulateKeyInput(user, input, '-', 0, 0);
     expect(input).toHaveValue('-');
   });
 
@@ -704,7 +704,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     const { input, user } = await render(
       <NumericFormat decimalSeparator="," thousandSeparator="." value="234.456" suffix=" Sq. ft" />,
     );
-    await simulateNativeKeyInput(user, input, '.', 5);
+    await simulateKeyInput(user, input, '.', 5);
     expect(input).toHaveValue('2.344,56 Sq. ft');
     //check if caret position is maintained
     expect(input.selectionStart).toEqual(6);
@@ -712,27 +712,27 @@ describe('Test NumberFormat as input with numeric format options', () => {
     // expect(caretPos).toEqual(6);
 
     //it should allow typing actual separator
-    await simulateNativeKeyInput(user, input, ',', 3, 3);
+    await simulateKeyInput(user, input, ',', 3, 3);
     expect(input).toHaveValue('23,4456 Sq. ft');
   });
 
   it('should not break if suffix/prefix has negation sign. Issue #245', async () => {
     const { input, user } = await render(<NumericFormat suffix="-" />);
 
-    await simulateNativeKeyInput(user, input, '2', 0);
+    await simulateKeyInput(user, input, '2', 0);
     expect(input).toHaveValue('2-');
 
-    await simulateNativeKeyInput(user, input, '1', 1);
+    await simulateKeyInput(user, input, '1', 1);
     expect(input).toHaveValue('21-');
 
-    await simulateNativeKeyInput(user, input, '-', 2);
+    await simulateKeyInput(user, input, '-', 2);
     expect(input).toHaveValue('-21-');
   });
 
   it('should not apply thousand separator on the leading zeros #289', async () => {
     const { input, user } = await render(<NumericFormat prefix="$" thousandSeparator="," />);
 
-    await simulateNativeKeyInput(user, input, '000012345678', 0);
+    await simulateKeyInput(user, input, '000012345678', 0);
     expect(input).toHaveValue('$000012,345,678');
   });
 
@@ -741,7 +741,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     const { input, user } = await render(
       <NumericFormat value={4200} thousandSeparator={true} decimalScale={0} />,
     );
-    await simulateNativeKeyInput(user, input, '.', 2, 2);
+    await simulateKeyInput(user, input, '.', 2, 2);
     expect(input).toHaveValue('4,200');
   });
 
@@ -762,7 +762,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     }
 
     const { input, user } = await render(<Test />);
-    await simulateNativeKeyInput(user, input, '0', 4, 4);
+    await simulateKeyInput(user, input, '0', 4, 4);
     expect(input).toHaveValue('1.0000001');
   });
 
@@ -774,25 +774,25 @@ describe('Test NumberFormat as input with numeric format options', () => {
   describe('should allow typing number if prefix or suffix is just an number #691', () => {
     it('when prefix is number', async () => {
       const { input, user } = await render(<NumericFormat prefix="1" />);
-      await simulateNativeKeyInput(user, input, '1', 0, 0);
+      await simulateKeyInput(user, input, '1', 0, 0);
       expect(input).toHaveValue('11');
     });
 
     it('when prefix is multiple digit', async () => {
       const { input, user } = await render(<NumericFormat prefix="11" />);
-      await simulateNativeKeyInput(user, input, '11', 0, 0);
+      await simulateKeyInput(user, input, '11', 0, 0);
       expect(input).toHaveValue('1111');
     });
 
     it('when suffix is number', async () => {
       const { input, user } = await render(<NumericFormat suffix="1" />);
-      await simulateNativeKeyInput(user, input, '1', 0, 0);
+      await simulateKeyInput(user, input, '1', 0, 0);
       expect(input).toHaveValue('11');
     });
 
     it('when prefix and suffix both are number', async () => {
       const { input, user } = await render(<NumericFormat prefix="1" suffix="1" />);
-      await simulateNativeKeyInput(user, input, '1', 0, 0);
+      await simulateKeyInput(user, input, '1', 0, 0);
       expect(input).toHaveValue('111');
     });
   });
@@ -803,7 +803,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         <NumericFormat prefix="100-" value={1} suffix="000 USD" />,
       );
 
-      await simulateNativeKeyInput(user, input, '1', 9, 12);
+      await simulateKeyInput(user, input, '1', 9, 12);
       expect(input).toHaveValue('100-1000 USD');
     });
 
@@ -812,7 +812,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         <NumericFormat prefix="100-" value={1} suffix="000 USD" />,
       );
 
-      await simulateNativeKeyInput(user, input, '1', 0, 2);
+      await simulateKeyInput(user, input, '1', 0, 2);
       expect(input).toHaveValue('100-1000 USD');
     });
 
@@ -821,7 +821,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         <NumericFormat prefix="100-" value={1} suffix="000 USD" />,
       );
 
-      await simulateNativeKeyInput(user, input, '{Backspace}', 9, 12);
+      await simulateKeyInput(user, input, '{Backspace}', 9, 12);
       expect(input).toHaveValue('100-1000 USD');
     });
 
@@ -831,7 +831,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         <NumericFormat prefix="100-" value={1} suffix="000 USD" />,
       );
 
-      await simulateNativeKeyInput(user, input, '{Backspace}', 0, 4);
+      await simulateKeyInput(user, input, '{Backspace}', 0, 4);
       expect(input).toHaveValue('100-1000 USD');
     });
 
@@ -841,7 +841,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         <NumericFormat prefix="100-" value={1} suffix="000 USD" />,
       );
 
-      await simulateNativeKeyInput(user, input, '{Backspace}', 0, 3);
+      await simulateKeyInput(user, input, '{Backspace}', 0, 3);
       expect(input).toHaveValue('100-1000 USD');
     });
   });
@@ -852,7 +852,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         <NumericFormat thousandSeparator={true} value={12345678} />,
       );
       expect(input).toHaveValue('12,345,678');
-      await simulateNativeKeyInput(user, input, '9', 10, 10);
+      await simulateKeyInput(user, input, '9', 10, 10);
       expect(input).toHaveValue('123,456,789');
     });
 
@@ -861,7 +861,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         <NumericFormat thousandSeparator={true} thousandsGroupStyle="lakh" value={12345678} />,
       );
       expect(input).toHaveValue('1,23,45,678');
-      await simulateNativeKeyInput(user, input, '9', 11, 11);
+      await simulateKeyInput(user, input, '9', 11, 11);
       expect(input).toHaveValue('12,34,56,789');
     });
 
@@ -870,7 +870,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         <NumericFormat thousandSeparator={true} thousandsGroupStyle="wan" value={12345678} />,
       );
       expect(input).toHaveValue('1234,5678');
-      await simulateNativeKeyInput(user, input, '9', 9, 9);
+      await simulateKeyInput(user, input, '9', 9, 9);
       expect(input).toHaveValue('1,2345,6789');
     });
   });
