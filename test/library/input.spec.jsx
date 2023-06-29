@@ -672,6 +672,18 @@ const onValueChangeFn =
       expect(value.innerText).toEqual('1123234512');
     });
 
+    // Replace the test above
+    it('should render correct value when user input does not match the expected pattern', async () => {
+      const { input, user } = await render(
+        <PatternFormat value={1232345124} format="(###) #### ###" valueIsNumericString mask="_" />,
+      );
+
+      expect(input).toHaveValue('(123) 2345 124');
+
+      await simulateKeyInput(user, input, '1', 1, 1);
+      expect(input).toHaveValue('(112) 3234 512');
+    });
+
     it('should try to correct the value if old formatted value is provided but the format prop changes', async () => {
       const { input, rerender } = await render(
         <NumericFormat value="$1,234" prefix="$" thousandSeparator />,
@@ -705,13 +717,13 @@ const onValueChangeFn =
         expect(input).toHaveValue('13/MM/YYYY');
       });
 
-      it.skip('should throw an error if mask has numeric character', async () => {
-        expect(async () => {
-          shallow(<PatternFormat format="#### #### ####" mask="1" />);
+      it('should throw an error if mask has numeric character', async () => {
+        expect(() => {
+          rtlRender(<PatternFormat format="#### #### ####" mask="1" />);
         }).toThrow();
 
-        expect(async () => {
-          shallow(
+        expect(() => {
+          rtlRender(
             <PatternFormat
               format="#### #### ####"
               mask={['D', 'D', 'M', '1', '2', 'Y', 'Y', 'Y']}
@@ -758,6 +770,32 @@ const onValueChangeFn =
         expect(getInputValue(wrapper)).toEqual('$123.1234');
       });
 
+      // Replaces the test above
+      it('should correctly show the decimal values', async () => {
+        const { input, user, rerender } = await render(
+          <NumericFormat
+            value="123.123"
+            decimalScale={18}
+            thousandSeparator
+            prefix="$"
+            valueIsNumericString
+          />,
+        );
+
+        expect(input).toHaveValue('$123.123');
+
+        rerender(
+          <NumericFormat
+            value="123.1234"
+            decimalScale={18}
+            thousandSeparator
+            prefix="$"
+            valueIsNumericString
+          />,
+        );
+        expect(input).toHaveValue('$123.1234');
+      });
+
       it.skip('should show the right number of zeros in all cases', async () => {
         class WrapperComponent extends React.Component {
           constructor() {
@@ -791,10 +829,61 @@ const onValueChangeFn =
         expect(getInputValue(wrapper)).toEqual('$100.10');
       });
     });
+
+    // Replaces the test above
+    it('should show the correct number of zeroes after the decimal', async () => {
+      const { input, user, rerender } = await render(
+        <NumericFormat
+          decimalScale={2}
+          prefix="$"
+          thousandSeparator
+          value="100.0"
+          valueIsNumericString
+        />,
+      );
+
+      expect(input).toHaveValue('$100.0');
+
+      rerender(
+        <NumericFormat
+          decimalScale={2}
+          prefix="$"
+          thousandSeparator
+          value="123.00"
+          valueIsNumericString
+        />,
+      );
+
+      expect(input).toHaveValue('$123.00');
+
+      rerender(
+        <NumericFormat
+          decimalScale={2}
+          prefix="$"
+          thousandSeparator
+          value="132.000"
+          valueIsNumericString
+        />,
+      );
+
+      expect(input).toHaveValue('$132.00');
+
+      rerender(
+        <NumericFormat
+          decimalScale={2}
+          prefix="$"
+          thousandSeparator
+          value="100.10"
+          valueIsNumericString
+        />,
+      );
+
+      expect(input).toHaveValue('$100.10');
+    });
   });
 
 describe('Test hooks', () => {
-  it.only('useNumericFormat hook should return all the expected props for NumberFormatBase', () => {
+  it('useNumericFormat hook should return all the expected props for NumberFormatBase', () => {
     const { result } = renderHook(() =>
       useNumericFormat({ thousandSeparator: '.', decimalSeparator: ',', maxLength: 5 }),
     );
@@ -803,7 +892,7 @@ describe('Test hooks', () => {
     expect('thousandSeparator' in result.current).toBe(false);
   });
 
-  it.only('usePatternFormat hook should return all the expected props for NumberFormatBase', async () => {
+  it('usePatternFormat hook should return all the expected props for NumberFormatBase', async () => {
     const { result } = renderHook(() =>
       usePatternFormat({ format: '### ##', mask: '_', maxLength: 5 }),
     );
