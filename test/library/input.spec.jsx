@@ -478,25 +478,30 @@ const onValueChangeFn =
       });
     });
 
-    it.skip('should not call onValueChange if no formatting is applied', async () => {
-      const spy = jasmine.createSpy();
-      const { input, user } = await render(<NumericFormat value="" onValueChange={spy} />);
-      expect(spy).not.toHaveBeenCalled();
+    it('should not call onValueChange if no formatting is applied', async () => {
+      const mockOnValueChange = vi.fn();
 
-      wrapper.setProps({ value: NaN });
-      expect(spy).not.toHaveBeenCalled();
+      const { input, user, rerender } = await render(
+        <NumericFormat value="" onValueChange={mockOnValueChange} />,
+      );
 
-      wrapper.setProps({ value: 1234 });
-      expect(spy).not.toHaveBeenCalled();
+      expect(mockOnValueChange).not.toHaveBeenCalled();
 
-      wrapper.setProps({ thousandSeparator: true });
-      expect(spy.calls.argsFor(0)[0]).toEqual({
+      rerender(<NumericFormat value={NaN} onValueChange={mockOnValueChange} />);
+      expect(mockOnValueChange).not.toHaveBeenCalled();
+
+      rerender(<NumericFormat value={1234} onValueChange={mockOnValueChange} />);
+      expect(mockOnValueChange).not.toHaveBeenCalled();
+
+      rerender(<NumericFormat value={1234} onValueChange={mockOnValueChange} thousandSeparator />);
+      expect(mockOnValueChange.mock.lastCall[0]).toEqual({
         formattedValue: '1,234',
         value: '1234',
         floatValue: 1234,
       });
     });
 
+    // TODO: Clarify the purpose of this test
     it('should always call setState when input is not on focus and value formatting is changed from outside', async () => {
       const { input, user, rerender } = await render(
         <NumericFormat value="1.1" valueIsNumericString />,
@@ -515,50 +520,83 @@ const onValueChangeFn =
       expect(input).toHaveValue('1.2');
     });
 
-    it.skip('should call onValueChange in change caused by prop change', async (done) => {
-      const spy = jasmine.createSpy();
+    it('should call onValueChange in change caused by prop change', async () => {
+      const mockOnValueChange = vi.fn();
       const { rerender } = await render(
-        <NumericFormat value="1234" valueIsNumericString onValueChange={spy} />,
+        <NumericFormat value="1234" valueIsNumericString onValueChange={mockOnValueChange} />,
       );
+
       rerender(
         <NumericFormat
           value="1234"
           valueIsNumericString
           thousandSeparator={true}
-          onValueChange={spy}
+          onValueChange={mockOnValueChange}
         />,
       );
 
-      await wait(100);
-
-      expect(spy.calls.argsFor(0)[0]).toEqual({
+      expect(mockOnValueChange.mock.lastCall[0]).toEqual({
         formattedValue: '1,234',
         value: '1234',
         floatValue: 1234,
       });
-
-      done();
     });
 
-    it.skip('should call onValueChange with the right source information', async () => {
-      const spy = jasmine.createSpy();
-      const { input, user } = await render(
+    // TODO: Consider updating to test behaviour, not implementation
+    it('should call onValueChange with the right source information', async () => {
+      const spy = vi.fn();
+      const { input, user, rerender } = await render(
         <NumericFormat value="1234" valueIsNumericString={true} onValueChange={spy} />,
       );
 
       // Test prop change onValueChange
-      wrapper.setProps({ thousandSeparator: true });
-      expect(spy.calls.argsFor(0)[1]).toEqual({
+      rerender(
+        <NumericFormat
+          onValueChange={spy}
+          thousandSeparator
+          value="1234"
+          valueIsNumericString={true}
+        />,
+      );
+      expect(spy.mock.lastCall[1]).toEqual({
         event: undefined,
         source: 'prop',
       });
 
       // Test with input change by simulateKeyInput
-      simulateKeyInput(wrapper.find('input'), '5', 0);
-      const { event, source } = spy.calls.argsFor(1)[1];
+      await simulateKeyInput(user, input, '5', 0);
+      const { event, source } = spy.mock.lastCall[1];
       const { key } = event;
       expect(key).toEqual('5');
       expect(source).toEqual('event');
+    });
+
+    it('should call onValueChange when value changes', async () => {
+      const mockOnValueChange = vi.fn();
+      const { input, user, rerender } = await render(
+        <NumericFormat
+          value="1234"
+          valueIsNumericString={true}
+          onValueChange={mockOnValueChange}
+        />,
+      );
+
+      expect(input).toHaveValue('1234');
+
+      // Test prop change onValueChange
+      rerender(
+        <NumericFormat
+          onValueChange={mockOnValueChange}
+          thousandSeparator
+          value="1234"
+          valueIsNumericString={true}
+        />,
+      );
+      expect(mockOnValueChange).toHaveBeenCalled();
+
+      // Test with input change by simulateKeyInput
+      await simulateKeyInput(user, input, '5', 0);
+      expect(input).toHaveValue('51,234');
     });
 
     it('should treat Infinity value as empty string', async () => {
@@ -567,16 +605,13 @@ const onValueChangeFn =
       expect(input).toHaveValue('');
     });
 
-    it.skip('should call onFocus prop when focused', async (done) => {
-      const spy = jasmine.createSpy('onFocus');
-      const { input, user } = await render(<NumericFormat onFocus={spy} />);
+    it('should call onFocus prop when focused', async () => {
+      const mockOnFocus = vi.fn();
+      const { input, user } = await render(<NumericFormat onFocus={mockOnFocus} />);
 
       simulateFocusEvent(input);
 
-      setTimeout(async () => {
-        expect(spy).toHaveBeenCalled();
-        done();
-      }, 0);
+      expect(mockOnFocus).toHaveBeenCalled();
     });
 
     it.skip('should not reset the selection when manually focused on mount', async () => {
@@ -595,17 +630,14 @@ const onValueChangeFn =
       expect(input.selectionEnd).toEqual(5);
     });
 
-    it.skip('should not call onFocus prop when focused then blurred in the same event loop', async (done) => {
-      const spy = jasmine.createSpy('onFocus');
-      const { input, user } = await render(<NumericFormat onFocus={spy} />);
+    it('should not call onFocus prop when focused then blurred in the same event loop', async () => {
+      const mockOnFocus = vi.fn();
+      const { input, user } = await render(<NumericFormat onFocus={mockOnFocus} />);
 
       simulateFocusEvent(input);
       simulateBlurEvent(input);
 
-      setTimeout(async () => {
-        expect(spy).not.toHaveBeenCalled();
-        done();
-      }, 0);
+      expect(mockOnFocus).not.toHaveBeenCalled();
     });
 
     it('should pass custom props to the renderText function', async () => {
@@ -628,20 +660,29 @@ const onValueChangeFn =
       expect(span.textContent).toBe('1234');
     });
 
-    it.skip('should not fire onChange when change is not allowed via the isAllowed prop', async () => {
-      const spy = jasmine.createSpy('onChange');
+    // TODO: Consider testing behaviour rather than implementation details
+    it('should not fire onChange when change is not allowed via the isAllowed prop', async () => {
+      const mockOnChange = vi.fn();
       const { input, user } = await render(
-        <NumericFormat value={1234} className="foo" isAllowed={() => false} onChange={spy} />,
+        <NumericFormat
+          value={1234}
+          className="foo"
+          isAllowed={() => false}
+          onChange={mockOnChange}
+        />,
       );
-      simulateKeyInput(wrapper.find('input'), '5678', 2, 3);
-      expect(spy).not.toHaveBeenCalled();
+
+      await simulateKeyInput(user, input, '5678', 2, 3);
+      expect(mockOnChange).not.toHaveBeenCalled();
     });
 
-    it.skip('should call onChange if value is changed or reset #669 ', async () => {
-      const spy = jasmine.createSpy('onChange');
-      const { input, user } = await render(<NumericFormat value={1} onChange={spy} />);
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
-      expect(spy).toHaveBeenCalled();
+    // TODO: Consider testing behaviour rather than implementation details
+    it('should call onChange if value is changed or reset #669 ', async () => {
+      const mockOnChange = vi.fn();
+      const { input, user } = await render(<NumericFormat value={1} onChange={mockOnChange} />);
+
+      await simulateKeyInput(user, input, 'Backspace', 1);
+      expect(mockOnChange).toHaveBeenCalled();
     });
 
     it.skip('should not give wrong value, when user enter more number than the given hash in PatternFormat #712', async () => {
