@@ -1,11 +1,8 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { renderHook } from '@testing-library/react-hooks';
 import { vi } from 'vitest';
-import { render as rtlRender, screen } from '@testing-library/react';
+import { render as rtlRender, screen, renderHook } from '@testing-library/react';
 
 import TextField from 'material-ui/TextField';
-
-import NumericFormat, { useNumericFormat } from '../../src/numeric_format';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {
@@ -19,6 +16,7 @@ import {
   render,
   wait,
 } from '../test_util';
+import NumericFormat, { useNumericFormat } from '../../src/numeric_format';
 import PatternFormat, { usePatternFormat } from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
 
@@ -796,21 +794,21 @@ const onValueChangeFn =
   });
 
 describe('Test hooks', () => {
-  it.only('useNumericFormat hook should return all the expected props for NumberFormatBase', async () => {
+  it.only('useNumericFormat hook should return all the expected props for NumberFormatBase', () => {
     const { result } = renderHook(() =>
       useNumericFormat({ thousandSeparator: '.', decimalSeparator: ',', maxLength: 5 }),
     );
 
-    expect('maxLength' in result.current).toEqual(true);
-    expect('thousandSeparator' in result.current).toEqual(false);
+    expect(result.current.maxLength).toBe(5);
+    expect('thousandSeparator' in result.current).toBe(false);
   });
 
-  it('usePatternFormat hook should return all the expected props for NumberFormatBase', async () => {
+  it.only('usePatternFormat hook should return all the expected props for NumberFormatBase', async () => {
     const { result } = renderHook(() =>
       usePatternFormat({ format: '### ##', mask: '_', maxLength: 5 }),
     );
 
-    expect('maxLength' in result.current).toEqual(true);
-    expect('mask' in result.current).toEqual(false);
+    expect(result.current.maxLength).toBe(5);
+    expect('mask' in result.current).toBe(false);
   });
 });
