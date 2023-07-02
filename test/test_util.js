@@ -36,7 +36,7 @@ export async function simulateKeyInput(user, input, key, selectionStart = 0, sel
     return;
   }
 
-  const specialKeys = ['{Backspace}', '{Delete}'];
+  const specialKeys = ['{Backspace}', '{Delete}', '{ArrowLeft}', '{ArrowRight}'];
 
   if (specialKeys.includes(key)) {
     if (start === end) {
