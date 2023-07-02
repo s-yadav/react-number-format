@@ -96,11 +96,7 @@ export function simulateMouseUpEvent(user, input, selectionStart) {
   });
 }
 
-export function simulateFocusEvent(input, selectionStart = 0, selectionEnd, setSelectionRange) {
-  if (selectionEnd === undefined) {
-    selectionEnd = selectionStart;
-  }
-
+export function simulateFocusEvent(input) {
   input.focus();
 }
 
