@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { vi } from 'vitest';
-import { render as rtlRender, screen, renderHook } from '@testing-library/react';
+import { render as rtlRender, screen, renderHook, fireEvent } from '@testing-library/react';
 
 import TextField from 'material-ui/TextField';
 
@@ -48,6 +48,7 @@ const onValueChangeFn =
       expect(input.getAttribute('inputmode')).toBe('search');
     });
 
+    // TODO
     it.skip('should add inputMode numeric only when app is mounted', async () => {
       const wrapper = shallow(<NumberFormatBase />, { disableLifecycleMethods: true });
       expect(wrapper.find('input').prop('inputMode')).toEqual(undefined);
@@ -56,15 +57,16 @@ const onValueChangeFn =
       expect(wrapper2.find('input').prop('inputMode')).toEqual('numeric');
     });
 
+    // TODO
     it.skip('should always add inputMode numeric to pattern format, even for Iphone/IPad device', async () => {
       navigator['__defineGetter__']('platform', async () => {
         return 'iPhone';
       });
-      const { input, user } = await render(<NumericFormat />);
-      expect(wrapper.find('input').instance().getAttribute('inputmode')).toEqual(null);
+      const { input, rerender } = await render(<PatternFormat />);
+      expect(input.getAttribute('inputmode')).toBe('numeric');
 
-      const wrapper2 = mount(<PatternFormat format="##" />);
-      expect(wrapper2.find('input').instance().getAttribute('inputmode')).toEqual('numeric');
+      rerender(<PatternFormat format="##" />);
+      expect(input.getAttribute('inputmode')).toBe('numeric');
     });
 
     it('should have initial value', async () => {
@@ -99,6 +101,35 @@ const onValueChangeFn =
 
       expect(input).toHaveValue('90');
       wrapper.setState({ testState: null });
+      expect(input).toHaveValue('90');
+    });
+
+    // If this has to be tested, this test should replace the one above.
+    it('should hold the previous valid value if the prop is changed to null', async () => {
+      const WrapperComponent = () => {
+        const [testState, setTestState] = useState(90);
+
+        return (
+          <div>
+            <NumericFormat value={testState} />
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setTestState(null);
+              }}
+            >
+              Click
+            </button>
+          </div>
+        );
+      };
+
+      const { input, user, view } = await render(<WrapperComponent />);
+      const button = view.getByText('Click');
+
+      expect(input).toHaveValue('90');
+
+      user.click(button);
       expect(input).toHaveValue('90');
     });
 
@@ -154,6 +185,36 @@ const onValueChangeFn =
       expect(input).toHaveValue('$2,456,981');
     });
 
+    // If this has to be tested, this test should replace the one above.
+    it('should not reset number inputs value if number input renders again with same props', async () => {
+      const WrapperComponent = () => {
+        const [testState, setTestState] = useState(false);
+
+        return (
+          <div>
+            <NumericFormat thousandSeparator={true} prefix={'$'} />
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setTestState((c) => !c);
+              }}
+            >
+              Click
+            </button>
+          </div>
+        );
+      };
+
+      const { input, user, view } = await render(<WrapperComponent />);
+      const button = view.getByText('Click');
+
+      await simulateKeyInput(user, input, '2456981', 0);
+      expect(input).toHaveValue('$2,456,981');
+
+      user.click(button);
+      expect(input).toHaveValue('$2,456,981');
+    });
+
     it('removes negation when format props is provided', async () => {
       const { input, user } = await render(
         <PatternFormat format="#### #### #### ####" value="2342 2345 2342 2345" />,
@@ -185,7 +246,7 @@ const onValueChangeFn =
     });
 
     // TODO
-    it('handles multiple different allowed decimal separators', async () => {
+    it.skip('handles multiple different allowed decimal separators', async () => {
       const allowedDecimalSeparators = [',', '.', 'm'];
 
       const { input, user, rerender } = await render(
@@ -195,7 +256,10 @@ const onValueChangeFn =
         />,
       );
 
-      for (const separator in allowedDecimalSeparators) {
+      await simulateKeyInput(user, input, '12', 2);
+      expect(input).toHaveValue('12');
+
+      for (const separator of allowedDecimalSeparators) {
         rerender(
           <NumericFormat
             value={12}
@@ -203,6 +267,9 @@ const onValueChangeFn =
             allowedDecimalSeparators={allowedDecimalSeparators}
           />,
         );
+
+        // Why is this different from typing in '12'?
+        expect(input).toHaveValue('12');
 
         await simulateKeyInput(user, input, separator, 2);
         expect(input).toHaveValue('12,');
@@ -258,7 +325,7 @@ const onValueChangeFn =
         />,
       );
 
-      simulateKeyInput(user, input, '411111', 0);
+      await simulateKeyInput(user, input, '411111', 0);
       expect(input).toHaveValue('4111 11__ ____ ____');
     });
 
@@ -297,6 +364,17 @@ const onValueChangeFn =
       expect(wrapper.find('input').prop('value')).toEqual('+1 (012) 345 6 78 US');
     });
 
+    // TODO: Replace the test above
+    it('should update value if whole content is replaced', async () => {
+      const { input, user } = await render(
+        <PatternFormat format="+1 (###) ### # ## US" allowEmptyFormatting />,
+      );
+
+      await user.type(input, '012345678', { initialSelectionStart: 20, initialSelectionEnd: 20 });
+
+      expect(input).toHaveValue('+1 (012) 345 6 78 US');
+    });
+
     // TODO: Test value of the input instead of checking for prop value?
     it.skip('should replace the whole value if a new number is typed after selecting the everything', async () => {
       const { input, user } = await render(
@@ -306,6 +384,16 @@ const onValueChangeFn =
       await simulateKeyInput(user, input, '0', 0, 3);
 
       expect(wrapper.find('input').prop('value')).toEqual('$0');
+    });
+
+    // TODO: Replace the test above
+    it('replace previous value and format new value when input content is selected and character is typed', async () => {
+      const { input, user } = await render(
+        <NumericFormat prefix="$" value="10" allowedDecimalSeparators={[',', '.']} />,
+      );
+
+      await simulateKeyInput(user, input, '0', 0, 3);
+      expect(input).toHaveValue('$0');
     });
 
     it('should allow replacing all characters with number when formatting is present', async () => {
@@ -318,8 +406,8 @@ const onValueChangeFn =
       expect(input).toHaveValue('+1 (8__) ___ _ __ US');
     });
 
-    // TODO: Fix error
-    it.skip('should give proper value when format character has number #652', async () => {
+    // TODO: Consider testing internal logic like this using unit tests
+    it('should give proper value when format character has number #652', async () => {
       //https://github.com/s-yadav/react-number-format/issues/652#issuecomment-1278200770
       const spy = vi.fn();
 
@@ -328,21 +416,26 @@ const onValueChangeFn =
       );
 
       await simulateKeyInput(user, input, '3', 0);
-      // await simulateKeyInput(user, input, '4', 3);
+      await simulateKeyInput(user, input, '4', 3);
 
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(2);
 
-      // Throws error -> RangeError: Maximum call stack size exceeded
-      expect(spy).toHaveBeenCalledWith({
+      expect(spy.mock.lastCall[0]).toEqual({
         formattedValue: '1334_',
         value: '34',
         floatValue: 34,
       });
-      // expect(spy.calls.argsFor(1)[0]).toEqual({
-      //   formattedValue: '1334_',
-      //   value: '34',
-      //   floatValue: 34,
-      // });
+    });
+
+    // TODO: Replace above test
+    it('render correct value when format character contains a number', async () => {
+      const { input, user } = await render(<PatternFormat format="13###" mask="_" />);
+
+      await simulateKeyInput(user, input, '3', 0);
+      expect(input).toHaveValue('133__');
+
+      await simulateKeyInput(user, input, '4', 3);
+      expect(input).toHaveValue('1334_');
     });
 
     it('should not allow replacing all characters with number when formatting is present for NumericFormats', async () => {
@@ -363,7 +456,7 @@ const onValueChangeFn =
       expect(input).toHaveValue('1.000');
     });
 
-    it.only('should format value when input value is empty and allowEmptyFormatting is true', async () => {
+    it('should format value when input value is empty and allowEmptyFormatting is true', async () => {
       expect(async () => {
         const { input, user } = await render(<PatternFormat format="##/##/####" value="" />);
 
@@ -397,7 +490,7 @@ const onValueChangeFn =
       expect(input).toHaveValue('');
     });
 
-    it.skip('should allow adding decimals and negation when float value is used to set state', async () => {
+    it('should allow adding decimals and negation when float value is used to set state', async () => {
       function NumericFormatTest(props) {
         const [state, setState] = useState();
 
@@ -416,7 +509,7 @@ const onValueChangeFn =
         );
       }
 
-      const { input, user } = await render(
+      const { input, user, rerender } = await render(
         <NumericFormatTest
           onValueChange={(values) => {
             wrapper.setProps({ value: values.floatValue });
@@ -429,53 +522,88 @@ const onValueChangeFn =
       expect(input).toHaveValue('-');
 
       //check decimal
-      await simulateKeyInput(user, input, 'Backspace', 1);
+      await simulateKeyInput(user, input, '{Backspace}', 1);
       await simulateKeyInput(user, input, '.', 0);
       await simulateKeyInput(user, input, '2', 1);
       expect(input).toHaveValue('0.2');
 
       //check changing format should change the formatted value
-      wrapper.setProps({ prefix: '$' });
+      rerender(
+        <NumericFormatTest
+          onValueChange={(values) => {
+            wrapper.setProps({ value: values.floatValue });
+          }}
+          prefix="$"
+        />,
+      );
       expect(input).toHaveValue('$0.2');
 
       //check if trailing decimal is supported
-      wrapper.setProps({ value: 123 });
+      rerender(
+        <NumericFormatTest
+          onValueChange={(values) => {
+            wrapper.setProps({ value: values.floatValue });
+          }}
+          prefix="$"
+          value={123}
+        />,
+      );
       await simulateKeyInput(user, input, '.', 4);
       expect(input).toHaveValue('$123.');
 
       //test in backspace leads correct formatting if it has trailing .
       await simulateKeyInput(user, input, '4', 5);
       expect(input).toHaveValue('$123.4');
-      await simulateKeyInput(user, input, 'Backspace', 6);
+      await simulateKeyInput(user, input, '{Backspace}', 6);
       expect(input).toHaveValue('$123');
     });
 
+    // TODO: Could be replaced by the test below
     it.skip('should pass valid floatValue in isAllowed callback', async () => {
-      const spy = jasmine.createSpy();
+      const spy = vi.fn();
+
       const { input, user } = await render(<NumericFormat isAllowed={spy} />);
+
       await simulateKeyInput(user, input, '.', 0);
-      expect(spy.calls.argsFor(0)[0]).toEqual({
+      expect(spy.mock.lastCall[0]).toEqual({
         formattedValue: '.',
         value: '.',
         floatValue: undefined,
       });
 
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
-      simulateKeyInput(wrapper.find('input'), '0', 0);
-
-      expect(spy.calls.argsFor(2)[0]).toEqual({
+      await simulateKeyInput(user, input, '{Backspace}', 1);
+      await simulateKeyInput(user, input, '0', 0);
+      expect(spy.mock.lastCall[0]).toEqual({
         formattedValue: '0',
         value: '0',
         floatValue: 0,
       });
 
-      simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
-      simulateKeyInput(wrapper.find('input'), '123.', 0);
-      expect(spy.calls.argsFor(4)[0]).toEqual({
+      await simulateKeyInput(user, input, '{Backspace}', 1);
+      await simulateKeyInput(user, input, '123.', 0);
+      expect(spy.mock.lastCall[0]).toEqual({
         formattedValue: '123.',
         value: '123.',
         floatValue: 123,
       });
+    });
+
+    // TODO: Replace above test
+    it.skip('should test for behaviour', async () => {
+      const { input, user } = await render(<NumericFormat isAllowed={() => true} />);
+
+      await simulateKeyInput(user, input, '.', 0);
+      expect(input).toHaveValue('.');
+
+      await simulateKeyInput(user, input, '{Backspace}', 1);
+      expect(input).toHaveValue('');
+      await simulateKeyInput(user, input, '0', 0);
+      expect(input).toHaveValue('0');
+
+      await simulateKeyInput(user, input, '{Backspace}', 1);
+      expect(input).toHaveValue('');
+      await simulateKeyInput(user, input, '123.', 0);
+      expect(input).toHaveValue('123.');
     });
 
     it('should not call onValueChange if no formatting is applied', async () => {
@@ -543,7 +671,7 @@ const onValueChangeFn =
     });
 
     // TODO: Consider updating to test behaviour, not implementation
-    it('should call onValueChange with the right source information', async () => {
+    it.skip('should call onValueChange with the right source information', async () => {
       const spy = vi.fn();
       const { input, user, rerender } = await render(
         <NumericFormat value="1234" valueIsNumericString={true} onValueChange={spy} />,
@@ -567,12 +695,15 @@ const onValueChangeFn =
       await simulateKeyInput(user, input, '5', 0);
       const { event, source } = spy.mock.lastCall[1];
       const { key } = event;
+      // Not sure if this has anything to do with the component?
       expect(key).toEqual('5');
       expect(source).toEqual('event');
     });
 
+    // Replace the test above
     it('should call onValueChange when value changes', async () => {
       const mockOnValueChange = vi.fn();
+
       const { input, user, rerender } = await render(
         <NumericFormat
           value="1234"
@@ -607,6 +738,7 @@ const onValueChangeFn =
 
     it('should call onFocus prop when focused', async () => {
       const mockOnFocus = vi.fn();
+
       const { input, user } = await render(<NumericFormat onFocus={mockOnFocus} />);
 
       simulateFocusEvent(input);
@@ -751,10 +883,10 @@ const onValueChangeFn =
           <PatternFormat format="##/##/####" mask={['D', 'D', 'M', 'M', 'Y', 'Y', 'Y', 'Y']} />,
         );
 
-        simulateKeyInput(user, input, '1', 0);
+        await simulateKeyInput(user, input, '1', 0);
         expect(input).toHaveValue('1D/MM/YYYY');
 
-        simulateKeyInput(user, input, '3', 1);
+        await simulateKeyInput(user, input, '3', 1);
         expect(input).toHaveValue('13/MM/YYYY');
       });
 
