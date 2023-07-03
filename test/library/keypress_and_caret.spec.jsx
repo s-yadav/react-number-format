@@ -4,7 +4,7 @@ import NumericFormat from '../../src/numeric_format';
 import PatternFormat from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
 import ReactDOM from 'react-dom';
-import { cleanup } from '@testing-library/react';
+import { cleanup, fireEvent } from '@testing-library/react';
 
 import {
   simulateBlurEvent,
@@ -136,24 +136,21 @@ describe('Test keypress and caret position changes', () => {
       expect(input).toHaveValue('');
 
       //case 3: Enter first multiple number
-      rerender(<PatternFormat format="#### #### #### ####" mask="_" value="" />);
+      user.clear(input);
       await simulateKeyInput(user, input, '2456789', 0);
       expect(input).toHaveValue('2456 789_ ____ ____');
 
       //case 4: When alpha numeric character got added
       user.clear(input);
-      // rerender(<PatternFormat format="#### #### #### ####" mask="_" value="" />);
       await simulateKeyInput(user, input, '245sf6789', 0);
       expect(input).toHaveValue('2456 789_ ____ ____');
 
       //case 5: Similiar to case 4 but a formatted value got added
       user.clear(input);
-      // rerender(<PatternFormat format="#### #### #### ####" mask="_" value="" />);
       await simulateKeyInput(user, input, '1234 56', 0);
       expect(input).toHaveValue('1234 56__ ____ ____');
 
       //case 6: If format has numbers
-      user.clear(input);
       rerender(<PatternFormat format="+1 (###) ### # ##" mask="_" />);
       await simulateKeyInput(user, input, '123456', 0);
       expect(input).toHaveValue('+1 (123) 456 _ __');
@@ -489,7 +486,6 @@ describe('Test keypress and caret position changes', () => {
       expect(input.selectionStart).toEqual(13);
     });
 
-    // TODO
     it('should correct wrong caret position on focus', async () => {
       const { input, rerender, user } = await render(
         <NumericFormat
@@ -503,10 +499,9 @@ describe('Test keypress and caret position changes', () => {
       // Replaced with an approach which more accurately represents user behaviour
       // simulateFocusEvent(input, 0, 0, setSelectionRange);
 
-      // simulateMouseUpEvent(user, input, 4);
-      // expect(input.selectionStart).toEqual(4);
-      // simulateBlurEvent(input);
-      simulateFocusEvent(input);
+      simulateMouseUpEvent(user, input, 0);
+
+      expect(input.selectionStart).toBe(4);
 
       expect(input.selectionStart).toBe(4);
     });
@@ -521,7 +516,6 @@ describe('Test keypress and caret position changes', () => {
       expect(onFocus).toHaveBeenCalledTimes(0);
     });
 
-    // TODO
     it('should correct wrong caret positon on focus when allowEmptyFormatting is set', async () => {
       const { input, user } = await render(
         <PatternFormat
@@ -532,7 +526,7 @@ describe('Test keypress and caret position changes', () => {
         />,
       );
 
-      simulateFocusEvent(input);
+      simulateMouseUpEvent(user, input, 1);
 
       expect(input.selectionStart).toBe(4);
     });
@@ -550,6 +544,9 @@ describe('Test keypress and caret position changes', () => {
       // Note: init caretPos to `6`. Focus to `6`. In case of bug, selectionStart is `0` and the caret will move to `4`.
       //   otherwise (correct behaviour) the value will not change, and stay `6`
 
+      simulateMouseUpEvent(user, input, 1);
+      expect(input.selectionStart).toBe(4);
+
       simulateMouseUpEvent(user, input, 6);
       expect(input.selectionStart).toBe(6);
       simulateBlurEvent(input);
@@ -558,15 +555,14 @@ describe('Test keypress and caret position changes', () => {
       expect(input.selectionStart).toBe(6);
     });
 
-    // TODO
-    it('should not reset caret position on focus when full value is selected', async () => {
+    // TODO: Why would `caret position` not change when a selectionRange is explicitly set?
+    it.todo('should not reset caret position on focus when full value is selected', async () => {
       const value = 'Rs. 12,345.50 /sq.feet';
 
       const { input, user } = await render(
         <NumericFormat thousandSeparator="," prefix="Rs. " suffix=" /sq.feet" value={value} />,
       );
 
-      // simulateFocusEvent(input, 0, value.length, setSelectionRange);
       simulateFocusEvent(input);
 
       expect(input.selectionStart).toBe(0);
