@@ -1,27 +1,32 @@
 import React from 'react';
+import { render as rtlRender, screen, renderHook, fireEvent } from '@testing-library/react';
 
-import { mount } from '../test_util';
+import { mount, render } from '../test_util';
 import NumericFormat from '../../src/numeric_format';
 import PatternFormat from '../../src/pattern_format';
 
 /*** format_number input as text ****/
 describe('NumberFormat as text', () => {
   it('should format numbers to currency', () => {
-    const wrapper = mount(
+    rtlRender(
       <NumericFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />,
     );
-    expect(wrapper.find('span').text()).toEqual('$2,456,981');
+
+    const span = screen.getByTestId('rnf-renderText-span');
+    expect(span.textContent).toBe('$2,456,981');
   });
 
   it('should format as given format', () => {
-    const wrapper = mount(
+    rtlRender(
       <PatternFormat value={4111111111111111} displayType={'text'} format="#### #### #### ####" />,
     );
-    expect(wrapper.find('span').text()).toEqual('4111 1111 1111 1111');
+
+    const span = screen.getByTestId('rnf-renderText-span');
+    expect(span.textContent).toEqual('4111 1111 1111 1111');
   });
 
   it('should format as given format when input is string', () => {
-    const wrapper = mount(
+    rtlRender(
       <PatternFormat
         value="4111111111111111"
         valueIsNumericString
@@ -29,11 +34,13 @@ describe('NumberFormat as text', () => {
         format="#### #### #### ####"
       />,
     );
-    expect(wrapper.find('span').text()).toEqual('4111 1111 1111 1111');
+
+    const span = screen.getByTestId('rnf-renderText-span');
+    expect(span.textContent).toEqual('4111 1111 1111 1111');
   });
 
   it('should format as given format when input length is less than format length', () => {
-    const wrapper = mount(
+    rtlRender(
       <PatternFormat
         value="41111111111111"
         valueIsNumericString
@@ -41,11 +48,13 @@ describe('NumberFormat as text', () => {
         format="#### #### #### ####"
       />,
     );
-    expect(wrapper.find('span').text()).toEqual('4111 1111 1111 11  ');
+
+    const span = screen.getByTestId('rnf-renderText-span');
+    expect(span.textContent).toEqual('4111 1111 1111 11  ');
   });
 
   it('should format as given format with mask', () => {
-    const wrapper = mount(
+    rtlRender(
       <PatternFormat
         value="41111111111111"
         valueIsNumericString
@@ -54,23 +63,26 @@ describe('NumberFormat as text', () => {
         mask="_"
       />,
     );
-    expect(wrapper.find('span').text()).toEqual('4111 1111 1111 11__');
+
+    const span = screen.getByTestId('rnf-renderText-span');
+    expect(span.textContent).toEqual('4111 1111 1111 11__');
   });
 
   it('should limit decimal scale to given value', () => {
-    const wrapper = mount(<NumericFormat value={4111.344} displayType={'text'} decimalScale={2} />);
-    expect(wrapper.find('span').text()).toEqual('4111.34');
+    const { rerender } = rtlRender(
+      <NumericFormat value={4111.344} displayType={'text'} decimalScale={2} />,
+    );
 
-    wrapper.setProps({
-      value: 4111.358,
-    });
-    wrapper.update();
+    const span = screen.getByTestId('rnf-renderText-span');
+    expect(span.textContent).toEqual('4111.34');
 
-    expect(wrapper.find('span').text()).toEqual('4111.36');
+    rerender(<NumericFormat value={4111.358} displayType={'text'} decimalScale={2} />);
+
+    expect(span.textContent).toEqual('4111.36');
   });
 
   it('should add zeros if fixedDecimalScale is provided', () => {
-    const wrapper = mount(
+    const { rerender } = rtlRender(
       <NumericFormat
         value="4111.11"
         valueIsNumericString
@@ -79,26 +91,34 @@ describe('NumberFormat as text', () => {
         fixedDecimalScale={true}
       />,
     );
-    expect(wrapper.find('span').text()).toEqual('4111.1100');
 
-    wrapper.setProps({
-      decimalScale: 1,
-    });
+    const span = screen.getByTestId('rnf-renderText-span');
+    expect(span.textContent).toEqual('4111.1100');
 
-    wrapper.update();
-    expect(wrapper.find('span').text()).toEqual('4111.1');
+    rerender(
+      <NumericFormat
+        value="4111.11"
+        valueIsNumericString
+        displayType={'text'}
+        decimalScale={1}
+        fixedDecimalScale={true}
+      />,
+    );
+    expect(span.textContent).toEqual('4111.1');
   });
 
   it('should accept custom renderText method', () => {
-    const wrapper = mount(
+    rtlRender(
       <NumericFormat
         value="4111.11"
         valueIsNumericString
         thousandSeparator=","
-        renderText={(value) => <div>{value}</div>}
+        renderText={(value) => <div data-testid="rnf-renderText-div">{value}</div>}
         displayType={'text'}
       />,
     );
-    expect(wrapper.find('div').text()).toEqual('4,111.11');
+
+    const div = screen.getByTestId('rnf-renderText-div');
+    expect(div.textContent).toEqual('4,111.11');
   });
 });
