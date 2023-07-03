@@ -105,7 +105,7 @@
     "rollup-plugin-uglify": "^6.0.3",
     "ts-loader": "^9.2.6",
     "typescript": "^4.6.3",
-    "vitest": "^0.31.1",
+    "vitest": "^0.32.0",
     "webpack": "^5.69.1",
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.7.4"
