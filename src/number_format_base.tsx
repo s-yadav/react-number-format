@@ -421,7 +421,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     return renderText ? (
       <>{renderText(formattedValue, otherProps) || null}</>
     ) : (
-      <span {...otherProps} ref={getInputRef}>
+      <span {...otherProps} data-testid="rnf-renderText-span" ref={getInputRef}>
         {formattedValue}
       </span>
     );
