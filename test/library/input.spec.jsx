@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, StrictMode } from 'react';
 import { vi } from 'vitest';
 import { render as rtlRender, screen, renderHook, fireEvent } from '@testing-library/react';
 
@@ -865,6 +865,38 @@ const onValueChangeFn =
 
       rerender(<NumericFormat value="$1,234" prefix="Rs. " thousandSeparator />);
       expect(input).toHaveValue('Rs. 1,234');
+    });
+
+    it('should handle prop updates on StrictMode', async () => {
+      function Test() {
+        const [val, setVal] = React.useState('2');
+
+        return (
+          <div className="App">
+            <span>Controlled value: {val}</span>
+            <hr />
+            <NumericFormat
+              value={val}
+              onValueChange={(values) => {
+                setVal(values.value);
+              }}
+            />
+            <button type="button" onClick={() => setVal('321')}>
+              Update to 321
+            </button>
+          </div>
+        );
+      }
+
+      const { input, view } = await render(
+        <StrictMode>
+          <Test />
+        </StrictMode>,
+      );
+      expect(input.value).toEqual('2');
+      const button = view.getByRole('button');
+      fireEvent.click(button);
+      expect(input.value).toEqual('321');
     });
 
     describe('Test masking', () => {

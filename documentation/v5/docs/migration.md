@@ -36,6 +36,14 @@ Number format modules need to know if the passed value is a formatting string or
 
 isNumericString prop was confusing and wasn't explaining what is numeric string. The prop is now renamed to more verbose name `valueIsNumericString`.
 
+### Function values for format and removeFormatting are handled in NumberFormatBase.
+
+The ability to use a custom formatting function has been extracted to a base customizable module. [**NumberFormatBase**](/docs/customization) for custom formatter based formatting.
+
+```js
+import { NumberFormatBase} from "react-number-format";
+```
+
 ### customNumerals `Array<string>`
 
 :::caution Removed
