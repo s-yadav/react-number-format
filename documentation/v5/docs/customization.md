@@ -200,3 +200,32 @@ function CustomNumeralNumericFormat(props) {
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
 </details>
+
+### AllowEmptyFormatting on NumericFormat
+
+Currently allowEmptyFormatting is only available on the pattern lock, while it isn't a common usecase in NumericFormat, you still might want that behavior, you can achieve it like following.
+
+```js
+function CustomNumberFormat(props) {
+  const { prefix = '', suffix = '', allowEmptyFormatting } = props;
+  const { format, ...numberFormatBaseProps } = useNumericFormat(props);
+  const _format = (numStr, props) => {
+    const formattedValue = format(numStr, props);
+    return allowEmptyFormatting && formattedValue === '' ? prefix + suffix : formattedValue;
+  };
+
+  return <NumberFormatBase {...numberFormatBaseProps} format={_format} />;
+}
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/numeric-format-allowemptyformat-zt3mh8?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     title="Custom Numeral (Numer Format)"
+     className="csb"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
