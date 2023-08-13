@@ -57,6 +57,14 @@ type NumberFormatProps<Props, BaseType = InputAttributes> = Props &
 
 export type OnValueChange = (values: NumberFormatValues, sourceInfo: SourceInfo) => void;
 
+export type IsCharacterSame = (compareProps: {
+  currentValue: string;
+  lastValue: string;
+  formattedValue: string;
+  currentValueIndex: number;
+  formattedValueIndex: number;
+}) => boolean;
+
 type NumberFormatBase = {
   type?: 'text' | 'tel' | 'password';
   displayType?: 'input' | 'text';
@@ -77,6 +85,7 @@ type NumberFormatBase = {
   onBlur?: InputAttributes['onBlur'];
   getCaretBoundary?: (formattedValue: string) => boolean[];
   isValidInputCharacter?: (character: string) => boolean;
+  isCharacterSame?: IsCharacterSame;
 };
 
 export type NumberFormatBaseProps<BaseType = InputAttributes> = NumberFormatProps<

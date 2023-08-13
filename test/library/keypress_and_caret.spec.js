@@ -133,7 +133,23 @@ describe('Test keypress and caret position changes', () => {
   it('should handle caret position correctly when suffix starts with space and allowed decimal separator is pressed. #725', async () => {
     const { input } = await render(
       <NumericFormat
-        value={0}
+        value={2}
+        decimalSeparator=","
+        thousandSeparator="."
+        decimalScale={2}
+        prefix="$"
+        suffix=" €"
+      />,
+    );
+
+    simulateNativeKeyInput(input, '.', 2, 2);
+    expect(input.selectionStart).toEqual(3);
+  });
+
+  it('should handle caret position correctly when suffix starts with space and allowed decimal separator is pressed in empty input. #774', async () => {
+    const { input } = await render(
+      <NumericFormat
+        value={''}
         decimalSeparator=","
         allowedDecimalSeparators={['%', '.']}
         decimalScale={2}
@@ -141,7 +157,28 @@ describe('Test keypress and caret position changes', () => {
       />,
     );
 
-    simulateNativeKeyInput(input, '.', 1, 1);
+    simulateNativeKeyInput(input, '.', 0, 0);
+    expect(input.selectionStart).toEqual(1);
+  });
+
+  it('should handle the caret position when prefix is provided and number is entered on empty input', async () => {
+    const { input } = await render(<NumericFormat value={''} prefix="$" />);
+
+    simulateNativeKeyInput(input, '1', 0, 0);
+    expect(input.selectionStart).toEqual(2);
+  });
+
+  it('should handle the caret position when prefix is provided and allowed decimal separator is entered on empty input', async () => {
+    const { input } = await render(
+      <NumericFormat
+        value={''}
+        decimalSeparator=","
+        allowedDecimalSeparators={['%', '.']}
+        prefix="$"
+      />,
+    );
+
+    simulateNativeKeyInput(input, '.', 0, 0);
     expect(input.selectionStart).toEqual(2);
   });
 
