@@ -18,6 +18,8 @@ import { TextField } from '@mui/material';
 <NumericFormat value={12323} customInput={TextField} />;
 ```
 
+**Note**: customInput expects reference of component (not a render prop), if you pass an inline component like this `<NumericFormat customInput={() => <TextField />} />`, it will not work.
+
 <details>
   <summary>
   Demo
