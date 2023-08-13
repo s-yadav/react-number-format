@@ -1,11 +1,50 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import NumericFormat from '../../src/numeric_format';
+import NumericFormat, { useNumericFormat } from '../../src/numeric_format';
 import PatternFormat from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
 import TextField from 'material-ui/TextField';
 import { cardExpiry } from '../../custom_formatters/card_expiry';
+
+const persianNumeral = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+
+function CustomNumeralNumericFormat(props) {
+  const { format, removeFormatting, isCharacterSame, ...rest } = useNumericFormat(props);
+
+  const _format = (val) => {
+    const _val = format(val);
+    return _val.replace(/\d/g, ($1) => persianNumeral[Number($1)]);
+  };
+
+  const _removeFormatting = (val, ...rest) => {
+    const _val = val.replace(new RegExp(persianNumeral.join('|'), 'g'), ($1) =>
+      persianNumeral.indexOf($1),
+    );
+
+    return removeFormatting(_val, ...rest);
+  };
+
+  const _isCharacterSame = (compareMeta) => {
+    const isCharSame = isCharacterSame(compareMeta);
+    const { formattedValue, currentValue, formattedValueIndex, currentValueIndex } = compareMeta;
+    const curChar = currentValue[currentValueIndex];
+    const newChar = formattedValue[formattedValueIndex];
+    const curPersianChar = persianNumeral[Number(curChar)] ?? curChar;
+    const newPersianChar = persianNumeral[Number(newChar)] ?? newChar;
+
+    return isCharSame || curPersianChar || newPersianChar;
+  };
+
+  return (
+    <NumberFormatBase
+      format={_format}
+      removeFormatting={_removeFormatting}
+      isCharacterSame={_isCharacterSame}
+      {...rest}
+    />
+  );
+}
 
 class App extends React.Component {
   constructor() {
@@ -84,7 +123,8 @@ class App extends React.Component {
           <h3>Custom thousand separator : Format currency in input</h3>
           <div>ThousandSeparator: '.', decimalSeparator=','</div>
           <div>
-            <NumericFormat thousandSeparator="." decimalSeparator="," prefix="$" />
+            <NumericFormat value={1234567.8901} thousandSeparator="." decimalSeparator="," />,
+            <NumericFormat thousandSeparator="." decimalSeparator="," prefix="$" suffix=" /-" />
           </div>
           <br />
           <div>ThousandSeparator: ' ', decimalSeparator='.'</div>
@@ -152,7 +192,12 @@ class App extends React.Component {
 
         <div className="example">
           <h3>Custom Numeral: add support for custom languages </h3>
-          <NumericFormat customNumerals={['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']} />
+          <CustomNumeralNumericFormat
+            prefix="$"
+            decimalSeparator=","
+            suffix="/-"
+            allowedDecimalSeparators={[',', '.']}
+          />
         </div>
       </div>
     );

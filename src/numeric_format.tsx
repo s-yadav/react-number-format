@@ -14,6 +14,7 @@ import {
   toNumericString,
   charIsNumber,
   isNotValidValue,
+  findChangeRange,
 } from './utils';
 import {
   NumericFormatProps,
@@ -23,6 +24,7 @@ import {
   FormatInputValueFunction,
   RemoveFormattingFunction,
   NumberFormatBaseProps,
+  IsCharacterSame,
 } from './types';
 import NumberFormatBase from './number_format_base';
 
@@ -334,9 +336,9 @@ export function useNumericFormat<BaseType = InputAttributes>(
   props = validateAndUpdateProps(props);
 
   const {
-    decimalSeparator = '.',
     /* eslint-disable no-unused-vars */
-    allowedDecimalSeparators,
+    decimalSeparator: _decimalSeparator,
+    allowedDecimalSeparators: _allowedDecimalSeparators,
     thousandsGroupStyle,
     suffix,
     allowNegative,
@@ -354,6 +356,9 @@ export function useNumericFormat<BaseType = InputAttributes>(
     onValueChange,
     ...restProps
   } = props;
+
+  // get derived decimalSeparator and allowedDecimalSeparators
+  const { decimalSeparator, allowedDecimalSeparators } = getSeparators(props);
 
   const _format: FormatInputValueFunction = (numStr) => format(numStr, props);
 
@@ -421,7 +426,6 @@ export function useNumericFormat<BaseType = InputAttributes>(
     }
 
     // don't allow user to delete decimal separator when decimalScale and fixedDecimalScale is set
-    const { decimalSeparator, allowedDecimalSeparators } = getSeparators(props);
     if (
       key === 'Backspace' &&
       value[selectionStart - 1] === decimalSeparator &&
@@ -492,11 +496,43 @@ export function useNumericFormat<BaseType = InputAttributes>(
     return charIsNumber(inputChar);
   };
 
+  const isCharacterSame: IsCharacterSame = ({
+    currentValue,
+    lastValue,
+    formattedValue,
+    currentValueIndex,
+    formattedValueIndex,
+  }) => {
+    const curChar = currentValue[currentValueIndex];
+    const newChar = formattedValue[formattedValueIndex];
+
+    /**
+     * NOTE: as thousand separator and allowedDecimalSeparators can be same, we need to check on
+     * typed range if we have typed any character from allowedDecimalSeparators, in that case we
+     * consider different characters like , and . same within the range of updated value.
+     */
+    const typedRange = findChangeRange(lastValue, currentValue);
+    const { to } = typedRange;
+
+    if (
+      currentValueIndex >= to.start &&
+      currentValueIndex < to.end &&
+      allowedDecimalSeparators &&
+      allowedDecimalSeparators.includes(curChar) &&
+      newChar === decimalSeparator
+    ) {
+      return true;
+    }
+
+    return curChar === newChar;
+  };
+
   return {
     ...(restProps as NumberFormatBaseProps<BaseType>),
     value: formattedValue,
     valueIsNumericString: false,
     isValidInputCharacter,
+    isCharacterSame,
     onValueChange: _onValueChange,
     format: _format,
     removeFormatting: _removeFormatting,

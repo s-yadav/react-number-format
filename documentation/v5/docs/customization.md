@@ -9,12 +9,11 @@ React Number Format v5 is a complete rewrite with a goal of keeping it fully cus
 
 The primary thing which react number format controls is apply formatting in place (in the input) while managing correct caret position. It tries to understand what user is trying to do, add number, cut/paste, delete, and manage cursor position accordingly.
 
-At the core of React number format lies NumberFormatBase, which works on four main props controlled from parent.
+At the core of React number format lies NumberFormatBase, which works on three main props controlled from parent.
 
-- **format**: A format function which can turn any numeric string to a formatted string.
-- **removeFormatting**: A function to removing formatting from a formatted string and return numeric string.
-- **isValidInputCharacter**: A function to tell if a character in the formatted value is a valid typeable character. You don't need to pass it most of the time, as it defaults numeric characters (0-9). But case like additional character is allowed to type, for example decimal separator in currency format.
-- **getCaretBoundary**: A function given a formatted string, returns boundaries of valid cursor position. basically an array of boolean, where index of specify caret position. true at a index signifies user can put their caret at the position, false means the caret position is not allowed and the caret will move to closet allowed position.
+- **format** `(numStr: string) => string`: A format function which can turn any numeric string to a formatted string.
+- **removeFormatting** `(formattedStr: string) => string`: A function to removing formatting from a formatted string and return numeric string.
+- **getCaretBoundary** `(formattedStr: string) => boolean[]`: A function given a formatted string, returns boundaries of valid cursor position. basically an array of boolean, where index of specify caret position. true at a index signifies user can put their caret at the position, false means the caret position is not allowed and the caret will move to closet allowed position.
 
 Most of the time you don't have to define getCaretBoundary, as the default one is enough, but in case you need to define, it looks something like this.
 
@@ -32,6 +31,23 @@ function caretUnknownFormatBoundary(formattedValue) {
   return boundaryAry;
 }
 ```
+
+There are few more props to handle some corner case.
+
+- **isValidInputCharacter** `(char: sting) => boolean`: A function to tell if a character in the formatted value is a valid typeable character. You don't need to pass it most of the time, as it defaults numeric characters (0-9). But case like additional character is allowed to type, for example decimal separator in currency format.
+- **isCharacterSame** `(compareProps: CompareProps) => boolean`: Some time we would like to allow user pressing different key and that being interpreted as different key like custom numerals, or letting user press `.` for decimal separator when custom decimalSeparator is provided. In such case we need to inform the library that the two characters are same.
+
+```js
+type CompareProps = {
+  currentValue: string, // current value in the input, before applying any formatting
+  lastValue: string, // last formatted value
+  formattedValue: string, // current formatted value.
+  currentValueIndex: number, // character index in currentValue which we are comparing
+  formattedValueIndex: number, // character index in formattedValue which we are comparing
+};
+```
+
+Check the usage in [custom numeral example](#custom-numeral-example).
 
 Apart from this prop some key handling are required depending on use case which can be done using native events, onKeyDown/onKeyUp etc.
 
@@ -170,7 +186,7 @@ Another example for NumericFormat could be support for custom numerals.
 const persianNumeral = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 
 function CustomNumeralNumericFormat(props) {
-  const { format, removeFormatting, ...rest } = useNumericFormat(props);
+  const { format, removeFormatting, isCharacterSame, ...rest } = useNumericFormat(props);
 
   const _format = (val) => {
     const _val = format(val);
@@ -185,7 +201,25 @@ function CustomNumeralNumericFormat(props) {
     return removeFormatting(_val);
   };
 
-  return <NumberFormatBase format={_format} removeFormatting={_removeFormatting} {...rest} />;
+  const _isCharacterSame = (compareMeta) => {
+    const isCharSame = isCharacterSame(compareMeta);
+    const { formattedValue, currentValue, formattedValueIndex, currentValueIndex } = compareMeta;
+    const curChar = currentValue[currentValueIndex];
+    const newChar = formattedValue[formattedValueIndex];
+    const curPersianChar = persianNumeral[Number(curChar)] ?? curChar;
+    const newPersianChar = persianNumeral[Number(newChar)] ?? newChar;
+
+    return isCharSame || curPersianChar || newPersianChar;
+  };
+
+  return (
+    <NumberFormatBase
+      format={_format}
+      removeFormatting={_removeFormatting}
+      isCharacterSame={_isCharacterSame}
+      {...rest}
+    />
+  );
 }
 ```
 
