@@ -228,7 +228,7 @@ function CustomNumeralNumericFormat(props) {
   Demo
   </summary>
   <iframe src="https://codesandbox.io/embed/custom-numeral-numer-format-forked-s8e1s4?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     title="Custom Numeral (Numer Format)"
+     title="Custom numeral example"
      className="csb"
      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
@@ -257,7 +257,72 @@ function CustomNumberFormat(props) {
   Demo
   </summary>
   <iframe src="https://codesandbox.io/embed/numeric-format-allowemptyformat-zt3mh8?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     title="Custom Numeral (Numer Format)"
+     title="AllowEmptyFormatting on NumericFormat"
+     className="csb"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+
+### Using parentheses to express negative numbers
+
+In some financial application we may want to express negative numbers enclosed with parentheses `($111,222)` as opposed to negative sign ahead of the number `-$111,222`. This can be implemented outside of the lib since v5.
+
+```js
+function CustomNegationNumberFormat({ prefix = '', suffix = '', ...restProps }) {
+  const [hasNegation, toggleNegation] = useState('');
+  const props = {
+    prefix: hasNegation ? '(' + prefix : prefix,
+    suffix: hasNegation ? suffix + ')' : suffix,
+    // as we are controlling the negation logic outside, we don't want numeric format to handle this
+    allowNegative: false,
+    ...restProps,
+  };
+  const { format, onKeyDown, ...numberFormatBaseProps } = useNumericFormat(props);
+
+  const _format = (numStr) => {
+    const formattedValue = format(numStr, props);
+    // if negation is present we need to always show negation with prefix and suffix even if value is empty
+    return formattedValue === '' && hasNegation ? props.prefix + props.suffix : formattedValue;
+  };
+
+  const _onKeyDown = (e) => {
+    const el = e.target;
+    const { key } = e;
+    const { selectionStart, selectionEnd, value = '' } = el;
+
+    // if multiple characters are selected and user hits backspace, no need to handle anything manually
+    if (selectionStart !== selectionEnd) {
+      onKeyDown(e);
+      return;
+    }
+
+    // if user is pressing '-' we want to change it to '()', so mark there is negation in the number
+    if (key === '-') {
+      toggleNegation(!hasNegation);
+      e.preventDefault();
+      return;
+    }
+
+    if (key === 'Backspace' && value[0] === '(' && selectionStart === props.prefix.length) {
+      toggleNegation(false);
+      e.preventDefault();
+      return;
+    }
+
+    onKeyDown(e);
+  };
+
+  return <NumberFormatBase {...numberFormatBaseProps} onKeyDown={_onKeyDown} format={_format} />;
+}
+```
+
+<details>
+  <summary>
+  Demo
+  </summary>
+  <iframe src="https://codesandbox.io/embed/parentheses-for-negation-forked-jn42cp?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     title="Using parentheses to express negative numbers"
      className="csb"
      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
