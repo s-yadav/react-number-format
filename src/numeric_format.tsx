@@ -426,14 +426,13 @@ export function useNumericFormat<BaseType = InputAttributes>(
     }
 
     // don't allow user to delete decimal separator when decimalScale and fixedDecimalScale is set
-    if (
-      key === 'Backspace' &&
-      value[selectionStart - 1] === decimalSeparator &&
-      decimalScale &&
-      fixedDecimalScale
-    ) {
-      setCaretPosition(el, selectionStart - 1);
-      e.preventDefault();
+    if (decimalScale && fixedDecimalScale) {
+      if (key === 'Backspace' && value[selectionStart - 1] === decimalSeparator) {
+        setCaretPosition(el, selectionStart - 1);
+        e.preventDefault();
+      } else if (key === 'Delete' && value[selectionStart] === decimalSeparator) {
+        e.preventDefault();
+      }
     }
 
     // if user presses the allowed decimal separator before the separator, move the cursor after the separator
