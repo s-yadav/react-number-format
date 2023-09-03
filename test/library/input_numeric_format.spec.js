@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import NumericFormat from '../../src/numeric_format';
@@ -692,6 +692,43 @@ describe('Test NumberFormat as input with numeric format options', () => {
       <NumericFormat value={12345} valueIsNumericString={false} thousandSeparator={true} />,
     );
     expect(input.value).toEqual('12,345');
+  });
+
+  it('should not infinite rerender when valueIsNumericString is not set and decimalScale is provided, and values.value is used inside onValueChange #786', async () => {
+    const ControlledComponent = (props) => {
+      const [value, setValue] = useState('');
+      const [renderCount, setRenderCount] = useState(0);
+
+      return (
+        <>
+          <NumericFormat
+            value={value}
+            onValueChange={(values) => {
+              //return to avoid infinite rerender
+              if (renderCount > 10) return;
+              setValue(values.value);
+              setRenderCount(renderCount + 1);
+            }}
+            {...props}
+          />
+          <span data-testid="renderCount">{renderCount}</span>
+        </>
+      );
+    };
+    const { input, view } = await render(
+      <ControlledComponent
+        thousandSeparator={false}
+        decimalSeparator=","
+        decimalScale={2}
+        fixedDecimalScale
+      />,
+    );
+
+    simulateNativeKeyInput(input, '2', 0, 0);
+
+    const renderCount = await view.getByTestId('renderCount');
+    expect(renderCount.innerHTML).toEqual('1');
+    expect(input.value).toEqual('2,00');
   });
 
   describe('should allow typing number if prefix or suffix is just an number #691', () => {
