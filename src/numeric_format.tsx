@@ -371,9 +371,9 @@ export function useNumericFormat<BaseType = InputAttributes>(
   let _valueIsNumericString = valueIsNumericString ?? isNumericString(_value, prefix, suffix);
 
   if (!isNil(value)) {
-    _valueIsNumericString = valueIsNumericString || typeof value === 'number';
+    _valueIsNumericString = _valueIsNumericString || typeof value === 'number';
   } else if (!isNil(defaultValue)) {
-    _valueIsNumericString = valueIsNumericString || typeof defaultValue === 'number';
+    _valueIsNumericString = _valueIsNumericString || typeof defaultValue === 'number';
   }
 
   const roundIncomingValueToPrecision = (value: string | number | null | undefined) => {
