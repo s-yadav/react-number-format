@@ -731,6 +731,16 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(input.value).toEqual('2,00');
   });
 
+  it('should not delete decimal separator if delete key is pressed before decimal separator when fixedDecimalScale is provided. #789', async () => {
+    const { input } = await render(
+      <NumericFormat value={'123.000'} decimalScale={3} fixedDecimalScale />,
+    );
+
+    simulateNativeKeyInput(input, '{delete}', 3, 3);
+
+    expect(input.value).toEqual('123.000');
+  });
+
   describe('should allow typing number if prefix or suffix is just an number #691', () => {
     it('when prefix is number', async () => {
       const { input } = await render(<NumericFormat prefix="1" />);
