@@ -269,13 +269,65 @@ function CustomNumberFormat(props) {
 In some financial application we may want to express negative numbers enclosed with parentheses `($111,222)` as opposed to negative sign ahead of the number `-$111,222`. This can be implemented outside of the lib since v5.
 
 ```js
-function CustomNegationNumberFormat({ prefix = '', suffix = '', ...restProps }) {
-  const [hasNegation, toggleNegation] = useState('');
+const NEGATION_FORMAT_REGEX = /^\((.*)\)$/;
+
+function extractNegationAndNumber(value) {
+  let hasNegation = false;
+  if (typeof value === 'number') {
+    hasNegation = value < 0;
+    value = hasNegation ? value * -1 : value;
+  } else if (value?.[0] === '-') {
+    hasNegation = true;
+    value = value.substring(1);
+  } else if (value?.match(NEGATION_FORMAT_REGEX)) {
+    hasNegation = true;
+    value = value.replace(NEGATION_FORMAT_REGEX, '$1');
+  }
+
+  return { hasNegation, value };
+}
+
+function CustomNegationNumberFormat({
+  prefix = '',
+  suffix = '',
+  value,
+  defaultValue,
+  onValueChange,
+  ...restProps
+}) {
+  const [hasNegation, toggleNegation] = useState(
+    extractNegationAndNumber(value ?? defaultValue).hasNegation,
+  );
+  const [internalValue, setInternalValue] = useState(
+    extractNegationAndNumber(value ?? defaultValue).value,
+  );
+  useEffect(() => {
+    const { hasNegation, value: internalValue } = extractNegationAndNumber(value);
+    setInternalValue(internalValue);
+    toggleNegation(hasNegation);
+  }, [value]);
+
+  const _onValueChange = (values, sourceInfo) => {
+    if (!onValueChange) return;
+
+    const { formattedValue, value, floatValue } = values;
+    onValueChange(
+      {
+        formattedValue,
+        value: hasNegation ? `-${value}` : value,
+        floatValue: hasNegation && !isNaN(floatValue) ? -floatValue : floatValue,
+      },
+      sourceInfo,
+    );
+  };
+
   const props = {
     prefix: hasNegation ? '(' + prefix : prefix,
     suffix: hasNegation ? suffix + ')' : suffix,
     // as we are controlling the negation logic outside, we don't want numeric format to handle this
     allowNegative: false,
+    value: internalValue,
+    onValueChange: _onValueChange,
     ...restProps,
   };
   const { format, onKeyDown, ...numberFormatBaseProps } = useNumericFormat(props);
@@ -291,15 +343,16 @@ function CustomNegationNumberFormat({ prefix = '', suffix = '', ...restProps }) 
     const { key } = e;
     const { selectionStart, selectionEnd, value = '' } = el;
 
-    // if multiple characters are selected and user hits backspace, no need to handle anything manually
+    // if every thing is selected and deleted remove the negation as well
     if (selectionStart !== selectionEnd) {
+      // if multiple characters are selected and user hits backspace, no need to handle anything manually
       onKeyDown(e);
       return;
     }
 
     // if user is pressing '-' we want to change it to '()', so mark there is negation in the number
     if (key === '-') {
-      toggleNegation(!hasNegation);
+      toggleNegation((hasNegation) => !hasNegation);
       e.preventDefault();
       return;
     }

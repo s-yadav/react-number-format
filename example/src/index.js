@@ -46,6 +46,106 @@ function CustomNumeralNumericFormat(props) {
   );
 }
 
+const NEGATION_FORMAT_REGEX = /^\((.*)\)$/;
+
+function extractNegationAndNumber(value) {
+  let hasNegation = false;
+  if (typeof value === 'number') {
+    hasNegation = value < 0;
+    value = hasNegation ? value * -1 : value;
+  } else if (value?.[0] === '-') {
+    hasNegation = true;
+    value = value.substring(1);
+  } else if (value?.match(NEGATION_FORMAT_REGEX)) {
+    hasNegation = true;
+    value = value.replace(NEGATION_FORMAT_REGEX, '$1');
+  }
+
+  return { hasNegation, value };
+}
+
+function CustomNegationNumberFormat({
+  prefix = '',
+  suffix = '',
+  value,
+  defaultValue,
+  onValueChange,
+  ...restProps
+}) {
+  const [hasNegation, toggleNegation] = useState(
+    extractNegationAndNumber(value ?? defaultValue).hasNegation,
+  );
+  const [internalValue, setInternalValue] = useState(
+    extractNegationAndNumber(value ?? defaultValue).value,
+  );
+  useEffect(() => {
+    const { hasNegation, value: internalValue } = extractNegationAndNumber(value);
+    setInternalValue(internalValue);
+    toggleNegation(hasNegation);
+  }, [value]);
+
+  const _onValueChange = (values, sourceInfo) => {
+    if (!onValueChange) return;
+
+    const { formattedValue, value, floatValue } = values;
+    onValueChange(
+      {
+        formattedValue,
+        value: hasNegation ? `-${value}` : value,
+        floatValue: hasNegation && !isNaN(floatValue) ? -floatValue : floatValue,
+      },
+      sourceInfo,
+    );
+  };
+
+  const props = {
+    prefix: hasNegation ? '(' + prefix : prefix,
+    suffix: hasNegation ? suffix + ')' : suffix,
+    // as we are controlling the negation logic outside, we don't want numeric format to handle this
+    allowNegative: false,
+    value: internalValue,
+    onValueChange: _onValueChange,
+    ...restProps,
+  };
+  const { format, onKeyDown, ...numberFormatBaseProps } = useNumericFormat(props);
+
+  const _format = (numStr) => {
+    const formattedValue = format(numStr, props);
+    // if negation is present we need to always show negation with prefix and suffix even if value is empty
+    return formattedValue === '' && hasNegation ? props.prefix + props.suffix : formattedValue;
+  };
+
+  const _onKeyDown = (e) => {
+    const el = e.target;
+    const { key } = e;
+    const { selectionStart, selectionEnd, value = '' } = el;
+
+    // if every thing is selected and deleted remove the negation as well
+    if (selectionStart !== selectionEnd) {
+      // if multiple characters are selected and user hits backspace, no need to handle anything manually
+      onKeyDown(e);
+      return;
+    }
+
+    // if user is pressing '-' we want to change it to '()', so mark there is negation in the number
+    if (key === '-') {
+      toggleNegation((hasNegation) => !hasNegation);
+      e.preventDefault();
+      return;
+    }
+
+    if (key === 'Backspace' && value[0] === '(' && selectionStart === props.prefix.length) {
+      toggleNegation(false);
+      e.preventDefault();
+      return;
+    }
+
+    onKeyDown(e);
+  };
+
+  return <NumberFormatBase {...numberFormatBaseProps} onKeyDown={_onKeyDown} format={_format} />;
+}
+
 class App extends React.Component {
   constructor() {
     super();
