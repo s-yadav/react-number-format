@@ -6,5 +6,5 @@
     "noImplicitAny": true,
     "skipLibCheck": true
   },
-  "include": ["src", "test/types"]
+  "include": ["src", "test/types", "test/library/utils"]
 }
