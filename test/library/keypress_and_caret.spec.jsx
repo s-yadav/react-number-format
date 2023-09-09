@@ -104,6 +104,84 @@ describe('Test keypress and caret position changes', () => {
     expect(input.selectionStart).toEqual(3);
   });
 
+  it('should not break the cursor position when format prop is updated', async () => {
+    const Test = () => {
+      const [val, setValue] = useState();
+      return (
+        <NumericFormat
+          thousandSeparator=" "
+          decimalScale={2}
+          placeholder="0,00"
+          fixedDecimalScale
+          thousandsGroupStyle="thousand"
+          decimalSeparator=","
+          value={val}
+          onValueChange={(v) => {
+            setValue(v.floatValue);
+          }}
+          prefix={val > 0 ? '+' : undefined}
+        />
+      );
+    };
+
+    const { input } = await render(<Test />);
+    simulateNativeKeyInput(input, '1', 0, 0);
+    expect(input.value).toEqual('+1,00');
+    expect(input.selectionStart).toEqual(2);
+  });
+
+  it('should handle caret position correctly when suffix starts with space and allowed decimal separator is pressed. #725', async () => {
+    const { input } = await render(
+      <NumericFormat
+        value={2}
+        decimalSeparator=","
+        thousandSeparator="."
+        decimalScale={2}
+        prefix="$"
+        suffix=" €"
+      />,
+    );
+
+    simulateNativeKeyInput(input, '.', 2, 2);
+    expect(input.selectionStart).toEqual(3);
+  });
+
+  it('should handle caret position correctly when suffix starts with space and allowed decimal separator is pressed in empty input. #774', async () => {
+    const { input } = await render(
+      <NumericFormat
+        value={''}
+        decimalSeparator=","
+        allowedDecimalSeparators={['%', '.']}
+        decimalScale={2}
+        suffix=" €"
+      />,
+    );
+
+    simulateNativeKeyInput(input, '.', 0, 0);
+    expect(input.selectionStart).toEqual(1);
+  });
+
+  it('should handle the caret position when prefix is provided and number is entered on empty input', async () => {
+    const { input } = await render(<NumericFormat value={''} prefix="$" />);
+
+    simulateNativeKeyInput(input, '1', 0, 0);
+    expect(input.selectionStart).toEqual(2);
+  });
+
+  it('should handle the caret position when prefix is provided and allowed decimal separator is entered on empty input', async () => {
+    const { input } = await render(
+      <NumericFormat
+        value={''}
+        decimalSeparator=","
+        allowedDecimalSeparators={['%', '.']}
+        prefix="$"
+      />,
+    );
+
+    simulateNativeKeyInput(input, '.', 0, 0);
+    expect(input.selectionStart).toEqual(2);
+  });
+
   describe('Test character insertion', () => {
     it('should add any number properly when input is empty without format prop passed', async () => {
       const { input, rerender, user } = await render(

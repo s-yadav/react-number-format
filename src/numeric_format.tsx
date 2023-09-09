@@ -14,6 +14,7 @@ import {
   toNumericString,
   charIsNumber,
   isNotValidValue,
+  findChangeRange,
 } from './utils';
 import {
   NumericFormatProps,
@@ -23,6 +24,7 @@ import {
   FormatInputValueFunction,
   RemoveFormattingFunction,
   NumberFormatBaseProps,
+  IsCharacterSame,
 } from './types';
 import NumberFormatBase from './number_format_base';
 
@@ -334,9 +336,9 @@ export function useNumericFormat<BaseType = InputAttributes>(
   props = validateAndUpdateProps(props);
 
   const {
-    decimalSeparator = '.',
     /* eslint-disable no-unused-vars */
-    allowedDecimalSeparators,
+    decimalSeparator: _decimalSeparator,
+    allowedDecimalSeparators: _allowedDecimalSeparators,
     thousandsGroupStyle,
     suffix,
     allowNegative,
@@ -355,6 +357,9 @@ export function useNumericFormat<BaseType = InputAttributes>(
     ...restProps
   } = props;
 
+  // get derived decimalSeparator and allowedDecimalSeparators
+  const { decimalSeparator, allowedDecimalSeparators } = getSeparators(props);
+
   const _format: FormatInputValueFunction = (numStr) => format(numStr, props);
 
   const _removeFormatting: RemoveFormattingFunction = (inputValue, changeMeta) =>
@@ -366,9 +371,9 @@ export function useNumericFormat<BaseType = InputAttributes>(
   let _valueIsNumericString = valueIsNumericString ?? isNumericString(_value, prefix, suffix);
 
   if (!isNil(value)) {
-    _valueIsNumericString = valueIsNumericString || typeof value === 'number';
+    _valueIsNumericString = _valueIsNumericString || typeof value === 'number';
   } else if (!isNil(defaultValue)) {
-    _valueIsNumericString = valueIsNumericString || typeof defaultValue === 'number';
+    _valueIsNumericString = _valueIsNumericString || typeof defaultValue === 'number';
   }
 
   const roundIncomingValueToPrecision = (value: string | number | null | undefined) => {
@@ -421,15 +426,13 @@ export function useNumericFormat<BaseType = InputAttributes>(
     }
 
     // don't allow user to delete decimal separator when decimalScale and fixedDecimalScale is set
-    const { decimalSeparator, allowedDecimalSeparators } = getSeparators(props);
-    if (
-      key === 'Backspace' &&
-      value[selectionStart - 1] === decimalSeparator &&
-      decimalScale &&
-      fixedDecimalScale
-    ) {
-      setCaretPosition(el, selectionStart - 1);
-      e.preventDefault();
+    if (decimalScale && fixedDecimalScale) {
+      if (key === 'Backspace' && value[selectionStart - 1] === decimalSeparator) {
+        setCaretPosition(el, selectionStart - 1);
+        e.preventDefault();
+      } else if (key === 'Delete' && value[selectionStart] === decimalSeparator) {
+        e.preventDefault();
+      }
     }
 
     // if user presses the allowed decimal separator before the separator, move the cursor after the separator
@@ -492,11 +495,43 @@ export function useNumericFormat<BaseType = InputAttributes>(
     return charIsNumber(inputChar);
   };
 
+  const isCharacterSame: IsCharacterSame = ({
+    currentValue,
+    lastValue,
+    formattedValue,
+    currentValueIndex,
+    formattedValueIndex,
+  }) => {
+    const curChar = currentValue[currentValueIndex];
+    const newChar = formattedValue[formattedValueIndex];
+
+    /**
+     * NOTE: as thousand separator and allowedDecimalSeparators can be same, we need to check on
+     * typed range if we have typed any character from allowedDecimalSeparators, in that case we
+     * consider different characters like , and . same within the range of updated value.
+     */
+    const typedRange = findChangeRange(lastValue, currentValue);
+    const { to } = typedRange;
+
+    if (
+      currentValueIndex >= to.start &&
+      currentValueIndex < to.end &&
+      allowedDecimalSeparators &&
+      allowedDecimalSeparators.includes(curChar) &&
+      newChar === decimalSeparator
+    ) {
+      return true;
+    }
+
+    return curChar === newChar;
+  };
+
   return {
     ...(restProps as NumberFormatBaseProps<BaseType>),
     value: formattedValue,
     valueIsNumericString: false,
     isValidInputCharacter,
+    isCharacterSame,
     onValueChange: _onValueChange,
     format: _format,
     removeFormatting: _removeFormatting,

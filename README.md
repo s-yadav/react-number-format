@@ -2,7 +2,7 @@
 
 # react-number-format
 
-React Number Format is an input-formatter library with a sophisticated and light weight caret engine.  It ensures that a user can only enter text that meets specific numeric or string patterns, and formats the input value for display.
+React Number Format is an input-formatter library with a sophisticated and light weight caret engine. It ensures that a user can only enter text that meets specific numeric or string patterns, and formats the input value for display.
 
 ### Features
 
@@ -33,6 +33,11 @@ Using `yarn`
 yarn add react-number-format
 ```
 
+### Documentation
+
+Read the full documentation here
+[https://s-yadav.github.io/react-number-format/docs/intro](https://s-yadav.github.io/react-number-format/docs/intro)
+
 #### ES6
 
 Numeric Format
@@ -41,15 +46,15 @@ Numeric Format
 import { NumericFormat } from 'react-number-format';
 ```
 
+NumericFormat Props: [https://s-yadav.github.io/react-number-format/docs/numeric_format](https://s-yadav.github.io/react-number-format/docs/numeric_format)
+
 Pattern Format
 
 ```js
 import { PatternFormat } from 'react-number-format';
 ```
 
-Read the full documentation here
-
-[https://s-yadav.github.io/react-number-format/docs/intro](https://s-yadav.github.io/react-number-format/docs/intro)
+PatternFormat Props: [https://s-yadav.github.io/react-number-format/docs/pattern_format](https://s-yadav.github.io/react-number-format/docs/pattern_format)
 
 ### Migrate from v4 to v5
 

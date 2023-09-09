@@ -50,6 +50,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     value: propValue,
     getCaretBoundary = caretUnknownFormatBoundary,
     isValidInputCharacter = charIsNumber,
+    isCharacterSame,
     ...otherProps
   } = props;
 
@@ -135,6 +136,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       caretPos,
       caretBoundary,
       isValidInputCharacter,
+      isCharacterSame,
     );
 
     //correct caret position if its outside of editable area
@@ -230,7 +232,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     : undefined;
 
   // needed to prevent warning with useLayoutEffect on server
-  const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
+  const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
   useIsomorphicLayoutEffect(() => {
     const input = focusedElm.current;

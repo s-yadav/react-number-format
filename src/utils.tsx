@@ -1,10 +1,32 @@
 import { useMemo, useRef, useState } from 'react';
-import { NumberFormatBaseProps, FormatInputValueFunction, OnValueChange } from './types';
+import {
+  NumberFormatBaseProps,
+  FormatInputValueFunction,
+  OnValueChange,
+  IsCharacterSame,
+} from './types';
 
 // basic noop function
 export function noop() {}
 export function returnTrue() {
   return true;
+}
+
+export function memoizeOnce<T extends unknown[], R extends unknown>(cb: (...args: T) => R) {
+  let lastArgs: T | undefined;
+  let lastValue: R = undefined;
+  return (...args: T) => {
+    if (
+      lastArgs &&
+      args.length === lastArgs.length &&
+      args.every((value, index) => value === lastArgs[index])
+    ) {
+      return lastValue;
+    }
+    lastArgs = args;
+    lastValue = cb(...args);
+    return lastValue;
+  };
 }
 
 export function charIsNumber(char?: string) {
@@ -243,7 +265,7 @@ export function findChangedIndex(prevValue: string, newValue: string) {
   return { start: i, end: prevLength - j };
 }
 
-export function findChangeRange(prevValue: string, newValue: string) {
+export const findChangeRange = memoizeOnce((prevValue: string, newValue: string) => {
   let i = 0,
     j = 0;
   const prevLength = prevValue.length;
@@ -263,7 +285,7 @@ export function findChangeRange(prevValue: string, newValue: string) {
     from: { start: i, end: prevLength - j },
     to: { start: i, end: newLength - j },
   };
-}
+});
 
 /*
   Returns a number whose value is limited to the given range
@@ -306,6 +328,15 @@ export function getMaskAtIndex(mask: string | string[] = ' ', index: number) {
   return mask[index] || ' ';
 }
 
+function defaultIsCharacterSame({
+  currentValue,
+  formattedValue,
+  currentValueIndex,
+  formattedValueIndex,
+}: Parameters<IsCharacterSame>[0]) {
+  return currentValue[currentValueIndex] === formattedValue[formattedValueIndex];
+}
+
 export function getCaretPosition(
   newFormattedValue: string,
   lastFormattedValue: string,
@@ -313,16 +344,14 @@ export function getCaretPosition(
   curCaretPos: number,
   boundary: boolean[],
   isValidInputCharacter: (char: string) => boolean,
+  /**
+   * format function can change the character, the caret engine relies on mapping old value and new value
+   * In such case if character is changed, parent can tell which chars are equivalent
+   * Some example, all allowedDecimalCharacters are updated to decimalCharacters, 2nd case if user is coverting
+   * number to different numeric system.
+   */
+  isCharacterSame: IsCharacterSame = defaultIsCharacterSame,
 ) {
-  const changeRange = findChangeRange(curValue, newFormattedValue);
-  const { from, to } = changeRange;
-
-  // if only last typed character is changed in the
-  if (from.end - from.start === 1 && from.end === to.end && to.end === curCaretPos) {
-    // don't do anything
-    return curCaretPos;
-  }
-
   /**
    * if something got inserted on empty value, add the formatted character before the current value,
    * This is to avoid the case where typed character is present on format characters
@@ -330,6 +359,7 @@ export function getCaretPosition(
   const firstAllowedPosition = boundary.findIndex((b) => b);
   const prefixFormat = newFormattedValue.slice(0, firstAllowedPosition);
   if (!lastFormattedValue && !curValue.startsWith(prefixFormat)) {
+    lastFormattedValue = prefixFormat;
     curValue = prefixFormat + curValue;
     curCaretPos = curCaretPos + prefixFormat.length;
   }
@@ -344,7 +374,15 @@ export function getCaretPosition(
   for (let i = 0; i < curValLn; i++) {
     indexMap[i] = -1;
     for (let j = 0, jLn = formattedValueLn; j < jLn; j++) {
-      if (curValue[i] === newFormattedValue[j] && addedIndexMap[j] !== true) {
+      const isCharSame = isCharacterSame({
+        currentValue: curValue,
+        lastValue: lastFormattedValue,
+        formattedValue: newFormattedValue,
+        currentValueIndex: i,
+        formattedValueIndex: j,
+      });
+
+      if (isCharSame && addedIndexMap[j] !== true) {
         indexMap[i] = j;
         addedIndexMap[j] = true;
         break;
