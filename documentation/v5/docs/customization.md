@@ -175,7 +175,7 @@ function CardExpiry(props) {
      className="csb"
      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe> 
+   ></iframe>
 </details>
 
 Another example for NumericFormat could be support for custom numerals.
@@ -376,6 +376,67 @@ function CustomNegationNumberFormat({
   </summary>
   <iframe src="https://codesandbox.io/embed/parentheses-for-negation-forked-jn42cp?fontsize=14&hidenavigation=1&theme=dark&view=preview"
      title="Using parentheses to express negative numbers"
+     className="csb"
+     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+   ></iframe>
+</details>
+
+### IBAN account input field with pattern
+
+In order to enter IBAN (International Bank Account Number) accounts into an input field the field requires specific pattern (quartets of characters/digits) and should allow typing in digits and letters which get converted to uppercase. Each country has a predefined format of the IBAN value which defines which the correct sequence of letters and digits. These formats are  beyond this example and can be checked in libraries that validate IBAN accounts.
+
+(Example code is written in Typescript)
+
+```ts
+interface IBANInputProps extends NumberFormatBaseProps {
+    onChange: ChangeEventHandler<HTMLInputElement>;
+}
+
+const IBANInputDef: FunctionComponent<IBANInputProps> = ({ onChange, ...props }) => (
+    <NumberFormatBase
+        {...props}
+        type="text"
+        format={(value) =>
+            value
+                .replace(/\s+/g, '')
+                .replace(/([a-z0-9]{4})/gi, '$1 ')
+                .trim()
+                .toLocaleUpperCase()
+        }
+        removeFormatting={(value) => value.replace(/\s+/gi, '')}
+        isValidInputCharacter={(char) => /^[a-z0-9]$/i.test(char)}
+        getCaretBoundary={(value) =>
+            Array(value.length + 1)
+                .fill(0)
+                .map((v) => true)
+        }
+        onValueChange={(values, { event }) =>
+            onChange(
+                Object.assign({} as ChangeEvent<HTMLInputElement>, event, {
+                    target: { name: props.name, value: values.value.toLocaleUpperCase() },
+                })
+            )
+        }
+        onKeyDown={(e) =>
+            !/^(?:[a-z0-9]|Backspace|Delete|Home|End|ArrowLeft|ArrowRight|Shift|CapsLock|Control|NumLock|Tab|Paste|Redo|Undo)$/i.test(
+                e.key
+            ) && e.preventDefault()
+        }
+    />
+);
+
+const IBANInput = forwardRef<HTMLInputElement, IBANInputProps>((props, ref) => (
+    <IBANInputDef {...props} getInputRef={ref} />
+));
+```
+
+<details>
+    <summary>
+    Demo
+    </summary>
+    <iframe src="https://codesandbox.io/embed/iban-input-field-czr3fh?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+     title="IBAN Input Field"
      className="csb"
      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
