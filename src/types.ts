@@ -66,7 +66,7 @@ export type IsCharacterSame = (compareProps: {
 }) => boolean;
 
 type NumberFormatBase = {
-  type?: 'text' | 'tel' | 'password';
+  type?: string;
   displayType?: 'input' | 'text';
   inputMode?: InputAttributes['inputMode'];
   renderText?: (formattedValue: string, otherProps: Partial<NumberFormatBase>) => React.ReactNode;
