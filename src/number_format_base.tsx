@@ -265,7 +265,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       lastValue: formattedValue,
     };
     let _numAsString = removeFormatting(inputValue, changeMeta);
-    const _formattedValue = _format(_numAsString);
+    const _formattedValue = _format(_numAsString, event);
 
     // formatting can remove some of the number chars, so we need to fine number string again
     _numAsString = removeFormatting(_formattedValue, undefined);

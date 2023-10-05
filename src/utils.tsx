@@ -482,10 +482,10 @@ export function useInternalValues(
         formattedValue = '';
       } else if (typeof value === 'number' || valueIsNumericString) {
         numAsString = typeof value === 'number' ? toNumericString(value) : value;
-        formattedValue = format(numAsString);
+        formattedValue = format(numAsString, null);
       } else {
         numAsString = removeFormatting(value, undefined);
-        formattedValue = format(numAsString);
+        formattedValue = format(numAsString, null);
       }
 
       return { formattedValue, numAsString };
