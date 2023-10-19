@@ -1,61 +1,81 @@
 import { fixLeadingZero } from '../../../src/utils';
+import { TestCases } from './common';
 
-type ReturnType = string;
+type Expected = string;
 
-type CaseType = {
+type Arguments = {
   numStr: string;
-  expected: ReturnType;
 };
 
-type TestType = { label: string; cases: CaseType[] };
-
-const testCases: TestType[] = [
+const testCases: TestCases<Arguments, Expected>[] = [
   {
     label: 'fixedDecimalScale = true',
     cases: [
       {
-        numStr: '-0100',
+        arguments: {
+          numStr: '-0100',
+        },
         expected: '-100',
       },
       {
-        numStr: '00100200',
+        arguments: {
+          numStr: '00100200',
+        },
         expected: '100200',
       },
       {
-        numStr: '00000000100200',
+        arguments: {
+          numStr: '00000000100200',
+        },
         expected: '100200',
       },
       {
-        numStr: '00100200.000',
+        arguments: {
+          numStr: '00100200.000',
+        },
         expected: '100200.000',
       },
       {
-        numStr: '00100200.345',
+        arguments: {
+          numStr: '00100200.345',
+        },
         expected: '100200.345',
       },
       {
-        numStr: '-00100200.345',
+        arguments: {
+          numStr: '-00100200.345',
+        },
         expected: '-100200.345',
       },
       {
-        numStr: '10002000',
+        arguments: {
+          numStr: '10002000',
+        },
         expected: '10002000',
       },
       {
-        numStr: '-10002000',
+        arguments: {
+          numStr: '-10002000',
+        },
         expected: '-10002000',
       },
       // TODO
       {
-        numStr: '--10002000',
+        arguments: {
+          numStr: '--10002000',
+        },
         expected: '-10002000',
       },
       {
-        numStr: '--0010002000',
+        arguments: {
+          numStr: '--0010002000',
+        },
         expected: '-10002000',
       },
       {
-        numStr: '--00100200.345',
+        arguments: {
+          numStr: '--00100200.345',
+        },
         expected: '-100200.345',
       },
     ],
@@ -64,8 +84,11 @@ const testCases: TestType[] = [
 
 for (const testCase of testCases) {
   describe.only(testCase.label, () => {
-    test.each(testCase.cases)('$numStr -> $expected', ({ numStr, expected }) => {
-      expect(fixLeadingZero(numStr)).toBe(expected);
-    });
+    test.each(testCase.cases)(
+      '$arguments.numStr -> $expected',
+      ({ arguments: { numStr }, expected }) => {
+        expect(fixLeadingZero(numStr)).toBe(expected);
+      },
+    );
   });
 }

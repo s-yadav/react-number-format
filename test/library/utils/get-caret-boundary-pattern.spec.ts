@@ -1,19 +1,15 @@
 import { InputAttributes, PatternFormatProps } from '../../../src';
 import { getCaretBoundary } from '../../../src/pattern_format';
+import { TestCases } from './common';
 
-type ReturnType = boolean[];
+type Expected = boolean[];
 
-type CaseType = {
-  arguments: {
-    formattedValue: string;
-    props: { format: string; mask?: string; patternChar?: string };
-  };
-  expected: ReturnType;
+type Arguments = {
+  formattedValue: string;
+  props: { format: string; mask?: string; patternChar?: string };
 };
 
-type TestType = { label: string; cases: CaseType[] };
-
-const testCases: TestType[] = [
+const testCases: TestCases<Arguments, Expected>[] = [
   {
     label: 'Without prefix or suffix',
     cases: [
@@ -141,7 +137,7 @@ const testCases: TestType[] = [
 for (const testCase of testCases) {
   describe(testCase.label, () => {
     test.each(testCase.cases)(
-      '$formattedValue',
+      '$arguments.formattedValue',
       ({ arguments: { formattedValue, props }, expected }) => {
         expect(
           getCaretBoundary(formattedValue, props as PatternFormatProps<InputAttributes>),

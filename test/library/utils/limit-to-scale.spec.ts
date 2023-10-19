@@ -1,48 +1,56 @@
 import { limitToScale } from '../../../src/utils';
+import { TestCases } from './common';
 
-type ReturnType = string;
+type Expected = string;
 
-type CaseType = {
+type Arguments = {
   numStr: string;
   scale: number;
   fixedDecimalScale: boolean;
-  expected: ReturnType;
 };
 
-type TestType = { label: string; cases: CaseType[] };
-
-const testCases: TestType[] = [
+const testCases: TestCases<Arguments, Expected>[] = [
   {
     label: 'fixedDecimalScale = true',
     cases: [
       {
-        numStr: '',
-        scale: 2,
-        fixedDecimalScale: true,
+        arguments: {
+          numStr: '',
+          scale: 2,
+          fixedDecimalScale: true,
+        },
         expected: '00',
       },
       {
-        numStr: '1234',
-        scale: 0,
-        fixedDecimalScale: true,
+        arguments: {
+          numStr: '1234',
+          scale: 0,
+          fixedDecimalScale: true,
+        },
         expected: '',
       },
       {
-        numStr: '1234',
-        scale: 5,
-        fixedDecimalScale: true,
+        arguments: {
+          numStr: '1234',
+          scale: 5,
+          fixedDecimalScale: true,
+        },
         expected: '12340',
       },
       {
-        numStr: '40',
-        scale: 2,
-        fixedDecimalScale: true,
+        arguments: {
+          numStr: '40',
+          scale: 2,
+          fixedDecimalScale: true,
+        },
         expected: '40',
       },
       {
-        numStr: '40',
-        scale: 5,
-        fixedDecimalScale: true,
+        arguments: {
+          numStr: '40',
+          scale: 5,
+          fixedDecimalScale: true,
+        },
         expected: '40000',
       },
     ],
@@ -51,27 +59,35 @@ const testCases: TestType[] = [
     label: 'fixedDecimalScale = false',
     cases: [
       {
-        numStr: '',
-        scale: 2,
-        fixedDecimalScale: false,
+        arguments: {
+          numStr: '',
+          scale: 2,
+          fixedDecimalScale: false,
+        },
         expected: '',
       },
       {
-        numStr: '1234',
-        scale: 0,
-        fixedDecimalScale: false,
+        arguments: {
+          numStr: '1234',
+          scale: 0,
+          fixedDecimalScale: false,
+        },
         expected: '',
       },
       {
-        numStr: '1234',
-        scale: 3,
-        fixedDecimalScale: false,
+        arguments: {
+          numStr: '1234',
+          scale: 3,
+          fixedDecimalScale: false,
+        },
         expected: '123',
       },
       {
-        numStr: '1234',
-        scale: 5,
-        fixedDecimalScale: false,
+        arguments: {
+          numStr: '1234',
+          scale: 5,
+          fixedDecimalScale: false,
+        },
         expected: '1234',
       },
     ],
@@ -81,8 +97,8 @@ const testCases: TestType[] = [
 for (const testCase of testCases) {
   describe.only(testCase.label, () => {
     test.each(testCase.cases)(
-      '$numStr -> $expected',
-      ({ numStr, scale, fixedDecimalScale, expected }) => {
+      '$arguments.numStr -> $expected',
+      ({ arguments: { numStr, scale, fixedDecimalScale }, expected }) => {
         expect(limitToScale(numStr, scale, fixedDecimalScale)).toBe(expected);
       },
     );
