@@ -1,22 +1,22 @@
 import { getCaretBoundary } from '../../../src/numeric_format';
+import { TestCases } from './common';
 
-type ReturnType = boolean[];
-
-type CaseType = {
+type Arguments = {
   formattedValue: string;
   props: { prefix?: string; suffix?: string };
-  expected: ReturnType;
 };
 
-type TestType = { label: string; cases: CaseType[] };
+type Expected = boolean[];
 
-const testCases: TestType[] = [
+const testCases: TestCases<Arguments, Expected>[] = [
   {
     label: 'No prefix or suffix',
     cases: [
       {
-        formattedValue: '1000',
-        props: { prefix: '', suffix: '' },
+        arguments: {
+          formattedValue: '1000',
+          props: { prefix: '', suffix: '' },
+        },
         expected: [true, true, true, true, true],
       },
     ],
@@ -25,8 +25,10 @@ const testCases: TestType[] = [
     label: 'Only prefix',
     cases: [
       {
-        formattedValue: '$1000',
-        props: { prefix: '$', suffix: '' },
+        arguments: {
+          formattedValue: '$1000',
+          props: { prefix: '$', suffix: '' },
+        },
         expected: [false, true, true, true, true, true],
       },
     ],
@@ -35,13 +37,17 @@ const testCases: TestType[] = [
     label: 'Only suffix',
     cases: [
       {
-        formattedValue: '1000 USD',
-        props: { prefix: '', suffix: ' USD' },
+        arguments: {
+          formattedValue: '1000 USD',
+          props: { prefix: '', suffix: ' USD' },
+        },
         expected: [true, true, true, true, true, false, false, false, false],
       },
       {
-        formattedValue: '-1000 USD',
-        props: { prefix: '', suffix: ' USD' },
+        arguments: {
+          formattedValue: '-1000 USD',
+          props: { prefix: '', suffix: ' USD' },
+        },
         expected: [false, true, true, true, true, true, false, false, false, false],
       },
     ],
@@ -50,8 +56,10 @@ const testCases: TestType[] = [
     label: 'With prefix and suffix',
     cases: [
       {
-        formattedValue: '100-10000 USD',
-        props: { prefix: '100-', suffix: ' USD' },
+        arguments: {
+          formattedValue: '100-10000 USD',
+          props: { prefix: '100-', suffix: ' USD' },
+        },
         expected: [
           false,
           false,
@@ -70,8 +78,10 @@ const testCases: TestType[] = [
         ],
       },
       {
-        formattedValue: '100-10000 USD',
-        props: { prefix: '100-', suffix: '000 USD' },
+        arguments: {
+          formattedValue: '100-10000 USD',
+          props: { prefix: '100-', suffix: '000 USD' },
+        },
         expected: [
           false,
           false,
@@ -95,8 +105,11 @@ const testCases: TestType[] = [
 
 for (const testCase of testCases) {
   describe(testCase.label, () => {
-    test.each(testCase.cases)('$formattedValue', ({ formattedValue, props, expected }) => {
-      expect(getCaretBoundary(formattedValue, props)).toStrictEqual(expected);
-    });
+    test.each(testCase.cases)(
+      '$arguments.formattedValue',
+      ({ arguments: { formattedValue, props }, expected }) => {
+        expect(getCaretBoundary(formattedValue, props)).toStrictEqual(expected);
+      },
+    );
   });
 }

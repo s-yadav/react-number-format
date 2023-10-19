@@ -1,27 +1,27 @@
 import { splitDecimal } from '../../../src/utils';
+import { TestCases } from './common';
 
-type ReturnType = {
+type Expected = {
   beforeDecimal: string;
   afterDecimal: string;
   hasNegation: boolean;
   addNegation: boolean;
 };
 
-type CaseType = {
+type Arguments = {
   numStr: string;
   allowNegative: boolean;
-  expected: ReturnType;
 };
 
-type TestType = { label: string; cases: CaseType[] };
-
-const testCases: TestType[] = [
+const testCases: TestCases<Arguments, Expected>[] = [
   {
     label: 'allowNegative = true',
     cases: [
       {
-        numStr: '100.40',
-        allowNegative: true,
+        arguments: {
+          numStr: '100.40',
+          allowNegative: true,
+        },
         expected: {
           beforeDecimal: '100',
           afterDecimal: '40',
@@ -30,8 +30,10 @@ const testCases: TestType[] = [
         },
       },
       {
-        numStr: '-100.40',
-        allowNegative: true,
+        arguments: {
+          numStr: '-100.40',
+          allowNegative: true,
+        },
         expected: {
           beforeDecimal: '100',
           afterDecimal: '40',
@@ -45,8 +47,10 @@ const testCases: TestType[] = [
     label: 'allowNegative = false',
     cases: [
       {
-        numStr: '100.40',
-        allowNegative: false,
+        arguments: {
+          numStr: '100.40',
+          allowNegative: false,
+        },
         expected: {
           beforeDecimal: '100',
           afterDecimal: '40',
@@ -55,8 +59,10 @@ const testCases: TestType[] = [
         },
       },
       {
-        numStr: '-100.40',
-        allowNegative: false,
+        arguments: {
+          numStr: '-100.40',
+          allowNegative: false,
+        },
         expected: {
           beforeDecimal: '100',
           afterDecimal: '40',
@@ -70,8 +76,10 @@ const testCases: TestType[] = [
     label: 'Non-float values',
     cases: [
       {
-        numStr: '-100',
-        allowNegative: false,
+        arguments: {
+          numStr: '-100',
+          allowNegative: false,
+        },
         expected: {
           beforeDecimal: '100',
           afterDecimal: '',
@@ -80,8 +88,10 @@ const testCases: TestType[] = [
         },
       },
       {
-        numStr: '-100',
-        allowNegative: true,
+        arguments: {
+          numStr: '-100',
+          allowNegative: true,
+        },
         expected: {
           beforeDecimal: '100',
           afterDecimal: '',
@@ -95,8 +105,11 @@ const testCases: TestType[] = [
 
 for (const testCase of testCases) {
   describe(testCase.label, () => {
-    test.each(testCase.cases)('$numStr', ({ numStr, allowNegative, expected }) => {
-      expect(splitDecimal(numStr, allowNegative)).toStrictEqual(expected);
-    });
+    test.each(testCase.cases)(
+      '$arguments.numStr',
+      ({ arguments: { numStr, allowNegative }, expected }) => {
+        expect(splitDecimal(numStr, allowNegative)).toStrictEqual(expected);
+      },
+    );
   });
 }
