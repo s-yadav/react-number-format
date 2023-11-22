@@ -155,46 +155,33 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       | React.FocusEvent<HTMLInputElement>
       | React.KeyboardEvent<HTMLInputElement>;
     source: SourceType;
-    caretPos?: number;
-    setCaretPosition?: Boolean;
   }) => {
     const {
       formattedValue: newFormattedValue = '',
       input,
-      setCaretPosition = true,
       source,
       event,
       numAsString,
     } = params;
-    let { caretPos } = params;
+    let caretPos;
 
     if (input) {
-      //calculate caret position if not defined
-      if (caretPos === undefined && setCaretPosition) {
-        const inputValue = params.inputValue || input.value;
+      const inputValue = params.inputValue || input.value;
 
-        const currentCaretPosition = geInputCaretPosition(input);
-
-        /**
-         * set the value imperatively, this is required for IE fix
-         * This is also required as if new caret position is beyond the previous value.
-         * Caret position will not be set correctly
-         */
-        input.value = newFormattedValue;
-
-        //get the caret position
-        caretPos = getNewCaretPosition(inputValue, newFormattedValue, currentCaretPosition);
-      }
+      const currentCaretPosition = geInputCaretPosition(input);
 
       /**
-       * set the value imperatively, as we set the caret position as well imperatively.
-       * This is to keep value and caret position in sync
+       * set the value imperatively, this is required for IE fix
+       * This is also required as if new caret position is beyond the previous value.
+       * Caret position will not be set correctly
        */
       input.value = newFormattedValue;
 
-      //set caret position, and value imperatively when element is provided
-      if (setCaretPosition && caretPos !== undefined) {
-        //set caret position
+      //get the caret position
+      caretPos = getNewCaretPosition(inputValue, newFormattedValue, currentCaretPosition);
+
+      //set caret position imperatively
+      if (caretPos !== undefined) {
         setPatchedCaretPosition(input, caretPos, newFormattedValue);
       }
     }
@@ -287,7 +274,6 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       inputValue,
       event,
       source,
-      setCaretPosition: true,
       input: event.target as HTMLInputElement,
     });
 
