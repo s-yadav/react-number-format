@@ -116,7 +116,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     setCaretPosition(el, caretPos);
 
     timeout.current.setCaretTimeout = setTimeout(() => {
-      if (el.value === currentValue && el.selectionStart !== el.selectionEnd) {
+      if (el.value === currentValue && el.selectionStart !== caretPos) {
         setCaretPosition(el, caretPos);
       }
     }, 0);
