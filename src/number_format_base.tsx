@@ -383,6 +383,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     if (e.persist) e.persist();
 
     const el = e.target;
+    const currentTarget = e.currentTarget;
     focusedElm.current = el;
 
     timeout.current.focusTimeout = setTimeout(() => {
@@ -398,7 +399,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
         setPatchedCaretPosition(el, caretPosition, value);
       }
 
-      onFocus(e);
+      onFocus({ ...e, currentTarget });
     }, 0);
   };
 
