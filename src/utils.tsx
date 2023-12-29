@@ -235,7 +235,7 @@ export function setCaretPosition(el: HTMLInputElement, caretPos: number) {
     }
 
     // fail city, fortunately this never happens (as far as I've tested) :)
-    el.focus();
+    el.focus?.();
     return false;
   }
 }
