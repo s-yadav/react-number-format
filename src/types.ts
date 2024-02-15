@@ -52,7 +52,7 @@ export type InputAttributes = Omit<
 type NumberFormatProps<Props, BaseType = InputAttributes> = Props &
   Omit<InputAttributes, keyof BaseType> &
   Omit<BaseType, keyof Props | 'ref'> & {
-    customInput?: React.ComponentType<BaseType>;
+    customInput?: React.ComponentType<React.InputHTMLAttributes<HTMLInputElement> & React.RefAttributes<HTMLInputElement>>;
   };
 
 export type OnValueChange = (values: NumberFormatValues, sourceInfo: SourceInfo) => void;
