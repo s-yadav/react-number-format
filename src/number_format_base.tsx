@@ -116,7 +116,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     setCaretPosition(el, caretPos);
 
     timeout.current.setCaretTimeout = setTimeout(() => {
-      if (el.value === currentValue && el.selectionStart !== el.selectionEnd) {
+      if (el.value === currentValue && el.selectionStart !== caretPos) {
         setCaretPosition(el, caretPos);
       }
     }, 0);
@@ -369,6 +369,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     if (e.persist) e.persist();
 
     const el = e.target;
+    const currentTarget = e.currentTarget;
     focusedElm.current = el;
 
     timeout.current.focusTimeout = setTimeout(() => {
@@ -384,7 +385,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
         setPatchedCaretPosition(el, caretPosition, value);
       }
 
-      onFocus(e);
+      onFocus({ ...e, currentTarget });
     }, 0);
   };
 
