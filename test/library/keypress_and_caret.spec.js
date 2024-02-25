@@ -131,6 +131,36 @@ describe('Test keypress and caret position changes', () => {
     expect(input.selectionStart).toEqual(2);
   });
 
+  it('should put correct position when . is pressed on empty value #817', async () => {
+    const Test = () => {
+      const [value, setValue] = useState();
+      return (
+        <NumericFormat
+          autoComplete="off"
+          fixedDecimalScale
+          decimalScale={2}
+          onValueChange={(obj) => {
+            setValue(obj.value);
+          }}
+          value={value}
+          allowNegative={false}
+          allowLeadingZeros={false}
+        />
+      );
+    };
+
+    const { input } = await render(<Test />);
+    simulateNativeKeyInput(input, '.5', 0, 0);
+
+    expect(input.selectionStart).toEqual(2);
+
+    input.blur();
+
+    await wait(0);
+
+    expect(input.value).toEqual('0.50');
+  });
+
   it('should handle caret position correctly when suffix starts with space and allowed decimal separator is pressed. #725', async () => {
     const { input } = await render(
       <NumericFormat
@@ -196,7 +226,6 @@ describe('Test keypress and caret position changes', () => {
         valueIsNumericString={false}
       />,
     );
-
 
     await userEvent.type(input, '91');
 
