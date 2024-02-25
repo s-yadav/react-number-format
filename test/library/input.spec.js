@@ -528,6 +528,17 @@ describe('NumberFormat as input', () => {
     }, 0);
   });
 
+  it('should contain currentTarget on focus event', async () => {
+    let currentTarget;
+    const { input } = await render(
+      <NumericFormat value="1234" onFocus={(e) => {currentTarget = e.currentTarget}}/>,
+    );
+    input.focus();
+
+    await wait(0);
+    expect(currentTarget).not.toBeNull();
+  })
+
   it('should not reset the selection when manually focused on mount', async () => {
     function Test() {
       const localInputRef = useRef();
