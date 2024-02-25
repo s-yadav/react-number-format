@@ -3,6 +3,7 @@ import NumericFormat from '../../src/numeric_format';
 import PatternFormat from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
 import { cleanup, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import {
   simulateFocusEvent,
@@ -180,6 +181,26 @@ describe('Test keypress and caret position changes', () => {
 
     simulateNativeKeyInput(input, '.', 0, 0);
     expect(input.selectionStart).toEqual(2);
+  });
+
+  it('should not reset caret position if caret is updated by browser after we set caret position #811', async () => {
+    // https://codesandbox.io/p/sandbox/recursing-poitras-rxtjkj?file=%2Fsrc%2Findex.test.js%3A15%2C5-15%2C44
+    const { input } = await render(
+      <NumericFormat
+        allowLeadingZeros={false}
+        allowNegative={false}
+        decimalSeparator="."
+        displayType="input"
+        placeholder="people"
+        suffix=" people"
+        valueIsNumericString={false}
+      />,
+    );
+
+
+    await userEvent.type(input, '91');
+
+    expect(input.value).toEqual('91 people');
   });
 
   describe('Test character insertion', () => {
