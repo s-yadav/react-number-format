@@ -156,13 +156,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       | React.KeyboardEvent<HTMLInputElement>;
     source: SourceType;
   }) => {
-    const {
-      formattedValue: newFormattedValue = '',
-      input,
-      source,
-      event,
-      numAsString,
-    } = params;
+    const { formattedValue: newFormattedValue = '', input, source, event, numAsString } = params;
     let caretPos;
 
     if (input) {
