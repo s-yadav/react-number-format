@@ -1,7 +1,6 @@
 import React from 'react';
-import { render as rtlRender, screen, renderHook, fireEvent } from '@testing-library/react';
+import { render as rtlRender, screen } from '@testing-library/react';
 
-import { mount, render } from '../test_util';
 import NumericFormat from '../../src/numeric_format';
 import PatternFormat from '../../src/pattern_format';
 
@@ -12,8 +11,8 @@ describe('NumberFormat as text', () => {
       <NumericFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />,
     );
 
-    const span = screen.getByTestId('rnf-renderText-span');
-    expect(span.textContent).toBe('$2,456,981');
+    const span = screen.getByText(/\$2,456,981/);
+    expect(span).toBeVisible();
   });
 
   it('should format as given format', () => {
@@ -21,8 +20,8 @@ describe('NumberFormat as text', () => {
       <PatternFormat value={4111111111111111} displayType={'text'} format="#### #### #### ####" />,
     );
 
-    const span = screen.getByTestId('rnf-renderText-span');
-    expect(span.textContent).toEqual('4111 1111 1111 1111');
+    const span = screen.getByText(/4111 1111 1111 1111/);
+    expect(span).toBeVisible();
   });
 
   it('should format as given format when input is string', () => {
@@ -35,8 +34,8 @@ describe('NumberFormat as text', () => {
       />,
     );
 
-    const span = screen.getByTestId('rnf-renderText-span');
-    expect(span.textContent).toEqual('4111 1111 1111 1111');
+    const span = screen.getByText(/4111 1111 1111 1111/);
+    expect(span).toBeVisible();
   });
 
   it('should format as given format when input length is less than format length', () => {
@@ -49,8 +48,11 @@ describe('NumberFormat as text', () => {
       />,
     );
 
-    const span = screen.getByTestId('rnf-renderText-span');
-    expect(span.textContent).toEqual('4111 1111 1111 11  ');
+    const span = screen.getByText(/4111 1111 1111 11  /, {
+      collapseWhitespace: false,
+      trim: false,
+    });
+    expect(span).toBeVisible();
   });
 
   it('should format as given format with mask', () => {
@@ -64,8 +66,8 @@ describe('NumberFormat as text', () => {
       />,
     );
 
-    const span = screen.getByTestId('rnf-renderText-span');
-    expect(span.textContent).toEqual('4111 1111 1111 11__');
+    const span = screen.getByText('4111 1111 1111 11__');
+    expect(span).toBeVisible();
   });
 
   it('should limit decimal scale to given value', () => {
@@ -73,8 +75,8 @@ describe('NumberFormat as text', () => {
       <NumericFormat value={4111.344} displayType={'text'} decimalScale={2} />,
     );
 
-    const span = screen.getByTestId('rnf-renderText-span');
-    expect(span.textContent).toEqual('4111.34');
+    const span = screen.getByText('4111.34');
+    expect(span).toBeVisible();
 
     rerender(<NumericFormat value={4111.358} displayType={'text'} decimalScale={2} />);
 
@@ -92,8 +94,8 @@ describe('NumberFormat as text', () => {
       />,
     );
 
-    const span = screen.getByTestId('rnf-renderText-span');
-    expect(span.textContent).toEqual('4111.1100');
+    const span = screen.getByText('4111.1100');
+    expect(span).toBeVisible();
 
     rerender(
       <NumericFormat
