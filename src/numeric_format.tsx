@@ -10,9 +10,11 @@ import {
   useInternalValues,
   isNil,
   roundToPrecision,
-  isNanValue,
   setCaretPosition,
   toNumericString,
+  charIsNumber,
+  isNotValidValue,
+  findChangeRange,
 } from './utils';
 import {
   NumericFormatProps,
@@ -22,6 +24,7 @@ import {
   FormatInputValueFunction,
   RemoveFormattingFunction,
   NumberFormatBaseProps,
+  IsCharacterSame,
 } from './types';
 import NumberFormatBase from './number_format_base';
 
@@ -34,7 +37,7 @@ export function format<BaseType = InputAttributes>(
     fixedDecimalScale,
     prefix = '',
     suffix = '',
-    allowNegative = true,
+    allowNegative,
     thousandsGroupStyle = 'thousand',
   } = props;
 
@@ -117,17 +120,42 @@ function getNumberRegex(decimalSeparator: string, global: boolean) {
   return new RegExp(`(^-)|[0-9]|${escapeRegExp(decimalSeparator)}`, global ? 'g' : undefined);
 }
 
+function isNumericString(
+  val: string | number | undefined | null,
+  prefix?: string,
+  suffix?: string,
+) {
+  // for empty value we can always treat it as numeric string
+  if (val === '') return true;
+
+  return (
+    !prefix?.match(/\d/) && !suffix?.match(/\d/) && typeof val === 'string' && !isNaN(Number(val))
+  );
+}
+
 export function removeFormatting<BaseType = InputAttributes>(
   value: string,
   changeMeta: ChangeMeta = getDefaultChangeMeta(value),
   props: NumericFormatProps<BaseType>,
 ) {
-  const { allowNegative = true, prefix = '', suffix = '', decimalScale } = props;
+  const { allowNegative, prefix = '', suffix = '', decimalScale } = props;
   const { from, to } = changeMeta;
   let { start, end } = to;
   const { allowedDecimalSeparators, decimalSeparator } = getSeparators(props);
 
   const isBeforeDecimalSeparator = value[end] === decimalSeparator;
+
+  /**
+   * If only a number is added on empty input which matches with the prefix or suffix,
+   * then don't remove it, just return the same
+   */
+  if (
+    charIsNumber(value) &&
+    (value === prefix || value === suffix) &&
+    changeMeta.lastValue === ''
+  ) {
+    return value;
+  }
 
   /** Check for any allowed decimal separator is added in the numeric format and replace it with decimal separator */
   if (end - start === 1 && allowedDecimalSeparators.indexOf(value[start]) !== -1) {
@@ -135,24 +163,61 @@ export function removeFormatting<BaseType = InputAttributes>(
     value = value.substring(0, start) + separator + value.substring(start + 1, value.length);
   }
 
-  let hasNegation = false;
+  const stripNegation = (value: string, start: number, end: number) => {
+    /**
+     * if prefix starts with - we don't allow negative number to avoid confusion
+     * if suffix starts with - and the value length is same as suffix length, then the - sign is from the suffix
+     * In other cases, if the value starts with - then it is a negation
+     */
+    let hasNegation = false;
+    let hasDoubleNegation = false;
 
-  /**
-   * if prefix starts with - the number hast to have two - at the start
-   * if suffix starts with - and the value length is same as suffix length, then the - sign is from the suffix
-   * In other cases, if the value starts with - then it is a negation
-   */
-  if (prefix.startsWith('-')) hasNegation = value.startsWith('--');
-  else if (suffix.startsWith('-') && value.length === suffix.length) hasNegation = false;
-  else if (value[0] === '-') hasNegation = true;
+    if (prefix.startsWith('-')) {
+      hasNegation = false;
+    } else if (value.startsWith('--')) {
+      hasNegation = false;
+      hasDoubleNegation = true;
+    } else if (suffix.startsWith('-') && value.length === suffix.length) {
+      hasNegation = false;
+    } else if (value[0] === '-') {
+      hasNegation = true;
+    }
 
-  // remove negation from start to simplify prefix logic as negation comes before prefix
-  if (hasNegation) {
-    value = value.substring(1);
+    let charsToRemove = hasNegation ? 1 : 0;
+    if (hasDoubleNegation) charsToRemove = 2;
 
-    // account for the removal of the negation for start and end index
-    start -= 1;
-    end -= 1;
+    // remove negation/double negation from start to simplify prefix logic as negation comes before prefix
+    if (charsToRemove) {
+      value = value.substring(charsToRemove);
+
+      // account for the removal of the negation for start and end index
+      start -= charsToRemove;
+      end -= charsToRemove;
+    }
+
+    return { value, start, end, hasNegation };
+  };
+
+  const toMetadata = stripNegation(value, start, end);
+  const { hasNegation } = toMetadata;
+  ({ value, start, end } = toMetadata);
+
+  const {
+    start: fromStart,
+    end: fromEnd,
+    value: lastValue,
+  } = stripNegation(changeMeta.lastValue, from.start, from.end);
+
+  // if only prefix and suffix part is updated reset the value to last value
+  // if the changed range is from suffix in the updated value, and the the suffix starts with the same characters, allow the change
+  const updatedSuffixPart = value.substring(start, end);
+  if (
+    value.length &&
+    lastValue.length &&
+    (fromStart > lastValue.length - suffix.length || fromEnd < prefix.length) &&
+    !(updatedSuffixPart && suffix.startsWith(updatedSuffixPart))
+  ) {
+    value = lastValue;
   }
 
   /**
@@ -166,7 +231,7 @@ export function removeFormatting<BaseType = InputAttributes>(
   else if (start < prefix.length) startIndex = start;
   value = value.substring(startIndex);
 
-  // account for deleted prefix for end index
+  // account for deleted prefix for end
   end -= startIndex;
 
   /**
@@ -179,6 +244,9 @@ export function removeFormatting<BaseType = InputAttributes>(
   const suffixStartIndex = value.length - suffix.length;
 
   if (value.endsWith(suffix)) endIndex = suffixStartIndex;
+  // if the suffix is removed from the end
+  else if (end > suffixStartIndex) endIndex = end;
+  // if the suffix is removed from start
   else if (end > value.length - suffix.length) endIndex = end;
 
   value = value.substring(0, endIndex);
@@ -231,8 +299,10 @@ export function getCaretBoundary<BaseType = InputAttributes>(
   return boundaryAry;
 }
 
-function validateProps<BaseType = InputAttributes>(props: NumericFormatProps<BaseType>) {
+function validateAndUpdateProps<BaseType = InputAttributes>(props: NumericFormatProps<BaseType>) {
   const { thousandSeparator, decimalSeparator } = getSeparators(props);
+  // eslint-disable-next-line prefer-const
+  let { prefix = '', allowNegative = true } = props;
 
   if (thousandSeparator === decimalSeparator) {
     throw new Error(`
@@ -241,15 +311,34 @@ function validateProps<BaseType = InputAttributes>(props: NumericFormatProps<Bas
         decimalSeparator: ${decimalSeparator} (default value for decimalSeparator is .)
      `);
   }
+
+  if (prefix.startsWith('-') && allowNegative) {
+    // TODO: throw error in next major version
+    console.error(`
+      Prefix can't start with '-' when allowNegative is true.
+      prefix: ${prefix}
+      allowNegative: ${allowNegative}
+    `);
+
+    allowNegative = false;
+  }
+
+  return {
+    ...props,
+    allowNegative,
+  };
 }
 
 export function useNumericFormat<BaseType = InputAttributes>(
   props: NumericFormatProps<BaseType>,
 ): NumberFormatBaseProps<BaseType> {
+  // validate props
+  props = validateAndUpdateProps(props);
+
   const {
     /* eslint-disable no-unused-vars */
-    decimalSeparator,
-    allowedDecimalSeparators,
+    decimalSeparator: _decimalSeparator,
+    allowedDecimalSeparators: _allowedDecimalSeparators,
     thousandsGroupStyle,
     suffix,
     allowNegative,
@@ -268,24 +357,27 @@ export function useNumericFormat<BaseType = InputAttributes>(
     ...restProps
   } = props;
 
-  // validate props
-  validateProps(props);
+  // get derived decimalSeparator and allowedDecimalSeparators
+  const { decimalSeparator, allowedDecimalSeparators } = getSeparators(props);
 
   const _format: FormatInputValueFunction = (numStr) => format(numStr, props);
 
   const _removeFormatting: RemoveFormattingFunction = (inputValue, changeMeta) =>
     removeFormatting(inputValue, changeMeta, props);
 
-  let _valueIsNumericString = valueIsNumericString;
+  const _value = isNil(value) ? defaultValue : value;
+
+  // try to figure out isValueNumericString based on format prop and value
+  let _valueIsNumericString = valueIsNumericString ?? isNumericString(_value, prefix, suffix);
 
   if (!isNil(value)) {
-    _valueIsNumericString = valueIsNumericString ?? typeof value === 'number';
+    _valueIsNumericString = _valueIsNumericString || typeof value === 'number';
   } else if (!isNil(defaultValue)) {
-    _valueIsNumericString = valueIsNumericString ?? typeof defaultValue === 'number';
+    _valueIsNumericString = _valueIsNumericString || typeof defaultValue === 'number';
   }
 
   const roundIncomingValueToPrecision = (value: string | number | null | undefined) => {
-    if (isNil(value) || isNanValue(value)) return value;
+    if (isNotValidValue(value)) return value;
 
     if (typeof value === 'number') {
       value = toNumericString(value);
@@ -323,21 +415,29 @@ export function useNumericFormat<BaseType = InputAttributes>(
     }
 
     // if user hits backspace, while the cursor is before prefix, and the input has negation, remove the negation
-    if (key === 'Backspace' && value[0] === '-' && selectionStart === prefix.length + 1) {
+    if (
+      key === 'Backspace' &&
+      value[0] === '-' &&
+      selectionStart === prefix.length + 1 &&
+      allowNegative
+    ) {
       // bring the cursor to after negation
       setCaretPosition(el, 1);
     }
 
     // don't allow user to delete decimal separator when decimalScale and fixedDecimalScale is set
-    const { decimalSeparator } = getSeparators(props);
-    if (
-      key === 'Backspace' &&
-      value[(selectionStart as number) - 1] === decimalSeparator &&
-      decimalScale &&
-      fixedDecimalScale
-    ) {
-      setCaretPosition(el, (selectionStart as number) - 1);
-      e.preventDefault();
+    if (decimalScale && fixedDecimalScale) {
+      if (key === 'Backspace' && value[selectionStart - 1] === decimalSeparator) {
+        setCaretPosition(el, selectionStart - 1);
+        e.preventDefault();
+      } else if (key === 'Delete' && value[selectionStart] === decimalSeparator) {
+        e.preventDefault();
+      }
+    }
+
+    // if user presses the allowed decimal separator before the separator, move the cursor after the separator
+    if (allowedDecimalSeparators?.includes(key) && value[selectionStart] === decimalSeparator) {
+      setCaretPosition(el, selectionStart + 1);
     }
 
     const _thousandSeparator = thousandSeparator === true ? ',' : thousandSeparator;
@@ -390,10 +490,48 @@ export function useNumericFormat<BaseType = InputAttributes>(
     onBlur(e);
   };
 
+  const isValidInputCharacter = (inputChar: string) => {
+    if (inputChar === decimalSeparator) return true;
+    return charIsNumber(inputChar);
+  };
+
+  const isCharacterSame: IsCharacterSame = ({
+    currentValue,
+    lastValue,
+    formattedValue,
+    currentValueIndex,
+    formattedValueIndex,
+  }) => {
+    const curChar = currentValue[currentValueIndex];
+    const newChar = formattedValue[formattedValueIndex];
+
+    /**
+     * NOTE: as thousand separator and allowedDecimalSeparators can be same, we need to check on
+     * typed range if we have typed any character from allowedDecimalSeparators, in that case we
+     * consider different characters like , and . same within the range of updated value.
+     */
+    const typedRange = findChangeRange(lastValue, currentValue);
+    const { to } = typedRange;
+
+    if (
+      currentValueIndex >= to.start &&
+      currentValueIndex < to.end &&
+      allowedDecimalSeparators &&
+      allowedDecimalSeparators.includes(curChar) &&
+      newChar === decimalSeparator
+    ) {
+      return true;
+    }
+
+    return curChar === newChar;
+  };
+
   return {
     ...(restProps as NumberFormatBaseProps<BaseType>),
     value: formattedValue,
     valueIsNumericString: false,
+    isValidInputCharacter,
+    isCharacterSame,
     onValueChange: _onValueChange,
     format: _format,
     removeFormatting: _removeFormatting,

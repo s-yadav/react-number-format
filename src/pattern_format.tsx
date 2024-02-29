@@ -1,15 +1,11 @@
 import React from 'react';
+import { PatternFormatProps, InputAttributes, ChangeMeta, NumberFormatBaseProps } from './types';
 import {
-  PatternFormatProps,
-  InputAttributes,
-  ChangeMeta,
-  InternalNumberFormatBase,
-  NumberFormatBaseProps,
-} from './types';
-import {
+  charIsNumber,
   getCaretPosInBoundary,
   getDefaultChangeMeta,
   getMaskAtIndex,
+  isNil,
   noop,
   setCaretPosition,
 } from './utils';
@@ -49,7 +45,7 @@ export function removeFormatting<BaseType = InputAttributes>(
   const removeFormatChar = (string: string, startIndex: number) => {
     let str = '';
     for (let i = 0; i < string.length; i++) {
-      if (isNumericSlot(startIndex + i)) {
+      if (isNumericSlot(startIndex + i) && charIsNumber(string[i])) {
         str += string[i];
       }
     }
@@ -72,7 +68,9 @@ export function removeFormatting<BaseType = InputAttributes>(
     let str = '';
     for (let i = 0; i < value.length; i++) {
       if (isNumericSlot(i)) {
-        str += value[i];
+        if (charIsNumber(value[i])) {
+          str += value[i];
+        }
       } else if (value[i] !== format[i]) {
         // if there is a mismatch on the pattern, do plane number extract
         return extractNumbers(value);
@@ -161,6 +159,13 @@ function validateProps<BaseType = InputAttributes>(props: PatternFormatProps<Bas
   }
 }
 
+function isNumericString(val: string | number | null | undefined, format: string) {
+  //we can treat empty string as numeric string
+  if (val === '') return true;
+
+  return !format?.match(/\d/) && typeof val === 'string' && (!!val.match(/^\d+$/) || val === '');
+}
+
 export function usePatternFormat<BaseType = InputAttributes>(
   props: PatternFormatProps<BaseType>,
 ): NumberFormatBaseProps<BaseType> {
@@ -173,6 +178,9 @@ export function usePatternFormat<BaseType = InputAttributes>(
     inputMode = 'numeric',
     onKeyDown = noop,
     patternChar = '#',
+    value,
+    defaultValue,
+    valueIsNumericString,
     ...restProps
   } = props;
 
@@ -232,12 +240,21 @@ export function usePatternFormat<BaseType = InputAttributes>(
     onKeyDown(e);
   };
 
+  // try to figure out isValueNumericString based on format prop and value
+  const _value = isNil(value) ? defaultValue : value;
+  const isValueNumericString = valueIsNumericString ?? isNumericString(_value, formatProp);
+
+  const _props = { ...props, valueIsNumericString: isValueNumericString };
+
   return {
     ...(restProps as NumberFormatBaseProps<BaseType>),
+    value,
+    defaultValue,
+    valueIsNumericString: isValueNumericString,
     inputMode,
-    format: (numStr: string) => format(numStr, props),
+    format: (numStr: string) => format(numStr, _props),
     removeFormatting: (inputValue: string, changeMeta: ChangeMeta) =>
-      removeFormatting(inputValue, changeMeta, props),
+      removeFormatting(inputValue, changeMeta, _props),
     getCaretBoundary: _getCaretBoundary,
     onKeyDown: _onKeyDown,
   };

@@ -1,10 +1,32 @@
 import { useMemo, useRef, useState } from 'react';
-import { NumberFormatBaseProps, FormatInputValueFunction, OnValueChange } from './types';
+import {
+  NumberFormatBaseProps,
+  FormatInputValueFunction,
+  OnValueChange,
+  IsCharacterSame,
+} from './types';
 
 // basic noop function
 export function noop() {}
 export function returnTrue() {
   return true;
+}
+
+export function memoizeOnce<T extends unknown[], R extends unknown>(cb: (...args: T) => R) {
+  let lastArgs: T | undefined;
+  let lastValue: R = undefined;
+  return (...args: T) => {
+    if (
+      lastArgs &&
+      args.length === lastArgs.length &&
+      args.every((value, index) => value === lastArgs[index])
+    ) {
+      return lastValue;
+    }
+    lastArgs = args;
+    lastValue = cb(...args);
+    return lastValue;
+  };
 }
 
 export function charIsNumber(char?: string) {
@@ -17,6 +39,10 @@ export function isNil(val: any): val is null | undefined {
 
 export function isNanValue(val: string | number) {
   return typeof val === 'number' && isNaN(val);
+}
+
+export function isNotValidValue(val: string | number | null | undefined) {
+  return isNil(val) || isNanValue(val) || (typeof val === 'number' && !isFinite(val));
 }
 
 export function escapeRegExp(str: string) {
@@ -167,18 +193,23 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
   const floatValueStr =
     afterDecimal.length <= scale ? `0.${afterDecimal}` : floatValue.toFixed(scale);
   const roundedDecimalParts = floatValueStr.split('.');
-  const intPart = beforeDecimal
-    .split('')
-    .reverse()
-    .reduce((roundedStr, current, idx) => {
-      if (roundedStr.length > idx) {
-        return (
-          (Number(roundedStr[0]) + Number(current)).toString() +
-          roundedStr.substring(1, roundedStr.length)
-        );
-      }
-      return current + roundedStr;
-    }, roundedDecimalParts[0]);
+  let intPart = beforeDecimal;
+
+  // if we have cary over from rounding decimal part, add that on before decimal
+  if (beforeDecimal && Number(roundedDecimalParts[0])) {
+    intPart = beforeDecimal
+      .split('')
+      .reverse()
+      .reduce((roundedStr, current, idx) => {
+        if (roundedStr.length > idx) {
+          return (
+            (Number(roundedStr[0]) + Number(current)).toString() +
+            roundedStr.substring(1, roundedStr.length)
+          );
+        }
+        return current + roundedStr;
+      }, roundedDecimalParts[0]);
+  }
 
   const decimalPart = limitToScale(roundedDecimalParts[1] || '', scale, fixedDecimalScale);
   const negation = hasNegation ? '-' : '';
@@ -239,7 +270,7 @@ export function findChangedIndex(prevValue: string, newValue: string) {
   return { start: i, end: prevLength - j };
 }
 
-export function findChangeRange(prevValue: string, newValue: string) {
+export const findChangeRange = memoizeOnce((prevValue: string, newValue: string) => {
   let i = 0,
     j = 0;
   const prevLength = prevValue.length;
@@ -259,7 +290,7 @@ export function findChangeRange(prevValue: string, newValue: string) {
     from: { start: i, end: prevLength - j },
     to: { start: i, end: newLength - j },
   };
-}
+});
 
 /*
   Returns a number whose value is limited to the given range
@@ -302,12 +333,29 @@ export function getMaskAtIndex(mask: string | string[] = ' ', index: number) {
   return mask[index] || ' ';
 }
 
+function defaultIsCharacterSame({
+  currentValue,
+  formattedValue,
+  currentValueIndex,
+  formattedValueIndex,
+}: Parameters<IsCharacterSame>[0]) {
+  return currentValue[currentValueIndex] === formattedValue[formattedValueIndex];
+}
+
 export function getCaretPosition(
   newFormattedValue: string,
   lastFormattedValue: string,
   curValue: string,
   curCaretPos: number,
   boundary: boolean[],
+  isValidInputCharacter: (char: string) => boolean,
+  /**
+   * format function can change the character, the caret engine relies on mapping old value and new value
+   * In such case if character is changed, parent can tell which chars are equivalent
+   * Some example, all allowedDecimalCharacters are updated to decimalCharacters, 2nd case if user is coverting
+   * number to different numeric system.
+   */
+  isCharacterSame: IsCharacterSame = defaultIsCharacterSame,
 ) {
   /**
    * if something got inserted on empty value, add the formatted character before the current value,
@@ -316,6 +364,7 @@ export function getCaretPosition(
   const firstAllowedPosition = boundary.findIndex((b) => b);
   const prefixFormat = newFormattedValue.slice(0, firstAllowedPosition);
   if (!lastFormattedValue && !curValue.startsWith(prefixFormat)) {
+    lastFormattedValue = prefixFormat;
     curValue = prefixFormat + curValue;
     curCaretPos = curCaretPos + prefixFormat.length;
   }
@@ -330,7 +379,15 @@ export function getCaretPosition(
   for (let i = 0; i < curValLn; i++) {
     indexMap[i] = -1;
     for (let j = 0, jLn = formattedValueLn; j < jLn; j++) {
-      if (curValue[i] === newFormattedValue[j] && addedIndexMap[j] !== true) {
+      const isCharSame = isCharacterSame({
+        currentValue: curValue,
+        lastValue: lastFormattedValue,
+        formattedValue: newFormattedValue,
+        currentValueIndex: i,
+        formattedValueIndex: j,
+      });
+
+      if (isCharSame && addedIndexMap[j] !== true) {
         indexMap[i] = j;
         addedIndexMap[j] = true;
         break;
@@ -345,7 +402,7 @@ export function getCaretPosition(
    * that mapped index
    */
   let pos = curCaretPos;
-  while (pos < curValLn && (indexMap[pos] === -1 || !charIsNumber(curValue[pos]))) {
+  while (pos < curValLn && (indexMap[pos] === -1 || !isValidInputCharacter(curValue[pos]))) {
     pos++;
   }
 
@@ -422,46 +479,53 @@ export function useInternalValues(
 ): [{ formattedValue: string; numAsString: string }, OnValueChange] {
   type Values = { formattedValue: string; numAsString: string };
 
-  const propValues = useRef<Values>();
+  const getValues = usePersistentCallback(
+    (value: string | number | null | undefined, valueIsNumericString: boolean) => {
+      let formattedValue, numAsString;
+      if (isNotValidValue(value)) {
+        numAsString = '';
+        formattedValue = '';
+      } else if (typeof value === 'number' || valueIsNumericString) {
+        numAsString = typeof value === 'number' ? toNumericString(value) : value;
+        formattedValue = format(numAsString);
+      } else {
+        numAsString = removeFormatting(value, undefined);
+        formattedValue = format(numAsString);
+      }
 
-  const getValues = usePersistentCallback((value: string | number | null | undefined) => {
-    let formattedValue, numAsString;
-    if (isNil(value) || isNanValue(value)) {
-      numAsString = '';
-      formattedValue = '';
-    } else if (typeof value === 'number' || valueIsNumericString) {
-      numAsString = typeof value === 'number' ? toNumericString(value) : value;
-      formattedValue = format(numAsString);
-    } else {
-      numAsString = removeFormatting(value, undefined);
-      formattedValue = value;
-    }
-
-    return { formattedValue, numAsString };
-  });
+      return { formattedValue, numAsString };
+    },
+  );
 
   const [values, setValues] = useState<Values>(() => {
-    return getValues(defaultValue);
+    return getValues(isNil(value) ? defaultValue : value, valueIsNumericString);
   });
 
-  const _onValueChange: typeof onValueChange = (values, sourceInfo) => {
-    setValues({
-      formattedValue: values.formattedValue,
-      numAsString: values.value,
-    });
+  const _onValueChange: typeof onValueChange = (newValues, sourceInfo) => {
+    if (newValues.formattedValue !== values.formattedValue) {
+      setValues({
+        formattedValue: newValues.formattedValue,
+        numAsString: newValues.value,
+      });
+    }
 
-    onValueChange(values, sourceInfo);
+    // call parent on value change if only if formatted value is changed
+    onValueChange(newValues, sourceInfo);
   };
 
+  // if value is switch from controlled to uncontrolled, use the internal state's value to format with new props
+  let _value = value;
+  let _valueIsNumericString = valueIsNumericString;
+  if (isNil(value)) {
+    _value = values.numAsString;
+    _valueIsNumericString = true;
+  }
+
+  const newValues = getValues(_value, _valueIsNumericString);
+
   useMemo(() => {
-    //if element is moved to uncontrolled mode, don't reset the value
-    if (!isNil(value)) {
-      propValues.current = getValues(value);
-      setValues(propValues.current);
-    } else {
-      propValues.current = undefined;
-    }
-  }, [value, getValues]);
+    setValues(newValues);
+  }, [newValues.formattedValue]);
 
   return [values, _onValueChange];
 }

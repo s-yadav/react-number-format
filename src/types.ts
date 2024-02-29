@@ -20,7 +20,7 @@ export enum SourceType {
 }
 
 export interface SourceInfo {
-  event?: SyntheticEvent;
+  event?: SyntheticEvent<HTMLInputElement>;
   source: SourceType;
 }
 
@@ -57,13 +57,21 @@ type NumberFormatProps<Props, BaseType = InputAttributes> = Props &
 
 export type OnValueChange = (values: NumberFormatValues, sourceInfo: SourceInfo) => void;
 
+export type IsCharacterSame = (compareProps: {
+  currentValue: string;
+  lastValue: string;
+  formattedValue: string;
+  currentValueIndex: number;
+  formattedValueIndex: number;
+}) => boolean;
+
 type NumberFormatBase = {
   type?: 'text' | 'tel' | 'password';
   displayType?: 'input' | 'text';
   inputMode?: InputAttributes['inputMode'];
   renderText?: (formattedValue: string, otherProps: Partial<NumberFormatBase>) => React.ReactNode;
-  format: FormatInputValueFunction;
-  removeFormatting: RemoveFormattingFunction;
+  format?: FormatInputValueFunction;
+  removeFormatting?: RemoveFormattingFunction;
   getInputRef?: ((el: HTMLInputElement) => void) | React.Ref<any>;
   value?: number | string | null;
   defaultValue?: number | string | null;
@@ -75,7 +83,9 @@ type NumberFormatBase = {
   onChange?: InputAttributes['onChange'];
   onFocus?: InputAttributes['onFocus'];
   onBlur?: InputAttributes['onBlur'];
-  getCaretBoundary: (formattedValue: string) => boolean[];
+  getCaretBoundary?: (formattedValue: string) => boolean[];
+  isValidInputCharacter?: (character: string) => boolean;
+  isCharacterSame?: IsCharacterSame;
 };
 
 export type NumberFormatBaseProps<BaseType = InputAttributes> = NumberFormatProps<
@@ -85,7 +95,7 @@ export type NumberFormatBaseProps<BaseType = InputAttributes> = NumberFormatProp
 
 export type InternalNumberFormatBase = Omit<
   NumberFormatBase,
-  'format' | 'removeFormatting' | 'getCaretBoundary'
+  'format' | 'removeFormatting' | 'getCaretBoundary' | 'isValidInputCharacter'
 >;
 
 export type NumericFormatProps<BaseType = InputAttributes> = NumberFormatProps<

@@ -1,16 +1,18 @@
 {
   "name": "react-number-format",
   "description": "React component to format number in an input or as a text.",
-  "version": "5.0.1",
+  "version": "5.3.3",
   "main": "dist/react-number-format.cjs.js",
   "module": "dist/react-number-format.es.js",
   "types": "types/index.d.ts",
+  "sideEffects": false,
   "author": "Sudhanshu Yadav",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/s-yadav/react-number-format"
   },
+  "homepage": "https://s-yadav.github.io/react-number-format/docs/intro",
   "bugs": {
     "mail": "sudhanshuyadav2@gmail.com",
     "url": "https://github.com/s-yadav/react-number-format/issues"
@@ -89,8 +91,8 @@
     "material-ui": "^0.20.2",
     "pascal-case": "3.1.2",
     "prettier": "^2.2.1",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-transform-hmr": "^1.0.4",
     "rollup": "^1.22.0",
     "rollup-plugin-babel": "^4.3.3",
@@ -107,8 +109,8 @@
     "webpack-dev-server": "^4.7.4"
   },
   "peerDependencies": {
-    "react": "^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^18.0.0",
-    "react-dom": "^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^18.0.0"
+    "react": "^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0"
   },
   "dependencies": {
     "prop-types": "^15.7.2"

@@ -18,6 +18,8 @@ import { TextField } from '@mui/material';
 <NumericFormat value={12323} customInput={TextField} />;
 ```
 
+**Note**: customInput expects reference of component (not a render prop), if you pass an inline component like this `<NumericFormat customInput={() => <TextField />} />`, it will not work.
+
 <details>
   <summary>
   Demo
@@ -37,7 +39,7 @@ import { TextField } from '@mui/material';
 This is the value for the input field. It can be a float number or a formatted string.
 
 :::info
-If the value passed is a string representation of the number, the [`valueIsNumericString`](#valueIsNumericString) props should be passed as `true`
+If the value passed is a string representation of the number and any of the format prop has number on it, the `valueIsNumericString` props should be passed as `true`. See [valueIsNumericString](#valueisnumericstring-boolean) for more details
 :::
 
 ```js
@@ -136,9 +138,9 @@ const MAX_LIMIT = 1000;
 
 <NumericFormat
   value={11}
-  isAllowed={(values, sourceInfo) => {
-    const { value } = values;
-    return value < MAX_LIMIT;
+  isAllowed={(values) => {
+    const { floatValue } = values;
+    return floatValue < MAX_LIMIT;
   }}
 />;
 ```
@@ -160,20 +162,14 @@ const MAX_LIMIT = 1000;
 
 **default**: false
 
-If value is passed as string representation of numbers (unformatted) then this should be passed as `true`.
+If value is passed as string representation of numbers (unformatted) and thousandSeparator is `.` in numeric format or number is used in any format props like in prefix or suffix in numeric format and format prop in pattern format then this should be passed as `true`.
+
+**Note**: Prior to 5.2.0 its was always required to be passed as true when value is passed as string representation of numbers (unformatted).
 
 ```js
-import { NumericFormat } from 'react-number-format';
+import { PatternFormat } from 'react-number-format';
 
-<NumericFormat
-  value={val}
-  type="text"
-  value="123456789"
-  valueIsNumericString={true}
-  decimalSeparator=","
-  displayType="input"
-  type="text"
-/>;
+<PatternFormat format="+1 (###) ###-####" value="123456789" valueIsNumericString={true} />;
 ```
 
 <details>
@@ -194,6 +190,10 @@ import { NumericFormat } from 'react-number-format';
 **default**: undefined
 
 This handler provides access to any values changes in the input field and is triggered only when a prop changes or the user input changes. It provides two arguments namely the [valueObject](quirks#values-object) as the first and the [sourceInfo](quirks#sourceInfo) as the second. The [valueObject](quirks#values-object) parameter contains the `formattedValue`, `value` and the `floatValue` of the given input field. The [sourceInfo](quirks#sourceInfo) contains the `event` Object and a `source` key which indicates whether the triggered change is due to an event or a prop change. This is particularly useful in identify whether the change is user driven or is an uncontrolled change due to any prop value being updated.
+
+:::info
+If you are using `values.value` which is non formatted value as numeric string. Make sure to pass valueIsNumericString to be true if any of the format prop has number on it, or if thousandSeparator is `.` in NumericFormat . See [valueIsNumericString](#valueisnumericstring-boolean) for more details.
+:::
 
 ```js
 import { NumericFormat } from 'react-number-format';

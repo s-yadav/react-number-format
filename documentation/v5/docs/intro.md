@@ -4,16 +4,20 @@ sidebar_position: 1
 
 # Getting started
 
-React Number format is a input formatter library with a sohpisticated and light weight caret engine.
+React Number Format is an input-formatter library with a sophisticated and light weight caret engine.  It ensures that a user can only enter text that meets specific numeric or string patterns, and formats the input value for display.
 
 ### Features
 
-1. Prefix, suffix and thousand separator.
-2. Custom pattern formatting.
-3. Masking.
-4. Custom formatting handler.
-5. Format number in an input or format as a simple text.
-6. Fully customizable
+1. Prefix, suffix and thousands separator.
+1. Input Masking.
+1. Format number in an input or format as a simple text.
+1. Custom pattern formatting.
+1. Custom formatting handler.
+1. Fully customizable
+
+### Demos
+
+See the many DEMO sections in [the documentation](https://s-yadav.github.io/react-number-format/docs/props).
 
 ### Install
 

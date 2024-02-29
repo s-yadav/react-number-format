@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import NumericFormat from '../../src/numeric_format';
@@ -10,6 +10,8 @@ import {
   mount,
   shallow,
   getInputValue,
+  render,
+  simulateNativeKeyInput,
 } from '../test_util';
 
 /**
@@ -683,6 +685,116 @@ describe('Test NumberFormat as input with numeric format options', () => {
   it('should handle exponential value as prop correctly #506', () => {
     const wrapper = mount(<NumericFormat value={0.00000001} />);
     expect(wrapper.find('input').prop('value')).toEqual('0.00000001');
+  });
+
+  it('should handle formatting correctly when valueIsNumericString is set to false and float value is provided, #741', async () => {
+    const { input } = await render(
+      <NumericFormat value={12345} valueIsNumericString={false} thousandSeparator={true} />,
+    );
+    expect(input.value).toEqual('12,345');
+  });
+
+  it('should not infinite rerender when valueIsNumericString is not set and decimalScale is provided, and values.value is used inside onValueChange #786', async () => {
+    const ControlledComponent = (props) => {
+      const [value, setValue] = useState('');
+      const [renderCount, setRenderCount] = useState(0);
+
+      return (
+        <>
+          <NumericFormat
+            value={value}
+            onValueChange={(values) => {
+              //return to avoid infinite rerender
+              if (renderCount > 10) return;
+              setValue(values.value);
+              setRenderCount(renderCount + 1);
+            }}
+            {...props}
+          />
+          <span data-testid="renderCount">{renderCount}</span>
+        </>
+      );
+    };
+    const { input, view } = await render(
+      <ControlledComponent
+        thousandSeparator={false}
+        decimalSeparator=","
+        decimalScale={2}
+        fixedDecimalScale
+      />,
+    );
+
+    simulateNativeKeyInput(input, '2', 0, 0);
+
+    const renderCount = await view.getByTestId('renderCount');
+    expect(renderCount.innerHTML).toEqual('1');
+    expect(input.value).toEqual('2,00');
+  });
+
+  it('should not delete decimal separator if delete key is pressed before decimal separator when fixedDecimalScale is provided. #789', async () => {
+    const { input } = await render(
+      <NumericFormat value={'123.000'} decimalScale={3} fixedDecimalScale />,
+    );
+
+    simulateNativeKeyInput(input, '{delete}', 3, 3);
+
+    expect(input.value).toEqual('123.000');
+  });
+
+  describe('should allow typing number if prefix or suffix is just an number #691', () => {
+    it('when prefix is number', async () => {
+      const { input } = await render(<NumericFormat prefix="1" />);
+      simulateNativeKeyInput(input, '1', 0, 0);
+      expect(input.value).toEqual('11');
+    });
+
+    it('when prefix is multiple digit', async () => {
+      const { input } = await render(<NumericFormat prefix="11" />);
+      simulateNativeKeyInput(input, '11', 0, 0);
+      expect(input.value).toEqual('1111');
+    });
+
+    it('when suffix is number', async () => {
+      const { input } = await render(<NumericFormat suffix="1" />);
+      simulateNativeKeyInput(input, '1', 0, 0);
+      expect(input.value).toEqual('11');
+    });
+
+    it('when prefix and suffix both are number', async () => {
+      const { input } = await render(<NumericFormat prefix="1" suffix="1" />);
+      simulateNativeKeyInput(input, '1', 0, 0);
+      expect(input.value).toEqual('111');
+    });
+  });
+
+  describe('should handle if only partial prefix or suffix is removed using double click select and the remove. #694', () => {
+    it('while changing suffix', async () => {
+      const { input } = await render(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
+
+      simulateNativeKeyInput(input, '2', 9, 12);
+      expect(input.value).toEqual('100-1000 USD');
+    });
+
+    it('while changing prefix', async () => {
+      const { input } = await render(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
+
+      simulateNativeKeyInput(input, '2', 0, 2);
+      expect(input.value).toEqual('100-1000 USD');
+    });
+
+    it('while deleting suffix', async () => {
+      const { input } = await render(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
+
+      simulateNativeKeyInput(input, 'Backspace', 9, 12);
+      expect(input.value).toEqual('100-1000 USD');
+    });
+
+    it('while deleting prefix', async () => {
+      const { input } = await render(<NumericFormat prefix="100-" value={1} suffix="000 USD" />);
+
+      simulateNativeKeyInput(input, 'Backspace', 0, 3);
+      expect(input.value).toEqual('100-1000 USD');
+    });
   });
 
   describe('Test thousand group style', () => {

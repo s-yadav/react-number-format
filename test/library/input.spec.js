@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, StrictMode } from 'react';
 import { renderHook } from '@testing-library/react-hooks/dom';
+import { fireEvent } from '@testing-library/react';
 
 import TextField from 'material-ui/TextField';
 
@@ -14,6 +15,9 @@ import {
   mount,
   shallow,
   getInputValue,
+  render,
+  wait,
+  simulateNativeKeyInput,
 } from '../test_util';
 import PatternFormat, { usePatternFormat } from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
@@ -285,6 +289,19 @@ describe('NumberFormat as input', () => {
     expect(getInputValue(wrapper)).toEqual('+1 (8__) ___ _ __ US');
   });
 
+  it('should give proper value when format character has number #652', () => {
+    //https://github.com/s-yadav/react-number-format/issues/652#issuecomment-1278200770
+    const spy = jasmine.createSpy();
+    const wrapper = mount(<PatternFormat format="13###" mask="_" onValueChange={spy} />);
+    simulateKeyInput(wrapper.find('input'), '3', 0);
+    simulateKeyInput(wrapper.find('input'), '4', 3);
+    expect(spy.calls.argsFor(1)[0]).toEqual({
+      formattedValue: '1334_',
+      value: '34',
+      floatValue: 34,
+    });
+  });
+
   it('should not allow replacing all characters with number when formatting is present for NumericFormats', () => {
     //check for numeric input
     const value = '12.000';
@@ -447,15 +464,29 @@ describe('NumberFormat as input', () => {
     expect(getInputValue(wrapper)).toEqual('1.2');
   });
 
-  it('should call onValueChange in change caused by prop change', () => {
+  it('should call onValueChange in change caused by prop change', async (done) => {
     const spy = jasmine.createSpy();
-    const wrapper = mount(<NumericFormat value="1234" onValueChange={spy} />);
-    wrapper.setProps({ thousandSeparator: true });
+    const { rerender } = await render(
+      <NumericFormat value="1234" valueIsNumericString onValueChange={spy} />,
+    );
+    await rerender(
+      <NumericFormat
+        value="1234"
+        valueIsNumericString
+        thousandSeparator={true}
+        onValueChange={spy}
+      />,
+    );
+
+    await wait(100);
+
     expect(spy.calls.argsFor(0)[0]).toEqual({
       formattedValue: '1,234',
       value: '1234',
       floatValue: 1234,
     });
+
+    done();
   });
 
   it('should call onValueChange with the right source information', () => {
@@ -495,6 +526,38 @@ describe('NumberFormat as input', () => {
       expect(spy).toHaveBeenCalled();
       done();
     }, 0);
+  });
+
+  it('should contain currentTarget on focus event', async () => {
+    let currentTarget;
+    const { input } = await render(
+      <NumericFormat
+        value="1234"
+        onFocus={(e) => {
+          currentTarget = e.currentTarget;
+        }}
+      />,
+    );
+    input.focus();
+
+    await wait(0);
+    expect(currentTarget).not.toBeNull();
+  });
+
+  it('should not reset the selection when manually focused on mount', async () => {
+    function Test() {
+      const localInputRef = useRef();
+      useEffect(() => {
+        // eslint-disable-next-line no-unused-expressions
+        localInputRef.current?.select();
+      }, []);
+
+      return <NumericFormat getInputRef={(elm) => (localInputRef.current = elm)} value="12345" />;
+    }
+
+    const { input } = await render(<Test />);
+    expect(input.selectionStart).toEqual(0);
+    expect(input.selectionEnd).toEqual(5);
   });
 
   it('should not call onFocus prop when focused then blurred in the same event loop', (done) => {
@@ -538,6 +601,76 @@ describe('NumberFormat as input', () => {
     const wrapper = mount(<NumericFormat value={1} onChange={spy} />);
     simulateKeyInput(wrapper.find('input'), 'Backspace', 1);
     expect(spy).toHaveBeenCalled();
+  });
+
+  it('should not give wrong value, when user enter more number than the given hash in PatternFormat #712', async () => {
+    const Component = () => {
+      const [value, setValue] = useState('1232345124');
+      return (
+        <div>
+          <PatternFormat
+            value={value}
+            format="(###) #### ###"
+            valueIsNumericString
+            mask="_"
+            onValueChange={(values) => {
+              setValue(values.value);
+            }}
+          />
+          <span data-testid="value">{value}</span>
+        </div>
+      );
+    };
+
+    const { input, view } = await render(<Component />);
+    simulateNativeKeyInput(input, '1', 1, 1);
+    await wait(100);
+
+    expect(input.value).toEqual('(112) 3234 512');
+    const value = await view.getByTestId('value');
+    expect(value.innerText).toEqual('1123234512');
+  });
+
+  it('should try to correct the value if old formatted value is provided but the format prop changes', async () => {
+    const { input, rerender } = await render(
+      <NumericFormat value="$1,234" prefix="$" thousandSeparator />,
+    );
+    expect(input.value).toEqual('$1,234');
+
+    await rerender(<NumericFormat value="$1,234" prefix="Rs. " thousandSeparator />);
+    expect(input.value).toEqual('Rs. 1,234');
+  });
+
+  it('should handle prop updates on StrictMode', async () => {
+    function Test() {
+      const [val, setVal] = React.useState('2');
+
+      return (
+        <div className="App">
+          <span>Controlled value: {val}</span>
+          <hr />
+          <NumericFormat
+            value={val}
+            onValueChange={(values) => {
+              setVal(values.value);
+            }}
+          />
+          <button type="button" onClick={() => setVal('321')}>
+            Update to 321
+          </button>
+        </div>
+      );
+    }
+
+    const { input, view } = await render(
+      <StrictMode>
+        <Test />
+      </StrictMode>,
+    );
+    expect(input.value).toEqual('2');
+    const button = view.getByRole('button');
+    fireEvent.click(button);
+    expect(input.value).toEqual('321');
   });
 
   describe('Test masking', () => {
