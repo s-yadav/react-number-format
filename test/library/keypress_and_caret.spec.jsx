@@ -124,14 +124,44 @@ describe('Test keypress and caret position changes', () => {
       );
     };
 
-    const { input } = await render(<Test />);
-    simulateNativeKeyInput(input, '1', 0, 0);
+    const { input, user } = await render(<Test />);
+    await simulateKeyInput(user, input, '1', 0, 0);
     expect(input.value).toEqual('+1,00');
     expect(input.selectionStart).toEqual(2);
   });
 
+  it('should put correct position when . is pressed on empty value #817', async () => {
+    const Test = () => {
+      const [value, setValue] = useState();
+      return (
+        <NumericFormat
+          autoComplete="off"
+          fixedDecimalScale
+          decimalScale={2}
+          onValueChange={(obj) => {
+            setValue(obj.value);
+          }}
+          value={value}
+          allowNegative={false}
+          allowLeadingZeros={false}
+        />
+      );
+    };
+
+    const { input, user } = await render(<Test />);
+    await simulateKeyInput(user, input, '.5', 0, 0);
+
+    expect(input.selectionStart).toEqual(2);
+
+    input.blur();
+
+    await wait(0);
+
+    expect(input.value).toEqual('0.50');
+  });
+
   it('should handle caret position correctly when suffix starts with space and allowed decimal separator is pressed. #725', async () => {
-    const { input } = await render(
+    const { input, user } = await render(
       <NumericFormat
         value={2}
         decimalSeparator=","
@@ -142,12 +172,12 @@ describe('Test keypress and caret position changes', () => {
       />,
     );
 
-    simulateNativeKeyInput(input, '.', 2, 2);
+    await simulateKeyInput(user, input, '.', 2, 2);
     expect(input.selectionStart).toEqual(3);
   });
 
   it('should handle caret position correctly when suffix starts with space and allowed decimal separator is pressed in empty input. #774', async () => {
-    const { input } = await render(
+    const { input, user } = await render(
       <NumericFormat
         value={''}
         decimalSeparator=","
@@ -157,19 +187,19 @@ describe('Test keypress and caret position changes', () => {
       />,
     );
 
-    simulateNativeKeyInput(input, '.', 0, 0);
+    await simulateKeyInput(user, input, '.', 0, 0);
     expect(input.selectionStart).toEqual(1);
   });
 
   it('should handle the caret position when prefix is provided and number is entered on empty input', async () => {
-    const { input } = await render(<NumericFormat value={''} prefix="$" />);
+    const { input, user } = await render(<NumericFormat value={''} prefix="$" />);
 
-    simulateNativeKeyInput(input, '1', 0, 0);
+    await simulateKeyInput(user, input, '1', 0, 0);
     expect(input.selectionStart).toEqual(2);
   });
 
   it('should handle the caret position when prefix is provided and allowed decimal separator is entered on empty input', async () => {
-    const { input } = await render(
+    const { input, user } = await render(
       <NumericFormat
         value={''}
         decimalSeparator=","
@@ -178,8 +208,27 @@ describe('Test keypress and caret position changes', () => {
       />,
     );
 
-    simulateNativeKeyInput(input, '.', 0, 0);
+    await simulateKeyInput(user, input, '.', 0, 0);
     expect(input.selectionStart).toEqual(2);
+  });
+
+  it('should not reset caret position if caret is updated by browser after we set caret position #811', async () => {
+    // https://codesandbox.io/p/sandbox/recursing-poitras-rxtjkj?file=%2Fsrc%2Findex.test.js%3A15%2C5-15%2C44
+    const { input, user } = await render(
+      <NumericFormat
+        allowLeadingZeros={false}
+        allowNegative={false}
+        decimalSeparator="."
+        displayType="input"
+        placeholder="people"
+        suffix=" people"
+        valueIsNumericString={false}
+      />,
+    );
+
+    await simulateKeyInput(input, '91');
+
+    expect(input.value).toEqual('91 people');
   });
 
   describe('Test character insertion', () => {
