@@ -3,13 +3,7 @@ import { fireEvent, screen } from '@testing-library/react';
 
 import NumericFormat from '../../src/numeric_format';
 
-import {
-  getCustomEvent,
-  simulateBlurEvent,
-  render,
-  simulateKeyInput,
-  clearInput,
-} from '../test_util';
+import { simulateBlurEvent, render, simulateKeyInput, clearInput } from '../test_util';
 
 /**
  * This suit is to test NumberFormat when normal numeric values are provided without any formatting options
@@ -93,8 +87,8 @@ describe('Test NumberFormat as input with numeric format options', () => {
     const { input, rerender, user } = await render(
       <NumericFormat thousandSeparator={'.'} decimalSeparator={','} prefix={'$'} />,
     );
+
     await simulateKeyInput(user, input, '2456981,89', 0);
-    // await user.type(input, '2456981,89', { initialSelectionStart: 0 });
 
     expect(input).toHaveValue('$2.456.981,89');
 
@@ -171,10 +165,12 @@ describe('Test NumberFormat as input with numeric format options', () => {
     const { input, user } = await render(
       <NumericFormat thousandSeparator="." decimalSeparator="," />,
     );
-    fireEvent.change(input, getCustomEvent('981273724234817383478127'));
+    await simulateKeyInput(user, input, '981273724234817383478127', 0);
     expect(input).toHaveValue('981.273.724.234.817.383.478.127');
 
-    fireEvent.change(input, getCustomEvent('981273724234817383478,127'));
+    await clearInput(user, input);
+
+    await simulateKeyInput(user, input, '981273724234817383478,127', 0);
     expect(input).toHaveValue('981.273.724.234.817.383.478,127');
   });
 
@@ -183,7 +179,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
       <NumericFormat thousandSeparator={'.'} decimalSeparator={','} decimalScale={2} />,
     );
 
-    fireEvent.change(input, getCustomEvent('2456981,89'));
+    await simulateKeyInput(user, input, '2456981,89', 0);
     expect(input).toHaveValue('2.456.981,89');
   });
 
@@ -193,29 +189,34 @@ describe('Test NumberFormat as input with numeric format options', () => {
     );
 
     //case 1st - already exactly scale 4 should stay that way
-    fireEvent.change(input, getCustomEvent('4111.1111'));
+    await simulateKeyInput(user, input, '4111.1111', 0);
     expect(input).toHaveValue('4111.1111');
 
+    await clearInput(user, input);
     //case 2nd - longer scale should round
-    fireEvent.change(input, getCustomEvent('4111.11111'));
+    await simulateKeyInput(user, input, '4111.11111', 0);
     expect(input).toHaveValue('4111.1111');
 
+    await clearInput(user, input);
     /** Only initial value should round off not while input **/
-    fireEvent.change(input, getCustomEvent('4111.11118'));
+    await simulateKeyInput(user, input, '4111.11118', 0);
     expect(input.value).not.toEqual('4111.1112');
 
+    await clearInput(user, input);
     //case 3rd - shorter scale adds 0
-    fireEvent.change(input, getCustomEvent('4111.111'));
+    await simulateKeyInput(user, input, '4111.111', 0);
     expect(input).toHaveValue('4111.1110');
 
+    await clearInput(user, input);
     //case 4th - no decimal should round with 4 zeros
-    fireEvent.change(input, getCustomEvent(''));
-    fireEvent.change(input, getCustomEvent('4111'));
+    await simulateKeyInput(user, input, '', 0);
+    await simulateKeyInput(user, input, '4111', 0);
     expect(input).toHaveValue('4111.0000');
 
+    await clearInput(user, input);
     //case 5 - round with two decimal scale
     rerender(<NumericFormat decimalScale={2} fixedDecimalScale={true} />);
-    fireEvent.change(input, getCustomEvent('4111.111'));
+    await simulateKeyInput(user, input, '4111.111', 0);
     expect(input).toHaveValue('4111.11');
   });
 
@@ -416,15 +417,17 @@ describe('Test NumberFormat as input with numeric format options', () => {
     const { input, user } = await render(<NumericFormat />);
 
     //case 1st - no rounding with long decimal
-    fireEvent.change(input, getCustomEvent('4111.111111'));
+    await simulateKeyInput(user, input, '4111.111111', 0);
     expect(input).toHaveValue('4111.111111');
 
+    await clearInput(user, input);
     //case 2nd - no rounding with whole numbers
-    fireEvent.change(input, getCustomEvent('4111'));
+    await simulateKeyInput(user, input, '4111', 0);
     expect(input).toHaveValue('4111');
 
+    await clearInput(user, input);
     //case 3rd - no rounding on single place decimals
-    fireEvent.change(input, getCustomEvent('4111.1'));
+    await simulateKeyInput(user, input, '4111.1', 0);
     expect(input).toHaveValue('4111.1');
   });
 
@@ -434,7 +437,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     );
 
     //case 1 - decimal scale set to 0
-    fireEvent.change(input, getCustomEvent('4111.'));
+    await simulateKeyInput(user, input, '4111.', 0);
     expect(input).toHaveValue('4,111');
 
     //case 2 - It should round to integer if passed value props as decimal values
