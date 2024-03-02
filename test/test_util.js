@@ -48,42 +48,22 @@ export async function simulateKeyInput(user, input, key, selectionStart = 0, sel
       let newValue;
 
       if (key === '{Backspace}') {
-        // input.setRangeText('', start, end);
         newValue = v.slice(0, start) + v.slice(end, v.length);
       } else if (key === '{Delete}') {
-        // input.setRangeText('', start, end, 'end');
         newValue = v.slice(0, start) + v.slice(end, v.length);
       }
 
       fireEvent.change(input, { target: { value: newValue } });
     }
-  }
-
-  if (key.length === 1 && !specialKeys.includes(key)) {
+  } else {
     if (start === end) {
-      await input.focus();
-      await input.setSelectionRange(start, end);
-
-      await user.keyboard(key);
+      await user.type(input, key, { initialSelectionStart: start, initialSelectionEnd: end });
     } else {
       let newValue;
 
       newValue = v.slice(0, start) + key + v.slice(end, v.length);
       fireEvent.change(input, { target: { value: newValue } });
       end = start;
-    }
-  } else if (key.length > 1 && !specialKeys.includes(key)) {
-    let newValue;
-    newValue = v.slice(0, start) + v.slice(end, v.length);
-    end = start;
-
-    fireEvent.change(input, { target: { value: newValue } });
-
-    await input.focus();
-    await input.setSelectionRange(start, end);
-
-    for (let i = 0; i < key.length; i++) {
-      await user.keyboard(key[i]);
     }
   }
 }
