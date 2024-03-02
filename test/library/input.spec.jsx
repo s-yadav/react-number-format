@@ -49,15 +49,14 @@ describe('NumberFormat as input', () => {
 
   // TODO
   it.skip('should add inputMode numeric only when app is mounted', async () => {
-    const wrapper = shallow(<NumberFormatBase />, { disableLifecycleMethods: true });
+    const wrapper = await render(<NumberFormatBase />, { disableLifecycleMethods: true });
     expect(wrapper.find('input').prop('inputMode')).toEqual(undefined);
 
     const wrapper2 = mount(<NumberFormatBase />);
     expect(wrapper2.find('input').prop('inputMode')).toEqual('numeric');
   });
 
-  // TODO
-  it.skip('should always add inputMode numeric to pattern format, even for Iphone/IPad device', async () => {
+  it('should always add inputMode numeric to pattern format, even for Iphone/IPad device', async () => {
     navigator['__defineGetter__']('platform', async () => {
       return 'iPhone';
     });
@@ -229,7 +228,6 @@ describe('NumberFormat as input', () => {
     expect(input).toHaveValue('12,');
   });
 
-  // TODO
   it('numeric format works with custom input component', async () => {
     const NumericFormatWrapper = (props) => {
       return (
@@ -338,7 +336,6 @@ describe('NumberFormat as input', () => {
     expect(input).toHaveValue('+1 (8__) ___ _ __ US');
   });
 
-  // TODO: Consider testing internal logic like this using unit tests
   it('should give proper value when format character has number #652', async () => {
     //https://github.com/s-yadav/react-number-format/issues/652#issuecomment-1278200770
     const spy = vi.fn();
@@ -359,7 +356,6 @@ describe('NumberFormat as input', () => {
     });
   });
 
-  // TODO: Replace above test
   it('render correct value when format character contains a number', async () => {
     const { input, user } = await render(<PatternFormat format="13###" mask="_" />);
 
@@ -370,7 +366,7 @@ describe('NumberFormat as input', () => {
     expect(input).toHaveValue('1334_');
   });
 
-  it('should not allow replacing all characters with number when formatting is present for NumericFormats', async () => {
+  it('should allow replacing all characters with number when formatting is present for NumericFormats', async () => {
     //check for numeric input
     const value = '12.000';
 
@@ -488,8 +484,7 @@ describe('NumberFormat as input', () => {
     expect(input).toHaveValue('$123');
   });
 
-  // TODO: Could be replaced by the test below
-  it.skip('should pass valid floatValue in isAllowed callback', async () => {
+  it('should pass valid floatValue in isAllowed callback', async () => {
     const spy = vi.fn();
 
     const { input, user } = await render(<NumericFormat isAllowed={spy} />);
@@ -518,24 +513,6 @@ describe('NumberFormat as input', () => {
     });
   });
 
-  // TODO: Replace above test
-  it.skip('should test for behaviour', async () => {
-    const { input, user } = await render(<NumericFormat isAllowed={() => true} />);
-
-    await simulateKeyInput(user, input, '.', 0);
-    expect(input).toHaveValue('.');
-
-    await simulateKeyInput(user, input, '{Backspace}', 1);
-    expect(input).toHaveValue('');
-    await simulateKeyInput(user, input, '0', 0);
-    expect(input).toHaveValue('0');
-
-    await simulateKeyInput(user, input, '{Backspace}', 1);
-    expect(input).toHaveValue('');
-    await simulateKeyInput(user, input, '123.', 0);
-    expect(input).toHaveValue('123.');
-  });
-
   it('should not call onValueChange if no formatting is applied', async () => {
     const mockOnValueChange = vi.fn();
 
@@ -559,13 +536,11 @@ describe('NumberFormat as input', () => {
     });
   });
 
-  // TODO: Clarify the purpose of this test
   it('should always call setState when input is not on focus and value formatting is changed from outside', async () => {
     const { input, user, rerender } = await render(
       <NumericFormat value="1.1" valueIsNumericString />,
     );
 
-    // Why?
     simulateFocusEvent(input);
     await simulateKeyInput(user, input, '0', 3);
 
@@ -600,8 +575,7 @@ describe('NumberFormat as input', () => {
     });
   });
 
-  // TODO: Consider updating to test behaviour, not implementation
-  it.skip('should call onValueChange with the right source information', async () => {
+  it('should call onValueChange with the right source information', async () => {
     const spy = vi.fn();
     const { input, user, rerender } = await render(
       <NumericFormat value="1234" valueIsNumericString={true} onValueChange={spy} />,
@@ -621,16 +595,14 @@ describe('NumberFormat as input', () => {
       source: 'prop',
     });
 
-    // Test with input change by simulateKeyInput
     await simulateKeyInput(user, input, '5', 0);
+
     const { event, source } = spy.mock.lastCall[1];
     const { key } = event;
-    // Not sure if this has anything to do with the component?
     expect(key).toEqual('5');
     expect(source).toEqual('event');
   });
 
-  // Replace the test above
   it('should call onValueChange when value changes', async () => {
     const mockOnValueChange = vi.fn();
 
@@ -640,7 +612,6 @@ describe('NumberFormat as input', () => {
 
     expect(input).toHaveValue('1234');
 
-    // Test prop change onValueChange
     rerender(
       <NumericFormat
         onValueChange={mockOnValueChange}
@@ -651,7 +622,6 @@ describe('NumberFormat as input', () => {
     );
     expect(mockOnValueChange).toHaveBeenCalled();
 
-    // Test with input change by simulateKeyInput
     await simulateKeyInput(user, input, '5', 0);
     expect(input).toHaveValue('51,234');
   });
@@ -689,11 +659,10 @@ describe('NumberFormat as input', () => {
     expect(currentTarget).not.toBeNull();
   });
 
-  it.skip('should not reset the selection when manually focused on mount', async () => {
+  it('should not reset the selection when manually focused on mount', async () => {
     function Test() {
       const localInputRef = useRef();
-      useEffect(async () => {
-        // eslint-disable-next-line no-unused-expressions
+      useEffect(() => {
         localInputRef.current?.select();
       }, []);
 
@@ -735,7 +704,6 @@ describe('NumberFormat as input', () => {
     expect(span.textContent).toBe('1234');
   });
 
-  // TODO: Consider testing behaviour rather than implementation details
   it('should not fire onChange when change is not allowed via the isAllowed prop', async () => {
     const mockOnChange = vi.fn();
     const { input, user } = await render(
@@ -751,7 +719,6 @@ describe('NumberFormat as input', () => {
     expect(mockOnChange).not.toHaveBeenCalled();
   });
 
-  // TODO: Consider testing behaviour rather than implementation details
   it('should call onChange if value is changed or reset #669 ', async () => {
     const mockOnChange = vi.fn();
     const { input, user } = await render(<NumericFormat value={1} onChange={mockOnChange} />);
@@ -760,8 +727,8 @@ describe('NumberFormat as input', () => {
     expect(mockOnChange).toHaveBeenCalled();
   });
 
-  it.skip('should not give wrong value, when user enter more number than the given hash in PatternFormat #712', async () => {
-    const Component = async () => {
+  it('should not give wrong value, when user enter more number than the given hash in PatternFormat #712', async () => {
+    const Component = () => {
       const [value, setValue] = useState('1232345124');
       return (
         <div>
@@ -781,23 +748,11 @@ describe('NumberFormat as input', () => {
 
     const { input, user, view } = await render(<Component />);
     await simulateKeyInput(user, input, '1', 1, 1);
-    await wait(100);
 
     expect(input).toHaveValue('(112) 3234 512');
     const value = view.getByTestId('value');
-    expect(value.innerText).toEqual('1123234512');
-  });
-
-  // Replace the test above
-  it('should render correct value when user input does not match the expected pattern', async () => {
-    const { input, user } = await render(
-      <PatternFormat value={1232345124} format="(###) #### ###" valueIsNumericString mask="_" />,
-    );
-
-    expect(input).toHaveValue('(123) 2345 124');
-
-    await simulateKeyInput(user, input, '1', 1, 1);
-    expect(input).toHaveValue('(112) 3234 512');
+    console.log(value);
+    expect(value.textContent).toEqual('1123234512');
   });
 
   it('should try to correct the value if old formatted value is provided but the format prop changes', async () => {
