@@ -270,18 +270,6 @@ describe('NumberFormat as input', () => {
     expect(input).toHaveValue('+1 (012) 345 6 78 US');
   });
 
-  // TODO: Test value of the input instead of checking for prop value?
-  it.skip('should replace the whole value if a new number is typed after selecting the everything', async () => {
-    const { input, user } = await render(
-      <NumericFormat prefix="$" value="10" allowedDecimalSeparators={[',', '.']} />,
-    );
-
-    await simulateKeyInput(user, input, '0', 0, 3);
-
-    expect(wrapper.find('input').prop('value')).toEqual('$0');
-  });
-
-  // TODO: Replace the test above
   it('replace previous value and format new value when input content is selected and character is typed', async () => {
     const { input, user } = await render(
       <NumericFormat prefix="$" value="10" allowedDecimalSeparators={[',', '.']} />,
@@ -822,89 +810,55 @@ describe('NumberFormat as input', () => {
       expect(input).toHaveValue('$123.1234');
     });
 
-    it.skip('should show the right number of zeros in all cases', async () => {
-      class WrapperComponent extends React.Component {
-        constructor() {
-          super();
-          this.state = {
-            value: '100.0',
-          };
-        }
+    it('should show the correct number of zeroes after the decimal', async () => {
+      const { input, rerender } = await render(
+        <NumericFormat
+          decimalScale={2}
+          prefix="$"
+          thousandSeparator
+          value="100.0"
+          valueIsNumericString
+        />,
+      );
 
-        render() {
-          return (
-            <NumericFormat
-              name="numberformat"
-              value={this.state.value}
-              thousandSeparator
-              prefix="$"
-              decimalScale={2}
-              valueIsNumericString
-            />
-          );
-        }
-      }
+      expect(input).toHaveValue('$100.0');
 
-      const { input, user } = await render(<WrapperComponent />);
-      expect(getInputValue(wrapper)).toEqual('$100.0');
-      wrapper.setState({ value: '123.00' });
-      expect(getInputValue(wrapper)).toEqual('$123.00');
-      wrapper.setState({ value: '132.000' });
-      expect(getInputValue(wrapper)).toEqual('$132.00');
-      wrapper.setState({ value: '100.10' });
-      expect(getInputValue(wrapper)).toEqual('$100.10');
+      rerender(
+        <NumericFormat
+          decimalScale={2}
+          prefix="$"
+          thousandSeparator
+          value="123.00"
+          valueIsNumericString
+        />,
+      );
+
+      expect(input).toHaveValue('$123.00');
+
+      rerender(
+        <NumericFormat
+          decimalScale={2}
+          prefix="$"
+          thousandSeparator
+          value="132.000"
+          valueIsNumericString
+        />,
+      );
+
+      expect(input).toHaveValue('$132.00');
+
+      rerender(
+        <NumericFormat
+          decimalScale={2}
+          prefix="$"
+          thousandSeparator
+          value="100.10"
+          valueIsNumericString
+        />,
+      );
+
+      expect(input).toHaveValue('$100.10');
     });
-  });
-
-  // Replaces the test above
-  it('should show the correct number of zeroes after the decimal', async () => {
-    const { input, user, rerender } = await render(
-      <NumericFormat
-        decimalScale={2}
-        prefix="$"
-        thousandSeparator
-        value="100.0"
-        valueIsNumericString
-      />,
-    );
-
-    expect(input).toHaveValue('$100.0');
-
-    rerender(
-      <NumericFormat
-        decimalScale={2}
-        prefix="$"
-        thousandSeparator
-        value="123.00"
-        valueIsNumericString
-      />,
-    );
-
-    expect(input).toHaveValue('$123.00');
-
-    rerender(
-      <NumericFormat
-        decimalScale={2}
-        prefix="$"
-        thousandSeparator
-        value="132.000"
-        valueIsNumericString
-      />,
-    );
-
-    expect(input).toHaveValue('$132.00');
-
-    rerender(
-      <NumericFormat
-        decimalScale={2}
-        prefix="$"
-        thousandSeparator
-        value="100.10"
-        valueIsNumericString
-      />,
-    );
-
-    expect(input).toHaveValue('$100.10');
   });
 });
 
