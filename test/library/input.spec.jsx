@@ -80,30 +80,12 @@ describe('NumberFormat as input', () => {
   });
 
   it('should hold the previous valid value if the prop is changed to null', async () => {
-    const WrapperComponent = () => {
-      const [testState, setTestState] = useState(90);
-
-      return (
-        <div>
-          <NumericFormat value={testState} />
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              setTestState(null);
-            }}
-          >
-            Click
-          </button>
-        </div>
-      );
-    };
-
-    const { input, user, view } = await render(<WrapperComponent />);
-    const button = view.getByText('Click');
+    const { input, rerender } = await render(<NumericFormat value={90} />);
 
     expect(input).toHaveValue('90');
 
-    user.click(button);
+    rerender(<NumericFormat />);
+
     expect(input).toHaveValue('90');
   });
 
@@ -134,31 +116,14 @@ describe('NumberFormat as input', () => {
   });
 
   it('should not reset number inputs value if number input renders again with same props', async () => {
-    const WrapperComponent = () => {
-      const [testState, setTestState] = useState(false);
-
-      return (
-        <div>
-          <NumericFormat thousandSeparator={true} prefix={'$'} />
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              setTestState((c) => !c);
-            }}
-          >
-            Click
-          </button>
-        </div>
-      );
-    };
-
-    const { input, user, view } = await render(<WrapperComponent />);
-    const button = view.getByText('Click');
+    const { input, user, rerender } = await render(
+      <NumericFormat thousandSeparator={true} prefix={'$'} />,
+    );
 
     await simulateKeyInput(user, input, '2456981', 0);
     expect(input).toHaveValue('$2,456,981');
 
-    user.click(button);
+    rerender(<NumericFormat thousandSeparator={false} prefix={'$'} />);
     expect(input).toHaveValue('$2,456,981');
   });
 
