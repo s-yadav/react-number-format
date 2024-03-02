@@ -80,30 +80,6 @@ describe('NumberFormat as input', () => {
     expect(input).toHaveValue('89');
   });
 
-  // TODO: Testing internals like might not be possible with RTL
-  // Consider removing this test entirely unless it serves a specific use case.
-  // Also, the description does not seem to match the test.
-  it.skip('should hold the previous valid value if the prop is changed to null', async () => {
-    class WrapperComponent extends React.Component {
-      constructor() {
-        super();
-        this.state = {
-          testState: 90,
-        };
-      }
-      render() {
-        return <NumericFormat value={this.state.testState} />;
-      }
-    }
-
-    const { input, user } = await render(<WrapperComponent />);
-
-    expect(input).toHaveValue('90');
-    wrapper.setState({ testState: null });
-    expect(input).toHaveValue('90');
-  });
-
-  // If this has to be tested, this test should replace the one above.
   it('should hold the previous valid value if the prop is changed to null', async () => {
     const WrapperComponent = () => {
       const [testState, setTestState] = useState(90);
@@ -158,33 +134,6 @@ describe('NumberFormat as input', () => {
     expect(input).toHaveValue('$24.569.821');
   });
 
-  // TODO: Same as the test above where the state is being manipulated.
-  it.skip('should not reset number inputs value if number input renders again with same props', async () => {
-    class WrapperComponent extends React.Component {
-      constructor() {
-        super();
-        this.state = {
-          testState: false,
-        };
-      }
-      render() {
-        return <NumericFormat thousandSeparator={true} prefix={'$'} />;
-      }
-    }
-
-    const { input, user } = await render(<WrapperComponent />);
-
-    await simulateKeyInput(input, '2456981', 0);
-    await simulateKeyInput(user, input, '2456981', 0);
-
-    expect(input).toHaveValue('$2,456,981');
-
-    wrapper.setState({ testState: true });
-
-    expect(input).toHaveValue('$2,456,981');
-  });
-
-  // If this has to be tested, this test should replace the one above.
   it('should not reset number inputs value if number input renders again with same props', async () => {
     const WrapperComponent = () => {
       const [testState, setTestState] = useState(false);
@@ -244,8 +193,7 @@ describe('NumberFormat as input', () => {
     expect(input).toHaveValue('9999');
   });
 
-  // TODO
-  it.skip('handles multiple different allowed decimal separators', async () => {
+  it('handles multiple different allowed decimal separators', async () => {
     const allowedDecimalSeparators = [',', '.', 'm'];
 
     const { input, user, rerender } = await render(
@@ -259,7 +207,7 @@ describe('NumberFormat as input', () => {
       rerender(
         <NumericFormat
           value={12}
-          decimalSeparator={','}
+          decimalSeparator={separator}
           allowedDecimalSeparators={allowedDecimalSeparators}
         />,
       );
@@ -268,7 +216,7 @@ describe('NumberFormat as input', () => {
       expect(input).toHaveValue('12');
 
       await simulateKeyInput(user, input, separator, 2);
-      expect(input).toHaveValue('12,');
+      expect(input).toHaveValue('12' + separator);
     }
   });
 
@@ -349,18 +297,6 @@ describe('NumberFormat as input', () => {
     expect(input).toHaveValue('01230 78909   ');
   });
 
-  // TODO
-  it.skip('should update value if whole content is replaced by new number', async () => {
-    const { input, user } = await render(
-      <PatternFormat format="+1 (###) ### # ## US" allowEmptyFormatting />,
-    );
-
-    wrapper.find('input').simulate('change', getCustomEvent('012345678', 20, 20));
-
-    expect(wrapper.find('input').prop('value')).toEqual('+1 (012) 345 6 78 US');
-  });
-
-  // TODO: Replace the test above
   it('should update value if whole content is replaced', async () => {
     const { input, user } = await render(
       <PatternFormat format="+1 (###) ### # ## US" allowEmptyFormatting />,
@@ -941,45 +877,6 @@ describe('NumberFormat as input', () => {
       }).toThrow();
     });
 
-    // TODO: Controlling state in a test
-    // Test case for Issue #533
-    it.skip('should show the right decimal values based on the decimal scale provided', async () => {
-      class WrapperComponent extends React.Component {
-        constructor() {
-          super();
-          this.state = {
-            value: '123.123',
-          };
-        }
-
-        onInputChange = (inputObj) => {
-          this.setState({ value: inputObj.value });
-        };
-
-        render() {
-          return (
-            <NumericFormat
-              name="numberformat"
-              id="formatted-numberformat-input"
-              value={this.state.value}
-              onValueChange={this.onInputChange}
-              decimalScale={18}
-              thousandSeparator
-              prefix={'$'}
-              valueIsNumericString
-            />
-          );
-        }
-      }
-
-      const { input, user } = await render(<WrapperComponent />);
-
-      expect(input).toHaveValue('$123.123');
-      wrapper.setState({ value: '123.1234' });
-      expect(getInputValue(wrapper)).toEqual('$123.1234');
-    });
-
-    // Replaces the test above
     it('should correctly show the decimal values', async () => {
       const { input, user, rerender } = await render(
         <NumericFormat
