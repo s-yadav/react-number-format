@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, StrictMode } from 'react';
 import { vi } from 'vitest';
-import { render as rtlRender, screen, renderHook, fireEvent } from '@testing-library/react';
+import { render as rtlRender, screen, renderHook } from '@testing-library/react';
 
 import TextField from 'material-ui/TextField';
 
@@ -265,7 +265,7 @@ describe('NumberFormat as input', () => {
       <PatternFormat format="+1 (###) ### # ## US" allowEmptyFormatting />,
     );
 
-    await user.type(input, '012345678', { initialSelectionStart: 20, initialSelectionEnd: 20 });
+    await simulateKeyInput(user, input, '012345678', 20, 20);
 
     expect(input).toHaveValue('+1 (012) 345 6 78 US');
   });
@@ -739,15 +739,18 @@ describe('NumberFormat as input', () => {
       );
     }
 
-    const { input, view } = await render(
+    const { input, user, view } = await render(
       <StrictMode>
         <Test />
       </StrictMode>,
     );
+
     expect(input.value).toEqual('2');
+
     const button = view.getByRole('button');
-    fireEvent.click(button);
-    expect(input.value).toEqual('321');
+    await user.click(button);
+
+    expect(input).toHaveValue('321');
   });
 
   describe('Test masking', () => {
