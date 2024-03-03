@@ -106,7 +106,7 @@ describe('Test keypress and caret position changes', () => {
 
   it('should not break the cursor position when format prop is updated', async () => {
     const Test = () => {
-      const [val, setValue] = useState();
+      const [val, setValue] = React.useState();
       return (
         <NumericFormat
           thousandSeparator=" "
@@ -132,7 +132,7 @@ describe('Test keypress and caret position changes', () => {
 
   it('should put correct position when . is pressed on empty value #817', async () => {
     const Test = () => {
-      const [value, setValue] = useState();
+      const [value, setValue] = React.useState();
       return (
         <NumericFormat
           autoComplete="off"
@@ -226,7 +226,7 @@ describe('Test keypress and caret position changes', () => {
       />,
     );
 
-    await simulateKeyInput(input, '91');
+    await simulateKeyInput(user, input, '91', 0);
 
     expect(input.value).toEqual('91 people');
   });
