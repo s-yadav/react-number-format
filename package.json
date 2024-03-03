@@ -1,7 +1,7 @@
 {
   "name": "react-number-format",
   "description": "React component to format number in an input or as a text.",
-  "version": "5.3.1",
+  "version": "5.3.3",
   "main": "dist/react-number-format.cjs.js",
   "module": "dist/react-number-format.es.js",
   "types": "types/index.d.ts",
@@ -12,6 +12,7 @@
     "type": "git",
     "url": "https://github.com/s-yadav/react-number-format"
   },
+  "homepage": "https://s-yadav.github.io/react-number-format/docs/intro",
   "bugs": {
     "mail": "sudhanshuyadav2@gmail.com",
     "url": "https://github.com/s-yadav/react-number-format/issues"

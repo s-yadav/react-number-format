@@ -193,18 +193,23 @@ export function roundToPrecision(numStr: string, scale: number, fixedDecimalScal
   const floatValueStr =
     afterDecimal.length <= scale ? `0.${afterDecimal}` : floatValue.toFixed(scale);
   const roundedDecimalParts = floatValueStr.split('.');
-  const intPart = beforeDecimal
-    .split('')
-    .reverse()
-    .reduce((roundedStr, current, idx) => {
-      if (roundedStr.length > idx) {
-        return (
-          (Number(roundedStr[0]) + Number(current)).toString() +
-          roundedStr.substring(1, roundedStr.length)
-        );
-      }
-      return current + roundedStr;
-    }, roundedDecimalParts[0]);
+  let intPart = beforeDecimal;
+
+  // if we have cary over from rounding decimal part, add that on before decimal
+  if (beforeDecimal && Number(roundedDecimalParts[0])) {
+    intPart = beforeDecimal
+      .split('')
+      .reverse()
+      .reduce((roundedStr, current, idx) => {
+        if (roundedStr.length > idx) {
+          return (
+            (Number(roundedStr[0]) + Number(current)).toString() +
+            roundedStr.substring(1, roundedStr.length)
+          );
+        }
+        return current + roundedStr;
+      }, roundedDecimalParts[0]);
+  }
 
   const decimalPart = limitToScale(roundedDecimalParts[1] || '', scale, fixedDecimalScale);
   const negation = hasNegation ? '-' : '';
