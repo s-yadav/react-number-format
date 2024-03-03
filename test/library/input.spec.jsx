@@ -47,13 +47,9 @@ describe('NumberFormat as input', () => {
     expect(input.getAttribute('inputmode')).toBe('search');
   });
 
-  // TODO
-  it.skip('should add inputMode numeric only when app is mounted', async () => {
-    const wrapper = await render(<NumberFormatBase />, { disableLifecycleMethods: true });
-    expect(wrapper.find('input').prop('inputMode')).toEqual(undefined);
-
-    const wrapper2 = mount(<NumberFormatBase />);
-    expect(wrapper2.find('input').prop('inputMode')).toEqual('numeric');
+  it('should add inputMode numeric only when app is mounted', async () => {
+    const { input } = await render(<NumberFormatBase />);
+    expect(input.getAttribute('inputmode')).toBe('numeric');
   });
 
   it('should always add inputMode numeric to pattern format, even for Iphone/IPad device', async () => {
@@ -127,12 +123,12 @@ describe('NumberFormat as input', () => {
     expect(input).toHaveValue('$2,456,981');
   });
 
-  it('removes negation when format props is provided', async () => {
+  it('should not allow negation to be added on PatternFormat', async () => {
     const { input, user } = await render(
       <PatternFormat format="#### #### #### ####" value="2342 2345 2342 2345" />,
     );
 
-    //by default space is mask
+    // by default space is mask
     await simulateKeyInput(user, input, '-', 0);
     expect(input).toHaveValue('2342 2345 2342 2345');
 
