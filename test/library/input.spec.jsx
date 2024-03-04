@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, StrictMode } from 'react';
 import { vi } from 'vitest';
-import { render as rtlRender, screen, renderHook } from '@testing-library/react';
+import { render as rtlRender, screen, renderHook, waitFor } from '@testing-library/react';
 
 import TextField from 'material-ui/TextField';
 
@@ -569,7 +569,7 @@ describe('NumberFormat as input', () => {
 
     simulateFocusEvent(input);
 
-    expect(mockOnFocus).toHaveBeenCalled();
+    await waitFor(() => expect(mockOnFocus).toHaveBeenCalled());
   });
 
   it('should contain currentTarget on focus event', async () => {
