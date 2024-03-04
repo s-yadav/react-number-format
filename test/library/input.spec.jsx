@@ -413,12 +413,14 @@ describe('NumberFormat as input', () => {
   });
 
   it('should pass valid floatValue in isAllowed callback', async () => {
-    const spy = vi.fn();
+    // The mock implementation needs to return `true` because the some
+    // assertions in this test work on that assumption.
+    const mockIsAllowed = vi.fn().mockImplementation(() => true);
 
-    const { input, user } = await render(<NumericFormat isAllowed={spy} />);
+    const { input, user } = await render(<NumericFormat isAllowed={mockIsAllowed} />);
 
     await simulateKeyInput(user, input, '.', 0);
-    expect(spy.mock.lastCall[0]).toEqual({
+    expect(mockIsAllowed.mock.lastCall[0]).toEqual({
       formattedValue: '.',
       value: '.',
       floatValue: undefined,
@@ -426,7 +428,7 @@ describe('NumberFormat as input', () => {
 
     await simulateKeyInput(user, input, '{Backspace}', 1);
     await simulateKeyInput(user, input, '0', 0);
-    expect(spy.mock.lastCall[0]).toEqual({
+    expect(mockIsAllowed.mock.lastCall[0]).toEqual({
       formattedValue: '0',
       value: '0',
       floatValue: 0,
@@ -434,7 +436,7 @@ describe('NumberFormat as input', () => {
 
     await simulateKeyInput(user, input, '{Backspace}', 1);
     await simulateKeyInput(user, input, '123.', 0);
-    expect(spy.mock.lastCall[0]).toEqual({
+    expect(mockIsAllowed.mock.lastCall[0]).toEqual({
       formattedValue: '123.',
       value: '123.',
       floatValue: 123,
