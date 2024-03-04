@@ -384,13 +384,7 @@ describe('NumberFormat as input', () => {
       );
     }
 
-    const { input, user, rerender } = await render(
-      <NumericFormatTest
-        onValueChange={(values) => {
-          wrapper.setProps({ value: values.floatValue });
-        }}
-      />,
-    );
+    const { input, user, rerender } = await render(<NumericFormatTest />);
 
     //check negation
     await simulateKeyInput(user, input, '-', 0);
@@ -403,26 +397,11 @@ describe('NumberFormat as input', () => {
     expect(input).toHaveValue('0.2');
 
     //check changing format should change the formatted value
-    rerender(
-      <NumericFormatTest
-        onValueChange={(values) => {
-          wrapper.setProps({ value: values.floatValue });
-        }}
-        prefix="$"
-      />,
-    );
+    rerender(<NumericFormatTest prefix="$" />);
     expect(input).toHaveValue('$0.2');
 
     //check if trailing decimal is supported
-    rerender(
-      <NumericFormatTest
-        onValueChange={(values) => {
-          wrapper.setProps({ value: values.floatValue });
-        }}
-        prefix="$"
-        value={123}
-      />,
-    );
+    rerender(<NumericFormatTest prefix="$" value={123} />);
     await simulateKeyInput(user, input, '.', 4);
     expect(input).toHaveValue('$123.');
 
