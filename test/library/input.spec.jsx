@@ -5,17 +5,7 @@ import { render as rtlRender, screen, renderHook, waitFor } from '@testing-libra
 import TextField from 'material-ui/TextField';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {
-  simulateKeyInput,
-  simulateFocusEvent,
-  simulateBlurEvent,
-  getCustomEvent,
-  mount,
-  shallow,
-  getInputValue,
-  render,
-  wait,
-} from '../test_util';
+import { simulateKeyInput, simulateFocusEvent, simulateBlurEvent, render } from '../test_util';
 import NumericFormat, { useNumericFormat } from '../../src/numeric_format';
 import PatternFormat, { usePatternFormat } from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';

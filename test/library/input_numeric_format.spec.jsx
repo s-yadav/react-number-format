@@ -1,5 +1,4 @@
 import React from 'react';
-import { fireEvent, screen } from '@testing-library/react';
 
 import NumericFormat from '../../src/numeric_format';
 
@@ -829,7 +828,6 @@ describe('Test NumberFormat as input with numeric format options', () => {
     });
 
     it('while deleting prefix', async () => {
-      // TODO: Incorrect assertion
       const { input, user } = await render(
         <NumericFormat prefix="100-" value={1} suffix="000 USD" />,
       );
@@ -839,7 +837,6 @@ describe('Test NumberFormat as input with numeric format options', () => {
     });
 
     it('while deleting part of the prefix', async () => {
-      // TODO: Incorrect assertion
       const { input, user } = await render(
         <NumericFormat prefix="100-" value={1} suffix="000 USD" />,
       );

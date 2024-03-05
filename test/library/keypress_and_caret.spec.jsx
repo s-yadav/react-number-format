@@ -3,8 +3,7 @@ import React from 'react';
 import NumericFormat from '../../src/numeric_format';
 import PatternFormat from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
-import ReactDOM from 'react-dom';
-import { cleanup, fireEvent, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 
 import {
   simulateBlurEvent,
@@ -18,21 +17,6 @@ import {
 import { cardExpiry } from '../../custom_formatters/card_expiry';
 
 describe('Test keypress and caret position changes', () => {
-  // let caretPos;
-  // const setSelectionRange = (pos) => {
-  //   caretPos = pos;
-  // };
-
-  // beforeEach(() => {
-  //   caretPos = 0;
-  // });
-
-  // afterEach(() => {
-  //   jest.useRealTimers();
-  //   cleanup();
-  // });
-
-  // TODO: replace test
   it('should maintain caret position if suffix/prefix is updated while typing #249', async () => {
     class TestComp extends React.Component {
       constructor() {
@@ -683,8 +667,7 @@ describe('Test keypress and caret position changes', () => {
       expect(input.selectionStart).toBe(6);
     });
 
-    // TODO: Why would `caret position` not change when a selectionRange is explicitly set?
-    it.todo('should not reset caret position on focus when full value is selected', async () => {
+    it('should not reset caret position on focus when full value is selected', async () => {
       const value = 'Rs. 12,345.50 /sq.feet';
 
       const { input, user } = await render(

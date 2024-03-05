@@ -1,5 +1,5 @@
 import React from 'react';
-import { render as rtlRender, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import NumericFormat from '../../src/numeric_format';
 import PatternFormat from '../../src/pattern_format';
@@ -7,7 +7,7 @@ import PatternFormat from '../../src/pattern_format';
 /*** format_number input as text ****/
 describe('NumberFormat as text', () => {
   it('should format numbers to currency', () => {
-    rtlRender(
+    render(
       <NumericFormat value={2456981} displayType={'text'} thousandSeparator={true} prefix={'$'} />,
     );
 
@@ -16,7 +16,7 @@ describe('NumberFormat as text', () => {
   });
 
   it('should format as given format', () => {
-    rtlRender(
+    render(
       <PatternFormat value={4111111111111111} displayType={'text'} format="#### #### #### ####" />,
     );
 
@@ -25,7 +25,7 @@ describe('NumberFormat as text', () => {
   });
 
   it('should format as given format when input is string', () => {
-    rtlRender(
+    render(
       <PatternFormat
         value="4111111111111111"
         valueIsNumericString
@@ -39,7 +39,7 @@ describe('NumberFormat as text', () => {
   });
 
   it('should format as given format when input length is less than format length', () => {
-    rtlRender(
+    render(
       <PatternFormat
         value="41111111111111"
         valueIsNumericString
@@ -56,7 +56,7 @@ describe('NumberFormat as text', () => {
   });
 
   it('should format as given format with mask', () => {
-    rtlRender(
+    render(
       <PatternFormat
         value="41111111111111"
         valueIsNumericString
@@ -71,7 +71,7 @@ describe('NumberFormat as text', () => {
   });
 
   it('should limit decimal scale to given value', () => {
-    const { rerender } = rtlRender(
+    const { rerender } = render(
       <NumericFormat value={4111.344} displayType={'text'} decimalScale={2} />,
     );
 
@@ -84,7 +84,7 @@ describe('NumberFormat as text', () => {
   });
 
   it('should add zeros if fixedDecimalScale is provided', () => {
-    const { rerender } = rtlRender(
+    const { rerender } = render(
       <NumericFormat
         value="4111.11"
         valueIsNumericString
@@ -110,7 +110,7 @@ describe('NumberFormat as text', () => {
   });
 
   it('should accept custom renderText method', () => {
-    rtlRender(
+    render(
       <NumericFormat
         value="4111.11"
         valueIsNumericString
