@@ -12,6 +12,8 @@ import {
   simulateMouseUpEvent,
   simulateFocusEvent,
   render,
+  simulatePaste,
+  clearInput,
 } from '../test_util';
 import { cardExpiry } from '../../custom_formatters/card_expiry';
 
@@ -261,28 +263,29 @@ describe('Test keypress and caret position changes', () => {
       expect(input).toHaveValue('');
 
       //case 3: Enter first multiple number
-      user.clear(input);
-      await simulateKeyInput(user, input, '2456789', 0);
+      await clearInput(user, input);
+      await simulatePaste(user, input, '2456789');
       expect(input).toHaveValue('2456 789_ ____ ____');
 
       //case 4: When alpha numeric character got added
-      user.clear(input);
-      await simulateKeyInput(user, input, '245sf6789', 0);
+      await clearInput(user, input);
+      await simulatePaste(user, input, '245sf6789');
       expect(input).toHaveValue('2456 789_ ____ ____');
 
       //case 5: Similiar to case 4 but a formatted value got added
-      user.clear(input);
-      await simulateKeyInput(user, input, '1234 56', 0);
+      await clearInput(user, input);
+      await simulatePaste(user, input, '1234 56');
       expect(input).toHaveValue('1234 56__ ____ ____');
 
       //case 6: If format has numbers
       rerender(<PatternFormat format="+1 (###) ### # ##" mask="_" />);
-      await simulateKeyInput(user, input, '123456', 0);
+      await clearInput(user, input);
+      await simulatePaste(user, input, '123456');
       expect(input).toHaveValue('+1 (123) 456 _ __');
 
       //case 7: If format has numbers and and formatted value is inserted
-      user.clear(input);
-      await simulateKeyInput(user, input, '+1 (965) 432 1 19', 0);
+      await clearInput(user, input);
+      await simulatePaste(user, input, '+1 (965) 432 1 19');
       expect(input).toHaveValue('+1 (965) 432 1 19');
     });
 

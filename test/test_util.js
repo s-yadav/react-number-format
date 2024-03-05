@@ -102,3 +102,8 @@ export async function clearInput(user, input) {
 export function simulateBlurEvent(input) {
   fireEvent.blur(input);
 }
+
+export async function simulatePaste(user, input, data) {
+  input.focus();
+  await user.paste(data);
+}
