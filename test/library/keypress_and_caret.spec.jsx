@@ -4,7 +4,7 @@ import NumericFormat from '../../src/numeric_format';
 import PatternFormat from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
 import ReactDOM from 'react-dom';
-import { cleanup, fireEvent } from '@testing-library/react';
+import { cleanup, fireEvent, waitFor } from '@testing-library/react';
 
 import {
   simulateBlurEvent,
@@ -155,9 +155,7 @@ describe('Test keypress and caret position changes', () => {
 
     input.blur();
 
-    await wait(0);
-
-    expect(input.value).toEqual('0.50');
+    await waitFor(() => expect(input.value).toEqual('0.50'));
   });
 
   it('should handle caret position correctly when suffix starts with space and allowed decimal separator is pressed. #725', async () => {
@@ -446,8 +444,8 @@ describe('Test keypress and caret position changes', () => {
       expect(input.selectionStart).toEqual(8);
 
       // delete before decimal separator
-      await simulateKeyInput(user, input, '.', 8, 8);
-      await simulateKeyInput(user, input, '{Delete}', 7, 7);
+      await simulateKeyInput(user, input, '.', 8, 8, { eventType: 'keyboard' });
+      await simulateKeyInput(user, input, '{Delete}', 7, 7, { eventType: 'keyboard' });
       expect(input).toHaveValue('Rs. 14,550 /sq.feet');
       expect(input.selectionStart).toEqual(8);
     });
