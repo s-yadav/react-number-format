@@ -525,11 +525,10 @@ describe('NumberFormat as input', () => {
       source: 'prop',
     });
 
-    await simulateKeyInput(user, input, '5', 0);
+    await simulateKeyInput(user, input, '5', 0, 0, { eventType: 'keyboard' });
 
     const { event, source } = spy.mock.lastCall[1];
-    const { key } = event;
-    expect(key).toEqual('5');
+    expect(event.nativeEvent.data).toEqual('5');
     expect(source).toEqual('event');
   });
 
@@ -681,7 +680,6 @@ describe('NumberFormat as input', () => {
 
     expect(input).toHaveValue('(112) 3234 512');
     const value = view.getByTestId('value');
-    console.log(value);
     expect(value.textContent).toEqual('1123234512');
   });
 

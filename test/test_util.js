@@ -21,7 +21,14 @@ export async function render(elm) {
   return { ...view, view: view, input, user };
 }
 
-export async function simulateKeyInput(user, input, key, selectionStart = 0, selectionEnd) {
+export async function simulateKeyInput(
+  user,
+  input,
+  key,
+  selectionStart = 0,
+  selectionEnd,
+  options,
+) {
   const v = input.value;
 
   let [start, end] = [selectionStart, selectionEnd ?? selectionStart];
@@ -57,7 +64,15 @@ export async function simulateKeyInput(user, input, key, selectionStart = 0, sel
     }
   } else {
     if (start === end) {
-      await user.type(input, key, { initialSelectionStart: start, initialSelectionEnd: end });
+      if (options?.eventType === 'keyboard') {
+        input.focus();
+        input.selectionStart = start;
+        input.selectionEnd = end;
+
+        await user.keyboard(key);
+      } else {
+        await user.type(input, key, { initialSelectionStart: start, initialSelectionEnd: end });
+      }
     } else {
       let newValue;
 
