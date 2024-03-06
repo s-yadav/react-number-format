@@ -1,4 +1,5 @@
 import React from 'react';
+import { render as rtlRender } from '@testing-library/react';
 
 import NumericFormat from '../../src/numeric_format';
 
@@ -108,15 +109,13 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(input).toHaveValue("$2 456 981'89");
   });
 
-  // it('should throw error when decimal separator and thousand separator are same', async () => {
-  //   expect(async () => {
-  //     shallow(<NumericFormat thousandSeparator={'.'} prefix={'$'} />);
-  //   }).toThrow();
+  it('should throw error when decimal separator and thousand separator are same', async () => {
+    expect(() => rtlRender(<NumericFormat thousandSeparator={'.'} prefix={'$'} />)).toThrowError();
 
-  //   expect(async () => {
-  //     shallow(<NumericFormat thousandSeparator={','} decimalSeparator={','} prefix={'$'} />);
-  //   }).toThrow();
-  // });
+    expect(() =>
+      rtlRender(<NumericFormat thousandSeparator={','} decimalSeparator={','} prefix={'$'} />),
+    ).toThrowError();
+  });
 
   it('should allow floating/integer numbers as values and do proper formatting', async () => {
     const { input, user, rerender } = await render(<NumericFormat value={12345.67} />);
@@ -326,18 +325,15 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(input).toHaveValue('981.273.724.234.817.383.478.127,68');
   });
 
-  // it('should allow deleting all numbers when decimalScale and fixedDecimalScale is defined', async () => {
-  //   jest.useFakeTimers();
+  it('should allow deleting all numbers when decimalScale and fixedDecimalScale is defined', async () => {
+    const { input, user } = await render(
+      <NumericFormat prefix="$" decimalScale={3} value="$1.000" fixedDecimalScale={true} />,
+    );
 
-  //   const { input, user } = await render(
-  //     <NumericFormat prefix="$" decimalScale={3} value="$1.000" fixedDecimalScale={true} />,
-  //   );
-  //   await simulateNativeKeyInput(user, input, '{Backspace}', 2);
+    await simulateKeyInput(user, input, '{Backspace}', 2);
 
-  //   jest.advanceTimersByTime(1);
-
-  //   expect(input).toHaveValue('');
-  // });
+    expect(input).toHaveValue('');
+  });
 
   it('should not allow to remove decimalSeparator if decimalScale and fixedDecimalScale is defined', async () => {
     const { input, user, rerender } = await render(
@@ -381,8 +377,6 @@ describe('Test NumberFormat as input with numeric format options', () => {
     await simulateKeyInput(user, input, '56', 1, 9);
     expect(input).toHaveValue('$56.00');
 
-    // simulateBlurEvent(input);
-
     rerender(
       <NumericFormat
         prefix={''}
@@ -393,10 +387,8 @@ describe('Test NumberFormat as input with numeric format options', () => {
         value={'98.76%'}
       />,
     );
-    input.selectionStart = 0;
-    input.selectionEnd = 0;
     await simulateKeyInput(user, input, '1', 0, 5);
-    // expect(input).toHaveValue('1.00%');
+    expect(input).toHaveValue('1.00%');
 
     rerender(
       <NumericFormat
@@ -477,8 +469,8 @@ describe('Test NumberFormat as input with numeric format options', () => {
         prefix={'$'}
       />,
     );
-    await simulateKeyInput(user, input, '0', 1);
 
+    await simulateKeyInput(user, input, '0', 1);
     expect(input).toHaveValue('$023,456.78');
 
     simulateBlurEvent(input);
@@ -493,11 +485,10 @@ describe('Test NumberFormat as input with numeric format options', () => {
     );
 
     await simulateKeyInput(user, input, '{Backspace}', 2);
-
     expect(input).toHaveValue('$0000.25');
 
-    // await simulateNativeKeyInput(user, input, '2', 1);
-    // expect(input).toHaveValue('$20,000.25');
+    await simulateKeyInput(user, input, '2', 1);
+    expect(input).toHaveValue('$20,000.25');
   });
 
   it('should remove leading 0s while user go out of focus and allowLeadingZeros is false', async () => {
@@ -629,35 +620,33 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   //Issue #137 valueIsNumericString=true breaks decimal places
-  // TODO: Replace test
-  // it('should not break decimal palces when valueIsNumericString is set to true and decimal scale is provided. Issue #137', async () => {
-  //   class IssueExample extends React.Component {
-  //     constructor() {
-  //       super();
-  //       this.state = {
-  //         value: '3456',
-  //       };
-  //     }
-  //     render() {
-  //       const { value } = this.state;
-  //       return (
-  //         <NumericFormat
-  //           valueIsNumericString={true}
-  //           decimalScale={2}
-  //           prefix={'$'}
-  //           value={value}
-  //           onValueChange={({ value }) => {
-  //             this.setState({ value });
-  //           }}
-  //         />
-  //       );
-  //     }
-  //   }
-  //   const {input, user } = await render(<IssueExample />);
-  //   await simulateNativeKeyInput(user, input, '.', 5);
-  //   render(wrapper.get(0)).update();
-  //   expect(ReactDOM.findDOMNode(wrapper.instance()).value).toEqual('$3456.');
-  // });
+  it('should not break decimal palces when valueIsNumericString is set to true and decimal scale is provided. Issue #137', async () => {
+    class IssueExample extends React.Component {
+      constructor() {
+        super();
+        this.state = {
+          value: '3456',
+        };
+      }
+      render() {
+        const { value } = this.state;
+        return (
+          <NumericFormat
+            valueIsNumericString={true}
+            decimalScale={2}
+            prefix={'$'}
+            value={value}
+            onValueChange={({ value }) => {
+              this.setState({ value });
+            }}
+          />
+        );
+      }
+    }
+    const { input, user } = await render(<IssueExample />);
+    await simulateKeyInput(user, input, '.', 5);
+    expect(input).toHaveValue('$3456.');
+  });
 
   //Issue #140
   it('should not give NaN zeros, when decimalScale is 0 and roundedValue will be multiple of 10s, Issue #140', async () => {
