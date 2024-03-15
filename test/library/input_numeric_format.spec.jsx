@@ -198,7 +198,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
     await clearInput(user, input);
     /** Only initial value should round off not while input **/
     await simulateKeyInput(user, input, '4111.11118', 0);
-    expect(input.value).not.toEqual('4111.1112');
+    expect(input.value).toEqual('4111.1111');
 
     await clearInput(user, input);
     //case 3rd - shorter scale adds 0
@@ -207,7 +207,6 @@ describe('Test NumberFormat as input with numeric format options', () => {
 
     await clearInput(user, input);
     //case 4th - no decimal should round with 4 zeros
-    await simulateKeyInput(user, input, '', 0);
     await simulateKeyInput(user, input, '4111', 0);
     expect(input).toHaveValue('4111.0000');
 
