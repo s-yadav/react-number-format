@@ -187,33 +187,28 @@ describe('Test NumberFormat as input with numeric format options', () => {
     );
 
     //case 1st - already exactly scale 4 should stay that way
-    await simulateKeyInput(user, input, '4111.1111', 0);
+    await simulateKeyInput(user, input, '4111.1111', 0, 0);
     expect(input).toHaveValue('4111.1111');
 
-    await clearInput(user, input);
     //case 2nd - longer scale should round
-    await simulateKeyInput(user, input, '4111.11111', 0);
+    await simulateKeyInput(user, input, '4111.11111', 0, 9);
     expect(input).toHaveValue('4111.1111');
 
-    await clearInput(user, input);
     /** Only initial value should round off not while input **/
-    await simulateKeyInput(user, input, '4111.11118', 0);
+    await simulateKeyInput(user, input, '4111.11118', 0, 9);
     expect(input.value).toEqual('4111.1111');
 
-    await clearInput(user, input);
     //case 3rd - shorter scale adds 0
-    await simulateKeyInput(user, input, '4111.111', 0);
+    await simulateKeyInput(user, input, '4111.111', 0, 9);
     expect(input).toHaveValue('4111.1110');
 
-    await clearInput(user, input);
     //case 4th - no decimal should round with 4 zeros
-    await simulateKeyInput(user, input, '4111', 0);
+    await simulateKeyInput(user, input, '4111', 0, 9);
     expect(input).toHaveValue('4111.0000');
 
-    await clearInput(user, input);
     //case 5 - round with two decimal scale
     rerender(<NumericFormat decimalScale={2} fixedDecimalScale={true} />);
-    await simulateKeyInput(user, input, '4111.111', 0);
+    await simulateKeyInput(user, input, '4111.111', 0, 9);
     expect(input).toHaveValue('4111.11');
   });
 
