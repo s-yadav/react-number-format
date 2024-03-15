@@ -21,18 +21,19 @@ export async function render(elm) {
   return { ...view, view: view, input, user };
 }
 
-export async function simulateKeyInput(
-  user,
-  input,
-  key,
-  selectionStart = 0,
-  selectionEnd,
-  options,
-) {
+export async function simulateKeyInput(user, input, key, selectionStart, selectionEnd, options) {
+  if (!selectionStart && selectionStart !== 0) {
+    input.focus();
+    await user.keyboard(key);
+    return;
+  }
+
   const v = input.value;
 
-  let [start, end] = [selectionStart, selectionEnd ?? selectionStart];
-  if (selectionStart > v.length) {
+  let start = selectionStart ?? 0;
+  let end = selectionEnd ?? start;
+
+  if (start > v.length) {
     start = v.length;
   }
   if (end > v.length) {
@@ -45,11 +46,10 @@ export async function simulateKeyInput(
 
   const specialKeys = ['{Backspace}', '{Delete}', '{ArrowLeft}', '{ArrowRight}'];
 
+  input.focus();
+  input.setSelectionRange(start, end);
   if (specialKeys.includes(key)) {
     if (start === end) {
-      await input.focus();
-      await input.setSelectionRange(start, end);
-
       await user.keyboard(key);
     } else {
       let newValue;
@@ -65,20 +65,12 @@ export async function simulateKeyInput(
   } else {
     if (start === end) {
       if (options?.eventType === 'keyboard') {
-        input.focus();
-        input.selectionStart = start;
-        input.selectionEnd = end;
-
         await user.keyboard(key);
       } else {
         await user.type(input, key, { initialSelectionStart: start, initialSelectionEnd: end });
       }
     } else {
-      let newValue;
-
-      newValue = v.slice(0, start) + key + v.slice(end, v.length);
-      fireEvent.change(input, { target: { value: newValue } });
-      end = start;
+      await user.type(input, key, { initialSelectionStart: start, initialSelectionEnd: end });
     }
   }
 }
