@@ -3,7 +3,14 @@ import { render as rtlRender } from '@testing-library/react';
 
 import NumericFormat from '../../src/numeric_format';
 
-import { simulateBlurEvent, render, simulateKeyInput, clearInput } from '../test_util';
+import {
+  simulateBlurEvent,
+  render,
+  simulateKeyInput,
+  clearInput,
+  simulateDblClick,
+  simulateDragMouseToSelect,
+} from '../test_util';
 
 /**
  * This suit is to test NumberFormat when normal numeric values are provided without any formatting options
@@ -787,7 +794,8 @@ describe('Test NumberFormat as input with numeric format options', () => {
         <NumericFormat prefix="100-" value={1} suffix="000 USD" />,
       );
 
-      await simulateKeyInput(user, input, '1', 9, 12);
+      await simulateDblClick(user, input, 10);
+      await simulateKeyInput(user, input, '1');
       expect(input).toHaveValue('100-1000 USD');
     });
 
@@ -796,7 +804,8 @@ describe('Test NumberFormat as input with numeric format options', () => {
         <NumericFormat prefix="100-" value={1} suffix="000 USD" />,
       );
 
-      await simulateKeyInput(user, input, '1', 0, 2);
+      await simulateDblClick(user, input, 1);
+      await simulateKeyInput(user, input, '1');
       expect(input).toHaveValue('100-1000 USD');
     });
 
@@ -805,7 +814,8 @@ describe('Test NumberFormat as input with numeric format options', () => {
         <NumericFormat prefix="100-" value={1} suffix="000 USD" />,
       );
 
-      await simulateKeyInput(user, input, '{Backspace}', 9, 12);
+      await simulateDblClick(user, input, 10);
+      await simulateKeyInput(user, input, '{Backspace}');
       expect(input).toHaveValue('100-1000 USD');
     });
 
@@ -814,6 +824,13 @@ describe('Test NumberFormat as input with numeric format options', () => {
         <NumericFormat prefix="100-" value={1} suffix="000 USD" />,
       );
 
+      // TODO: simulateKeyInput isn't actually typing anything into the input.
+      // It computes the expected value of the input and updates it.
+      // However, for what it's worth, this assertion also fails in the browser as
+      // of now.
+
+      // await simulateDragMouseToSelect(user, input, 0, 4)
+      // await simulateKeyInput(user, input, '{Backspace}');
       await simulateKeyInput(user, input, '{Backspace}', 0, 4);
       expect(input).toHaveValue('100-1000 USD');
     });
@@ -823,7 +840,8 @@ describe('Test NumberFormat as input with numeric format options', () => {
         <NumericFormat prefix="100-" value={1} suffix="000 USD" />,
       );
 
-      await simulateKeyInput(user, input, '{Backspace}', 0, 3);
+      await simulateDblClick(user, input, 1);
+      await simulateKeyInput(user, input, '{Backspace}');
       expect(input).toHaveValue('100-1000 USD');
     });
   });

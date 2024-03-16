@@ -100,3 +100,11 @@ export async function simulatePaste(user, input, data, selectionStart = 0, selec
   input.focus();
   await user.paste(data);
 }
+
+export async function simulateDblClick(user, target, offset) {
+  await user.pointer([{ target: target, offset: offset, keys: '[MouseLeft][MouseLeft]' }]);
+}
+
+export async function simulateDragMouseToSelect(user, target, from, to) {
+  await user.pointer([{ target: target, offset: from, keys: '[MouseLeft>]' }, { offset: to }]);
+}
