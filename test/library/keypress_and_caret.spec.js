@@ -679,5 +679,17 @@ describe('Test keypress and caret position changes', () => {
       jasmine.clock().tick(1);
       expect(caretPos).toEqual(0);
     });
+
+    it('should correct caret position after user click on input while it has selection #780', async () => {
+      const { input } = await render(<NumericFormat prefix="$" value="$123" />);
+
+      input.setSelectionRange(0, 3);
+
+      // this simulates browser mouse up on already selected text
+      userEvent.click(input);
+      input.setSelectionRange(0, 0);
+      await wait(500);
+      expect(input.selectionStart).toEqual(1);
+    });
   });
 });
