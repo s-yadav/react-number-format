@@ -403,7 +403,9 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
   // add input mode on element based on format prop and device once the component is mounted
   const inputMode: InputAttributes['inputMode'] = mounted && addInputMode() ? 'numeric' : undefined;
 
-  const inputProps = Object.assign({ inputMode }, otherProps, {
+  const inputProps: InputAttributes = {
+    inputMode,
+    ...otherProps,
     type,
     value: formattedValue,
     onChange: _onChange,
@@ -411,7 +413,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     onMouseUp: _onMouseUp,
     onFocus: _onFocus,
     onBlur: _onBlur,
-  });
+  };
 
   if (displayType === 'text') {
     return renderText ? (
@@ -423,7 +425,6 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     );
   } else if (customInput) {
     const CustomInput = customInput;
-    /* @ts-ignore */
     return <CustomInput {...inputProps} ref={getInputRef} />;
   }
 
