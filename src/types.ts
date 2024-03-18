@@ -24,7 +24,7 @@ export interface SourceInfo {
   source: SourceType;
 }
 
-export type FormatInputValueFunction = (inputValue: string) => string;
+export type FormatInputValueFunction = (inputValue: string, event: SyntheticEvent<HTMLInputElement> | null) => string;
 export type RemoveFormattingFunction = (inputValue: string, changeMeta?: ChangeMeta) => string;
 
 export interface SyntheticInputEvent extends React.SyntheticEvent<HTMLInputElement> {
