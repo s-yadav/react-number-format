@@ -79,7 +79,7 @@
     "gh-pages": "^4.0.0",
     "jasmine": "^2.4.1",
     "jasmine-core": "^2.4.1",
-    "karma": "^4.3.0",
+    "karma": "^6.3.16",
     "karma-chrome-launcher": "^3.1.0",
     "karma-cli": "^2.0.0",
     "karma-jasmine": "^0.3.7",
