@@ -345,14 +345,24 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
      * NOTE: we have to give default value for value as in case when custom input is provided
      * value can come as undefined when nothing is provided on value prop.
      */
-    const { selectionStart, selectionEnd, value = '' } = el;
 
-    if (selectionStart === selectionEnd) {
-      const caretPosition = correctCaretPosition(value, selectionStart as number);
-      if (caretPosition !== selectionStart) {
-        setPatchedCaretPosition(el, caretPosition, value);
+    const correctCaretPositionIfRequired = () => {
+      const { selectionStart, selectionEnd, value = '' } = el;
+      if (selectionStart === selectionEnd) {
+        const caretPosition = correctCaretPosition(value, selectionStart as number);
+        if (caretPosition !== selectionStart) {
+          setPatchedCaretPosition(el, caretPosition, value);
+        }
       }
-    }
+    };
+
+    correctCaretPositionIfRequired();
+
+    // try to correct after selection has updated by browser
+    // this case is required when user clicks on some position while a text is selected on input
+    requestAnimationFrame(() => {
+      correctCaretPositionIfRequired();
+    });
 
     onMouseUp(e);
   };

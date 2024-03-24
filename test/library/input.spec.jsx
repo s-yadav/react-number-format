@@ -563,6 +563,22 @@ describe('NumberFormat as input', () => {
 
   it('should contain currentTarget on focus event', async () => {
     let currentTarget;
+    const { input } = await render(
+      <NumericFormat
+        value="1234"
+        onFocus={(e) => {
+          currentTarget = e.currentTarget;
+        }}
+      />,
+    );
+    input.focus();
+
+    await wait(0);
+    expect(currentTarget).not.toBeNull();
+  });
+
+  it('should contain currentTarget on focus event', async () => {
+    let currentTarget;
 
     const { input, user } = await render(
       <NumericFormat

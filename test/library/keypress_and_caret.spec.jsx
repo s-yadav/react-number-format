@@ -1,9 +1,10 @@
 import { vi } from 'vitest';
-import React from 'react';
+import React, {useState} from 'react';
 import NumericFormat from '../../src/numeric_format';
 import PatternFormat from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
 import { waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import {
   simulateBlurEvent,
@@ -118,7 +119,7 @@ describe('Test keypress and caret position changes', () => {
 
   it('should put correct position when . is pressed on empty value #817', async () => {
     const Test = () => {
-      const [value, setValue] = React.useState();
+      const [value, setValue] = useState();
       return (
         <NumericFormat
           autoComplete="off"
@@ -677,6 +678,19 @@ describe('Test keypress and caret position changes', () => {
       simulateFocusEvent(input);
 
       expect(input.selectionStart).toBe(0);
+    });
+
+    it('should correct caret position after user click on input while it has selection #780', async () => {
+      const { input } = await render(<NumericFormat prefix="$" value="$123" />);
+
+      input.setSelectionRange(0, 3);
+
+      // this simulates browser mouse up on already selected text
+      userEvent.click(input);
+      input.setSelectionRange(0, 0);
+      waitFor(()=> expect(input.selectionStart).toEqual(1))
+      // await wait(500);
+      // expect(input.selectionStart).toEqual(1);
     });
   });
 });
