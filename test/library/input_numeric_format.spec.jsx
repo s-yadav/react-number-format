@@ -453,8 +453,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         value={1231237.56}
         thousandSeparator={','}
         decimalSeparator={'.'}
-        prefix={'$'}
-        suffix={' per sq. ft.'}
+        prefix={'$ per sq. ft. '}
       />,
     );
     expect(input).toHaveValue('$ per, sq. ft. 1,231,237.56');

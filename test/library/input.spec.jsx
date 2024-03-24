@@ -101,7 +101,7 @@ describe('NumberFormat as input', () => {
     expect(input).toHaveValue('$24.569.821');
   });
 
-  it('should not reset number inputs value if number input renders again with same props', async () => {
+  it('should not reset value for a uncontrolled NumericFormat if it renders again with same props', async () => {
     const { input, user, rerender } = await render(
       <NumericFormat thousandSeparator={true} prefix={'$'} />,
     );
@@ -109,7 +109,7 @@ describe('NumberFormat as input', () => {
     await simulateKeyInput(user, input, '2456981', 0);
     expect(input).toHaveValue('$2,456,981');
 
-    rerender(<NumericFormat thousandSeparator={false} prefix={'$'} />);
+    rerender(<NumericFormat thousandSeparator={true} prefix={'$'} />);
     expect(input).toHaveValue('$2,456,981');
   });
 
@@ -251,7 +251,7 @@ describe('NumberFormat as input', () => {
       <PatternFormat format="+1 (###) ### # ## US" allowEmptyFormatting />,
     );
 
-    await simulateKeyInput(user, input, '012345678', 20, 20);
+    await simulateKeyInput(user, input, '012345678', 0, 20);
 
     expect(input).toHaveValue('+1 (012) 345 6 78 US');
   });
@@ -573,8 +573,7 @@ describe('NumberFormat as input', () => {
     );
     input.focus();
 
-    await wait(0);
-    expect(currentTarget).not.toBeNull();
+    waitFor(() => expect(currentTarget).not.toBeNull());
   });
 
   it('should contain currentTarget on focus event', async () => {

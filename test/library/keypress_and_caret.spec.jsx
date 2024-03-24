@@ -689,8 +689,6 @@ describe('Test keypress and caret position changes', () => {
       userEvent.click(input);
       input.setSelectionRange(0, 0);
       waitFor(()=> expect(input.selectionStart).toEqual(1))
-      // await wait(500);
-      // expect(input.selectionStart).toEqual(1);
     });
   });
 });
