@@ -103,7 +103,8 @@ export function simulateBlurEvent(input) {
   fireEvent.blur(input);
 }
 
-export async function simulatePaste(user, input, data) {
+export async function simulatePaste(user, input, data, selectionStart = 0, selectionEnd = input.value.length) {
+  input.setSelectionRange(selectionStart, selectionEnd);
   input.focus();
   await user.paste(data);
 }
