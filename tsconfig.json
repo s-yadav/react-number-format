@@ -4,7 +4,8 @@
     "esModuleInterop": true,
     "downlevelIteration": true,
     "noImplicitAny": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["vitest/globals"]
   },
-  "include": ["src", "test/types"]
+  "include": ["src", "test/types", "test/library/utils"]
 }
