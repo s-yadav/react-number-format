@@ -249,29 +249,26 @@ describe('Test keypress and caret position changes', () => {
       expect(input).toHaveValue('');
 
       //case 3: Enter first multiple number
-      await clearInput(user, input);
       await simulatePaste(user, input, '2456789');
       expect(input).toHaveValue('2456 789_ ____ ____');
 
       //case 4: When alpha numeric character got added
-      await clearInput(user, input);
-      await simulatePaste(user, input, '245sf6789');
+      await simulatePaste(user, input, '245sf6789', 0, 20);
       expect(input).toHaveValue('2456 789_ ____ ____');
 
       //case 5: Similiar to case 4 but a formatted value got added
-      await clearInput(user, input);
-      await simulatePaste(user, input, '1234 56');
+      await simulatePaste(user, input, '1234 56', 0, 3);
+      expect(input).toHaveValue('1234 5667 89__ ____');
+      await simulatePaste(user, input, '1234 56', 0, 20);
       expect(input).toHaveValue('1234 56__ ____ ____');
 
       //case 6: If format has numbers
       rerender(<PatternFormat format="+1 (###) ### # ##" mask="_" />);
-      await clearInput(user, input);
-      await simulatePaste(user, input, '123456');
+      await simulatePaste(user, input, '123456', 0, 20);
       expect(input).toHaveValue('+1 (123) 456 _ __');
 
       //case 7: If format has numbers and and formatted value is inserted
-      await clearInput(user, input);
-      await simulatePaste(user, input, '+1 (965) 432 1 19');
+      await simulatePaste(user, input, '+1 (965) 432 1 19', 0, 20);
       expect(input).toHaveValue('+1 (965) 432 1 19');
     });
 
