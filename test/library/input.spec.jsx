@@ -5,7 +5,13 @@ import { render as rtlRender, screen, renderHook, waitFor } from '@testing-libra
 import TextField from 'material-ui/TextField';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { simulateKeyInput, simulateFocusEvent, simulateBlurEvent, render } from '../test_util';
+import {
+  simulateKeyInput,
+  simulateClickToFocus,
+  simulateBlurEvent,
+  render,
+  simulateFocus,
+} from '../test_util';
 import NumericFormat, { useNumericFormat } from '../../src/numeric_format';
 import PatternFormat, { usePatternFormat } from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
@@ -461,7 +467,7 @@ describe('NumberFormat as input', () => {
       <NumericFormat value="1.1" valueIsNumericString />,
     );
 
-    simulateFocusEvent(input);
+    await simulateClickToFocus(user, input);
     await simulateKeyInput(user, input, '0', 3);
 
     expect(input).toHaveValue('1.10');
@@ -556,14 +562,14 @@ describe('NumberFormat as input', () => {
 
     const { input, user } = await render(<NumericFormat onFocus={mockOnFocus} />);
 
-    simulateFocusEvent(input);
+    await simulateClickToFocus(user, input);
 
     await waitFor(() => expect(mockOnFocus).toHaveBeenCalled());
   });
 
   it('should contain currentTarget on focus event', async () => {
     let currentTarget;
-    const { input } = await render(
+    const { input, user } = await render(
       <NumericFormat
         value="1234"
         onFocus={(e) => {
@@ -571,7 +577,8 @@ describe('NumberFormat as input', () => {
         }}
       />,
     );
-    input.focus();
+
+    await simulateClickToFocus(user, input);
 
     waitFor(() => expect(currentTarget).not.toBeNull());
   });
@@ -588,7 +595,7 @@ describe('NumberFormat as input', () => {
       />,
     );
 
-    simulateFocusEvent(input);
+    await simulateClickToFocus(user, input);
 
     expect(currentTarget).not.toBeNull();
   });
@@ -610,9 +617,9 @@ describe('NumberFormat as input', () => {
 
   it('should not call onFocus prop when focused then blurred in the same event loop', async () => {
     const mockOnFocus = vi.fn();
-    const { input, user } = await render(<NumericFormat onFocus={mockOnFocus} />);
+    const { input } = await render(<NumericFormat onFocus={mockOnFocus} />);
 
-    simulateFocusEvent(input);
+    simulateFocus(input);
     simulateBlurEvent(input);
 
     expect(mockOnFocus).not.toHaveBeenCalled();

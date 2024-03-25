@@ -83,8 +83,12 @@ export function simulateMouseUpEvent(user, input, selectionStart) {
   });
 }
 
-export function simulateFocusEvent(input) {
+export function simulateFocus(input) {
   input.focus();
+}
+
+export async function simulateClickToFocus(user, input) {
+  await user.click(input);
 }
 
 export async function clearInput(user, input) {
@@ -98,7 +102,7 @@ export function simulateBlurEvent(input) {
 export async function simulatePaste(user, input, data, selectionStart = 0, selectionEnd) {
   if (!selectionEnd) selectionEnd = selectionStart;
 
-  await user.click(input);
+  await simulateClickToFocus(user, input);
   await simulateDragMouseToSelect(user, input, selectionStart, selectionEnd);
   await user.paste(data);
 }

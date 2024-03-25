@@ -10,11 +10,12 @@ import {
   simulateBlurEvent,
   simulateKeyInput,
   simulateMouseUpEvent,
-  simulateFocusEvent,
+  simulateClickToFocus,
   render,
   simulatePaste,
   clearInput,
   simulateTripleClick,
+  simulateFocus,
 } from '../test_util';
 import { cardExpiry } from '../../custom_formatters/card_expiry';
 
@@ -537,10 +538,6 @@ describe('Test keypress and caret position changes', () => {
   });
 
   describe('Test click / focus on input', () => {
-    // afterEach(async () => {
-    //   jest.useRealTimers();
-    // });
-
     it('should always keep caret on typable area when we click on the input', async () => {
       const { input, user } = await render(
         <PatternFormat format="+1 (###) ### # ## US" value="+1 (123) 456 7 89 US" />,
@@ -614,12 +611,13 @@ describe('Test keypress and caret position changes', () => {
       expect(input.selectionStart).toBe(4);
     });
 
+    // TODO: Needs review
     it('should clear active timers', async () => {
       const onFocus = vi.fn();
 
       const { input, user } = await render(<NumericFormat onFocus={onFocus} />);
 
-      simulateFocusEvent(input);
+      await simulateClickToFocus(user, input);
 
       expect(onFocus).toHaveBeenCalledTimes(0);
     });
@@ -659,7 +657,7 @@ describe('Test keypress and caret position changes', () => {
       expect(input.selectionStart).toBe(6);
       simulateBlurEvent(input);
 
-      simulateFocusEvent(input);
+      simulateFocus(input);
       expect(input.selectionStart).toBe(6);
     });
 
