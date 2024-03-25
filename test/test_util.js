@@ -95,7 +95,13 @@ export function simulateBlurEvent(input) {
   fireEvent.blur(input);
 }
 
-export async function simulatePaste(user, input, data, selectionStart = 0, selectionEnd = input.value.length) {
+export async function simulatePaste(
+  user,
+  input,
+  data,
+  selectionStart = 0,
+  selectionEnd = input.value.length,
+) {
   input.setSelectionRange(selectionStart, selectionEnd);
   input.focus();
   await user.paste(data);
@@ -103,6 +109,12 @@ export async function simulatePaste(user, input, data, selectionStart = 0, selec
 
 export async function simulateDblClick(user, target, offset) {
   await user.pointer([{ target: target, offset: offset, keys: '[MouseLeft][MouseLeft]' }]);
+}
+
+export async function simulateTripleClick(user, target, offset) {
+  await user.pointer([
+    { target: target, offset: offset, keys: '[MouseLeft][MouseLeft][MouseLeft]' },
+  ]);
 }
 
 export async function simulateDragMouseToSelect(user, target, from, to) {
