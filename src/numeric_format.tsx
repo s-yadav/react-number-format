@@ -96,7 +96,7 @@ function getSeparators<BaseType = InputAttributes>(props: NumericFormatProps<Bas
   };
 }
 
-function handleNegation(value: string = '', allowNegative: boolean) {
+export function handleNegation(value: string = '', allowNegative: boolean) {
   const negationRegex = new RegExp('(-)');
   const doubleNegationRegex = new RegExp('(-)(.)*(-)');
 
@@ -133,6 +133,47 @@ function isNumericString(
   );
 }
 
+export const stripNegation = (
+  value: string,
+  start: number,
+  end: number,
+  prefix: string,
+  suffix: string,
+) => {
+  /**
+   * if prefix starts with - we don't allow negative number to avoid confusion
+   * if suffix starts with - and the value length is same as suffix length, then the - sign is from the suffix
+   * In other cases, if the value starts with - then it is a negation
+   */
+  let hasNegation = false;
+  let hasDoubleNegation = false;
+
+  if (prefix.startsWith('-')) {
+    hasNegation = false;
+  } else if (value.startsWith('--')) {
+    hasNegation = false;
+    hasDoubleNegation = true;
+  } else if (suffix.startsWith('-') && value.length === suffix.length) {
+    hasNegation = false;
+  } else if (value[0] === '-') {
+    hasNegation = true;
+  }
+
+  let charsToRemove = hasNegation ? 1 : 0;
+  if (hasDoubleNegation) charsToRemove = 2;
+
+  // remove negation/double negation from start to simplify prefix logic as negation comes before prefix
+  if (charsToRemove) {
+    value = value.substring(charsToRemove);
+
+    // account for the removal of the negation for start and end index
+    start -= charsToRemove;
+    end -= charsToRemove;
+  }
+
+  return { value, start, end, hasNegation };
+};
+
 export function removeFormatting<BaseType = InputAttributes>(
   value: string,
   changeMeta: ChangeMeta = getDefaultChangeMeta(value),
@@ -163,42 +204,7 @@ export function removeFormatting<BaseType = InputAttributes>(
     value = value.substring(0, start) + separator + value.substring(start + 1, value.length);
   }
 
-  const stripNegation = (value: string, start: number, end: number) => {
-    /**
-     * if prefix starts with - we don't allow negative number to avoid confusion
-     * if suffix starts with - and the value length is same as suffix length, then the - sign is from the suffix
-     * In other cases, if the value starts with - then it is a negation
-     */
-    let hasNegation = false;
-    let hasDoubleNegation = false;
-
-    if (prefix.startsWith('-')) {
-      hasNegation = false;
-    } else if (value.startsWith('--')) {
-      hasNegation = false;
-      hasDoubleNegation = true;
-    } else if (suffix.startsWith('-') && value.length === suffix.length) {
-      hasNegation = false;
-    } else if (value[0] === '-') {
-      hasNegation = true;
-    }
-
-    let charsToRemove = hasNegation ? 1 : 0;
-    if (hasDoubleNegation) charsToRemove = 2;
-
-    // remove negation/double negation from start to simplify prefix logic as negation comes before prefix
-    if (charsToRemove) {
-      value = value.substring(charsToRemove);
-
-      // account for the removal of the negation for start and end index
-      start -= charsToRemove;
-      end -= charsToRemove;
-    }
-
-    return { value, start, end, hasNegation };
-  };
-
-  const toMetadata = stripNegation(value, start, end);
+  const toMetadata = stripNegation(value, start, end, prefix, suffix);
   const { hasNegation } = toMetadata;
   ({ value, start, end } = toMetadata);
 
@@ -206,7 +212,7 @@ export function removeFormatting<BaseType = InputAttributes>(
     start: fromStart,
     end: fromEnd,
     value: lastValue,
-  } = stripNegation(changeMeta.lastValue, from.start, from.end);
+  } = stripNegation(changeMeta.lastValue, from.start, from.end, prefix, suffix);
 
   // if only prefix and suffix part is updated reset the value to last value
   // if the changed range is from suffix in the updated value, and the the suffix starts with the same characters, allow the change
