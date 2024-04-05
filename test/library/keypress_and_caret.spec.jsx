@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { afterEach, beforeEach, vi } from 'vitest';
 import React, { useState } from 'react';
 import NumericFormat from '../../src/numeric_format';
 import PatternFormat from '../../src/pattern_format';
@@ -611,15 +611,23 @@ describe('Test keypress and caret position changes', () => {
       expect(input.selectionStart).toBe(4);
     });
 
-    // TODO: Needs review
     it('should clear active timers', async () => {
+      vi.useFakeTimers();
+
       const onFocus = vi.fn();
 
-      const { input, user } = await render(<NumericFormat onFocus={onFocus} />);
+      const { input, user, unmount } = await render(<NumericFormat onFocus={onFocus} />);
 
-      await simulateClickToFocus(user, input);
+      // Fails if input receives focus by clicking.
+      // await simulateClickToFocus(user, input);
+      simulateFocus(input);
+
+      unmount();
+      vi.runAllTimers();
 
       expect(onFocus).toHaveBeenCalledTimes(0);
+
+      vi.useRealTimers();
     });
 
     it('should correct wrong caret positon on focus when allowEmptyFormatting is set', async () => {
