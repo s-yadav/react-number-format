@@ -48,6 +48,7 @@ export async function simulateKeyInput(user, input, key, selectionStart, selecti
 
   input.focus();
   input.setSelectionRange(start, end);
+
   if (specialKeys.includes(key)) {
     if (start === end) {
       await user.keyboard(key);
@@ -70,7 +71,11 @@ export async function simulateKeyInput(user, input, key, selectionStart, selecti
         await user.type(input, key, { initialSelectionStart: start, initialSelectionEnd: end });
       }
     } else {
-      await user.type(input, key, { initialSelectionStart: start, initialSelectionEnd: end });
+      const newValue = v.slice(0, start) + v.slice(end, v.length);
+      fireEvent.change(input, { target: { value: newValue } });
+
+      input.setSelectionRange(start, start);
+      await user.keyboard(key);
     }
   }
 }
