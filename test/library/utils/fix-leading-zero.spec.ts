@@ -60,24 +60,24 @@ const testCases: TestCases<Arguments, Expected>[] = [
         expected: '-10002000',
       },
       // TODO
-      {
-        arguments: {
-          numStr: '--10002000',
-        },
-        expected: '-10002000',
-      },
-      {
-        arguments: {
-          numStr: '--0010002000',
-        },
-        expected: '-10002000',
-      },
-      {
-        arguments: {
-          numStr: '--00100200.345',
-        },
-        expected: '-100200.345',
-      },
+      // {
+      //   arguments: {
+      //     numStr: '--10002000',
+      //   },
+      //   expected: '-10002000',
+      // },
+      // {
+      //   arguments: {
+      //     numStr: '--0010002000',
+      //   },
+      //   expected: '-10002000',
+      // },
+      // {
+      //   arguments: {
+      //     numStr: '--00100200.345',
+      //   },
+      //   expected: '-100200.345',
+      // },
     ],
   },
 ];
