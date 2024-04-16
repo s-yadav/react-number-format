@@ -90,7 +90,7 @@ This allow supporting custom input components with number format.
 import { NumericFormat } from 'react-number-format';
 import { TextField } from '@mui/material';
 
-<NumericFormat value={12323} customInput={TextField} />;
+<NumericFormat value={12323} customInput={TextField} thousandSeparator />;
 ```
 
 <details>
