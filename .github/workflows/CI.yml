@@ -33,4 +33,4 @@ jobs:
         run: yarn run lint
 
       - name: Test
-        run: yarn test
+        run: yarn test-build

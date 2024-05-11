@@ -37,7 +37,7 @@
     "build-types": "tsc -p tsconfig.build.json",
     "test": "vitest && yarn test-ts",
     "coverage": "vitest run --coverage",
-    "test-build": "vitest",
+    "test-build": "vitest run",
     "test-ts": "yarn tsc --noEmit",
     "lint": "cross-env eslint src/**"
   },
