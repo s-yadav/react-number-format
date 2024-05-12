@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, vi } from 'vitest';
+import { vi } from 'vitest';
 import React, { useState } from 'react';
 import NumericFormat from '../../src/numeric_format';
 import PatternFormat from '../../src/pattern_format';
@@ -10,10 +10,8 @@ import {
   simulateBlurEvent,
   simulateKeyInput,
   simulateMouseUpEvent,
-  simulateClickToFocus,
   render,
   simulatePaste,
-  clearInput,
   simulateTripleClick,
   simulateFocus,
 } from '../test_util';
@@ -56,7 +54,7 @@ describe('Test keypress and caret position changes', () => {
   });
 
   it('should maintain caret position when isAllowed returns false', async () => {
-    const { input, rerender, user } = await render(
+    const { input, user } = await render(
       <NumericFormat
         isAllowed={({ floatValue }) => {
           return floatValue < 100;
@@ -73,7 +71,7 @@ describe('Test keypress and caret position changes', () => {
   });
 
   it('should update caret position when any of the decimal separator is pressed just before the decimal separator #711', async () => {
-    const { input, rerender, user } = await render(
+    const { input, user } = await render(
       <NumericFormat
         value={12}
         allowedDecimalSeparators={[',', '.']}
@@ -320,9 +318,7 @@ describe('Test keypress and caret position changes', () => {
     });
 
     it('should bring caret to correct position if user types same number used in format pattern', async () => {
-      const { input, rerender, user } = await render(
-        <PatternFormat format="+1 (###) 2##-####" mask="_" />,
-      );
+      const { input, user } = await render(<PatternFormat format="+1 (###) 2##-####" mask="_" />);
 
       await simulateKeyInput(user, input, '1', 0, 0);
       expect(input.selectionStart).toEqual(5);
@@ -346,7 +342,7 @@ describe('Test keypress and caret position changes', () => {
     });
 
     it('caret position should not change if its on end of input area', async () => {
-      const { input, rerender, user } = await render(
+      const { input, user } = await render(
         <PatternFormat format="+1 (###) ### # ## US" value="+1 (123) 456 7 89 US" />,
       );
       await simulateKeyInput(user, input, '{Delete}', 17, 17);
@@ -355,7 +351,7 @@ describe('Test keypress and caret position changes', () => {
     });
 
     it('should remove the numeric part irrespective of the cursor position', async () => {
-      const { input, rerender, user } = await render(
+      const { input, user } = await render(
         <PatternFormat format="+1 (###) ### # ## US" mask="_" value="+1 (123) 456 7 89 US" />,
       );
       await simulateKeyInput(user, input, '{Backspace}', 10, 10);
@@ -378,7 +374,7 @@ describe('Test keypress and caret position changes', () => {
 
   describe('Test delete/backspace with numeric format', () => {
     it('should not remove prefix', async () => {
-      const { input, rerender, user } = await render(
+      const { input, user } = await render(
         <NumericFormat
           thousandSeparator=","
           prefix="Rs. "
@@ -392,7 +388,7 @@ describe('Test keypress and caret position changes', () => {
     });
 
     it('should not remove suffix', async () => {
-      const { input, rerender, user } = await render(
+      const { input, user } = await render(
         <NumericFormat
           thousandSeparator=","
           prefix="Rs. "
@@ -406,7 +402,7 @@ describe('Test keypress and caret position changes', () => {
     });
 
     it('should remove number, irrespective of the cursor position', async () => {
-      const { input, rerender, user } = await render(
+      const { input, user } = await render(
         <NumericFormat
           thousandSeparator=","
           prefix="Rs. "
@@ -438,7 +434,7 @@ describe('Test keypress and caret position changes', () => {
     });
 
     it('should maintain correct caret positon while removing the last character and suffix is not defined. Issue #105', async () => {
-      const { input, rerender, user } = await render(
+      const { input, user } = await render(
         <NumericFormat thousandSeparator="," prefix="$" suffix="" value="$2,342,343" />,
       );
 
@@ -448,7 +444,7 @@ describe('Test keypress and caret position changes', () => {
     });
 
     it('should maintain correct caret position while removing the second last character and suffix is not defined, Issue #116', async () => {
-      const { input, rerender, user } = await render(
+      const { input, user } = await render(
         <NumericFormat thousandSeparator="," prefix="" suffix="" value="1,000" />,
       );
 
@@ -460,7 +456,7 @@ describe('Test keypress and caret position changes', () => {
     it('should allow removing negation(-), even if its before prefix', async () => {
       const spy = vi.fn();
 
-      const { input, rerender, user } = await render(
+      const { input, user } = await render(
         <NumericFormat
           thousandSeparator=","
           suffix=""
@@ -478,7 +474,7 @@ describe('Test keypress and caret position changes', () => {
     });
 
     it('should maintain correct caret position if one of thousand separator is removed due to backspace. #695', async () => {
-      const { input, rerender, user } = await render(
+      const { input, user } = await render(
         <NumericFormat value={1234567.8901} thousandSeparator="." decimalSeparator="," />,
       );
 
@@ -490,7 +486,7 @@ describe('Test keypress and caret position changes', () => {
 
   describe('Test arrow keys', () => {
     it('should keep caret position between the prefix and suffix', async () => {
-      const { input, rerender, user } = await render(
+      const { input, user } = await render(
         <NumericFormat
           thousandSeparator=","
           prefix="Rs. "
@@ -578,7 +574,7 @@ describe('Test keypress and caret position changes', () => {
     });
 
     it('should always keep caret position between suffix and prefix', async () => {
-      const { input, rerender, user } = await render(
+      const { input, user } = await render(
         <NumericFormat
           thousandSeparator=","
           prefix="Rs. "
@@ -595,7 +591,7 @@ describe('Test keypress and caret position changes', () => {
     });
 
     it('should correct wrong caret position on focus', async () => {
-      const { input, rerender, user } = await render(
+      const { input, user } = await render(
         <NumericFormat
           thousandSeparator=","
           prefix="Rs. "
@@ -616,7 +612,7 @@ describe('Test keypress and caret position changes', () => {
 
       const onFocus = vi.fn();
 
-      const { input, user, unmount } = await render(<NumericFormat onFocus={onFocus} />);
+      const { input, unmount } = await render(<NumericFormat onFocus={onFocus} />);
 
       // Fails if input receives focus by clicking.
       // await simulateClickToFocus(user, input);

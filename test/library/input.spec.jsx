@@ -25,17 +25,17 @@ describe('NumberFormat as input', () => {
   });
 
   it('should render input as type text by default', async () => {
-    const { input, user } = await render(<NumericFormat />);
+    const { input } = await render(<NumericFormat />);
     expect(input.getAttribute('type')).toBe('text');
   });
 
   it('should render input as defined type', async () => {
-    const { input, user } = await render(<NumericFormat type="tel" />);
+    const { input } = await render(<NumericFormat type="tel" />);
     expect(input.getAttribute('type')).toBe('tel');
   });
 
   it('should add inputMode numeric to non Iphone/IPad device by default to input element', async () => {
-    const { input, user, rerender } = await render(<NumericFormat />);
+    const { input, rerender } = await render(<NumericFormat />);
     expect(input.getAttribute('inputmode')).toBe('numeric');
 
     //should allow updating the inputMode value
@@ -60,14 +60,14 @@ describe('NumberFormat as input', () => {
   });
 
   it('should have initial value', async () => {
-    const { input, user } = await render(
+    const { input } = await render(
       <NumericFormat value={2456981} thousandSeparator={true} prefix={'$'} />,
     );
     expect(input).toHaveValue('$2,456,981');
   });
 
   it('should load the default value when initial value is null', async () => {
-    const { input, user } = await render(<NumericFormat value={null} defaultValue={89} />);
+    const { input } = await render(<NumericFormat value={null} defaultValue={89} />);
     expect(input).toHaveValue('89');
   });
 
@@ -82,7 +82,7 @@ describe('NumberFormat as input', () => {
   });
 
   it('should use defaultValue as initial value', async () => {
-    const { input, user } = await render(
+    const { input } = await render(
       <NumericFormat defaultValue={2456981} thousandSeparator={true} prefix={'$'} />,
     );
     expect(input).toHaveValue('$2,456,981');
@@ -331,7 +331,7 @@ describe('NumberFormat as input', () => {
 
   it('should format value when input value is empty and allowEmptyFormatting is true', async () => {
     expect(async () => {
-      const { input, user } = await render(<PatternFormat format="##/##/####" value="" />);
+      const { input } = await render(<PatternFormat format="##/##/####" value="" />);
 
       expect(input).toHaveValue('  /  /    ');
     });
@@ -339,14 +339,14 @@ describe('NumberFormat as input', () => {
 
   it('should format value when input value is not set and allowEmptyFormatting is true', async () => {
     expect(async () => {
-      const { input, user } = await render(<PatternFormat format="##/##/####" />);
+      const { input } = await render(<PatternFormat format="##/##/####" />);
 
       expect(input).toHaveValue('  /  /    ');
     });
   });
 
   it('should not convert empty string to 0 if valueIsNumericString is true', async () => {
-    const { input, user } = await render(
+    const { input } = await render(
       <NumericFormat valueIsNumericString={true} value={''} decimalScale={2} />,
     );
 
@@ -354,7 +354,7 @@ describe('NumberFormat as input', () => {
   });
 
   it('should not break if null or NaN is provided as value', async () => {
-    const { input, user, rerender } = await render(<NumericFormat value={null} decimalScale={2} />);
+    const { input, rerender } = await render(<NumericFormat value={null} decimalScale={2} />);
     expect(input).toHaveValue('');
 
     rerender(<NumericFormat value={NaN} decimalScale={2} />);
@@ -442,9 +442,7 @@ describe('NumberFormat as input', () => {
   it('should not call onValueChange if no formatting is applied', async () => {
     const mockOnValueChange = vi.fn();
 
-    const { input, user, rerender } = await render(
-      <NumericFormat value="" onValueChange={mockOnValueChange} />,
-    );
+    const { rerender } = await render(<NumericFormat value="" onValueChange={mockOnValueChange} />);
 
     expect(mockOnValueChange).not.toHaveBeenCalled();
 
@@ -552,7 +550,7 @@ describe('NumberFormat as input', () => {
   });
 
   it('should treat Infinity value as empty string', async () => {
-    const { input, user } = await render(<NumericFormat value={Infinity} />);
+    const { input } = await render(<NumericFormat value={Infinity} />);
 
     expect(input).toHaveValue('');
   });
@@ -760,7 +758,7 @@ describe('NumberFormat as input', () => {
     });
 
     it('should correctly show the decimal values', async () => {
-      const { input, user, rerender } = await render(
+      const { input, rerender } = await render(
         <NumericFormat
           value="123.123"
           decimalScale={18}

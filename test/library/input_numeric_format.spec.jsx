@@ -21,21 +21,21 @@ import {
  */
 describe('Test NumberFormat as input with numeric format options', () => {
   it('should show the initial value as $0 when number 0 is passed', async () => {
-    const { input, user } = await render(
+    const { input } = await render(
       <NumericFormat value={0} thousandSeparator={true} prefix={'$'} />,
     );
     expect(input).toHaveValue('$0');
   });
 
   it('should show the initial value as empty string when empty string is passed and decimalScale is set', async () => {
-    const { input, user } = await render(
+    const { input } = await render(
       <NumericFormat value="" thousandSeparator={true} decimalScale={2} />,
     );
     expect(input).toHaveValue('');
   });
 
   it('should show the initial value as empty string when empty string is passed and decimalScale is not set', async () => {
-    const { input, user } = await render(<NumericFormat value="" thousandSeparator={true} />);
+    const { input } = await render(<NumericFormat value="" thousandSeparator={true} />);
     expect(input).toHaveValue('');
   });
 
@@ -146,7 +146,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should update formatted value if any of the props changes', async () => {
-    const { input, user, rerender } = await render(<NumericFormat value={12345.67} />);
+    const { input, rerender } = await render(<NumericFormat value={12345.67} />);
     expect(input).toHaveValue('12345.67');
 
     rerender(<NumericFormat value={12345.67} thousandSeparator />);
@@ -220,9 +220,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should not add zeros to fixedDecimalScale is not set', async () => {
-    const { input, user, rerender } = await render(
-      <NumericFormat decimalScale={4} value={24.45} />,
-    );
+    const { input, rerender } = await render(<NumericFormat decimalScale={4} value={24.45} />);
     expect(input).toHaveValue('24.45');
 
     rerender(<NumericFormat decimalScale={4} value={24.45678} />);
@@ -230,14 +228,14 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should handle fixedDecimalScale correctly #670', async () => {
-    const { input, user } = await render(
+    const { input } = await render(
       <NumericFormat thousandSeparator value={12} decimalScale={2} fixedDecimalScale />,
     );
     expect(input).toHaveValue('12.00');
   });
 
   it('should not round the initial if decimalScale is not provided', async () => {
-    const { input, user, rerender } = await render(<NumericFormat value={123213.7535} />);
+    const { input, rerender } = await render(<NumericFormat value={123213.7535} />);
     expect(input).toHaveValue('123213.7535');
 
     rerender(<NumericFormat value={123213.7535} thousandSeparator />);
@@ -255,7 +253,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should round the initial value to given decimalScale', async () => {
-    const { input, user, rerender } = await render(
+    const { input, rerender } = await render(
       <NumericFormat value={'123213.7536'} valueIsNumericString={true} decimalScale={1} />,
     );
     expect(input).toHaveValue('123213.8');
@@ -438,7 +436,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should allow decimal separator and thousand separator on suffix prefix', async () => {
-    const { input, user, rerender } = await render(
+    const { input, rerender } = await render(
       <NumericFormat
         value={1231237.56}
         thousandSeparator={','}
@@ -650,7 +648,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
 
   //Issue #140
   it('should not give NaN zeros, when decimalScale is 0 and roundedValue will be multiple of 10s, Issue #140', async () => {
-    const { input, user, rerender } = await render(<NumericFormat value={-9.5} decimalScale={0} />);
+    const { input, rerender } = await render(<NumericFormat value={-9.5} decimalScale={0} />);
     expect(input).toHaveValue('-10');
 
     rerender(<NumericFormat value={-99.5} decimalScale={0} />);
@@ -677,7 +675,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
 
   it(`should give correct formatted value when decimal value is passed as prop and
     decimal scale is set to zero and fixedDecimalScale is true, issue #183`, async () => {
-    const { input, user } = await render(
+    const { input } = await render(
       <NumericFormat decimalScale={0} fixedDecimalScale={true} value={1.333333333} />,
     );
     expect(input).toHaveValue('1');
@@ -760,7 +758,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should handle exponential value as prop correctly #506', async () => {
-    const { input, user } = await render(<NumericFormat value={0.00000001} />);
+    const { input } = await render(<NumericFormat value={0.00000001} />);
     expect(input).toHaveValue('0.00000001');
   });
 
