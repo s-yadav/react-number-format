@@ -415,7 +415,7 @@ describe('Test keypress and caret position changes', () => {
         />,
       );
 
-      // backspace after thousand separator separator
+      // // backspace after thousand separator separator
       await simulateKeyInput(user, input, '{Backspace}', 7, 7);
       expect(input).toHaveValue('Rs. 1,345.50 /sq.feet');
       expect(input.selectionStart).toEqual(5);
@@ -431,8 +431,8 @@ describe('Test keypress and caret position changes', () => {
       expect(input.selectionStart).toEqual(8);
 
       // delete before decimal separator
-      await simulateKeyInput(user, input, '.', 8, 8, { eventType: 'keyboard' });
-      await simulateKeyInput(user, input, '{Delete}', 7, 7, { eventType: 'keyboard' });
+      await simulateKeyInput(user, input, '.', 8, 8);
+      await simulateKeyInput(user, input, '{Delete}', 7, 7);
       expect(input).toHaveValue('Rs. 14,550 /sq.feet');
       expect(input.selectionStart).toEqual(8);
     });

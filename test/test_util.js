@@ -10,6 +10,14 @@ afterEach(() => {
   cleanup();
 });
 
+function waitForFrame() {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      resolve(undefined);
+    });
+  });
+}
+
 export async function render(elm) {
   const view = testRender(elm);
 
@@ -21,7 +29,7 @@ export async function render(elm) {
   return { ...view, view: view, input, user };
 }
 
-export async function simulateKeyInput(user, input, key, selectionStart, selectionEnd, options) {
+export async function simulateKeyInput(user, input, key, selectionStart, selectionEnd) {
   if (!selectionStart && selectionStart !== 0) {
     input.focus();
     await user.keyboard(key);
@@ -50,33 +58,25 @@ export async function simulateKeyInput(user, input, key, selectionStart, selecti
   input.setSelectionRange(start, end);
 
   if (specialKeys.includes(key)) {
-    if (start === end) {
-      await user.keyboard(key);
-    } else {
-      let newValue;
-
-      if (key === '{Backspace}') {
-        newValue = v.slice(0, start) + v.slice(end, v.length);
-      } else if (key === '{Delete}') {
-        newValue = v.slice(0, start) + v.slice(end, v.length);
-      }
-
-      fireEvent.change(input, { target: { value: newValue } });
-    }
+    await user.keyboard(key);
   } else {
-    if (start === end) {
-      if (options?.eventType === 'keyboard') {
-        await user.keyboard(key);
-      } else {
-        await user.type(input, key, { initialSelectionStart: start, initialSelectionEnd: end });
-      }
-    } else {
-      const newValue = v.slice(0, start) + v.slice(end, v.length);
-      fireEvent.change(input, { target: { value: newValue } });
-
-      input.setSelectionRange(start, start);
-      await user.keyboard(key);
-    }
+    // Unfortunately jsdom do not handle react-testing-library user.type event correctly
+    // So we have to simulate keyDown and change events manually, this is not ideal but it works (and assume some implementation details)
+    fireEvent.keyDown(input, { key: key[0] });
+    // update start and end, and keydown can change caret position
+    start = input.selectionStart;
+    end = input.selectionEnd;
+    const newValue = v.slice(0, start) + key + v.slice(end, v.length);
+    const caretPosition = start + key.length;
+    fireEvent.change(input, {
+      target: {
+        value: newValue,
+        selectionStart: caretPosition,
+        selectionEnd: caretPosition,
+      },
+    });
+    // wait for a frame so changes are reflected
+    await waitForFrame();
   }
 }
 
@@ -108,8 +108,8 @@ export async function simulatePaste(user, input, data, selectionStart = 0, selec
   if (!selectionEnd) selectionEnd = selectionStart;
 
   await simulateClickToFocus(user, input);
-  await simulateDragMouseToSelect(user, input, selectionStart, selectionEnd);
-  await user.paste(data);
+  await simulateDragMouseToSelect(input, selectionStart, selectionEnd);
+  await user.paste(data, {});
 }
 
 export async function simulateDblClick(user, target, offset) {
@@ -122,6 +122,11 @@ export async function simulateTripleClick(user, target, offset) {
   ]);
 }
 
-export async function simulateDragMouseToSelect(user, target, from, to) {
-  await user.pointer([{ target: target, offset: from, keys: '[MouseLeft>]' }, { offset: to }]);
+export async function simulateDragMouseToSelect(target, from, to) {
+  fireEvent.mouseDown(target, {
+    target: { selectionStart: from, selectionEnd: from },
+  });
+  fireEvent.mouseUp(target, {
+    target: { selectionStart: from, selectionEnd: to },
+  });
 }

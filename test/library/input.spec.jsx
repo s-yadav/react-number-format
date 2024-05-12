@@ -521,10 +521,10 @@ describe('NumberFormat as input', () => {
       source: 'prop',
     });
 
-    await simulateKeyInput(user, input, '5', 0, 0, { eventType: 'keyboard' });
+    await simulateKeyInput(user, input, '5', 0, 0);
 
     const { event, source } = spy.mock.lastCall[1];
-    expect(event.nativeEvent.data).toEqual('5');
+    expect(event.type).toEqual('change');
     expect(source).toEqual('event');
   });
 

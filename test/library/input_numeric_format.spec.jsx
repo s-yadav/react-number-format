@@ -9,7 +9,7 @@ import {
   simulateKeyInput,
   clearInput,
   simulateDblClick,
-  simulateDragMouseToSelect,
+  simulatePaste,
 } from '../test_util';
 
 /**
@@ -125,7 +125,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   it('should allow floating/integer numbers as values and do proper formatting', async () => {
-    const { input, user, rerender } = await render(<NumericFormat value={12345.67} />);
+    const { input, rerender } = await render(<NumericFormat value={12345.67} />);
     expect(input).toHaveValue('12345.67');
 
     rerender(<NumericFormat value={12345.67} thousandSeparator />);
@@ -372,7 +372,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         thousandSeparator={true}
         decimalScale={2}
         fixedDecimalScale={true}
-        value={'1,234.00'}
+        value={'$1,234.00'}
       />,
     );
     await simulateKeyInput(user, input, '56', 1, 9);
@@ -388,7 +388,7 @@ describe('Test NumberFormat as input with numeric format options', () => {
         value={'98.76%'}
       />,
     );
-    await simulateKeyInput(user, input, '1', 0, 5);
+    await simulateKeyInput(user, input, '1', 0, 6);
     expect(input).toHaveValue('1.00%');
 
     rerender(
@@ -658,16 +658,12 @@ describe('Test NumberFormat as input with numeric format options', () => {
   });
 
   //Issue #145
-  it.todo(
-    'should give correct formatted value when pasting a number with decimal and decimal scale is set to zero, issue #145',
-    async () => {
-      // TODO: Incorrect assertion
-      const { input, user } = await render(<NumericFormat decimalScale={0} />);
-      await simulateKeyInput(user, input, '9.55');
-      simulateBlurEvent(input);
-      expect(input).toHaveValue('9');
-    },
-  );
+  it('should give correct formatted value when pasting a number with decimal and decimal scale is set to zero, issue #145', async () => {
+    const { input, user } = await render(<NumericFormat decimalScale={0} />);
+    await simulatePaste(user, input, '9.55');
+    simulateBlurEvent(input);
+    expect(input).toHaveValue('9');
+  });
 
   it('should format the number correctly when thousandSeparator is true and decimal scale is 0. Issue #178', async () => {
     const { input, user } = await render(
@@ -694,27 +690,24 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(input).toHaveValue('-');
   });
 
-  it.todo(
-    'should allow typing . as decimal separator when some other decimal separator is given',
-    async () => {
-      const { input, user } = await render(
-        <NumericFormat
-          decimalSeparator=","
-          thousandSeparator="."
-          value="234.456"
-          suffix=" Sq. ft"
-        />,
-      );
-      await simulateKeyInput(user, input, '.', 5);
-      expect(input).toHaveValue('2.344,56 Sq. ft');
-      //check if caret position is maintained
-      expect(input.selectionStart).toEqual(6);
+  it('should allow typing . as decimal separator when some other decimal separator is given', async () => {
+    const { input, user } = await render(
+      <NumericFormat
+        decimalSeparator=","
+        thousandSeparator="."
+        value="234.456 Sq. ft"
+        suffix=" Sq. ft"
+      />,
+    );
+    await simulateKeyInput(user, input, '.', 5, 5);
+    expect(input).toHaveValue('2.344,56 Sq. ft');
+    //check if caret position is maintained
+    expect(input.selectionStart).toEqual(6);
 
-      //it should allow typing actual separator
-      await simulateKeyInput(user, input, ',', 3, 3);
-      expect(input).toHaveValue('23,4456 Sq. ft');
-    },
-  );
+    //it should allow typing actual separator
+    await simulateKeyInput(user, input, ',', 3, 3);
+    expect(input).toHaveValue('23,4456 Sq. ft');
+  });
 
   it('should not break if suffix/prefix has negation sign. Issue #245', async () => {
     const { input, user } = await render(<NumericFormat suffix="-" />);
@@ -828,23 +821,16 @@ describe('Test NumberFormat as input with numeric format options', () => {
       expect(input).toHaveValue('100-1000 USD');
     });
 
-    it.todo('while deleting prefix', async () => {
+    it('while deleting prefix', async () => {
       const { input, user } = await render(
         <NumericFormat prefix="100-" value={1} suffix="000 USD" />,
       );
 
-      // TODO: simulateKeyInput isn't actually typing anything into the input.
-      // It computes the expected value of the input and updates it.
-      // However, for what it's worth, this assertion also fails in the browser as
-      // of now.
-
-      // await simulateDragMouseToSelect(user, input, 0, 4)
-      // await simulateKeyInput(user, input, '{Backspace}');
       await simulateKeyInput(user, input, '{Backspace}', 0, 4);
       expect(input).toHaveValue('100-1000 USD');
     });
 
-    it.todo('while deleting part of the prefix', async () => {
+    it('while deleting part of the prefix', async () => {
       const { input, user } = await render(
         <NumericFormat prefix="100-" value={1} suffix="000 USD" />,
       );

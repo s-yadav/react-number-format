@@ -61,10 +61,13 @@ export function removeFormatting<BaseType = InputAttributes>(
   }
 
   /**
-   * if user paste the whole formatted text in an empty input, check if matches to the pattern
+   * if user paste the whole formatted text in an empty input or doing select all and paste, check if matches to the pattern
    * and remove the format characters, if there is a mismatch on the pattern, do plane number extract
    */
-  if (lastValue === '' && value.length === format.length) {
+  if (
+    (lastValue === '' || from.end - from.start === lastValue.length) &&
+    value.length === format.length
+  ) {
     let str = '';
     for (let i = 0; i < value.length; i++) {
       if (isNumericSlot(i)) {
