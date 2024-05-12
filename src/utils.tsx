@@ -246,29 +246,13 @@ export function setCaretPosition(el: HTMLInputElement, caretPos: number) {
 }
 
 /**
-  Given previous value and newValue it returns the index
-  start - end to which values have changed.
-  This function makes assumption about only consecutive
-  characters are changed which is correct assumption for caret input.
-*/
-export function findChangedIndex(prevValue: string, newValue: string) {
-  let i = 0,
-    j = 0;
-  const prevLength = prevValue.length;
-  const newLength = newValue.length;
-  while (prevValue[i] === newValue[i] && i < prevLength) i++;
-
-  //check what has been changed from last
-  while (
-    prevValue[prevLength - 1 - j] === newValue[newLength - 1 - j] &&
-    newLength - j > i &&
-    prevLength - j > i
-  ) {
-    j++;
-  }
-
-  return { start: i, end: prevLength - j };
-}
+ * TODO: remove dependency of findChangeRange, findChangedRangeFromCaretPositions is better way to find what is changed
+ * currently this is mostly required by test and isCharacterSame util
+ * Given previous value and newValue it returns the index
+ * start - end to which values have changed.
+ * This function makes assumption about only consecutive
+ * characters are changed which is correct assumption for caret input.
+ */
 
 export const findChangeRange = memoizeOnce((prevValue: string, newValue: string) => {
   let i = 0,
@@ -291,6 +275,17 @@ export const findChangeRange = memoizeOnce((prevValue: string, newValue: string)
     to: { start: i, end: newLength - j },
   };
 });
+
+export const findChangedRangeFromCaretPositions = (
+  lastCaretPositions: { selectionStart: number; selectionEnd: number },
+  currentCaretPosition: number,
+) => {
+  const startPosition = Math.min(lastCaretPositions.selectionStart, currentCaretPosition);
+  return {
+    from: { start: startPosition, end: lastCaretPositions.selectionEnd },
+    to: { start: startPosition, end: currentCaretPosition },
+  };
+};
 
 /*
   Returns a number whose value is limited to the given range
