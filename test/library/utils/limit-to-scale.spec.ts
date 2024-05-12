@@ -95,7 +95,7 @@ const testCases: TestCases<Arguments, Expected>[] = [
 ];
 
 for (const testCase of testCases) {
-  describe.only(testCase.label, () => {
+  describe(testCase.label, () => {
     test.each(testCase.cases)(
       '$arguments.numStr -> $expected',
       ({ arguments: { numStr, scale, fixedDecimalScale }, expected }) => {
