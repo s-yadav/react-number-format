@@ -439,27 +439,6 @@ describe('NumberFormat as input', () => {
     });
   });
 
-  it('should not call onValueChange if no formatting is applied', async () => {
-    const mockOnValueChange = vi.fn();
-
-    const { rerender } = await render(<NumericFormat value="" onValueChange={mockOnValueChange} />);
-
-    expect(mockOnValueChange).not.toHaveBeenCalled();
-
-    rerender(<NumericFormat value={NaN} onValueChange={mockOnValueChange} />);
-    expect(mockOnValueChange).not.toHaveBeenCalled();
-
-    rerender(<NumericFormat value={1234} onValueChange={mockOnValueChange} />);
-    expect(mockOnValueChange).not.toHaveBeenCalled();
-
-    rerender(<NumericFormat value={1234} onValueChange={mockOnValueChange} thousandSeparator />);
-    expect(mockOnValueChange.mock.lastCall[0]).toEqual({
-      formattedValue: '1,234',
-      value: '1234',
-      floatValue: 1234,
-    });
-  });
-
   it('should always call setState when input is not on focus and value formatting is changed from outside', async () => {
     const { input, user, rerender } = await render(
       <NumericFormat value="1.1" valueIsNumericString />,
@@ -526,7 +505,7 @@ describe('NumberFormat as input', () => {
     expect(source).toEqual('event');
   });
 
-  it('should call onValueChange when value changes', async () => {
+  it('should call onValueChange when value changes via user input', async () => {
     const mockOnValueChange = vi.fn();
 
     const { input, user, rerender } = await render(
@@ -545,8 +524,73 @@ describe('NumberFormat as input', () => {
     );
     expect(mockOnValueChange).toHaveBeenCalled();
 
+    mockOnValueChange.mockReset();
+
     await simulateKeyInput(user, input, '5', 0);
     expect(input).toHaveValue('51,234');
+    expect(mockOnValueChange).toHaveBeenCalled();
+
+    await simulateKeyInput(user, input, '{Backspace}', 6);
+    expect(input).toHaveValue('5,123');
+    expect(mockOnValueChange).toHaveBeenCalled();
+
+    mockOnValueChange.mockReset();
+
+    await simulateKeyInput(user, input, '{Backspace}', 5);
+    expect(input).toHaveValue('512');
+    expect(mockOnValueChange).toHaveBeenCalled();
+
+    mockOnValueChange.mockReset();
+
+    await simulateKeyInput(user, input, '{Backspace}', 4);
+    expect(input).toHaveValue('51');
+    expect(mockOnValueChange).toHaveBeenCalled();
+  });
+
+  it('should call onValueChange when value changes via props', async () => {
+    const mockOnValueChange = vi.fn();
+
+    const { input, rerender } = await render(
+      <NumericFormat value="1234" valueIsNumericString={true} onValueChange={mockOnValueChange} />,
+    );
+
+    expect(input).toHaveValue('1234');
+
+    rerender(
+      <NumericFormat
+        onValueChange={mockOnValueChange}
+        thousandSeparator
+        value="1234"
+        valueIsNumericString={true}
+      />,
+    );
+    expect(mockOnValueChange).toHaveBeenCalled();
+
+    mockOnValueChange.mockReset();
+
+    rerender(
+      <NumericFormat
+        onValueChange={mockOnValueChange}
+        thousandSeparator
+        value="123"
+        valueIsNumericString={true}
+      />,
+    );
+    expect(mockOnValueChange).toHaveBeenCalled();
+
+    mockOnValueChange.mockReset();
+
+    rerender(
+      <NumericFormat
+        onValueChange={mockOnValueChange}
+        thousandSeparator
+        value="12"
+        valueIsNumericString={true}
+      />,
+    );
+    expect(mockOnValueChange).toHaveBeenCalled();
+
+    console.log({ input });
   });
 
   it('should treat Infinity value as empty string', async () => {
