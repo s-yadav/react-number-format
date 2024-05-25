@@ -191,17 +191,14 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
 
   /**
    * if the formatted value is not synced to parent, or if the formatted value is different from last synced value sync it
-   * we also don't need to sync to the parent if no formatting is applied
    * if the formatting props is removed, in which case last formatted value will be different from the numeric string value
    * in such case we need to inform the parent.
    */
   useEffect(() => {
     const { formattedValue: lastFormattedValue, numAsString: lastNumAsString } =
       lastUpdatedValue.current;
-    if (
-      formattedValue !== lastFormattedValue &&
-      (formattedValue !== numAsString || lastFormattedValue !== lastNumAsString)
-    ) {
+
+    if (formattedValue !== lastFormattedValue || numAsString !== lastNumAsString) {
       _onValueChange(getValueObject(formattedValue, numAsString), {
         event: undefined,
         source: SourceType.props,
