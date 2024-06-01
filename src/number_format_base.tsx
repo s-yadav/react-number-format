@@ -319,9 +319,11 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       endOffset = 1;
     }
 
+    const isArrowKey = key === 'ArrowLeft' || key === 'ArrowRight';
+
     //if expectedCaretPosition is not set it means we don't want to Handle keyDown
     // also if multiple characters are selected don't handle
-    if (expectedCaretPosition === undefined || selectionStart !== selectionEnd) {
+    if (expectedCaretPosition === undefined || (selectionStart !== selectionEnd && !isArrowKey)) {
       onKeyDown(e);
       // keep information of what was the caret position before keyDown
       // set it after onKeyDown, in case parent updates the position manually
@@ -331,7 +333,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
 
     let newCaretPosition = expectedCaretPosition;
 
-    if (key === 'ArrowLeft' || key === 'ArrowRight') {
+    if (isArrowKey) {
       const direction = key === 'ArrowLeft' ? 'left' : 'right';
       newCaretPosition = correctCaretPosition(value, expectedCaretPosition, direction);
       // arrow left or right only moves the caret, so no need to handle the event, if we are handling it manually

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import NumericFormat from '../../src/numeric_format';
 import PatternFormat from '../../src/pattern_format';
 import NumberFormatBase from '../../src/number_format_base';
-import { waitFor } from '@testing-library/react';
+import { waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import {
@@ -688,6 +688,13 @@ describe('Test keypress and caret position changes', () => {
       userEvent.click(input);
       input.setSelectionRange(0, 0);
       waitFor(() => expect(input.selectionStart).toEqual(1));
+    });
+
+    it('should correct caret position after user select masked area and then clicks or press key #839', async () => {
+      const { input } = await render(<PatternFormat format="##/##/####" value="1" mask="_" />);
+      input.setSelectionRange(3, 7);
+      fireEvent.keyDown(input, { key: 'ArrowRight' });
+      expect(input.selectionEnd).toEqual(1);
     });
   });
 });
