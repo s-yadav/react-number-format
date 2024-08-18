@@ -14,23 +14,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [14]
+        node: [20]
         os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Use node ${{ matrix.node }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           registry-url: https://registry.npmjs.org
 
       - name: Install
-        run: yarn
+        run: yarn install --frozen-lockfile
 
       - name: Lint
         run: yarn run lint
 
       - name: Test
-        run: TEST_BROWSER=ChromeHeadless yarn test
+        run: yarn test-build

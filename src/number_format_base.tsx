@@ -17,6 +17,7 @@ import {
   noop,
   caretUnknownFormatBoundary,
   getCaretPosInBoundary,
+  findChangedRangeFromCaretPositions,
 } from './utils';
 
 function defaultRemoveFormatting(value: string) {
@@ -62,6 +63,8 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     removeFormatting,
     onValueChange,
   );
+
+  const caretPositionBeforeChange = useRef<{ selectionStart: number; selectionEnd: number }>();
 
   const lastUpdatedValue = useRef({ formattedValue, numAsString });
 
@@ -116,7 +119,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     setCaretPosition(el, caretPos);
 
     timeout.current.setCaretTimeout = setTimeout(() => {
-      if (el.value === currentValue && el.selectionStart !== el.selectionEnd) {
+      if (el.value === currentValue && el.selectionStart !== caretPos) {
         setCaretPosition(el, caretPos);
       }
     }, 0);
@@ -155,46 +158,27 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       | React.FocusEvent<HTMLInputElement>
       | React.KeyboardEvent<HTMLInputElement>;
     source: SourceType;
-    caretPos?: number;
-    setCaretPosition?: Boolean;
   }) => {
-    const {
-      formattedValue: newFormattedValue = '',
-      input,
-      setCaretPosition = true,
-      source,
-      event,
-      numAsString,
-    } = params;
-    let { caretPos } = params;
+    const { formattedValue: newFormattedValue = '', input, source, event, numAsString } = params;
+    let caretPos;
 
     if (input) {
-      //calculate caret position if not defined
-      if (caretPos === undefined && setCaretPosition) {
-        const inputValue = params.inputValue || input.value;
+      const inputValue = params.inputValue || input.value;
 
-        const currentCaretPosition = geInputCaretPosition(input);
-
-        /**
-         * set the value imperatively, this is required for IE fix
-         * This is also required as if new caret position is beyond the previous value.
-         * Caret position will not be set correctly
-         */
-        input.value = newFormattedValue;
-
-        //get the caret position
-        caretPos = getNewCaretPosition(inputValue, newFormattedValue, currentCaretPosition);
-      }
+      const currentCaretPosition = geInputCaretPosition(input);
 
       /**
-       * set the value imperatively, as we set the caret position as well imperatively.
-       * This is to keep value and caret position in sync
+       * set the value imperatively, this is required for IE fix
+       * This is also required as if new caret position is beyond the previous value.
+       * Caret position will not be set correctly
        */
       input.value = newFormattedValue;
 
-      //set caret position, and value imperatively when element is provided
-      if (setCaretPosition && caretPos !== undefined) {
-        //set caret position
+      //get the caret position
+      caretPos = getNewCaretPosition(inputValue, newFormattedValue, currentCaretPosition);
+
+      //set caret position imperatively
+      if (caretPos !== undefined) {
         setPatchedCaretPosition(input, caretPos, newFormattedValue);
       }
     }
@@ -207,17 +191,14 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
 
   /**
    * if the formatted value is not synced to parent, or if the formatted value is different from last synced value sync it
-   * we also don't need to sync to the parent if no formatting is applied
    * if the formatting props is removed, in which case last formatted value will be different from the numeric string value
    * in such case we need to inform the parent.
    */
   useEffect(() => {
     const { formattedValue: lastFormattedValue, numAsString: lastNumAsString } =
       lastUpdatedValue.current;
-    if (
-      formattedValue !== lastFormattedValue &&
-      (formattedValue !== numAsString || lastFormattedValue !== lastNumAsString)
-    ) {
+
+    if (formattedValue !== lastFormattedValue || numAsString !== lastNumAsString) {
       _onValueChange(getValueObject(formattedValue, numAsString), {
         event: undefined,
         source: SourceType.props,
@@ -259,7 +240,12 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       | React.KeyboardEvent<HTMLInputElement>,
     source: SourceType,
   ) => {
-    const changeRange = findChangeRange(formattedValue, inputValue);
+    const input = event.target as HTMLInputElement;
+
+    const changeRange = caretPositionBeforeChange.current
+      ? findChangedRangeFromCaretPositions(caretPositionBeforeChange.current, input.selectionEnd)
+      : findChangeRange(formattedValue, inputValue);
+
     const changeMeta = {
       ...changeRange,
       lastValue: formattedValue,
@@ -287,11 +273,15 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       inputValue,
       event,
       source,
-      setCaretPosition: true,
       input: event.target as HTMLInputElement,
     });
 
     return true;
+  };
+
+  const setCaretPositionInfoBeforeChange = (el: HTMLInputElement, endOffset: number = 0) => {
+    const { selectionStart, selectionEnd } = el;
+    caretPositionBeforeChange.current = { selectionStart, selectionEnd: selectionEnd + endOffset };
   };
 
   const _onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -301,6 +291,9 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     const changed = formatInputValue(inputValue, e, SourceType.event);
 
     if (changed) onChange(e);
+
+    // reset the position, as we have already handled the caret position
+    caretPositionBeforeChange.current = undefined;
   };
 
   const _onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -319,16 +312,28 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       expectedCaretPosition = selectionStart;
     }
 
+    // if key is delete and text is not selected keep the end offset to 1, as it deletes one character
+    // this is required as selection is not changed on delete case, which changes the change range calculation
+    let endOffset = 0;
+    if (key === 'Delete' && selectionStart === selectionEnd) {
+      endOffset = 1;
+    }
+
+    const isArrowKey = key === 'ArrowLeft' || key === 'ArrowRight';
+
     //if expectedCaretPosition is not set it means we don't want to Handle keyDown
     // also if multiple characters are selected don't handle
-    if (expectedCaretPosition === undefined || selectionStart !== selectionEnd) {
+    if (expectedCaretPosition === undefined || (selectionStart !== selectionEnd && !isArrowKey)) {
       onKeyDown(e);
+      // keep information of what was the caret position before keyDown
+      // set it after onKeyDown, in case parent updates the position manually
+      setCaretPositionInfoBeforeChange(el, endOffset);
       return;
     }
 
     let newCaretPosition = expectedCaretPosition;
 
-    if (key === 'ArrowLeft' || key === 'ArrowRight') {
+    if (isArrowKey) {
       const direction = key === 'ArrowLeft' ? 'left' : 'right';
       newCaretPosition = correctCaretPosition(value, expectedCaretPosition, direction);
       // arrow left or right only moves the caret, so no need to handle the event, if we are handling it manually
@@ -347,14 +352,9 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       setPatchedCaretPosition(el, newCaretPosition, value);
     }
 
-    /* NOTE: this is just required for unit test as we need to get the newCaretPosition,
-            Remove this when you find different solution */
-    /* @ts-ignore */
-    if (e.isUnitTestRun) {
-      setPatchedCaretPosition(el, newCaretPosition, value);
-    }
-
     onKeyDown(e);
+
+    setCaretPositionInfoBeforeChange(el, endOffset);
   };
 
   /** required to handle the caret position when click anywhere within the input **/
@@ -365,16 +365,27 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
      * NOTE: we have to give default value for value as in case when custom input is provided
      * value can come as undefined when nothing is provided on value prop.
      */
-    const { selectionStart, selectionEnd, value = '' } = el;
 
-    if (selectionStart === selectionEnd) {
-      const caretPosition = correctCaretPosition(value, selectionStart as number);
-      if (caretPosition !== selectionStart) {
-        setPatchedCaretPosition(el, caretPosition, value);
+    const correctCaretPositionIfRequired = () => {
+      const { selectionStart, selectionEnd, value = '' } = el;
+      if (selectionStart === selectionEnd) {
+        const caretPosition = correctCaretPosition(value, selectionStart as number);
+        if (caretPosition !== selectionStart) {
+          setPatchedCaretPosition(el, caretPosition, value);
+        }
       }
-    }
+    };
+
+    correctCaretPositionIfRequired();
+
+    // try to correct after selection has updated by browser
+    // this case is required when user clicks on some position while a text is selected on input
+    requestAnimationFrame(() => {
+      correctCaretPositionIfRequired();
+    });
 
     onMouseUp(e);
+    setCaretPositionInfoBeforeChange(el);
   };
 
   const _onFocus = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -383,6 +394,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     if (e.persist) e.persist();
 
     const el = e.target;
+    const currentTarget = e.currentTarget;
     focusedElm.current = el;
 
     timeout.current.focusTimeout = setTimeout(() => {
@@ -398,7 +410,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
         setPatchedCaretPosition(el, caretPosition, value);
       }
 
-      onFocus(e);
+      onFocus({ ...e, currentTarget });
     }, 0);
   };
 

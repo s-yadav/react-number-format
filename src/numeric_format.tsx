@@ -408,6 +408,12 @@ export function useNumericFormat<BaseType = InputAttributes>(
     const { key } = e;
     const { selectionStart, selectionEnd, value = '' } = el;
 
+    // if user tries to delete partial prefix then ignore it
+    if ((key === 'Backspace' || key === 'Delete') && selectionEnd < prefix.length) {
+      e.preventDefault();
+      return;
+    }
+
     // if multiple characters are selected and user hits backspace, no need to handle anything manually
     if (selectionStart !== selectionEnd) {
       onKeyDown(e);

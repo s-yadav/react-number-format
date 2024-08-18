@@ -15,7 +15,7 @@ This allow supporting custom input components with number format.
 import { NumericFormat } from 'react-number-format';
 import { TextField } from '@mui/material';
 
-<NumericFormat value={12323} customInput={TextField} />;
+<NumericFormat value={12323} customInput={TextField} thousandSeparator/>;
 ```
 
 **Note**: customInput expects reference of component (not a render prop), if you pass an inline component like this `<NumericFormat customInput={() => <TextField />} />`, it will not work.

@@ -1,213 +1,132 @@
-import Enzyme, { shallow, mount } from 'enzyme';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+// @ts-check
+import { expect, afterEach } from 'vitest';
+import * as matchers from '@testing-library/jest-dom/matchers';
 import userEvent from '@testing-library/user-event';
-import { render as testRender } from '@testing-library/react';
+import { cleanup, render as testRender, fireEvent } from '@testing-library/react';
 
-Enzyme.configure({ adapter: new Adapter() });
+expect.extend(matchers);
 
-const noop = function () {};
+afterEach(() => {
+  cleanup();
+});
 
-export const persist = jasmine.createSpy();
-
-//keep input element singleton
-const target = document.createElement('input');
-
-export function getCustomEvent(value, selectionStart, selectionEnd) {
-  let event = new Event('custom');
-  const el = document.createElement('input');
-  event = { ...event, target: el, persist };
-  event.target = el;
-  el.value = value;
-  el.selectionStart = selectionStart;
-  el.selectionEnd = selectionEnd;
-  return event;
-}
-
-function getEvent(eventProps, targetProps) {
-  let event = new Event('custom');
-
-  Object.keys(targetProps).forEach((key) => {
-    target[key] = targetProps[key];
+function waitForFrame() {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      resolve(undefined);
+    });
   });
-
-  event = { ...event, ...eventProps, target };
-
-  return event;
-}
-
-export function setCaretPosition(event, caretPos) {
-  const { target } = event;
-  target.focus();
-  target.setSelectionRange(caretPos, caretPos);
-}
-
-export function simulateKeyInput(input, key, selectionStart, selectionEnd, setSelectionRange) {
-  if (selectionEnd === undefined) {
-    selectionEnd = selectionStart;
-  }
-
-  const currentValue = input.prop('value');
-  let defaultPrevented = false;
-
-  const keydownEvent = getEvent(
-    {
-      preventDefault: function () {
-        defaultPrevented = true;
-      },
-      key,
-      isUnitTestRun: true,
-      persist: persist.bind(null, 'keydown'),
-    },
-    {
-      value: currentValue,
-      selectionStart,
-      selectionEnd,
-      setSelectionRange: setSelectionRange || noop,
-      focus: noop,
-    },
-  );
-
-  //fire key down event
-  input.simulate('keydown', keydownEvent);
-
-  //fire change event
-  if (!defaultPrevented && key !== 'ArrowLeft' && key !== 'ArrowRight') {
-    //get changed caret positon
-    let newCaretPosition, newValue;
-
-    if (key === 'Backspace') {
-      newCaretPosition = selectionStart !== selectionEnd ? selectionStart : selectionStart - 1;
-      newValue =
-        selectionStart !== selectionEnd
-          ? currentValue.substring(0, selectionStart) +
-            currentValue.substring(selectionEnd, currentValue.length)
-          : currentValue.substring(0, newCaretPosition) +
-            currentValue.substring(selectionStart, currentValue.length);
-    } else if (key === 'Delete') {
-      newCaretPosition = selectionStart;
-      newValue =
-        selectionStart !== selectionEnd
-          ? currentValue.substring(0, selectionStart) +
-            currentValue.substring(selectionEnd, currentValue.length)
-          : currentValue.substring(0, selectionStart) +
-            currentValue.substring(selectionStart + 1, currentValue.length);
-    } else {
-      newCaretPosition = selectionStart + key.length;
-      newValue =
-        selectionStart !== selectionEnd
-          ? currentValue.substring(0, selectionStart) +
-            key +
-            currentValue.substring(selectionEnd, currentValue.length)
-          : currentValue.substring(0, selectionStart) +
-            key +
-            currentValue.substring(selectionStart, currentValue.length);
-    }
-
-    const changeEvent = getEvent(
-      {
-        persist: persist.bind(null, 'change'),
-        key,
-      },
-      {
-        value: newValue,
-        selectionStart: newCaretPosition,
-        selectionEnd: newCaretPosition,
-        setSelectionRange: setSelectionRange || noop,
-        focus: noop,
-      },
-    );
-    input.simulate('change', changeEvent);
-  }
 }
 
 export async function render(elm) {
   const view = testRender(elm);
-  const input = await view.getByRole('textbox');
-  return { ...view, view: view, input };
+
+  // /** @type {HTMLInputElement} */
+  const input = view.getByRole('textbox');
+
+  const user = userEvent.setup();
+
+  return { ...view, view: view, input, user };
 }
 
-export function simulateNativeKeyInput(input, key, selectionStart = 0, selectionEnd = 0) {
-  input.setSelectionRange(selectionStart, selectionEnd);
-  userEvent.type(input, key);
-}
-
-export function simulatePaste(input, test, selectionStart = 0, selectionEnd = 0) {
-  input.setSelectionRange(selectionStart, selectionEnd);
-  userEvent.paste(input, test);
-}
-
-export function simulateNativeMouseUpEvent(input, selectionStart) {
-  input.setSelectionRange(selectionStart, selectionStart);
-  userEvent.click(input);
-}
-
-export function simulateMousUpEvent(input, selectionStart, setSelectionRange) {
-  const selectionEnd = selectionStart;
-
-  const currentValue = input.prop('value');
-
-  const mouseUpEvent = getEvent(
-    {},
-    {
-      value: currentValue,
-      selectionStart,
-      selectionEnd,
-      setSelectionRange: setSelectionRange || noop,
-      focus: noop,
-    },
-  );
-
-  input.simulate('mouseup', mouseUpEvent);
-}
-
-export function simulateFocusEvent(input, selectionStart = 0, selectionEnd, setSelectionRange) {
-  if (selectionEnd === undefined) {
-    selectionEnd = selectionStart;
+export async function simulateKeyInput(user, input, key, selectionStart, selectionEnd) {
+  if (!selectionStart && selectionStart !== 0) {
+    input.focus();
+    await user.keyboard(key);
+    return;
   }
 
-  const currentValue = input.prop('value');
+  const v = input.value;
 
-  const focusEvent = getEvent(
-    {
-      persist: persist.bind(null, 'focus'),
-    },
-    {
-      value: currentValue,
-      selectionStart,
-      selectionEnd,
-      setSelectionRange: setSelectionRange || noop,
-      focus: noop,
-    },
-  );
+  let start = selectionStart ?? 0;
+  let end = selectionEnd ?? start;
 
-  input.simulate('focus', focusEvent);
+  if (start > v.length) {
+    start = v.length;
+  }
+  if (end > v.length) {
+    end = v.length;
+  }
+
+  if (key.length === 0) {
+    return;
+  }
+
+  const specialKeys = ['{Backspace}', '{Delete}', '{ArrowLeft}', '{ArrowRight}'];
+
+  input.focus();
+  input.setSelectionRange(start, end);
+
+  if (specialKeys.includes(key)) {
+    await user.keyboard(key);
+  } else {
+    // Unfortunately jsdom do not handle react-testing-library user.type event correctly
+    // So we have to simulate keyDown and change events manually, this is not ideal but it works (and assume some implementation details)
+    fireEvent.keyDown(input, { key: key[0] });
+    // update start and end, and keydown can change caret position
+    start = input.selectionStart;
+    end = input.selectionEnd;
+    const newValue = v.slice(0, start) + key + v.slice(end, v.length);
+    const caretPosition = start + key.length;
+    fireEvent.change(input, {
+      target: {
+        value: newValue,
+        selectionStart: caretPosition,
+        selectionEnd: caretPosition,
+      },
+    });
+    // wait for a frame so changes are reflected
+    await waitForFrame();
+  }
+}
+
+export function simulateMouseUpEvent(user, input, selectionStart) {
+  const selectionEnd = selectionStart;
+
+  fireEvent.mouseUp(input, {
+    target: { selectionStart, selectionEnd },
+  });
+}
+
+export function simulateFocus(input) {
+  input.focus();
+}
+
+export async function simulateClickToFocus(user, input) {
+  await user.click(input);
+}
+
+export async function clearInput(user, input) {
+  await user.clear(input);
 }
 
 export function simulateBlurEvent(input) {
-  const currentValue = input.prop('value');
-
-  const blurEvent = getEvent(
-    {
-      persist: persist.bind(null, 'blur'),
-    },
-    {
-      value: currentValue,
-    },
-  );
-
-  input.simulate('blur', blurEvent);
+  fireEvent.blur(input);
 }
 
-export { Enzyme, shallow, mount };
+export async function simulatePaste(user, input, data, selectionStart = 0, selectionEnd) {
+  if (!selectionEnd) selectionEnd = selectionStart;
 
-export function getInputValue(wrapper) {
-  return wrapper.find('input').instance().value;
+  await simulateClickToFocus(user, input);
+  await simulateDragMouseToSelect(input, selectionStart, selectionEnd);
+  await user.paste(data, {});
 }
 
-export async function wait(delay) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, delay);
+export async function simulateDblClick(user, target, offset) {
+  await user.pointer([{ target: target, offset: offset, keys: '[MouseLeft][MouseLeft]' }]);
+}
+
+export async function simulateTripleClick(user, target, offset) {
+  await user.pointer([
+    { target: target, offset: offset, keys: '[MouseLeft][MouseLeft][MouseLeft]' },
+  ]);
+}
+
+export async function simulateDragMouseToSelect(target, from, to) {
+  fireEvent.mouseDown(target, {
+    target: { selectionStart: from, selectionEnd: from },
+  });
+  fireEvent.mouseUp(target, {
+    target: { selectionStart: from, selectionEnd: to },
   });
 }
