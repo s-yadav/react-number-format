@@ -254,7 +254,7 @@ export function usePatternFormat<BaseType = InputAttributes>(
     inputMode,
     format: (numStr: string) => format(numStr, _props),
     removeFormatting: (inputValue: string, changeMeta: ChangeMeta) =>
-      removeFormatting(inputValue, changeMeta, _props),
+    removeFormatting(inputValue, changeMeta, _props),
     getCaretBoundary: _getCaretBoundary,
     onKeyDown: _onKeyDown,
   };

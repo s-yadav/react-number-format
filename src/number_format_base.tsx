@@ -434,6 +434,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     );
   } else if (customInput) {
     const CustomInput = customInput;
+    // @ts-expect-error
     return <CustomInput {...inputProps} ref={getInputRef} />;
   }
 
