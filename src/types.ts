@@ -95,7 +95,7 @@ export type NumberFormatBaseProps<BaseType = InputAttributes> = NumberFormatProp
 
 export type InternalNumberFormatBase = Omit<
   NumberFormatBase,
-  'format' | 'removeFormatting' | 'getCaretBoundary' | 'isValidInputCharacter'
+  'format' | 'removeFormatting' | 'getCaretBoundary' | 'isValidInputCharacter' | 'isCharacterSame'
 >;
 
 export type NumericFormatProps<BaseType = InputAttributes> = NumberFormatProps<
