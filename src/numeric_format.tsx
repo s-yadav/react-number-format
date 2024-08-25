@@ -519,6 +519,22 @@ export function useNumericFormat<BaseType = InputAttributes>(
     const typedRange = findChangeRange(lastValue, currentValue);
     const { to } = typedRange;
 
+    // handle corner case where if we user types a decimal separator with fixedDecimalScale
+    // and pass back float value the cursor jumps. #851
+    const getDecimalSeparatorIndex = (value: string) => {
+      return _removeFormatting(value).indexOf('.') + prefix.length;
+    };
+
+    if (
+      value === 0 &&
+      fixedDecimalScale &&
+      decimalScale &&
+      getDecimalSeparatorIndex(currentValue) < currentValueIndex &&
+      getDecimalSeparatorIndex(formattedValue) > formattedValueIndex
+    ) {
+      return false;
+    }
+
     if (
       currentValueIndex >= to.start &&
       currentValueIndex < to.end &&

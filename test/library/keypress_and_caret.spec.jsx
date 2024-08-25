@@ -216,6 +216,42 @@ describe('Test keypress and caret position changes', () => {
     expect(input.value).toEqual('91 people');
   });
 
+  it('should handle caret position when float numbers are used with decimals #851', async () => {
+    const Test = ({ decimalSeparator = '.' }) => {
+      const [value, setValue] = useState();
+      return (
+        <NumericFormat
+          prefix="$"
+          fixedDecimalScale
+          decimalSeparator={decimalSeparator}
+          thousandSeparator={decimalSeparator === '.' ? ',' : '.'}
+          decimalScale={2}
+          onValueChange={(obj) => {
+            setValue(obj.floatValue);
+          }}
+          value={value}
+          allowNegative={false}
+          allowLeadingZeros={false}
+        />
+      );
+    };
+
+    const { input, user, rerender } = await render(<Test />);
+    await simulateKeyInput(user, input, '.', 0, 0);
+
+    expect(input.selectionStart).toEqual(3);
+
+    await waitFor(() => expect(input.value).toEqual('$0.00'));
+
+    await rerender(<Test decimalSeparator="," />);
+    input.value = '';
+
+    await simulateKeyInput(user, input, ',', 0, 0);
+    expect(input.selectionStart).toEqual(3);
+
+    await waitFor(() => expect(input.value).toEqual('$0,00'));
+  });
+
   describe('Test character insertion', () => {
     it('should add any number properly when input is empty without format prop passed', async () => {
       const { input, rerender, user } = await render(
