@@ -529,6 +529,7 @@ export function useNumericFormat<BaseType = InputAttributes>(
       value === 0 &&
       fixedDecimalScale &&
       decimalScale &&
+      currentValue[to.start] === decimalSeparator &&
       getDecimalSeparatorIndex(currentValue) < currentValueIndex &&
       getDecimalSeparatorIndex(formattedValue) > formattedValueIndex
     ) {

@@ -252,6 +252,16 @@ describe('Test keypress and caret position changes', () => {
     await waitFor(() => expect(input.value).toEqual('$0,00'));
   });
 
+  it('should keep the caret position at proper position when fixedDecimalScale is used and user types after clearing input #855', async () => {
+    const { input, user } = await render(
+      <NumericFormat value={0} fixedDecimalScale decimalScale={2} />,
+    );
+    await simulateKeyInput(user, input, 'Backspace', 0, 4);
+
+    await simulateKeyInput(user, input, '1', 0, 0);
+    expect(input.selectionStart).toEqual(1);
+  });
+
   describe('Test character insertion', () => {
     it('should add any number properly when input is empty without format prop passed', async () => {
       const { input, rerender, user } = await render(
