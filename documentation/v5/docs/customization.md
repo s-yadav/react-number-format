@@ -113,7 +113,23 @@ function CardExpiry(props) {
     return `${month}/${year}`;
   };
 
-  return <NumberFormatBase {...props} format={format} />;
+  const onKeyDown = (e) => {
+    const { target } = e;
+    const { value, selectionStart } = target;
+    console.log(value);
+    if (e.key === '/' && value[selectionStart] === '/') {
+      // if there is number before slash with just one character add 0 prefix
+      if (value.split('/')[0].length === 1) {
+        target.value = `0${value}`;
+        target.selectionStart++;
+      }
+
+      target.selectionStart++;
+      e.preventDefault();
+    }
+  };
+
+  return <NumberFormatBase {...props} format={format} onKeyDown={onKeyDown} />;
 }
 ```
 
@@ -186,9 +202,7 @@ Another example for NumericFormat could be support for custom numerals.
 const persianNumeral = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 
 function CustomNumeralNumericFormat(props) {
-
-   const { format, removeFormatting, isCharacterSame, ...rest } =
-    useNumericFormat(props);
+  const { format, removeFormatting, isCharacterSame, ...rest } = useNumericFormat(props);
 
   const _format = (val) => {
     const _val = format(val);
@@ -197,8 +211,8 @@ function CustomNumeralNumericFormat(props) {
   };
 
   const _removeFormatting = (val) => {
-    const _val = val.replace(new RegExp(persianNumeral.join("|"), "g"), ($1) =>
-      persianNumeral.indexOf($1)
+    const _val = val.replace(new RegExp(persianNumeral.join('|'), 'g'), ($1) =>
+      persianNumeral.indexOf($1),
     );
 
     return removeFormatting(_val);
@@ -206,12 +220,7 @@ function CustomNumeralNumericFormat(props) {
 
   const _isCharacterSame = (compareMeta) => {
     const isCharSame = isCharacterSame(compareMeta);
-    const {
-      formattedValue,
-      currentValue,
-      formattedValueIndex,
-      currentValueIndex,
-    } = compareMeta;
+    const { formattedValue, currentValue, formattedValueIndex, currentValueIndex } = compareMeta;
     const curChar = currentValue[currentValueIndex];
     const newChar = formattedValue[formattedValueIndex];
     const curPersianChar = persianNumeral[Number(curChar)] ?? curChar;
@@ -392,50 +401,50 @@ function CustomNegationNumberFormat({
 
 ### IBAN account input field with pattern
 
-In order to enter IBAN (International Bank Account Number) accounts into an input field the field requires specific pattern (quartets of characters/digits) and should allow typing in digits and letters which get converted to uppercase. Each country has a predefined format of the IBAN value which defines which the correct sequence of letters and digits. These formats are  beyond this example and can be checked in libraries that validate IBAN accounts.
+In order to enter IBAN (International Bank Account Number) accounts into an input field the field requires specific pattern (quartets of characters/digits) and should allow typing in digits and letters which get converted to uppercase. Each country has a predefined format of the IBAN value which defines which the correct sequence of letters and digits. These formats are beyond this example and can be checked in libraries that validate IBAN accounts.
 
 (Example code is written in Typescript)
 
 ```ts
 interface IBANInputProps extends NumberFormatBaseProps {
-    onChange: ChangeEventHandler<HTMLInputElement>;
+  onChange: ChangeEventHandler<HTMLInputElement>;
 }
 
 const IBANInputDef: FunctionComponent<IBANInputProps> = ({ onChange, ...props }) => (
-    <NumberFormatBase
-        {...props}
-        type="text"
-        format={(value) =>
-            value
-                .replace(/\s+/g, '')
-                .replace(/([a-z0-9]{4})/gi, '$1 ')
-                .trim()
-                .toLocaleUpperCase()
-        }
-        removeFormatting={(value) => value.replace(/\s+/gi, '')}
-        isValidInputCharacter={(char) => /^[a-z0-9]$/i.test(char)}
-        getCaretBoundary={(value) =>
-            Array(value.length + 1)
-                .fill(0)
-                .map((v) => true)
-        }
-        onValueChange={(values, { event }) =>
-            onChange(
-                Object.assign({} as ChangeEvent<HTMLInputElement>, event, {
-                    target: { name: props.name, value: values.value.toLocaleUpperCase() },
-                })
-            )
-        }
-        onKeyDown={(e) =>
-            !/^(?:[a-z0-9]|Backspace|Delete|Home|End|ArrowLeft|ArrowRight|Shift|CapsLock|Control|NumLock|Tab|Paste|Redo|Undo)$/i.test(
-                e.key
-            ) && e.preventDefault()
-        }
-    />
+  <NumberFormatBase
+    {...props}
+    type="text"
+    format={(value) =>
+      value
+        .replace(/\s+/g, '')
+        .replace(/([a-z0-9]{4})/gi, '$1 ')
+        .trim()
+        .toLocaleUpperCase()
+    }
+    removeFormatting={(value) => value.replace(/\s+/gi, '')}
+    isValidInputCharacter={(char) => /^[a-z0-9]$/i.test(char)}
+    getCaretBoundary={(value) =>
+      Array(value.length + 1)
+        .fill(0)
+        .map((v) => true)
+    }
+    onValueChange={(values, { event }) =>
+      onChange(
+        Object.assign({} as ChangeEvent<HTMLInputElement>, event, {
+          target: { name: props.name, value: values.value.toLocaleUpperCase() },
+        }),
+      )
+    }
+    onKeyDown={(e) =>
+      !/^(?:[a-z0-9]|Backspace|Delete|Home|End|ArrowLeft|ArrowRight|Shift|CapsLock|Control|NumLock|Tab|Paste|Redo|Undo)$/i.test(
+        e.key,
+      ) && e.preventDefault()
+    }
+  />
 );
 
 const IBANInput = forwardRef<HTMLInputElement, IBANInputProps>((props, ref) => (
-    <IBANInputDef {...props} getInputRef={ref} />
+  <IBANInputDef {...props} getInputRef={ref} />
 ));
 ```
 

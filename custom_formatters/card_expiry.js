@@ -11,8 +11,8 @@ function limit(val, max) {
     if (Number(val) === 0) {
       val = '01';
 
-    //this can happen when user paste number
-  } else if (val > max) {
+      //this can happen when user paste number
+    } else if (val > max) {
       val = max;
     }
   }
