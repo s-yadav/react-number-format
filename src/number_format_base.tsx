@@ -154,9 +154,9 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     inputValue?: string;
     input?: HTMLInputElement | null;
     event?:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.FocusEvent<HTMLInputElement>
-      | React.KeyboardEvent<HTMLInputElement>;
+    | React.ChangeEvent<HTMLInputElement>
+    | React.FocusEvent<HTMLInputElement>
+    | React.KeyboardEvent<HTMLInputElement>;
     source: SourceType;
   }) => {
     const { formattedValue: newFormattedValue = '', input, source, event, numAsString } = params;
@@ -432,6 +432,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     onMouseUp: _onMouseUp,
     onFocus: _onFocus,
     onBlur: _onBlur,
+    pattern: /[^0-9,.]/,
   });
 
   if (displayType === 'text') {
