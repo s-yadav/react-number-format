@@ -86,6 +86,7 @@ type NumberFormatBase = {
   getCaretBoundary?: (formattedValue: string) => boolean[];
   isValidInputCharacter?: (character: string) => boolean;
   isCharacterSame?: IsCharacterSame;
+  nonEnglishFormat?: boolean;
 };
 
 export type NumberFormatBaseProps<BaseType = InputAttributes> = NumberFormatProps<

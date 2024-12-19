@@ -524,3 +524,25 @@ export function useInternalValues(
 
   return [values, _onValueChange];
 }
+
+function convertPatterns(nonEglish: string[], text: string): string{
+  const regExp = new RegExp(`[${nonEglish.join('')}]`, 'gi')
+  return text.replace(regExp, (char:string):string => {
+      const index = nonEglish.indexOf(char)
+      return index.toString()
+  })
+}
+function arToEnNumber(text: string):string {
+  return convertPatterns('٠١٢٣٤٥٦٧٨٩'.split(''), text)
+}
+function faToEnNumber(text: string):string {
+  return convertPatterns('۰۱۲۳۴۵۶۷۸۹'.split(''), text)
+}
+
+export function enNumber(text: string): string{
+  const langs = [faToEnNumber, arToEnNumber]
+  langs.forEach(lang => {
+      text = lang(text)
+  })
+  return text
+}
