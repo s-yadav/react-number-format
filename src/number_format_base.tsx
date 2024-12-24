@@ -165,7 +165,10 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     let caretPos;
 
     if (input) {
-      const inputValue = nonEnglishFormat === true ? enNumber(params.inputValue || input.value) : params.inputValue || input.value;
+      const inputValue =
+        nonEnglishFormat === true
+          ? enNumber(params.inputValue || input.value)
+          : params.inputValue || input.value;
 
       const currentCaretPosition = geInputCaretPosition(input);
 
