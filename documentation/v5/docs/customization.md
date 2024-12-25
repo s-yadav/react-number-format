@@ -145,7 +145,7 @@ function CardExpiry(props) {
    ></iframe>
 </details>
 
-A couple of time we want to get all the features of NumericFormat or PatterFormat, and apply some customization on top of it. Well NumberFormat allows to do that as well. It provides
+A couple of time we want to get all the features of NumericFormat or PatternFormat, and apply some customization on top of it. Well NumberFormat allows to do that as well. It provides
 `usePatternFormat` and `useNumericFormat` hook which can be used in conjunction with NumberFormatBase.
 
 Let's take the same example of Card Expiry field.
