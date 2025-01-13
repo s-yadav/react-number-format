@@ -265,7 +265,7 @@ export function usePatternFormat<BaseType = InputAttributes>(
 
 export default function PatternFormat<BaseType = InputAttributes>(
   props: PatternFormatProps<BaseType>,
-) {
+): React.ReactElement {
   const patternFormatProps = usePatternFormat(props);
 
   return <NumberFormatBase {...patternFormatProps} />;

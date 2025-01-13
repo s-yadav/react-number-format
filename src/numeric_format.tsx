@@ -566,7 +566,7 @@ export function useNumericFormat<BaseType = InputAttributes>(
 
 export default function NumericFormat<BaseType = InputAttributes>(
   props: NumericFormatProps<BaseType>,
-) {
+): React.ReactElement {
   const numericFormatProps = useNumericFormat(props);
 
   return <NumberFormatBase {...numericFormatProps} />;
