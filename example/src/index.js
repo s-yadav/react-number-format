@@ -300,6 +300,26 @@ class App extends React.Component {
             allowedDecimalSeparators={[',', '.']}
           />
         </div>
+
+        <div className="example">
+          <h3>Format on type</h3>
+          <PatternFormat format="###.###.###-##" formatOnType />
+        </div>
+
+        <div className="example">
+          <h3>Format phone number on type</h3>
+          <PatternFormat format="+1 (###) ###-####" formatOnType />
+        </div>
+
+        <div className="example">
+          <h3>Format postal code on type</h3>
+          <PatternFormat format="##.###-###" formatOnType />
+        </div>
+
+        <div className="example">
+          <h3>Format date on type</h3>
+          <PatternFormat format="##/##/####" formatOnType />
+        </div>
       </div>
     );
   }

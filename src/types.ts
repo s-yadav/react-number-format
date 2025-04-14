@@ -120,6 +120,7 @@ export type PatternFormatProps<BaseType = InputAttributes> = NumberFormatProps<
     mask?: string | string[];
     allowEmptyFormatting?: boolean;
     patternChar?: string;
+    formatOnType?: boolean;
   },
   BaseType
 >;
