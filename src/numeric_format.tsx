@@ -561,6 +561,7 @@ export function useNumericFormat<BaseType = InputAttributes>(
     getCaretBoundary: (formattedValue: string) => getCaretBoundary(formattedValue, props),
     onKeyDown: _onKeyDown,
     onBlur: _onBlur,
+    pattern: /[^0-9,.]/,
   };
 }
 
