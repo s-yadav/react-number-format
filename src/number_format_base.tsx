@@ -217,7 +217,9 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
 
   useIsomorphicLayoutEffect(() => {
     const input = focusedElm.current;
-    if (formattedValue !== lastUpdatedValue.current.formattedValue && input) {
+    const activeElement = document.activeElement;
+
+    if (input === activeElement && formattedValue !== lastUpdatedValue.current.formattedValue && input) {
       const caretPos = getNewCaretPosition(
         lastUpdatedValue.current.formattedValue,
         formattedValue,
