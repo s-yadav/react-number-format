@@ -18,6 +18,7 @@ import {
   caretUnknownFormatBoundary,
   getCaretPosInBoundary,
   findChangedRangeFromCaretPositions,
+  enNumber,
 } from './utils';
 
 function defaultRemoveFormatting(value: string) {
@@ -52,6 +53,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     getCaretBoundary = caretUnknownFormatBoundary,
     isValidInputCharacter = charIsNumber,
     isCharacterSame,
+    nonEnglishFormat,
     ...otherProps
   } = props;
 
@@ -163,7 +165,10 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     let caretPos;
 
     if (input) {
-      const inputValue = params.inputValue || input.value;
+      const inputValue =
+        nonEnglishFormat === true
+          ? enNumber(params.inputValue || input.value)
+          : params.inputValue || input.value;
 
       const currentCaretPosition = geInputCaretPosition(input);
 
@@ -240,6 +245,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       | React.KeyboardEvent<HTMLInputElement>,
     source: SourceType,
   ) => {
+    inputValue = nonEnglishFormat === true ? enNumber(inputValue) : inputValue;
     const input = event.target as HTMLInputElement;
 
     const changeRange = caretPositionBeforeChange.current
