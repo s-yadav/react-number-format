@@ -298,13 +298,15 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
 
   const _onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const el = e.target as HTMLInputElement;
-    const { key } = e;
+    const { key, keyCode } = e;
     const { selectionStart, selectionEnd, value = '' } = el;
-
     let expectedCaretPosition;
 
+    // 229 is the key code for the backspace key on Android devices
+    const isBackspace = key === 'Backspace' || keyCode === 229;
+
     //Handle backspace and delete against non numerical/decimal characters or arrow keys
-    if (key === 'ArrowLeft' || key === 'Backspace') {
+    if (key === 'ArrowLeft' || isBackspace) {
       expectedCaretPosition = Math.max((selectionStart as number) - 1, 0);
     } else if (key === 'ArrowRight') {
       expectedCaretPosition = Math.min((selectionStart as number) + 1, value.length);
@@ -343,7 +345,7 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     } else if (key === 'Delete' && !isValidInputCharacter(value[expectedCaretPosition])) {
       // in case of delete go to closest caret boundary on the right side
       newCaretPosition = correctCaretPosition(value, expectedCaretPosition, 'right');
-    } else if (key === 'Backspace' && !isValidInputCharacter(value[expectedCaretPosition])) {
+    } else if (isBackspace && !isValidInputCharacter(value[expectedCaretPosition])) {
       // in case of backspace go to closest caret boundary on the left side
       newCaretPosition = correctCaretPosition(value, expectedCaretPosition, 'left');
     }
