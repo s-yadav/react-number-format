@@ -743,4 +743,58 @@ describe('Test keypress and caret position changes', () => {
       expect(input.selectionEnd).toEqual(1);
     });
   });
+
+  describe('Android/Huawei keyCode 229 backspace handling', () => {
+    it('should handle keyCode 229 as backspace in NumericFormat', async () => {
+      const { input } = await render(
+        <NumericFormat thousandSeparator="," prefix="$" value="$1,234" />,
+      );
+
+      input.focus();
+      input.setSelectionRange(6, 6);
+
+      // Simulate keyCode 229 (Android/Huawei backspace)
+      fireEvent.keyDown(input, { key: 'Unidentified', keyCode: 229 });
+      // Simulate the change that would happen after backspace
+      fireEvent.change(input, {
+        target: { value: '$1,23', selectionStart: 5, selectionEnd: 5 },
+      });
+
+      expect(input).toHaveValue('$123');
+    });
+
+    it('should handle keyCode 229 as backspace in PatternFormat', async () => {
+      const { input } = await render(
+        <PatternFormat format="+1 (###) ###-####" mask="_" value="+1 (123) 456-7890" />,
+      );
+
+      input.focus();
+      input.setSelectionRange(17, 17);
+
+      // Simulate keyCode 229 (Android/Huawei backspace)
+      fireEvent.keyDown(input, { key: 'Unidentified', keyCode: 229 });
+      // Simulate the change that would happen after backspace
+      fireEvent.change(input, {
+        target: { value: '+1 (123) 456-789', selectionStart: 16, selectionEnd: 16 },
+      });
+
+      expect(input).toHaveValue('+1 (123) 456-789_');
+    });
+
+    it('should handle keyCode 229 as backspace in NumberFormatBase', async () => {
+      const { input } = await render(<NumberFormatBase value="12345" />);
+
+      input.focus();
+      input.setSelectionRange(5, 5);
+
+      // Simulate keyCode 229 (Android/Huawei backspace)
+      fireEvent.keyDown(input, { key: 'Unidentified', keyCode: 229 });
+      // Simulate the change that would happen after backspace
+      fireEvent.change(input, {
+        target: { value: '1234', selectionStart: 4, selectionEnd: 4 },
+      });
+
+      expect(input).toHaveValue('1234');
+    });
+  });
 });

@@ -195,9 +195,12 @@ export function usePatternFormat<BaseType = InputAttributes>(
   };
 
   const _onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const { key } = e;
+    const { key, keyCode } = e;
     const el = e.target as HTMLInputElement;
     const { selectionStart, selectionEnd, value } = el;
+
+    // 229 is the key code for the backspace key on Android devices
+    const isBackspace = key === 'Backspace' || keyCode === 229;
 
     // if multiple characters are selected and user hits backspace, no need to handle anything manually
     if (selectionStart !== selectionEnd) {
@@ -210,9 +213,9 @@ export function usePatternFormat<BaseType = InputAttributes>(
 
     // if backspace is pressed after the format characters, bring it to numeric section
     // if delete is pressed before the format characters, bring it to numeric section
-    if (key === 'Backspace' || key === 'Delete') {
+    if (isBackspace || key === 'Delete') {
       let direction: string = 'right';
-      if (key === 'Backspace') {
+      if (isBackspace) {
         while (caretPos > 0 && formatProp[caretPos - 1] !== patternChar) {
           caretPos--;
         }

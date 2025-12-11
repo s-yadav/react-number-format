@@ -405,11 +405,14 @@ export function useNumericFormat<BaseType = InputAttributes>(
 
   const _onKeyDown: InputAttributes['onKeyDown'] = (e) => {
     const el = e.target as HTMLInputElement;
-    const { key } = e;
+    const { key, keyCode } = e;
     const { selectionStart, selectionEnd, value = '' } = el;
 
+    // 229 is the key code for the backspace key on Android devices
+    const isBackspace = key === 'Backspace' || keyCode === 229;
+
     // if user tries to delete partial prefix then ignore it
-    if ((key === 'Backspace' || key === 'Delete') && selectionEnd < prefix.length) {
+    if ((isBackspace || key === 'Delete') && selectionEnd < prefix.length) {
       e.preventDefault();
       return;
     }
@@ -421,19 +424,14 @@ export function useNumericFormat<BaseType = InputAttributes>(
     }
 
     // if user hits backspace, while the cursor is before prefix, and the input has negation, remove the negation
-    if (
-      key === 'Backspace' &&
-      value[0] === '-' &&
-      selectionStart === prefix.length + 1 &&
-      allowNegative
-    ) {
+    if (isBackspace && value[0] === '-' && selectionStart === prefix.length + 1 && allowNegative) {
       // bring the cursor to after negation
       setCaretPosition(el, 1);
     }
 
     // don't allow user to delete decimal separator when decimalScale and fixedDecimalScale is set
     if (decimalScale && fixedDecimalScale) {
-      if (key === 'Backspace' && value[selectionStart - 1] === decimalSeparator) {
+      if (isBackspace && value[selectionStart - 1] === decimalSeparator) {
         setCaretPosition(el, selectionStart - 1);
         e.preventDefault();
       } else if (key === 'Delete' && value[selectionStart] === decimalSeparator) {
@@ -449,7 +447,7 @@ export function useNumericFormat<BaseType = InputAttributes>(
     const _thousandSeparator = thousandSeparator === true ? ',' : thousandSeparator;
 
     // move cursor when delete or backspace is pressed before/after thousand separator
-    if (key === 'Backspace' && value[(selectionStart as number) - 1] === _thousandSeparator) {
+    if (isBackspace && value[(selectionStart as number) - 1] === _thousandSeparator) {
       setCaretPosition(el, (selectionStart as number) - 1);
     }
 
