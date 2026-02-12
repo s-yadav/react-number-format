@@ -7,6 +7,7 @@ type Arguments = {
   numStr: string;
   scale: number;
   fixedDecimalScale: boolean;
+  minimumFractionDigits?: number;
 };
 
 describe('When fixedDecimalScale = false', () => {
@@ -129,6 +130,91 @@ describe('When fixedDecimalScale = true', () => {
         '%arguments.numStr',
         ({ arguments: { numStr, scale, fixedDecimalScale }, expected }) => {
           expect(roundToPrecision(numStr, scale, fixedDecimalScale)).toBe(expected);
+        },
+      );
+    });
+  }
+});
+
+describe('When minimumFractionDigits is set', () => {
+  const testCases: TestCases<Arguments, Expected>[] = [
+    {
+      label: 'pads to minimumFractionDigits but not beyond',
+      cases: [
+        {
+          arguments: { numStr: '24', scale: 8, fixedDecimalScale: false, minimumFractionDigits: 2 },
+          expected: '24.00',
+        },
+        {
+          arguments: {
+            numStr: '24.1',
+            scale: 8,
+            fixedDecimalScale: false,
+            minimumFractionDigits: 2,
+          },
+          expected: '24.10',
+        },
+        {
+          arguments: {
+            numStr: '24.1234',
+            scale: 8,
+            fixedDecimalScale: false,
+            minimumFractionDigits: 2,
+          },
+          expected: '24.1234',
+        },
+        {
+          arguments: {
+            numStr: '24.123456789',
+            scale: 8,
+            fixedDecimalScale: false,
+            minimumFractionDigits: 2,
+          },
+          expected: '24.12345679',
+        },
+      ],
+    },
+    {
+      label: 'empty and negation strings',
+      cases: [
+        {
+          arguments: { numStr: '', scale: 4, fixedDecimalScale: false, minimumFractionDigits: 2 },
+          expected: '',
+        },
+        {
+          arguments: { numStr: '-', scale: 4, fixedDecimalScale: false, minimumFractionDigits: 2 },
+          expected: '-',
+        },
+      ],
+    },
+    {
+      label: 'minimumFractionDigits equal to maximumFractionDigits acts like fixedDecimalScale',
+      cases: [
+        {
+          arguments: { numStr: '10', scale: 4, fixedDecimalScale: false, minimumFractionDigits: 4 },
+          expected: '10.0000',
+        },
+        {
+          arguments: {
+            numStr: '10.12',
+            scale: 4,
+            fixedDecimalScale: false,
+            minimumFractionDigits: 4,
+          },
+          expected: '10.1200',
+        },
+      ],
+    },
+  ];
+
+  for (const testCase of testCases) {
+    describe(testCase.label, () => {
+      test.each(testCase.cases)(
+        '%arguments.numStr',
+        ({ arguments: { numStr, scale, fixedDecimalScale, minimumFractionDigits }, expected }) => {
+          expect(roundToPrecision(numStr, scale, fixedDecimalScale, minimumFractionDigits)).toBe(
+            expected,
+          );
         },
       );
     });

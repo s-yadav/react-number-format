@@ -7,6 +7,7 @@ type Arguments = {
   numStr: string;
   scale: number;
   fixedDecimalScale: boolean;
+  minimumFractionDigits?: number;
 };
 
 const testCases: TestCases<Arguments, Expected>[] = [
@@ -92,14 +93,75 @@ const testCases: TestCases<Arguments, Expected>[] = [
       },
     ],
   },
+  {
+    label: 'minimumFractionDigits',
+    cases: [
+      {
+        arguments: {
+          numStr: '',
+          scale: 8,
+          fixedDecimalScale: false,
+          minimumFractionDigits: 2,
+        },
+        expected: '00',
+      },
+      {
+        arguments: {
+          numStr: '1',
+          scale: 8,
+          fixedDecimalScale: false,
+          minimumFractionDigits: 2,
+        },
+        expected: '10',
+      },
+      {
+        arguments: {
+          numStr: '1234',
+          scale: 8,
+          fixedDecimalScale: false,
+          minimumFractionDigits: 2,
+        },
+        expected: '1234',
+      },
+      {
+        arguments: {
+          numStr: '12345678',
+          scale: 8,
+          fixedDecimalScale: false,
+          minimumFractionDigits: 2,
+        },
+        expected: '12345678',
+      },
+      {
+        arguments: {
+          numStr: '123456789',
+          scale: 8,
+          fixedDecimalScale: false,
+          minimumFractionDigits: 2,
+        },
+        expected: '12345678',
+      },
+      {
+        arguments: {
+          numStr: '',
+          scale: 4,
+          fixedDecimalScale: false,
+          minimumFractionDigits: 4,
+        },
+        expected: '0000',
+      },
+    ],
+  },
 ];
 
 for (const testCase of testCases) {
   describe(testCase.label, () => {
     test.each(testCase.cases)(
       '$arguments.numStr -> $expected',
-      ({ arguments: { numStr, scale, fixedDecimalScale }, expected }) => {
-        expect(limitToScale(numStr, scale, fixedDecimalScale)).toBe(expected);
+      ({ arguments: { numStr, scale, fixedDecimalScale, minimumFractionDigits }, expected }) => {
+        expect(limitToScale(numStr, scale, fixedDecimalScale, minimumFractionDigits)).toBe(
+          expected,
+        );
       },
     );
   });

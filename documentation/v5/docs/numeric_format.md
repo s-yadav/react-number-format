@@ -105,30 +105,11 @@ import { TextField } from '@mui/material';
    ></iframe>
 </details>
 
-### decimalScale `number`
+### decimalScale `number` _(deprecated)_
 
 **default**: `undefined`
 
-If defined, it limits the number of digits after the decimal point.
-
-```js
-import { NumericFormat } from 'react-number-format';
-
-<NumericFormat value={12323.3334} decimalScale={3} />;
-```
-
-<details>
-  <summary>
-  Demo
-  </summary>
-
-<iframe src="https://codesandbox.io/embed/decimalscale-demo-uc92li?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     className='csb'
-     title="decimalScale-demo"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
-</details>
+Deprecated alias for `maximumFractionDigits`. If both are provided, `maximumFractionDigits` takes precedence.
 
 ### decimalSeparator `string`
 
@@ -155,29 +136,60 @@ import { NumericFormat } from 'react-number-format';
    ></iframe>
 </details>
 
-### fixedDecimalScale `boolean`
+### fixedDecimalScale `boolean` _(deprecated)_
 
 **default**: `false`
 
-If set to `true`, it adds trailing 0s after `decimalSeparator` to match given `decimalScale`.
+If set to `true`, it adds trailing 0s after `decimalSeparator` to match given `maximumFractionDigits`. Consider using `minimumFractionDigits === maximumFractionDigits` instead.
 
 ```js
 import { NumericFormat } from 'react-number-format';
 
-<NumericFormat value={12323.1} decimalScale={3} fixedDecimalScale />;
+<NumericFormat value={12323.1} maximumFractionDigits={3} fixedDecimalScale />;
+```
+
+### maximumFractionDigits `number`
+
+**default**: `undefined`
+
+If defined, it limits the number of digits after the decimal point. This aligns with `Intl.NumberFormat` options.
+
+> **Note:** `decimalScale` is a deprecated alias for this prop.
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+<NumericFormat value={12323.3334} maximumFractionDigits={3} />;
 ```
 
 <details>
   <summary>
   Demo
   </summary>
-    <iframe src="https://codesandbox.io/embed/fixeddecimalscale-demo-3jnvz7?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+
+<iframe src="https://codesandbox.io/embed/decimalscale-demo-uc92li?fontsize=14&hidenavigation=1&theme=dark&view=preview"
      className='csb'
-     title="allowNegative-demo"
+     title="decimalScale-demo"
      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
 </details>
+
+### minimumFractionDigits `number`
+
+**default**: `undefined`
+
+If defined, it enforces a minimum number of digits after the decimal point. Unlike `fixedDecimalScale` which always pads to the full `maximumFractionDigits`, `minimumFractionDigits` only pads up to the specified minimum, allowing users to type additional decimal digits up to `maximumFractionDigits` without forced padding. This aligns with `Intl.NumberFormat` options.
+
+> **Note:** When `minimumFractionDigits` is used without `maximumFractionDigits`, decimal digits are not capped — the value is padded to at least `minimumFractionDigits` but the user can type additional digits freely.
+
+```js
+import { NumericFormat } from 'react-number-format';
+
+// With value 24, renders as "24.00"
+// With value 24.1234, renders as "24.1234"
+<NumericFormat value={24} maximumFractionDigits={8} minimumFractionDigits={2} />;
+```
 
 ### prefix `string`
 

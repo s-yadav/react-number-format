@@ -1,45 +1,50 @@
 import React from 'react';
+import NumberFormatBase from './number_format_base';
 import {
-  escapeRegExp,
-  splitDecimal,
-  limitToScale,
+  ChangeMeta,
+  FormatInputValueFunction,
+  InputAttributes,
+  IsCharacterSame,
+  NumberFormatBaseProps,
+  NumericFormatProps,
+  RemoveFormattingFunction,
+  SourceType,
+} from './types';
+import {
   applyThousandSeparator,
-  getDefaultChangeMeta,
+  charIsNumber,
+  escapeRegExp,
+  findChangeRange,
   fixLeadingZero,
-  noop,
-  useInternalValues,
+  getDefaultChangeMeta,
   isNil,
+  isNotValidValue,
+  limitToScale,
+  noop,
   roundToPrecision,
   setCaretPosition,
+  splitDecimal,
   toNumericString,
-  charIsNumber,
-  isNotValidValue,
-  findChangeRange,
+  useInternalValues,
 } from './utils';
-import {
-  NumericFormatProps,
-  ChangeMeta,
-  SourceType,
-  InputAttributes,
-  FormatInputValueFunction,
-  RemoveFormattingFunction,
-  NumberFormatBaseProps,
-  IsCharacterSame,
-} from './types';
-import NumberFormatBase from './number_format_base';
 
 export function format<BaseType = InputAttributes>(
   numStr: string,
   props: NumericFormatProps<BaseType>,
 ) {
   const {
-    decimalScale,
+    decimalScale: _decimalScaleProp,
     fixedDecimalScale,
+    maximumFractionDigits,
+    minimumFractionDigits,
     prefix = '',
     suffix = '',
     allowNegative,
     thousandsGroupStyle = 'thousand',
   } = props;
+
+  // resolve new prop names over deprecated ones
+  const decimalScale = maximumFractionDigits ?? _decimalScaleProp;
 
   // don't apply formatting on empty string or '-'
   if (numStr === '' || numStr === '-') {
@@ -52,15 +57,24 @@ export function format<BaseType = InputAttributes>(
    * Keep the decimal separator
    * when decimalScale is not defined or non zero and the numStr has decimal in it
    * Or if decimalScale is > 0 and fixeDecimalScale is true (even if numStr has no decimal)
+   * Or if minimumFractionDigits is set (to ensure minimum decimal digits are shown)
    */
   const hasDecimalSeparator =
-    (decimalScale !== 0 && numStr.indexOf('.') !== -1) || (decimalScale && fixedDecimalScale);
+    (decimalScale !== 0 && numStr.indexOf('.') !== -1) ||
+    (decimalScale && fixedDecimalScale) ||
+    minimumFractionDigits;
 
   let { beforeDecimal, afterDecimal, addNegation } = splitDecimal(numStr, allowNegative); // eslint-disable-line prefer-const
 
   //apply decimal precision if its defined
-  if (decimalScale !== undefined) {
-    afterDecimal = limitToScale(afterDecimal, decimalScale, !!fixedDecimalScale);
+  if (decimalScale !== undefined || minimumFractionDigits !== undefined) {
+    const effectiveScale = decimalScale ?? Math.max(afterDecimal.length, minimumFractionDigits);
+    afterDecimal = limitToScale(
+      afterDecimal,
+      effectiveScale,
+      !!fixedDecimalScale,
+      minimumFractionDigits,
+    );
   }
 
   if (thousandSeparator) {
@@ -347,8 +361,10 @@ export function useNumericFormat<BaseType = InputAttributes>(
     onKeyDown = noop,
     onBlur = noop,
     thousandSeparator,
-    decimalScale,
+    decimalScale: _decimalScaleProp,
     fixedDecimalScale,
+    maximumFractionDigits,
+    minimumFractionDigits,
     prefix = '',
     defaultValue,
     value,
@@ -356,6 +372,9 @@ export function useNumericFormat<BaseType = InputAttributes>(
     onValueChange,
     ...restProps
   } = props;
+
+  // resolve new prop names over deprecated ones
+  const decimalScale = maximumFractionDigits ?? _decimalScaleProp;
 
   // get derived decimalSeparator and allowedDecimalSeparators
   const { decimalSeparator, allowedDecimalSeparators } = getSeparators(props);
@@ -388,7 +407,12 @@ export function useNumericFormat<BaseType = InputAttributes>(
      * we don't need to do it for onChange events, as we want to prevent typing there
      */
     if (_valueIsNumericString && typeof decimalScale === 'number') {
-      return roundToPrecision(value, decimalScale, Boolean(fixedDecimalScale));
+      return roundToPrecision(
+        value,
+        decimalScale,
+        Boolean(fixedDecimalScale),
+        minimumFractionDigits,
+      );
     }
 
     return value;
@@ -473,9 +497,11 @@ export function useNumericFormat<BaseType = InputAttributes>(
       _value = fixLeadingZero(_value) as string;
     }
 
-    // apply fixedDecimalScale on blur event
-    if (fixedDecimalScale && decimalScale) {
-      _value = roundToPrecision(_value, decimalScale, fixedDecimalScale);
+    // apply fixedDecimalScale or minimumFractionDigits on blur event
+    if ((fixedDecimalScale && decimalScale) || minimumFractionDigits) {
+      const { afterDecimal: _afterDecimal } = splitDecimal(_value);
+      const effectiveScale = decimalScale ?? Math.max(_afterDecimal.length, minimumFractionDigits);
+      _value = roundToPrecision(_value, effectiveScale, fixedDecimalScale, minimumFractionDigits);
     }
 
     if (_value !== numAsString) {
@@ -527,7 +553,7 @@ export function useNumericFormat<BaseType = InputAttributes>(
 
     if (
       value === 0 &&
-      fixedDecimalScale &&
+      (fixedDecimalScale || minimumFractionDigits) &&
       decimalScale &&
       currentValue[to.start] === decimalSeparator &&
       getDecimalSeparatorIndex(currentValue) < currentValueIndex &&

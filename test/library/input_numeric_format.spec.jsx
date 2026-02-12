@@ -234,6 +234,90 @@ describe('Test NumberFormat as input with numeric format options', () => {
     expect(input).toHaveValue('12.00');
   });
 
+  it('should enforce a minimum decimal scale if specified', async () => {
+    const { input, rerender } = await render(
+      <NumericFormat maximumFractionDigits={8} minimumFractionDigits={2} value={24} />,
+    );
+    expect(input).toHaveValue('24.00');
+
+    rerender(<NumericFormat maximumFractionDigits={8} minimumFractionDigits={2} value={24.1} />);
+    expect(input).toHaveValue('24.10');
+
+    rerender(<NumericFormat maximumFractionDigits={8} minimumFractionDigits={2} value={24.1234} />);
+    expect(input).toHaveValue('24.1234');
+
+    rerender(
+      <NumericFormat maximumFractionDigits={8} minimumFractionDigits={2} value={24.12345678} />,
+    );
+    expect(input).toHaveValue('24.12345678');
+
+    // should round when value exceeds maximumFractionDigits
+    rerender(
+      <NumericFormat maximumFractionDigits={8} minimumFractionDigits={2} value={24.123456789} />,
+    );
+    expect(input).toHaveValue('24.12345679');
+  });
+
+  it('should apply minimumFractionDigits rounding on blur', async () => {
+    const { input, user } = await render(
+      <NumericFormat maximumFractionDigits={4} minimumFractionDigits={2} />,
+    );
+
+    await simulateKeyInput(user, input, '5.1', 0);
+    expect(input).toHaveValue('5.10');
+
+    simulateBlurEvent(input);
+    expect(input).toHaveValue('5.10');
+  });
+
+  it('should pad to minimumFractionDigits on blur when no decimals typed', async () => {
+    const { input, user } = await render(
+      <NumericFormat maximumFractionDigits={4} minimumFractionDigits={2} />,
+    );
+
+    await simulateKeyInput(user, input, '42', 0);
+    expect(input).toHaveValue('42.00');
+
+    simulateBlurEvent(input);
+    expect(input).toHaveValue('42.00');
+  });
+
+  it('should not pad beyond minimumFractionDigits when fixedDecimalScale is not set', async () => {
+    const { input, user } = await render(
+      <NumericFormat maximumFractionDigits={8} minimumFractionDigits={2} />,
+    );
+
+    await simulateKeyInput(user, input, '100.12345', 0);
+    expect(input).toHaveValue('100.12345');
+
+    simulateBlurEvent(input);
+    expect(input).toHaveValue('100.12345');
+  });
+
+  it('should support deprecated decimalScale prop as alias for maximumFractionDigits', async () => {
+    const { input } = await render(<NumericFormat decimalScale={3} value={12323.3334} />);
+    expect(input).toHaveValue('12323.333');
+  });
+
+  it('should prefer maximumFractionDigits over decimalScale when both are provided', async () => {
+    const { input } = await render(
+      <NumericFormat decimalScale={3} maximumFractionDigits={5} value={12323.3334} />,
+    );
+    expect(input).toHaveValue('12323.3334');
+  });
+
+  it('should pad to minimumFractionDigits but not cap decimals when only minimumFractionDigits is set', async () => {
+    const { input, user } = await render(<NumericFormat minimumFractionDigits={2} />);
+
+    await simulateKeyInput(user, input, '24', 0);
+    simulateBlurEvent(input);
+    expect(input).toHaveValue('24.00');
+
+    // Without maximumFractionDigits, decimals are not capped
+    await simulateKeyInput(user, input, '24.1234', 0, 5);
+    expect(input).toHaveValue('24.1234');
+  });
+
   it('should not round the initial if decimalScale is not provided', async () => {
     const { input, rerender } = await render(<NumericFormat value={123213.7535} />);
     expect(input).toHaveValue('123213.7535');
