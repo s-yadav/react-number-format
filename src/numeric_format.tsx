@@ -152,7 +152,15 @@ export function removeFormatting<BaseType = InputAttributes>(
   changeMeta: ChangeMeta = getDefaultChangeMeta(value),
   props: NumericFormatProps<BaseType>,
 ) {
-  const { allowNegative, prefix = '', suffix = '', decimalScale } = props;
+  const {
+    allowNegative,
+    prefix = '',
+    suffix = '',
+    decimalScale: _decimalScaleProp,
+    maximumFractionDigits,
+  } = props;
+  const decimalScale = maximumFractionDigits ?? _decimalScaleProp;
+
   const { from, to } = changeMeta;
   let { start, end } = to;
   const { allowedDecimalSeparators, decimalSeparator } = getSeparators(props);
