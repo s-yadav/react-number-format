@@ -1,5 +1,5 @@
 {
-  "name": "react-number-format",
+  "name": "@withmantle/react-number-format",
   "description": "React component to format number in an input or as a text.",
   "version": "5.4.4",
   "main": "dist/react-number-format.cjs.js",
@@ -10,16 +10,20 @@
     "types"
   ],
   "sideEffects": false,
-  "author": "Sudhanshu Yadav",
+  "publishConfig": {
+    "access": "public"
+  },
+  "contributors": [
+    "Rafay Khan <rafay@withmantle.com>"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/s-yadav/react-number-format"
+    "url": "https://github.com/TenKeyLabs/react-number-format"
   },
-  "homepage": "https://s-yadav.github.io/react-number-format/docs/intro",
+  "homepage": "https://github.com/TenKeyLabs/react-number-format",
   "bugs": {
-    "mail": "sudhanshuyadav2@gmail.com",
-    "url": "https://github.com/s-yadav/react-number-format/issues"
+    "url": "https://github.com/TenKeyLabs/react-number-format/issues"
   },
   "keywords": [
     "react-component",
@@ -43,7 +47,8 @@
     "coverage": "vitest run --coverage",
     "test-build": "vitest run",
     "test-ts": "yarn tsc --noEmit",
-    "lint": "cross-env eslint src/**"
+    "lint": "cross-env eslint src/**",
+    "build-ci": "yarn build-dist && yarn build-types"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.2",
@@ -60,6 +65,10 @@
     "@mdx-js/react": "^1.6.22",
     "@rollup/plugin-buble": "^0.21.3",
     "@rollup/plugin-typescript": "^8.3.0",
+    "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/github": "^11.0.0",
+    "@semantic-release/npm": "^12.0.0",
+    "@semantic-release/release-notes-generator": "^14.0.0",
     "@testing-library/jest-dom": "^6.4.5",
     "@testing-library/react": "^15.0.7",
     "@testing-library/user-event": "^14.5.2",
@@ -94,6 +103,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-replace": "^2.2.0",
     "rollup-plugin-uglify": "^6.0.3",
+    "semantic-release": "^24.0.0",
     "ts-loader": "^9.2.6",
     "typescript": "^4.6.3",
     "vitest": "^1.6.0",
