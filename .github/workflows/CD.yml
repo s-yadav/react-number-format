@@ -2,35 +2,45 @@ name: CD
 
 on:
   push:
-    tags:
-      - '*'
+    branches:
+      - master
 
 jobs:
   publish:
-    name: Package publish using node ${{ matrix.node }}
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        node: [14]
-        os: [ubuntu-latest]
+    name: Build and Publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Use node ${{ matrix.node }}
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
         with:
-          node-version: ${{ matrix.node }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
           registry-url: https://registry.npmjs.org
-      - name: install
-        run: yarn
-      - name: yarn lint
+
+      - name: Install
+        run: yarn install --frozen-lockfile
+
+      - name: Lint
         run: yarn run lint
-      - name: build
-        run: yarn run build
-      - name: release
-        run: yarn publish
+
+      - name: Test
+        run: yarn test-build
+
+      - name: Type check
+        run: yarn test-ts
+
+      - name: Build
+        run: yarn build-ci
+
+      - name: Release
+        run: npx semantic-release
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
