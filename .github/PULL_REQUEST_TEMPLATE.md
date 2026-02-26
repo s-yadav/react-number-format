@@ -1,21 +1,22 @@
-#### Describe the issue/change
+<!--
+Thank you for your pull request. Please provide all required information
+-->
 
-#### Add CodeSandbox link to illustrate the issue (If applicable)
+**Short description of work done**
 
-#### Describe specs for failing cases if this is an issue (If applicable)
+<!-- e.g. Refactored auth logic as part of the transition to OAuth -->
 
-#### Describe the changes proposed/implemented in this PR
+### PR Checklist
 
-#### Link Github issue if this PR solved an existing issue
+<!-- Remove items that do not apply. For completed items, change [ ] to [x]. -->
 
-#### Example usage (If applicable)
+- [ ] I have run linter locally
+- [ ] I have run unit and integration tests locally
 
-#### Screenshot (If applicable)
+### Issues
 
-#### Please check which browsers were used for testing
-- [ ] Chrome
-- [ ] Chrome (Android)
-- [ ] Safari (OSX)
-- [ ] Safari (iOS)
-- [ ] Firefox
-- [ ] Firefox (Android)
+<!-- Use github keyword to close issues that are related to this PR -->
+
+<!-- [REQUIRED] -->
+
+Closes #
