@@ -1,9 +1,10 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   NumberFormatBaseProps,
   FormatInputValueFunction,
   OnValueChange,
   IsCharacterSame,
+  SourceType,
 } from './types';
 
 // basic noop function
@@ -496,7 +497,7 @@ export function useInternalValues(
     return getValues(isNil(value) ? defaultValue : value, valueIsNumericString);
   });
 
-  const _onValueChange: typeof onValueChange = (newValues, sourceInfo) => {
+  const _onValueChange: typeof onValueChange = usePersistentCallback((newValues, sourceInfo) => {
     if (newValues.formattedValue !== values.formattedValue) {
       setValues({
         formattedValue: newValues.formattedValue,
@@ -506,7 +507,7 @@ export function useInternalValues(
 
     // call parent on value change if only if formatted value is changed
     onValueChange(newValues, sourceInfo);
-  };
+  });
 
   // if value is switch from controlled to uncontrolled, use the internal state's value to format with new props
   let _value = value;
@@ -521,6 +522,27 @@ export function useInternalValues(
   useMemo(() => {
     setValues(newValues);
   }, [newValues.formattedValue]);
+
+  /**
+   * When only a defaultValue is provided (value prop is nil), the initial formatted value is
+   * derived by the library — the parent has not yet been informed of this formatted result.
+   * Fire onValueChange once on mount so the parent can sync to the formatted value.
+   */
+  const defaultValueOnChangeFired = useRef(false);
+  useEffect(() => {
+    if (!defaultValueOnChangeFired.current && isNil(value) && values.formattedValue !== '') {
+      defaultValueOnChangeFired.current = true;
+      const floatValue = parseFloat(values.numAsString);
+      _onValueChange(
+        {
+          formattedValue: values.formattedValue,
+          value: values.numAsString,
+          floatValue: isNaN(floatValue) ? undefined : floatValue,
+        },
+        { event: undefined, source: SourceType.props },
+      );
+    }
+  }, []);
 
   return [values, _onValueChange];
 }

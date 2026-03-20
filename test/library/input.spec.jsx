@@ -599,6 +599,53 @@ describe('NumberFormat as input', () => {
     expect(input).toHaveValue('');
   });
 
+  it('should call onValueChange on initial render when a defaultValue is provided to PatternFormat #883', async () => {
+    const spy = vi.fn();
+    await render(
+      <PatternFormat
+        format="(###) ### ####"
+        defaultValue="1234567890"
+        valueIsNumericString
+        onValueChange={spy}
+      />,
+    );
+
+    expect(spy).toHaveBeenCalled();
+    expect(spy.mock.lastCall[0]).toEqual({
+      formattedValue: '(123) 456 7890',
+      value: '1234567890',
+      floatValue: 1234567890,
+    });
+  });
+
+  it('should call onValueChange on initial render when a defaultValue is provided to NumericFormat #883', async () => {
+    const spy = vi.fn();
+    await render(
+      <NumericFormat thousandSeparator defaultValue={1234} onValueChange={spy} />,
+    );
+
+    expect(spy).toHaveBeenCalled();
+    expect(spy.mock.lastCall[0]).toEqual({
+      formattedValue: '1,234',
+      value: '1234',
+      floatValue: 1234,
+    });
+  });
+
+  it('should NOT call onValueChange on initial render when a controlled value prop is provided #883', async () => {
+    const spy = vi.fn();
+    await render(
+      <PatternFormat
+        format="(###) ### ####"
+        value="1234567890"
+        valueIsNumericString
+        onValueChange={spy}
+      />,
+    );
+
+    expect(spy).not.toHaveBeenCalled();
+  });
+
   it('should call onFocus prop when focused', async () => {
     const mockOnFocus = vi.fn();
 
