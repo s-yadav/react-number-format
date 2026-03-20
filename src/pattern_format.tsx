@@ -16,7 +16,9 @@ export function format<BaseType = InputAttributes>(
   props: PatternFormatProps<BaseType>,
 ) {
   const format = props.format as string;
-  const { allowEmptyFormatting, mask, patternChar = '#' } = props;
+  const { allowEmptyFormatting, patternChar = '#' } = props;
+  // treat empty string mask same as space, as empty string mask will break the format
+  const mask = !props.mask ? ' ' : props.mask;
 
   if (numStr === '' && !allowEmptyFormatting) return '';
 
@@ -174,7 +176,7 @@ export function usePatternFormat<BaseType = InputAttributes>(
 ): NumberFormatBaseProps<BaseType> {
   const {
     /* eslint-disable no-unused-vars */
-    mask,
+    mask: maskProp,
     allowEmptyFormatting,
     /* eslint-enable no-unused-vars */
     format: formatProp,
@@ -247,7 +249,9 @@ export function usePatternFormat<BaseType = InputAttributes>(
   const _value = isNil(value) ? defaultValue : value;
   const isValueNumericString = valueIsNumericString ?? isNumericString(_value, formatProp);
 
-  const _props = { ...props, valueIsNumericString: isValueNumericString };
+  // treat empty string mask same as space, as empty string mask will break the format
+  const mask = !maskProp ? ' ' : maskProp;
+  const _props = { ...props, mask, valueIsNumericString: isValueNumericString };
 
   return {
     ...(restProps as NumberFormatBaseProps<BaseType>),
