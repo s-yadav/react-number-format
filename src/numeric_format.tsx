@@ -290,7 +290,9 @@ export function getCaretBoundary<BaseType = InputAttributes>(
   const hasNegation = formattedValue[0] === '-';
 
   // fill for prefix and negation
-  boundaryAry.fill(false, 0, prefix.length + (hasNegation ? 1 : 0));
+  // Cap the fill range so we never exceed the array length when the formatted value
+  // is just '-' (negation only, e.g. during intermediate typing with a multi-char prefix)
+  boundaryAry.fill(false, 0, Math.min(prefix.length + (hasNegation ? 1 : 0), formattedValue.length));
 
   // fill for suffix
   const valLn = formattedValue.length;
@@ -409,7 +411,10 @@ export function useNumericFormat<BaseType = InputAttributes>(
     const { selectionStart, selectionEnd, value = '' } = el;
 
     // if user tries to delete partial prefix then ignore it
-    if ((key === 'Backspace' || key === 'Delete') && selectionEnd < prefix.length) {
+    // Exception: when value is just '-' (negation-only, no prefix shown yet), the cursor
+    // is at position 1 which is < prefix.length for multi-char prefixes — we must allow
+    // backspace to delete the lone negation sign in this state
+    if ((key === 'Backspace' || key === 'Delete') && selectionEnd < prefix.length && value !== '-') {
       e.preventDefault();
       return;
     }
