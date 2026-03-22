@@ -161,7 +161,6 @@ class App extends React.Component {
     return (
       <div>
         <div className="example">
-          
           <h3>Prefix and thousand separator : Format currency as text</h3>
           <NumericFormat value={2456981} displayType="text" thousandSeparator={true} prefix="$" />
         </div>
@@ -173,7 +172,6 @@ class App extends React.Component {
 
         <div className="example">
           <h3>Custom renderText method</h3>
-
           <PatternFormat
             value={4111111111111111}
             displayType="text"

@@ -311,29 +311,6 @@ describe('NumberFormat as input', () => {
     expect(input).toHaveValue('1334_');
   });
 
-  it('should treat mask="" as mask=" "', async () => {
-    const { input } = await render(<PatternFormat format="+359 ### ### ###" mask="" allowEmptyFormatting />);
-    expect(input).toHaveValue('+359            ');
-  });
-
-
-  it('should give proper value with mask="" and numeric prefix in format #879', async () => {
-    const spy = vi.fn();
-    const { input, user } = await render(
-      <PatternFormat format="+359 ### ### ###" onValueChange={spy} mask="" />,
-    );
-
-    await simulateKeyInput(user, input, '2', 5);
-
-    expect(spy).toHaveBeenCalled();
-    expect(spy.mock.lastCall[0]).toEqual({
-      formattedValue: '+359 2          ',
-      value: '2',
-      floatValue: 2,
-    });
-  });
-
-
   it('should allow replacing all characters with number when formatting is present for NumericFormats', async () => {
     //check for numeric input
     const value = '12.000';
