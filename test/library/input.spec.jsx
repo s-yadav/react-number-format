@@ -353,19 +353,15 @@ describe('NumberFormat as input', () => {
   });
 
   it('should format value when input value is empty and allowEmptyFormatting is true', async () => {
-    expect(async () => {
-      const { input } = await render(<PatternFormat format="##/##/####" value="" />);
+    const { input } = await render(<PatternFormat format="##/##/####" value="" allowEmptyFormatting={true} />);
 
-      expect(input).toHaveValue('  /  /    ');
-    });
+    expect(input).toHaveValue('  /  /    ');
   });
 
   it('should format value when input value is not set and allowEmptyFormatting is true', async () => {
-    expect(async () => {
-      const { input } = await render(<PatternFormat format="##/##/####" />);
+    const { input } = await render(<PatternFormat format="##/##/####" allowEmptyFormatting={true} />);
 
-      expect(input).toHaveValue('  /  /    ');
-    });
+    expect(input).toHaveValue('  /  /    ');
   });
 
   it('should not convert empty string to 0 if valueIsNumericString is true', async () => {
