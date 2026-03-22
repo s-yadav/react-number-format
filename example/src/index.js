@@ -173,11 +173,6 @@ class App extends React.Component {
 
         <div className="example">
           <h3>Custom renderText method</h3>
-          <PatternFormat
-            format="+359 ### ### ###"
-            onValueChange={console.log}
-            mask=""         
-            />
 
           <PatternFormat
             value={4111111111111111}
