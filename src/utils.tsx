@@ -528,10 +528,8 @@ export function useInternalValues(
    * derived by the library — the parent has not yet been informed of this formatted result.
    * Fire onValueChange once on mount so the parent can sync to the formatted value.
    */
-  const defaultValueOnChangeFired = useRef(false);
   useEffect(() => {
-    if (!defaultValueOnChangeFired.current && isNil(value) && values.formattedValue !== '') {
-      defaultValueOnChangeFired.current = true;
+    if (!isNil(defaultValue) && isNil(value) && values.formattedValue !== '') {
       const floatValue = parseFloat(values.numAsString);
       _onValueChange(
         {
