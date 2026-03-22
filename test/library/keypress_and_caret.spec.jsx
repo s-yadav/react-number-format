@@ -523,9 +523,7 @@ describe('Test keypress and caret position changes', () => {
       // When value is -1 with prefix "USD", formatted as "-USD1"
       // After backspace on the "1", numAsString becomes "-" (format('-') skips prefix)
       // Another backspace should be able to remove the "-" sign
-      const { input, user } = await render(
-        <NumericFormat prefix="USD" value={-1} allowNegative />,
-      );
+      const { input, user } = await render(<NumericFormat prefix="USD" value={-1} allowNegative />);
 
       expect(input).toHaveValue('-USD1');
 
@@ -541,9 +539,7 @@ describe('Test keypress and caret position changes', () => {
     it('should not remove negative sign when typing a digit after - with a multi-character prefix #882', async () => {
       // When value is just "-" (format returns "-" without prefix for negation-only state),
       // typing a digit should keep the "-" sign and produce the correctly formatted value
-      const { input, user } = await render(
-        <NumericFormat prefix="$" allowNegative />,
-      );
+      const { input, user } = await render(<NumericFormat prefix="$" allowNegative />);
 
       await simulateKeyInput(user, input, '-', 0);
       expect(input).toHaveValue('-');
@@ -554,7 +550,6 @@ describe('Test keypress and caret position changes', () => {
       await simulateKeyInput(user, input, '5', 5);
       expect(input).toHaveValue('-$0.5');
     });
-
 
     it('should maintain correct caret position if one of thousand separator is removed due to backspace. #695', async () => {
       const { input, user } = await render(

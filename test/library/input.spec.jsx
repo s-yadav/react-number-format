@@ -330,13 +330,17 @@ describe('NumberFormat as input', () => {
   });
 
   it('should format value when input value is empty and allowEmptyFormatting is true', async () => {
-    const { input } = await render(<PatternFormat format="##/##/####" value="" allowEmptyFormatting={true} />);
+    const { input } = await render(
+      <PatternFormat format="##/##/####" value="" allowEmptyFormatting={true} />,
+    );
 
     expect(input).toHaveValue('  /  /    ');
   });
 
   it('should format value when input value is not set and allowEmptyFormatting is true', async () => {
-    const { input } = await render(<PatternFormat format="##/##/####" allowEmptyFormatting={true} />);
+    const { input } = await render(
+      <PatternFormat format="##/##/####" allowEmptyFormatting={true} />,
+    );
 
     expect(input).toHaveValue('  /  /    ');
   });
@@ -616,9 +620,7 @@ describe('NumberFormat as input', () => {
 
   it('should call onValueChange on initial render when a defaultValue is provided to NumericFormat #883', async () => {
     const spy = vi.fn();
-    await render(
-      <NumericFormat thousandSeparator defaultValue={1234} onValueChange={spy} />,
-    );
+    await render(<NumericFormat thousandSeparator defaultValue={1234} onValueChange={spy} />);
 
     expect(spy).toHaveBeenCalled();
     expect(spy.mock.lastCall[0]).toEqual({
