@@ -414,6 +414,12 @@ export function useNumericFormat<BaseType = InputAttributes>(
     const { key } = e;
     const { selectionStart, selectionEnd, value = '' } = el;
 
+    // if the input has only negation, allow the user to delete it
+    if (key === 'Backspace' && value === '-') {
+      onKeyDown(e);
+      return;
+    }
+
     // if user tries to delete partial prefix then ignore it
     // Exception: when value is just '-' (negation-only, no prefix shown yet), the cursor
     // is at position 1 which is < prefix.length for multi-char prefixes — we must allow
