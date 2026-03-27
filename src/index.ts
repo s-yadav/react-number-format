@@ -22,6 +22,7 @@ export type {
   NumberFormatBaseProps,
   PatternFormatProps,
   SourceInfo,
+  SourceType,
   NumberFormatValues,
   OnValueChange,
   InputAttributes,
