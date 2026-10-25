@@ -262,6 +262,53 @@ describe('Test keypress and caret position changes', () => {
     expect(input.selectionStart).toEqual(1);
   });
 
+  it('should not let the deferred caret correction of an earlier keystroke move the caret after a later one', async () => {
+    const { input, user } = await render(
+      <NumericFormat value={0} fixedDecimalScale decimalScale={2} />,
+    );
+    await simulateKeyInput(user, input, 'Backspace', 0, 4);
+
+    // Hold every timeout instead of running it, honouring clearTimeout, so the test decides when
+    // each runs. A busy main thread does the same thing: the browser handles the next keystroke
+    // before the timeout scheduled by the previous one gets to run.
+    const held = new Map();
+    let nextId = 1;
+    const setTimeoutSpy = vi.spyOn(window, 'setTimeout').mockImplementation((callback) => {
+      const id = nextId++;
+      held.set(id, callback);
+      return id;
+    });
+    const clearTimeoutSpy = vi.spyOn(window, 'clearTimeout').mockImplementation((id) => {
+      held.delete(id);
+    });
+
+    try {
+      // "2" renders as "2.00" with the caret at 1, and schedules a correction to 1 for "2.00".
+      await simulateKeyInput(user, input, '2', 0, 0);
+      const scheduledByTheTwo = [...held.keys()];
+
+      // "." only moves the caret past the existing separator: still "2.00", caret now at 2.
+      await simulateKeyInput(user, input, '.', 1, 1);
+      expect(input.value).toEqual('2.00');
+      expect(input.selectionStart).toEqual(2);
+
+      // The "2"'s correction finally runs. The value still matches, but it is stale.
+      scheduledByTheTwo.forEach((id) => {
+        const callback = held.get(id);
+        held.delete(id);
+        callback?.();
+      });
+      expect(input.selectionStart).toEqual(2);
+
+      await simulateKeyInput(user, input, '5', input.selectionStart, input.selectionStart);
+    } finally {
+      setTimeoutSpy.mockRestore();
+      clearTimeoutSpy.mockRestore();
+    }
+
+    expect(input.value).toEqual('2.50');
+  });
+
   describe('Test character insertion', () => {
     it('should add any number properly when input is empty without format prop passed', async () => {
       const { input, rerender, user } = await render(

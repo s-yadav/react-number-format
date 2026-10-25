@@ -118,6 +118,11 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     We are also setting it without timeout so that in normal browser we don't see the flickering */
     setCaretPosition(el, caretPos);
 
+    /* a correction still pending from an earlier change is stale: if the value it was scheduled for
+    is still there (fixedDecimalScale keeps "2.00" when a decimal separator is typed after "2"),
+    it would move the caret back to where that earlier change left it */
+    clearTimeout(timeout.current.setCaretTimeout as unknown as Timeout);
+
     timeout.current.setCaretTimeout = setTimeout(() => {
       if (el.value === currentValue && el.selectionStart !== caretPos) {
         setCaretPosition(el, caretPos);
