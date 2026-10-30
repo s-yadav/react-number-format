@@ -304,10 +304,18 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     let expectedCaretPosition;
 
     //Handle backspace and delete against non numerical/decimal characters or arrow keys
-    if (key === 'ArrowLeft' || key === 'Backspace') {
+    if (key === 'ArrowLeft') {
+      expectedCaretPosition =
+        selectionStart === selectionEnd
+          ? Math.max((selectionStart as number) - 1, 0)
+          : selectionStart;
+    } else if (key === 'Backspace') {
       expectedCaretPosition = Math.max((selectionStart as number) - 1, 0);
     } else if (key === 'ArrowRight') {
-      expectedCaretPosition = Math.min((selectionStart as number) + 1, value.length);
+      expectedCaretPosition =
+        selectionStart === selectionEnd
+          ? Math.min((selectionEnd as number) + 1, value.length)
+          : selectionEnd;
     } else if (key === 'Delete') {
       expectedCaretPosition = selectionStart;
     }
@@ -322,8 +330,12 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
     const isArrowKey = key === 'ArrowLeft' || key === 'ArrowRight';
 
     //if expectedCaretPosition is not set it means we don't want to Handle keyDown
-    // also if multiple characters are selected don't handle
-    if (expectedCaretPosition === undefined || (selectionStart !== selectionEnd && !isArrowKey)) {
+    // also let the browser extend selections with shift and handle selected text deletion
+    if (
+      expectedCaretPosition === undefined ||
+      (isArrowKey && e.shiftKey) ||
+      (selectionStart !== selectionEnd && !isArrowKey)
+    ) {
       onKeyDown(e);
       // keep information of what was the caret position before keyDown
       // set it after onKeyDown, in case parent updates the position manually
@@ -339,6 +351,12 @@ export default function NumberFormatBase<BaseType = InputAttributes>(
       // arrow left or right only moves the caret, so no need to handle the event, if we are handling it manually
       if (newCaretPosition !== expectedCaretPosition) {
         e.preventDefault();
+      }
+      // Arrow keys collapse a selection even when the full value is selected.
+      // Formatting updates should still preserve full selections in setPatchedCaretPosition.
+      if (selectionStart !== selectionEnd) {
+        e.preventDefault();
+        setCaretPosition(el, newCaretPosition);
       }
     } else if (key === 'Delete' && !isValidInputCharacter(value[expectedCaretPosition])) {
       // in case of delete go to closest caret boundary on the right side

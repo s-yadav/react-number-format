@@ -563,6 +563,73 @@ describe('Test keypress and caret position changes', () => {
   });
 
   describe('Test arrow keys', () => {
+    it.each([
+      ['ArrowLeft', 0, 6, 2],
+      ['ArrowRight', 0, 6, 6],
+      ['ArrowLeft', 0, 4, 2],
+      ['ArrowRight', 0, 4, 4],
+    ])(
+      'should collapse selection %s from %i to %i with a multi-character prefix #862',
+      async (key, start, end, expected) => {
+        const { input, user } = await render(<NumericFormat value={1234} prefix="$$" />);
+
+        await user.click(input);
+        await simulateKeyInput(user, input, `{${key}}`, start, end);
+
+        expect(input).toHaveValue('$$1234');
+        expect(input.selectionStart).toBe(expected);
+        expect(input.selectionEnd).toBe(expected);
+      },
+    );
+
+    it.each([
+      ['ArrowLeft', 2],
+      ['ArrowRight', 6],
+    ])(
+      'should collapse a full selection %s within prefix and suffix boundaries',
+      async (key, expected) => {
+        const { input, user } = await render(
+          <NumericFormat value={1234} prefix="$$" suffix=" USD" />,
+        );
+
+        await user.click(input);
+        await simulateKeyInput(user, input, `{${key}}`, 0, input.value.length);
+
+        expect(input.selectionStart).toBe(expected);
+        expect(input.selectionEnd).toBe(expected);
+      },
+    );
+
+    it.each(['ArrowLeft', 'ArrowRight'])('should allow native Shift+%s selection', async (key) => {
+      const { input, user } = await render(<NumericFormat value={1234} prefix="$$" />);
+
+      await user.click(input);
+      input.setSelectionRange(0, input.value.length);
+      const allowed = fireEvent.keyDown(input, { key, shiftKey: true });
+
+      expect(allowed).toBe(true);
+      expect(input.selectionStart).toBe(0);
+      expect(input.selectionEnd).toBe(input.value.length);
+    });
+
+    it.each([
+      ['ArrowLeft', 4],
+      ['ArrowRight', 17],
+    ])(
+      'should collapse a full pattern selection %s within the typing area',
+      async (key, expected) => {
+        const { input, user } = await render(
+          <PatternFormat format="+1 (###) ### # ## US" value="123456789" />,
+        );
+
+        await user.click(input);
+        await simulateKeyInput(user, input, `{${key}}`, 0, input.value.length);
+
+        expect(input.selectionStart).toBe(expected);
+        expect(input.selectionEnd).toBe(expected);
+      },
+    );
+
     it('should keep caret position between the prefix and suffix', async () => {
       const { input, user } = await render(
         <NumericFormat
